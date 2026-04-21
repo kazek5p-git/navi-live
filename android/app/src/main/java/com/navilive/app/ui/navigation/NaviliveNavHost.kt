@@ -37,6 +37,7 @@ import com.navilive.app.ui.screens.ArrivalScreen
 import com.navilive.app.ui.screens.BootstrapScreen
 import com.navilive.app.ui.screens.CurrentPositionScreen
 import com.navilive.app.ui.screens.FavoritesScreen
+import com.navilive.app.ui.screens.HelpPrivacyScreen
 import com.navilive.app.ui.screens.HeadingAlignScreen
 import com.navilive.app.ui.screens.NotFoundScreen
 import com.navilive.app.ui.screens.OnboardingScreen
@@ -46,6 +47,7 @@ import com.navilive.app.ui.screens.RouteSummaryScreen
 import com.navilive.app.ui.screens.SearchScreen
 import com.navilive.app.ui.screens.SettingsScreen
 import com.navilive.app.ui.screens.StartScreen
+import com.navilive.app.ui.screens.TutorialScreen
 import java.io.File
 
 @Composable
@@ -152,6 +154,8 @@ fun NaviliveNavHost(viewModel: NaviliveViewModel) {
                 if (!uiState.value.isPreferencesLoaded) return@LaunchedEffect
                 val destination = when {
                     !uiState.value.hasCompletedOnboarding -> Routes.Onboarding
+                    uiState.value.settingsState.showTutorialOnStartup ->
+                        Routes.tutorial(Routes.TutorialEntryStartup)
                     !hasLocationPermission -> Routes.Permissions
                     else -> Routes.Start
                 }
@@ -171,6 +175,41 @@ fun NaviliveNavHost(viewModel: NaviliveViewModel) {
                     navController.navigate(destination) {
                         popUpTo(Routes.Bootstrap) { inclusive = true }
                         launchSingleTop = true
+                    }
+                },
+            )
+        }
+
+        composable(
+            route = Routes.TutorialPattern,
+            arguments = listOf(navArgument("entryMode") { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val entryMode = backStackEntry.arguments?.getString("entryMode")
+                ?: Routes.TutorialEntrySettings
+            val opensFromStartup = entryMode == Routes.TutorialEntryStartup
+            TutorialScreen(
+                showOnStartup = uiState.value.settingsState.showTutorialOnStartup,
+                onShowOnStartupChange = viewModel::setShowTutorialOnStartup,
+                onDone = {
+                    if (opensFromStartup) {
+                        val destination = if (hasLocationPermission) Routes.Start else Routes.Permissions
+                        navController.navigate(destination) {
+                            popUpTo(Routes.Bootstrap) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    } else {
+                        navController.popBackStack()
+                    }
+                },
+                onBack = {
+                    if (opensFromStartup) {
+                        val destination = if (hasLocationPermission) Routes.Start else Routes.Permissions
+                        navController.navigate(destination) {
+                            popUpTo(Routes.Bootstrap) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    } else {
+                        navController.popBackStack()
                     }
                 },
             )
@@ -419,6 +458,7 @@ fun NaviliveNavHost(viewModel: NaviliveViewModel) {
                 state = uiState.value.settingsState,
                 updateState = uiState.value.appUpdateState,
                 diagnosticsState = uiState.value.diagnosticsState,
+                onOpenHelpPrivacy = { navController.navigate(Routes.HelpPrivacy) },
                 onVibrationChange = viewModel::setVibration,
                 onAutoRecalculateChange = viewModel::setAutoRecalculate,
                 onJunctionAlertChange = viewModel::setJunctionAlerts,
@@ -442,6 +482,20 @@ fun NaviliveNavHost(viewModel: NaviliveViewModel) {
                     {
                         shareDiagnosticsFile(context, exportPath)
                     }
+                },
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        composable(Routes.HelpPrivacy) {
+            HelpPrivacyScreen(
+                showTutorialOnStartup = uiState.value.settingsState.showTutorialOnStartup,
+                onShowTutorialOnStartupChange = viewModel::setShowTutorialOnStartup,
+                onOpenTutorial = {
+                    navController.navigate(Routes.tutorial(Routes.TutorialEntrySettings))
+                },
+                onOpenSupportUrl = { supportUrl ->
+                    openExternalUrl(context, supportUrl)
                 },
                 onBack = { navController.popBackStack() },
             )

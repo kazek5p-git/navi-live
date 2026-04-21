@@ -97,6 +97,7 @@ data class SystemTtsEngineOption(
 
 data class SettingsState(
     val language: String = "",
+    val showTutorialOnStartup: Boolean = false,
     val vibrationEnabled: Boolean = true,
     val autoRecalculate: Boolean = true,
     val junctionAlerts: Boolean = true,

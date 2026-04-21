@@ -429,6 +429,24 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun setShowTutorialOnStartup(enabled: Boolean) {
+        _uiState.update { current ->
+            current.copy(
+                settingsState = current.settingsState.copy(showTutorialOnStartup = enabled),
+                statusMessage = string(
+                    if (enabled) {
+                        R.string.status_tutorial_on_start_enabled
+                    } else {
+                        R.string.status_tutorial_on_start_disabled
+                    },
+                ),
+            )
+        }
+        viewModelScope.launch {
+            preferencesStore.setShowTutorialOnStartup(enabled)
+        }
+    }
+
     fun toggleFavorite(placeId: String) {
         var favoriteIds = emptySet<String>()
         var added = false

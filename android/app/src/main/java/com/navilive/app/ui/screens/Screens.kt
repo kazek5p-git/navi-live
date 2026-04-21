@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -64,6 +65,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -71,12 +73,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.navilive.app.R
@@ -90,6 +95,7 @@ import com.navilive.app.model.RouteSummary
 import com.navilive.app.model.SettingsState
 import com.navilive.app.model.SpeechOutputMode
 import com.navilive.app.model.UpdateChannel
+import java.math.BigDecimal
 import kotlin.math.roundToInt
 
 private enum class BannerTone {
@@ -109,6 +115,8 @@ private val WarningContainer = Color(0xFFFFEDC2)
 private val OnWarningContainer = Color(0xFF3B2F04)
 private val SuccessContainer = Color(0xFFDDF4E0)
 private val OnSuccessContainer = Color(0xFF14311A)
+private const val SupportBaseUrl = "https://paypal.me/KazimierzParzych"
+private val SupportQuickAmounts = listOf(5, 10, 20, 50)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -321,27 +329,7 @@ fun OnboardingScreen(
                 tone = BannerTone.Success,
             )
 
-            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    SectionHeading(stringResource(R.string.onboarding_how_it_works_title))
-                    LabelValue(stringResource(R.string.onboarding_search_label), stringResource(R.string.onboarding_search_message))
-                    LabelValue(stringResource(R.string.onboarding_align_label), stringResource(R.string.onboarding_align_message))
-                    LabelValue(stringResource(R.string.onboarding_navigate_label), stringResource(R.string.onboarding_navigate_message))
-                }
-            }
-
-            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    SectionHeading(stringResource(R.string.onboarding_expect_title))
-                    Text(stringResource(R.string.onboarding_expect_message), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
+            TutorialOverviewCards()
 
             Spacer(modifier = Modifier.weight(1f, fill = false))
 
@@ -350,6 +338,80 @@ fun OnboardingScreen(
                 icon = Icons.Filled.Navigation,
                 onClick = onContinue,
             )
+        }
+    }
+}
+
+@Composable
+fun TutorialScreen(
+    showOnStartup: Boolean,
+    onShowOnStartupChange: (Boolean) -> Unit,
+    onDone: () -> Unit,
+    onBack: () -> Unit,
+) {
+    ScreenScaffold(
+        title = stringResource(R.string.tutorial_navigation_title),
+        showBack = true,
+        onBack = onBack,
+    ) { modifier ->
+        Column(
+            modifier = modifier.verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            StatusCard(
+                title = stringResource(R.string.tutorial_status_title),
+                message = stringResource(R.string.tutorial_status_message),
+                tone = BannerTone.Info,
+            )
+
+            TutorialOverviewCards()
+            TutorialStartupCard(
+                showOnStartup = showOnStartup,
+                onShowOnStartupChange = onShowOnStartupChange,
+            )
+
+            Spacer(modifier = Modifier.weight(1f, fill = false))
+
+            PrimaryActionButton(
+                label = stringResource(R.string.tutorial_done),
+                icon = Icons.Filled.Navigation,
+                onClick = onDone,
+            )
+        }
+    }
+}
+
+@Composable
+fun HelpPrivacyScreen(
+    showTutorialOnStartup: Boolean,
+    onShowTutorialOnStartupChange: (Boolean) -> Unit,
+    onOpenTutorial: () -> Unit,
+    onOpenSupportUrl: (String) -> Unit,
+    onBack: () -> Unit,
+) {
+    ScreenScaffold(
+        title = stringResource(R.string.settings_help_privacy_title),
+        showBack = true,
+        onBack = onBack,
+    ) { modifier ->
+        Column(
+            modifier = modifier.verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            StatusCard(
+                title = stringResource(R.string.settings_help_privacy_title),
+                message = stringResource(R.string.settings_help_privacy_status_message),
+                tone = BannerTone.Info,
+            )
+            TutorialSettingsCard(
+                showOnStartup = showTutorialOnStartup,
+                onShowOnStartupChange = onShowTutorialOnStartupChange,
+                onOpenTutorial = onOpenTutorial,
+            )
+            SupportDevelopmentCard(
+                onOpenSupportUrl = onOpenSupportUrl,
+            )
+            PrivacyInfoCard()
         }
     }
 }
@@ -1015,6 +1077,7 @@ fun SettingsScreen(
     state: SettingsState,
     updateState: AppUpdateState,
     diagnosticsState: DiagnosticsState,
+    onOpenHelpPrivacy: () -> Unit,
     onVibrationChange: (Boolean) -> Unit,
     onAutoRecalculateChange: (Boolean) -> Unit,
     onJunctionAlertChange: (Boolean) -> Unit,
@@ -1043,6 +1106,26 @@ fun SettingsScreen(
                 message = stringResource(R.string.settings_status_message),
                 tone = BannerTone.Info,
             )
+
+            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    SectionHeading(stringResource(R.string.settings_help_privacy_title))
+                    Text(
+                        text = stringResource(R.string.settings_help_privacy_summary),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    FilledTonalButton(
+                        onClick = onOpenHelpPrivacy,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(stringResource(R.string.settings_help_privacy_open_button))
+                    }
+                }
+            }
 
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(
@@ -1171,6 +1254,283 @@ fun SettingsScreen(
         }
     }
 }
+
+@Composable
+private fun TutorialOverviewCards() {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            SectionHeading(stringResource(R.string.onboarding_how_it_works_title))
+            LabelValue(stringResource(R.string.onboarding_search_label), stringResource(R.string.onboarding_search_message))
+            LabelValue(stringResource(R.string.onboarding_align_label), stringResource(R.string.onboarding_align_message))
+            LabelValue(stringResource(R.string.onboarding_navigate_label), stringResource(R.string.onboarding_navigate_message))
+        }
+    }
+
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            SectionHeading(stringResource(R.string.onboarding_expect_title))
+            Text(
+                text = stringResource(R.string.onboarding_expect_message),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun TutorialStartupCard(
+    showOnStartup: Boolean,
+    onShowOnStartupChange: (Boolean) -> Unit,
+) {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            SectionHeading(stringResource(R.string.tutorial_startup_section_title))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.tutorial_show_on_start_title),
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.weight(1f),
+                )
+                Spacer(Modifier.width(12.dp))
+                Switch(
+                    checked = showOnStartup,
+                    onCheckedChange = onShowOnStartupChange,
+                )
+            }
+            Text(
+                text = stringResource(R.string.tutorial_show_on_start_message),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun TutorialSettingsCard(
+    showOnStartup: Boolean,
+    onShowOnStartupChange: (Boolean) -> Unit,
+    onOpenTutorial: () -> Unit,
+) {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            SectionHeading(stringResource(R.string.tutorial_navigation_title))
+            Text(
+                text = stringResource(R.string.settings_help_privacy_tutorial_message),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            FilledTonalButton(
+                onClick = onOpenTutorial,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.settings_help_privacy_tutorial_open_button))
+            }
+            HorizontalDivider()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.tutorial_show_on_start_title),
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.weight(1f),
+                )
+                Spacer(Modifier.width(12.dp))
+                Switch(
+                    checked = showOnStartup,
+                    onCheckedChange = onShowOnStartupChange,
+                )
+            }
+            Text(
+                text = stringResource(R.string.tutorial_show_on_start_message),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun SupportDevelopmentCard(
+    onOpenSupportUrl: (String) -> Unit,
+) {
+    val clipboardManager = LocalClipboardManager.current
+    var customAmountInput by remember { mutableStateOf("") }
+    var localStatusMessage by remember { mutableStateOf<String?>(null) }
+    val copySuccessMessage = stringResource(R.string.settings_support_copy_success)
+    val invalidAmountMessage = stringResource(R.string.settings_support_custom_invalid)
+
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            SectionHeading(stringResource(R.string.settings_support_section_title))
+            Text(
+                text = stringResource(R.string.settings_support_body),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = stringResource(R.string.settings_support_amounts_description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            SupportQuickAmounts.chunked(2).forEach { amountRow ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    amountRow.forEach { amount ->
+                        Button(
+                            onClick = {
+                                localStatusMessage = null
+                                onOpenSupportUrl(supportUrlForAmount(amount.toString()))
+                            },
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Text(stringResource(R.string.format_settings_support_amount_button, amount))
+                        }
+                    }
+                    if (amountRow.size == 1) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
+            }
+            Text(
+                text = stringResource(R.string.settings_support_custom_title),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            OutlinedTextField(
+                value = customAmountInput,
+                onValueChange = { customAmountInput = it },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = {
+                    Text(stringResource(R.string.settings_support_custom_placeholder))
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            )
+            FilledTonalButton(
+                onClick = {
+                    val normalizedAmount = normalizeSupportAmount(customAmountInput)
+                    if (normalizedAmount == null) {
+                        localStatusMessage = invalidAmountMessage
+                    } else {
+                        localStatusMessage = null
+                        onOpenSupportUrl(supportUrlForAmount(normalizedAmount))
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.settings_support_custom_button))
+            }
+            OutlinedButton(
+                onClick = {
+                    localStatusMessage = null
+                    onOpenSupportUrl(SupportBaseUrl)
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.settings_support_other_currency_button))
+            }
+            TextButton(
+                onClick = {
+                    clipboardManager.setText(AnnotatedString(SupportBaseUrl))
+                    localStatusMessage = copySuccessMessage
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.settings_support_copy_link))
+            }
+            localStatusMessage?.takeIf { it.isNotBlank() }?.let { message ->
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PrivacyInfoCard() {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            SectionHeading(stringResource(R.string.settings_privacy_section_title))
+            PrivacyInfoBlock(
+                title = stringResource(R.string.settings_privacy_local_title),
+                body = stringResource(R.string.settings_privacy_local_body),
+            )
+            HorizontalDivider()
+            PrivacyInfoBlock(
+                title = stringResource(R.string.settings_privacy_online_title),
+                body = stringResource(R.string.settings_privacy_online_body),
+            )
+            HorizontalDivider()
+            PrivacyInfoBlock(
+                title = stringResource(R.string.settings_privacy_telemetry_title),
+                body = stringResource(R.string.settings_privacy_telemetry_body),
+            )
+        }
+    }
+}
+
+@Composable
+private fun PrivacyInfoBlock(
+    title: String,
+    body: String,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold,
+        )
+        Text(
+            text = body,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+private fun normalizeSupportAmount(input: String): String? {
+    val normalized = input.trim().replace(',', '.')
+    if (!normalized.matches(Regex("\\d+(\\.\\d{1,2})?"))) {
+        return null
+    }
+    val amount = normalized.toBigDecimalOrNull() ?: return null
+    if (amount <= BigDecimal.ZERO) {
+        return null
+    }
+    return amount.stripTrailingZeros().toPlainString()
+}
+
+private fun supportUrlForAmount(amount: String): String = "$SupportBaseUrl/${amount}PLN"
 
 @Composable
 fun ArrivalScreen(

@@ -72,6 +72,12 @@ class NavilivePreferencesStore(
         }
     }
 
+    suspend fun setShowTutorialOnStartup(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[Keys.ShowTutorialOnStartup] = enabled
+        }
+    }
+
     suspend fun setVibrationEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[Keys.VibrationEnabled] = enabled
@@ -151,6 +157,8 @@ class NavilivePreferencesStore(
             hasCompletedOnboarding = preferences[Keys.HasCompletedOnboarding] ?: false,
             settingsState = SettingsState(
                 language = preferences[Keys.Language] ?: SettingsState().language,
+                showTutorialOnStartup = preferences[Keys.ShowTutorialOnStartup]
+                    ?: SettingsState().showTutorialOnStartup,
                 vibrationEnabled = preferences[Keys.VibrationEnabled] ?: SettingsState().vibrationEnabled,
                 autoRecalculate = preferences[Keys.AutoRecalculate] ?: SettingsState().autoRecalculate,
                 junctionAlerts = preferences[Keys.JunctionAlerts] ?: SettingsState().junctionAlerts,
@@ -172,6 +180,7 @@ class NavilivePreferencesStore(
         val LastRoutePlaceId = stringPreferencesKey("last_route_place_id")
         val HasCompletedOnboarding = booleanPreferencesKey("has_completed_onboarding")
         val Language = stringPreferencesKey("language")
+        val ShowTutorialOnStartup = booleanPreferencesKey("show_tutorial_on_startup")
         val VibrationEnabled = booleanPreferencesKey("vibration_enabled")
         val AutoRecalculate = booleanPreferencesKey("auto_recalculate")
         val JunctionAlerts = booleanPreferencesKey("junction_alerts")
