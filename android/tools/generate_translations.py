@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import html
 import re
 import time
@@ -14,8 +15,10 @@ RES_DIR = ROOT / "app" / "src" / "main" / "res"
 BASE_STRINGS = RES_DIR / "values" / "strings.xml"
 LOCALES_CONFIG = RES_DIR / "xml" / "locales_config.xml"
 BATCH_SIZE = 20
-SPLIT_TOKEN = "__NAVILIVE_SPLIT__"
+SPLIT_TOKEN = "992220099222"
 PLACEHOLDER_PATTERN = re.compile(r"%\d+\$[sd]")
+BRAND_NAME = "Navi Live"
+BRAND_TOKEN = "991770099177"
 
 
 def read_strings() -> list[dict[str, str]]:
@@ -46,11 +49,12 @@ def protect_placeholders(text: str) -> tuple[str, list[str]]:
     protected = text
     for index, placeholder in enumerate(placeholders):
         protected = protected.replace(placeholder, f"99177{index}77199", 1)
+    protected = protected.replace(BRAND_NAME, BRAND_TOKEN)
     return protected, placeholders
 
 
 def restore_placeholders(text: str, placeholders: list[str]) -> str:
-    restored = text
+    restored = text.replace(BRAND_TOKEN, BRAND_NAME)
     for index, placeholder in enumerate(placeholders):
         restored = restored.replace(f"99177{index}77199", placeholder)
     return restored
@@ -105,7 +109,7 @@ def translate_texts(texts: list[str], target_locale: str) -> list[str]:
             pieces = translated.split(f" {SPLIT_TOKEN} ")
             if len(pieces) != len(texts):
                 pieces = translated.split(SPLIT_TOKEN)
-            if len(pieces) != len(texts):
+            if len(pieces) != len(texts) or any(SPLIT_TOKEN in piece for piece in pieces):
                 return [translate_single_text(text, target_locale) for text in texts]
             return [
                 restore_placeholders(piece.strip(), placeholders)
@@ -145,27 +149,65 @@ def read_existing_locale(locale: str) -> dict[str, str]:
     return data
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--rewrite-existing",
+        action="store_true",
+        help="Regenerate locale files from the base strings even when translations already exist.",
+    )
+    parser.add_argument(
+        "--exclude-locales",
+        nargs="*",
+        default=[],
+        help="Locale tags to leave untouched, for example pl.",
+    )
+    parser.add_argument(
+        "--only-locales",
+        nargs="*",
+        default=[],
+        help="Locale tags to regenerate. When omitted, all locales except exclusions are processed.",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
+    args = parse_args()
     base_items = read_strings()
     locales = read_locales()
+    only_locales = set(args.only_locales)
+    excluded_locales = set(args.exclude_locales)
     for locale in locales:
-        existing = read_existing_locale(locale)
-        missing = [item for item in base_items if item["name"] not in existing]
-        if not missing:
+        if only_locales and locale not in only_locales:
+            print(f"skip {locale}", flush=True)
+            continue
+        if locale in excluded_locales:
             print(f"skip {locale}", flush=True)
             continue
 
-        translated_missing: list[dict[str, str]] = []
-        for index in range(0, len(missing), BATCH_SIZE):
-            chunk = missing[index : index + BATCH_SIZE]
+        existing = read_existing_locale(locale)
+        items_to_translate = base_items if args.rewrite_existing else [
+            item for item in base_items if item["name"] not in existing
+        ]
+        if not items_to_translate:
+            print(f"skip {locale}", flush=True)
+            continue
+
+        translated_items: list[dict[str, str]] = []
+        for index in range(0, len(items_to_translate), BATCH_SIZE):
+            chunk = items_to_translate[index : index + BATCH_SIZE]
             translated_texts = translate_texts([item["text"] for item in chunk], locale)
             for item, translated in zip(chunk, translated_texts, strict=True):
-                translated_missing.append({"name": item["name"], "text": translated})
+                translated_items.append({"name": item["name"], "text": translated})
 
         merged_items = []
-        translated_by_name = {item["name"]: item["text"] for item in translated_missing}
+        translated_by_name = {item["name"]: item["text"] for item in translated_items}
         for item in base_items:
-            text = existing[item["name"]] if item["name"] in existing else translated_by_name[item["name"]]
+            text = (
+                translated_by_name[item["name"]]
+                if args.rewrite_existing or item["name"] not in existing
+                else existing[item["name"]]
+            )
             merged_items.append(
                 {
                     "name": item["name"],

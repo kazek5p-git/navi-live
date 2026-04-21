@@ -1127,7 +1127,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
     fun downloadAvailableUpdate(autoInstallAfterDownload: Boolean = false) {
         val updateState = _uiState.value.appUpdateState
         val assetUrl = updateState.latestAssetDownloadUrl ?: return
-        val assetName = updateState.latestAssetName ?: "navilive-update.apk"
+        val assetName = updateState.latestAssetName ?: "navi-live-update.apk"
         val versionLabel = updateState.latestVersionLabel ?: return
         updateDownloadJob?.cancel()
         updateDownloadJob = viewModelScope.launch {

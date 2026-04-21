@@ -14,8 +14,8 @@ android {
         applicationId = "com.navilive.app"
         minSdk = 23
         targetSdk = 36
-        versionCode = 7
-        versionName = "0.5.0"
+        versionCode = 8
+        versionName = "0.6.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -85,5 +85,5 @@ tasks.register<Copy>("stageDebugReleaseAsset") {
     dependsOn("assembleDebug")
     from(layout.buildDirectory.file("outputs/apk/debug/app-debug.apk"))
     into(layout.buildDirectory.dir("release-asset"))
-    rename { "navilive.apk" }
+    rename { "navi-live.apk" }
 }

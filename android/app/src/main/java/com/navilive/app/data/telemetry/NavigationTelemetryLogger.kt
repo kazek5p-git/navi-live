@@ -106,7 +106,7 @@ class NavigationTelemetryLogger(
             folder.mkdirs()
         }
         val timestamp = fileTimestampFormat().format(Date())
-        val file = File(folder, "navilive-telemetry-$timestamp.jsonl")
+        val file = File(folder, "navi-live-telemetry-$timestamp.jsonl")
         file.bufferedWriter().use { writer ->
             snapshot.forEach { event ->
                 val payload = JSONObject()

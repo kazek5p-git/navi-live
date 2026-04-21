@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "navilive"
+rootProject.name = "Navi Live"
 include(":app")

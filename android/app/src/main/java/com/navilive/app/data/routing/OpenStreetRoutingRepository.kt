@@ -206,7 +206,7 @@ class OpenStreetRoutingRepository(
             connectTimeout = 12_000
             readTimeout = 12_000
             setRequestProperty("Accept", "application/json")
-            setRequestProperty("User-Agent", "navilive/0.1 (accessibility-navigation-prototype)")
+            setRequestProperty("User-Agent", "navi-live/0.1 (accessibility-navigation-prototype)")
         }
         return try {
             val status = connection.responseCode

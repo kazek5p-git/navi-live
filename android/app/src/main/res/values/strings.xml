@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">navilive</string>
+    <string name="app_name" translatable="false">Navi Live</string>
 
     <string name="action_back">Back</string>
     <string name="action_settings">Settings</string>
@@ -20,7 +20,7 @@
 
     <string name="onboarding_title">Welcome</string>
     <string name="onboarding_status_title">Accessible walking navigation</string>
-    <string name="onboarding_status_message">navilive keeps each screen focused on one clear action with strong voice and haptic guidance.</string>
+    <string name="onboarding_status_message">Navi Live keeps each screen focused on one clear action with strong voice and haptic guidance.</string>
     <string name="onboarding_how_it_works_title">How this build works</string>
     <string name="onboarding_search_label">Search</string>
     <string name="onboarding_search_message">Find an address or place, then confirm the route summary.</string>
@@ -36,7 +36,7 @@
     <string name="tutorial_status_message">Review the same search, alignment and walking guidance that is used during setup.</string>
     <string name="tutorial_startup_section_title">Startup</string>
     <string name="tutorial_show_on_start_title">Show this tutorial on app start</string>
-    <string name="tutorial_show_on_start_message">Turn this on if you want navilive to open the tutorial automatically before the main screen.</string>
+    <string name="tutorial_show_on_start_message">Turn this on if you want Navi Live to open the tutorial automatically before the main screen.</string>
     <string name="tutorial_done">Done</string>
 
     <string name="permissions_title">Permissions</string>
@@ -138,7 +138,7 @@
     <string name="settings_status_message">Keep only the controls that materially affect voice, vibration and rerouting.</string>
     <string name="settings_help_privacy_title">Help and privacy</string>
     <string name="settings_help_privacy_summary">Tutorial, support and privacy</string>
-    <string name="settings_help_privacy_status_message">Open the tutorial, support development and review how navilive handles local data, online services and telemetry.</string>
+    <string name="settings_help_privacy_status_message">Open the tutorial, support development and review how Navi Live handles local data, online services and telemetry.</string>
     <string name="settings_help_privacy_open_button">Open help and privacy</string>
     <string name="settings_help_privacy_tutorial_message">Reopen the tutorial used during setup and decide whether it should appear automatically when the app starts.</string>
     <string name="settings_help_privacy_tutorial_open_button">Open tutorial</string>
@@ -148,28 +148,28 @@
     <string name="settings_voice_title">Voice announcements</string>
     <string name="settings_voice_message">Read route changes and turn-by-turn guidance aloud.</string>
     <string name="settings_speech_source_title">Speech source</string>
-    <string name="settings_speech_source_message">Choose whether navilive should speak with the Android system synthesizer or hand announcements to the active screen reader.</string>
+    <string name="settings_speech_source_message">Choose whether Navi Live should speak with the Android system synthesizer or hand announcements to the active screen reader.</string>
     <string name="settings_speech_source_system_title">System synthesizer</string>
-    <string name="settings_speech_source_system_message">Use the Android text-to-speech engine controlled directly by navilive.</string>
+    <string name="settings_speech_source_system_message">Use the Android text-to-speech engine controlled directly by Navi Live.</string>
     <string name="settings_speech_source_screen_reader_title">Screen reader</string>
     <string name="settings_speech_source_screen_reader_message">Send announcements through the active spoken accessibility service when one is running.</string>
     <string name="settings_speech_source_active_label">Current voice source</string>
     <string name="settings_speech_source_system_status">Using the Android system synthesizer.</string>
     <string name="format_settings_speech_source_screen_reader_active">Using the active screen reader: %1$s.</string>
-    <string name="settings_speech_source_screen_reader_fallback">No active screen reader detected. navilive will fall back to the system synthesizer.</string>
+    <string name="settings_speech_source_screen_reader_fallback">No active screen reader detected. Navi Live will fall back to the system synthesizer.</string>
     <string name="settings_speech_preview_button">Play voice sample</string>
-    <string name="settings_voice_preview_sample">This is a navilive voice sample for the current speech settings.</string>
+    <string name="settings_voice_preview_sample">This is a Navi Live voice sample for the current speech settings.</string>
     <string name="settings_system_tts_title">System TTS engine</string>
-    <string name="settings_system_tts_message">Choose which installed Android speech engine navilive should use when the system synthesizer source is active.</string>
+    <string name="settings_system_tts_message">Choose which installed Android speech engine Navi Live should use when the system synthesizer source is active.</string>
     <string name="settings_system_tts_default_title">System default engine</string>
     <string name="format_settings_system_tts_default_with_name">System default engine (%1$s)</string>
     <string name="settings_system_tts_default_message">Use the engine selected in Android system text-to-speech settings.</string>
     <string name="settings_system_tts_none_detected">No installed text-to-speech engines were detected.</string>
     <string name="settings_system_tts_active_label">Active system engine</string>
-    <string name="settings_system_tts_unavailable_message">The saved engine is no longer installed. navilive is using the system default engine instead.</string>
+    <string name="settings_system_tts_unavailable_message">The saved engine is no longer installed. Navi Live is using the system default engine instead.</string>
     <string name="settings_system_tts_open_settings">Open Android TTS settings</string>
     <string name="settings_speech_rate_title">Speech rate</string>
-    <string name="settings_speech_rate_message">Adjust how fast navilive reads directions with the system synthesizer.</string>
+    <string name="settings_speech_rate_message">Adjust how fast Navi Live reads directions with the system synthesizer.</string>
     <string name="settings_speech_volume_title">Speech volume</string>
     <string name="settings_speech_volume_message">Adjust relative voice loudness for the system synthesizer. Device media volume still applies.</string>
     <string name="settings_speech_controls_disabled_message">Speech rate and volume are controlled by the screen reader when that source is selected.</string>
@@ -180,7 +180,7 @@
     <string name="settings_junction_alerts_title">Junction alerts</string>
     <string name="settings_junction_alerts_message">Announce nearby junction context when this module is connected.</string>
     <string name="settings_support_section_title">Support</string>
-    <string name="settings_support_body">If navilive helps you and you want to support further development, you can contribute through PayPal. Every contribution helps cover accessibility work, fixes and new features.</string>
+    <string name="settings_support_body">If Navi Live helps you and you want to support further development, you can contribute through PayPal. Every contribution helps cover accessibility work, fixes and new features.</string>
     <string name="settings_support_amounts_description">Choose a quick amount or enter your own. PayPal still asks you to confirm the payment.</string>
     <string name="format_settings_support_amount_button">%1$d PLN</string>
     <string name="settings_support_custom_title">Custom amount</string>
@@ -192,7 +192,7 @@
     <string name="settings_support_custom_invalid">Enter a valid amount, for example 15 or 15.50.</string>
     <string name="settings_privacy_section_title">Privacy</string>
     <string name="settings_privacy_local_title">Your data stays under your control</string>
-    <string name="settings_privacy_local_body">navilive keeps favorites, settings, onboarding state and downloaded update metadata on this device.</string>
+    <string name="settings_privacy_local_body">Navi Live keeps favorites, settings, onboarding state and downloaded update metadata on this device.</string>
     <string name="settings_privacy_online_title">Online services are used only when needed</string>
     <string name="settings_privacy_online_body">Search, reverse geocoding and walking routing call Nominatim and OSRM only when you use those features.</string>
     <string name="settings_privacy_telemetry_title">Telemetry stays local until you export it</string>
@@ -263,7 +263,7 @@
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>
     <string name="format_percent_value">%1$d%%</string>
     <string name="settings_updates_title">App updates</string>
-    <string name="settings_updates_message">Check the latest GitHub release, download the APK, and install it directly from navilive.</string>
+    <string name="settings_updates_message">Check the latest GitHub release, download the APK, and install it directly from Navi Live.</string>
     <string name="settings_updates_current_version">Installed version</string>
     <string name="settings_updates_current_build">Installed build</string>
     <string name="settings_updates_latest_version">Latest release</string>
@@ -274,8 +274,8 @@
     <string name="settings_updates_progress">Download progress</string>
     <string name="settings_updates_not_checked">Not checked yet</string>
     <string name="settings_updates_channel_title">Update channel</string>
-    <string name="settings_updates_channel_description">navilive checks GitHub automatically at startup. Choose whether it should follow only stable releases or also newer beta builds.</string>
-    <string name="settings_updates_channel_message">Choose whether navilive should follow only stable releases or also newer test builds.</string>
+    <string name="settings_updates_channel_description">Navi Live checks GitHub automatically at startup. Choose whether it should follow only stable releases or also newer beta builds.</string>
+    <string name="settings_updates_channel_message">Choose whether Navi Live should follow only stable releases or also newer test builds.</string>
     <string name="settings_updates_channel_stable_title">Stable</string>
     <string name="settings_updates_channel_stable_message">Use only regular public releases intended for wider use.</string>
     <string name="settings_updates_channel_beta_title">Beta</string>
@@ -296,18 +296,18 @@
     <string name="start_latest_release_label">Latest known release</string>
     <string name="start_changelog_title">Latest changes</string>
     <string name="start_open_update_settings">Open update settings</string>
-    <string name="update_status_idle_auto">navilive also checks GitHub automatically at startup.</string>
+    <string name="update_status_idle_auto">Navi Live also checks GitHub automatically at startup.</string>
     <string name="update_status_idle">Open this section to check GitHub for a newer version.</string>
     <string name="update_status_checking">Checking the latest GitHub release...</string>
     <string name="format_update_ready_to_install">Update %1$s is downloaded and ready to install.</string>
     <string name="format_update_available">Update %1$s is available.</string>
-    <string name="format_update_up_to_date">navilive %1$s is up to date.</string>
+    <string name="format_update_up_to_date">Navi Live %1$s is up to date.</string>
     <string name="format_update_check_failed">Update check failed: %1$s</string>
     <string name="format_update_downloading">Downloading update %1$s...</string>
     <string name="format_update_downloading_progress">Downloading update: %1$d%%</string>
     <string name="format_update_download_failed">Update download failed: %1$s</string>
     <string name="format_update_install_started">Opening Android installer for %1$s.</string>
-    <string name="update_status_install_permission_required">Allow navilive to install APK files to continue.</string>
+    <string name="update_status_install_permission_required">Allow Navi Live to install APK files to continue.</string>
     <string name="status_update_channel_stable_selected">Stable update channel selected.</string>
     <string name="status_update_channel_beta_selected">Beta update channel selected.</string>
     <string name="status_update_channel_test_selected">Test update channel selected.</string>
@@ -327,9 +327,9 @@
     <string name="status_system_voice_selected">System synthesizer selected.</string>
     <string name="status_default_system_tts_selected">Default system TTS engine selected.</string>
     <string name="format_status_specific_system_tts_selected">System TTS engine selected: %1$s.</string>
-    <string name="status_selected_system_tts_unavailable">The selected TTS engine is unavailable. navilive is using the system default engine.</string>
+    <string name="status_selected_system_tts_unavailable">The selected TTS engine is unavailable. Navi Live is using the system default engine.</string>
     <string name="format_status_screen_reader_selected">Screen reader selected: %1$s.</string>
-    <string name="status_screen_reader_fallback_selected">Screen reader selected. No active screen reader detected, so navilive will fall back to the system synthesizer.</string>
+    <string name="status_screen_reader_fallback_selected">Screen reader selected. No active screen reader detected, so Navi Live will fall back to the system synthesizer.</string>
     <string name="status_tutorial_on_start_enabled">Tutorial will open automatically on app start.</string>
     <string name="status_tutorial_on_start_disabled">Tutorial will no longer open automatically on app start.</string>
     <string name="format_status_speech_rate_updated">Speech rate set to %1$d%%.</string>
@@ -385,10 +385,10 @@
     <string name="route_modifier_uturn">u-turn</string>
 
     <string name="notification_tracking">Tracking location for navigation</string>
-    <string name="notification_channel_name">navilive tracking</string>
+    <string name="notification_channel_name">Navi Live tracking</string>
     <string name="notification_channel_description">Foreground location tracking for navigation</string>
 
-    <string name="share_telemetry_subject">navilive telemetry export</string>
+    <string name="share_telemetry_subject">Navi Live telemetry export</string>
     <string name="share_telemetry_chooser">Share telemetry log</string>
 
     <string name="diagnostics_no_active_session">No active session</string>

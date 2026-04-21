@@ -1,4 +1,4 @@
-# navilive
+# Navi Live
 
 Specyfikacja produktu i plan odbudowy inspirowany `Nav by ViaOpta`
 
@@ -6,13 +6,13 @@ Data: 2026-04-06
 
 ## 1. Cel dokumentu
 
-Ten dokument opisuje, jak odtworzyć funkcjonalnie dawną aplikację `Nav by ViaOpta` pod nową nazwą `navilive`.
+Ten dokument opisuje, jak odtworzyć funkcjonalnie dawną aplikację `Nav by ViaOpta` pod nową nazwą `Navi Live`.
 
 Kluczowe założenie:
 
 - nie znaleziono publicznego repozytorium ze źródłami ViaOpta,
 - zachował się działający artefakt Android APK oraz archiwalne opisy produktu,
-- `navilive` powinno być traktowane jako clean-room rebuild, a nie rebranding starej aplikacji.
+- `Navi Live` powinno być traktowane jako clean-room rebuild, a nie rebranding starej aplikacji.
 
 ## 2. Podstawa źródłowa
 
@@ -45,7 +45,7 @@ Kluczowe założenie:
 
 ## 3. Wizja produktu
 
-`navilive` ma być aplikacją nawigacyjną dla osób niewidomych i słabowidzących, która:
+`Navi Live` ma być aplikacją nawigacyjną dla osób niewidomych i słabowidzących, która:
 
 - prowadzi głosowo od punktu A do B,
 - komunikuje kierunek startu i kolejne manewry,
@@ -207,7 +207,7 @@ Z App Store i stron ViaOpta da się odzyskać nie tylko listę funkcji, ale też
   - duże cele dotykowe
   - jedna dominująca czynność na ekranie
   - mapa jako tło pomocnicze, nie główny nośnik informacji
-- ważny sygnał projektowy dla `navilive`:
+- ważny sygnał projektowy dla `Navi Live`:
   - zachować prostotę przepływu i dużą hierarchię akcji z iOS
   - nie kopiować brandingu Novartis ani ilustracyjnej oprawy marketingowej 1:1
   - traktować mapę jako warstwę pomocniczą pod TTS, haptics i czytelne teksty
@@ -229,11 +229,11 @@ To oznacza kilka problemów:
 - nie mamy wiarygodnej ścieżki prawnej do kopiowania brandingu, tekstów i assetów Novartis,
 - iOS nie ma odzyskanego binarnego punktu odniesienia porównywalnego z Androidem.
 
-## 7. Założenia dla navilive
+## 7. Założenia dla Navi Live
 
 ### 7.1 Założenia produktowe
 
-- `navilive` ma odtworzyć funkcje, nie markę ViaOpta
+- `Navi Live` ma odtworzyć funkcje, nie markę ViaOpta
 - UI ma być prostsze niż w klasycznych aplikacjach mapowych
 - aplikacja ma działać sensownie bez patrzenia na ekran
 - każdy główny ekran powinien mieć jedną dominującą akcję i maksymalnie kilka dużych przycisków
@@ -248,7 +248,7 @@ To oznacza kilka problemów:
 - nie używamy grafik, tekstów marketingowych i znaków towarowych Novartis
 - zachowane APK traktujemy jako materiał referencyjny do interoperacyjności i analizy UX
 
-## 8. Zakres produktu navilive
+## 8. Zakres produktu Navi Live
 
 ### 8.1 MVP
 
@@ -544,7 +544,7 @@ Ta opcja daje większą kontrolę, ale znacząco zwiększa koszt operacyjny.
 
 ## 18. Rekomendacja końcowa
 
-Najbardziej realistyczny plan dla `navilive`:
+Najbardziej realistyczny plan dla `Navi Live`:
 
 - etap 1: wierne funkcjonalnie odtworzenie Android MVP,
 - etap 2: testy dostępności i spacery terenowe,

@@ -83,17 +83,17 @@ function Get-ReleaseNotes {
         return $ExistingNotes
     }
 
-    return @"
-navilive $VersionLabel release.
+return @"
+Navi Live $VersionLabel release.
 
-- Android build published as navilive.apk.
+- Android build published as navi-live.apk.
 "@
 }
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $androidDir = Join-Path $repoRoot "android"
 $gradleFile = Join-Path $androidDir "app\build.gradle.kts"
-$assetPath = Join-Path $androidDir "app\build\release-asset\navilive.apk"
+$assetPath = Join-Path $androidDir "app\build\release-asset\navi-live.apk"
 $tempPayloadPath = Join-Path $repoRoot ".release-payload.json"
 
 $gradleText = Get-Content -Path $gradleFile -Raw -Encoding UTF8
@@ -173,7 +173,7 @@ try {
         }
     }
 
-    $uploadUrl = "https://uploads.github.com/repos/$repoSlug/releases/$($release.id)/assets?name=navilive.apk"
+    $uploadUrl = "https://uploads.github.com/repos/$repoSlug/releases/$($release.id)/assets?name=navi-live.apk"
     Invoke-Tool -Command @(
         "gh",
         "api",
@@ -188,11 +188,11 @@ try {
 
     $releaseJson = Invoke-Capture -Command @("gh", "api", "repos/$repoSlug/releases/tags/$Tag")
     $release = $releaseJson | ConvertFrom-Json
-    $downloadUrl = ($release.assets | Where-Object { $_.name -eq "navilive.apk" } | Select-Object -First 1).browser_download_url
+    $downloadUrl = ($release.assets | Where-Object { $_.name -eq "navi-live.apk" } | Select-Object -First 1).browser_download_url
 
     Write-Host "Release ready: $($release.html_url)"
     Write-Host "APK: $downloadUrl"
-    Write-Host "Latest link: https://github.com/$repoSlug/releases/latest/download/navilive.apk"
+    Write-Host "Latest link: https://github.com/$repoSlug/releases/latest/download/navi-live.apk"
 } finally {
     if (Test-Path -Path $tempPayloadPath) {
         Remove-Item -Path $tempPayloadPath -Force

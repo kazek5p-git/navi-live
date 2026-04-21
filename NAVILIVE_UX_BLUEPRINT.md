@@ -1,12 +1,12 @@
-# navilive UX Blueprint
+# Navi Live UX Blueprint
 
-Blueprint interfejsu i przepływów dla `navilive`, oparty na odzyskanych materiałach `Nav by ViaOpta`
+Blueprint interfejsu i przepływów dla `Navi Live`, oparty na odzyskanych materiałach `Nav by ViaOpta`
 
 Data: 2026-04-07
 
 ## 1. Cel
 
-Ten dokument przekłada materiały z archiwum App Store, stron ViaOpta i analizę starej aplikacji na docelowy UX dla `navilive`.
+Ten dokument przekłada materiały z archiwum App Store, stron ViaOpta i analizę starej aplikacji na docelowy UX dla `Navi Live`.
 
 To nie jest wierna kopia dawnego UI.
 To jest nowy interfejs, który zachowuje najważniejsze cechy starego produktu:
@@ -134,7 +134,7 @@ Wireframe:
 
 ```text
 +----------------------------------+
-| navilive               Settings  |
+| Navi Live               Settings  |
 | Lokalizacja gotowa               |
 |                                  |
 | [ Dokąd chcesz iść?           ]  |
@@ -352,7 +352,7 @@ Elementy:
 
 Maksymalnie `3` ekrany:
 
-- czym jest `navilive`
+- czym jest `Navi Live`
 - jak działa głos i wibracje
 - jakie uprawnienia są potrzebne
 
@@ -411,7 +411,7 @@ Po dotarciu:
 
 Jeżeli użytkownik niewidomy po wejściu na ekran nie wie w ciągu kilku sekund, jaka jest jedna najważniejsza akcja, to ekran jest zbyt skomplikowany.
 
-## 11. Mapowanie materiału źródłowego na navilive
+## 11. Mapowanie materiału źródłowego na Navi Live
 
 Ta sekcja łączy odzyskane artefakty z konkretnymi ekranami i decyzjami UX.
 
@@ -420,27 +420,27 @@ Ta sekcja łączy odzyskane artefakty z konkretnymi ekranami i decyzjami UX.
 Screen `01`:
 - komunikat marketingowy o prowadzeniu głosowym
 - wewnątrz urządzenia: `Route Summary`
-- decyzja dla `navilive`:
+- decyzja dla `Navi Live`:
   - zachować układ `cel -> czas -> typ ruchu -> mapa pomocnicza -> 3 duże akcje`
 
 Screen `02`:
 - komunikat marketingowy o ustawieniu właściwego kierunku
 - wewnątrz urządzenia: ekran kalibracji kierunku
-- decyzja dla `navilive`:
+- decyzja dla `Navi Live`:
   - wielka strzałka ma być centralnym elementem
   - na ekranie nie powinno być więcej niż `2` akcje pomocnicze
 
 Screen `03`:
 - komunikat marketingowy o `Be My Eyes`
 - wewnątrz urządzenia: osobny ekran wsparcia z prostym CTA
-- decyzja dla `navilive`:
+- decyzja dla `Navi Live`:
   - potraktować to jako późniejszy moduł `Pomoc na żywo`
   - nie mieszać tego z głównym flow MVP
 
 Screen `04`:
 - komunikat marketingowy o szybkim ustaleniu pozycji
 - wewnątrz urządzenia: hybryda `Current Position` i `Start`
-- decyzja dla `navilive`:
+- decyzja dla `Navi Live`:
   - wyszukiwarka zostaje u góry
   - karta bieżącego adresu jest zaraz pod nią
   - `Favourites` mogą być rozwijane od dołu jako szybkie przejście do trasy
@@ -468,7 +468,7 @@ Nowsza strona produktowa porządkuje wartość aplikacji w 4 filary:
 - `Favorites`
 - `Junctions`
 
-Decyzja dla `navilive`:
+Decyzja dla `Navi Live`:
 - MVP musi pokryć pierwsze `3`
 - `Junctions` może wejść najpierw jako lekki alert kontekstowy, a nie od razu pełny osobny ekran
 

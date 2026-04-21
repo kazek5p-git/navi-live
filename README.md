@@ -1,6 +1,6 @@
-# navilive
+# Navi Live
 
-`navilive` is an accessibility-first walking navigation project focused on blind and low-vision users.
+`Navi Live` is an accessibility-first walking navigation project focused on blind and low-vision users.
 
 Project structure:
 
@@ -23,7 +23,7 @@ APK output:
 
 Staged release asset:
 
-`android\app\build\release-asset\navilive.apk`
+`android\app\build\release-asset\navi-live.apk`
 
 GitHub release publish:
 

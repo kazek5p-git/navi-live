@@ -1,6 +1,6 @@
-# navilive Android scaffold
+# Navi Live Android scaffold
 
-This directory contains the first working Android implementation for `navilive`:
+This directory contains the first working Android implementation for `Navi Live`:
 
 - Kotlin + Jetpack Compose
 - Navigation Compose flow for MVP screens
@@ -41,7 +41,7 @@ APK output:
 
 Staged GitHub release asset:
 
-`app\build\release-asset\navilive.apk`
+`app\build\release-asset\navi-live.apk`
 
 Prepare that asset directly:
 
@@ -92,10 +92,10 @@ Current Android MVP now follows the local `NAVILIVE_UX_BLUEPRINT.md` more closel
 - Live route progression, step changes and off-route logic are coordinated in `NaviliveViewModel`.
 - Navigation telemetry is buffered by `NavigationTelemetryLogger` and can be exported from `Settings`.
 - App updates are fetched from GitHub Releases by `GitHubUpdateRepository`.
-- navilive now performs one silent update check on app startup after preferences finish loading.
+- Navi Live now performs one silent update check on app startup after preferences finish loading.
 - Stable channel follows the latest regular GitHub release; beta channel scans the full GitHub releases list and will surface prereleases when they exist.
 - Downloaded update APKs are stored under app-internal `files/debug/updates` and persisted across app restarts until installed or superseded.
 - Installation is handed off to the Android package installer through the app `FileProvider`.
-- When the user starts an in-app `download and install` flow, navilive will automatically continue with APK installation after the required Android permission screen returns.
-- The updater now prefers GitHub release assets named `navilive.apk`, then falls back to older APK names when needed.
-- The repository release flow is automated by `..\scripts\publish-github-release.ps1`, which builds `navilive.apk`, updates or creates the GitHub release, removes old APK assets and uploads the new one.
+- When the user starts an in-app `download and install` flow, Navi Live will automatically continue with APK installation after the required Android permission screen returns.
+- The updater now prefers GitHub release assets named `navi-live.apk`, then falls back to older APK names when needed.
+- The repository release flow is automated by `..\scripts\publish-github-release.ps1`, which builds `navi-live.apk`, updates or creates the GitHub release, removes old APK assets and uploads the new one.

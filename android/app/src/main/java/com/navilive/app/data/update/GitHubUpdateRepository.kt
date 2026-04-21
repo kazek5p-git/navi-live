@@ -84,7 +84,7 @@ class GitHubUpdateRepository(
             connectTimeout = 20_000
             readTimeout = 60_000
             setRequestProperty("Accept", "application/octet-stream")
-            setRequestProperty("User-Agent", "navilive/0.2 (github-updater)")
+            setRequestProperty("User-Agent", "navi-live/0.2 (github-updater)")
         }
 
         try {
@@ -164,7 +164,8 @@ class GitHubUpdateRepository(
             }
         }
 
-        return parsed.firstOrNull { it.name.equals("navilive.apk", ignoreCase = true) }
+        return parsed.firstOrNull { it.name.equals("navi-live.apk", ignoreCase = true) }
+            ?: parsed.firstOrNull { it.name.equals("navilive.apk", ignoreCase = true) }
             ?: parsed.firstOrNull { it.name.equals("app-release.apk", ignoreCase = true) }
             ?: parsed.firstOrNull { it.name.equals("app-debug.apk", ignoreCase = true) }
             ?: parsed.firstOrNull { it.name.endsWith(".apk", ignoreCase = true) }
@@ -177,7 +178,7 @@ class GitHubUpdateRepository(
             connectTimeout = 15_000
             readTimeout = 15_000
             setRequestProperty("Accept", "application/vnd.github+json")
-            setRequestProperty("User-Agent", "navilive/0.2 (github-updater)")
+            setRequestProperty("User-Agent", "navi-live/0.2 (github-updater)")
         }
         return try {
             val status = connection.responseCode
