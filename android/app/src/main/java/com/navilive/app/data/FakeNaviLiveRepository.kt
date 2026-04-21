@@ -2,7 +2,7 @@ package com.navilive.app.data
 
 import com.navilive.app.model.Place
 
-class FakeNaviliveRepository {
+class FakeNaviLiveRepository {
 
     private val places = emptyList<Place>()
 

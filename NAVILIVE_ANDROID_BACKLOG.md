@@ -40,7 +40,7 @@ Ten backlog zakłada obecny MVP Android po wdrożeniu blueprintu UX, zielonym `a
 
 ## 6. Techniczne porządki
 
-- Dodać testy jednostkowe dla `OpenStreetRoutingRepository` i `NaviliveViewModel`.
+- Dodać testy jednostkowe dla `OpenStreetRoutingRepository` i `NaviLiveViewModel`.
 - Wydzielić wspólne komponenty UI do osobnych plików zamiast trzymać wszystko w `Screens.kt`.
 - Wprowadzić string resources dla tekstów ekranowych zamiast hardcoded strings w Kotlinie.
 - Dodać flavor `demo` i `prod`, jeśli pojawi się własny backend lub własne klucze.

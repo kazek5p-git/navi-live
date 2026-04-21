@@ -150,7 +150,7 @@ data class AppUpdateState(
     val isAutoInstallRequested: Boolean = false,
 )
 
-data class NaviliveUiState(
+data class NaviLiveUiState(
     val currentLocationLabel: String = "",
     val places: List<Place> = emptyList(),
     val searchQuery: String = "",

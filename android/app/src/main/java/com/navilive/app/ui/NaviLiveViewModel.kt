@@ -8,9 +8,9 @@ import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.navilive.app.R
-import com.navilive.app.data.FakeNaviliveRepository
+import com.navilive.app.data.FakeNaviLiveRepository
 import com.navilive.app.data.location.LocationTrackerStore
-import com.navilive.app.data.preferences.NavilivePreferencesStore
+import com.navilive.app.data.preferences.NaviLivePreferencesStore
 import com.navilive.app.data.routing.OpenStreetRoutingRepository
 import com.navilive.app.data.telemetry.NavigationTelemetryLogger
 import com.navilive.app.data.update.GitHubUpdateRepository
@@ -22,7 +22,7 @@ import com.navilive.app.model.AppUpdateState
 import com.navilive.app.model.GeoPoint
 import com.navilive.app.model.HeadingState
 import com.navilive.app.model.LocationFix
-import com.navilive.app.model.NaviliveUiState
+import com.navilive.app.model.NaviLiveUiState
 import com.navilive.app.model.Place
 import com.navilive.app.model.RouteStep
 import com.navilive.app.model.RouteSummary
@@ -49,16 +49,16 @@ private data class RouteSession(
     val currentStepIndex: Int = 0,
 )
 
-class NaviliveViewModel(application: Application) : AndroidViewModel(application) {
+class NaviLiveViewModel(application: Application) : AndroidViewModel(application) {
 
     private val appContext = application.applicationContext
-    private val fakeRepository = FakeNaviliveRepository()
+    private val fakeRepository = FakeNaviLiveRepository()
     private val seedPlaces = fakeRepository.getPlaces()
     private val defaultFavoriteIds = fakeRepository.getDefaultFavoriteIds()
     private val retiredDemoPlaceIds = fakeRepository.getRetiredDemoPlaceIds()
     private val defaultLastRoutePlaceId: String? = null
     private val routingRepository = OpenStreetRoutingRepository(appContext)
-    private val preferencesStore = NavilivePreferencesStore(
+    private val preferencesStore = NaviLivePreferencesStore(
         context = appContext,
         defaultFavoriteIds = defaultFavoriteIds,
         defaultLastRoutePlaceId = defaultLastRoutePlaceId,
@@ -104,7 +104,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
     private var hasPerformedStartupUpdateCheck = false
 
     private val _uiState = MutableStateFlow(
-        NaviliveUiState(
+        NaviLiveUiState(
             currentLocationLabel = string(R.string.current_position_status_waiting_message),
             places = seedPlaces,
             searchResults = seedPlaces,
@@ -118,7 +118,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
             statusMessage = string(R.string.location_status_ready_title),
         ),
     )
-    val uiState: StateFlow<NaviliveUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<NaviLiveUiState> = _uiState.asStateFlow()
 
     init {
         observePreferencesStore()

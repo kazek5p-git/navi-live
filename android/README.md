@@ -78,7 +78,7 @@ Current Android MVP now follows the local `NAVILIVE_UX_BLUEPRINT.md` more closel
 - The project includes generated resource sets for supported European locales under `app/src/main/res/values-*`.
 - Polish (`values-pl`) was additionally reviewed and refined manually after generation.
 - The translation generator is in `tools/generate_translations.py`.
-- Favorites, settings, onboarding state and last route are persisted by `NavilivePreferencesStore`.
+- Favorites, settings, onboarding state and last route are persisted by `NaviLivePreferencesStore`.
 - Speech settings now support two output sources: Android system TTS or the active spoken accessibility service.
 - System TTS can now target a specific installed speech engine package, or follow the Android default engine.
 - The Settings screen includes a direct shortcut into Android's system TTS settings screen.
@@ -89,7 +89,7 @@ Current Android MVP now follows the local `NAVILIVE_UX_BLUEPRINT.md` more closel
 - Foreground tracking service is `LocationForegroundService`.
 - Shared runtime location state is `LocationTrackerStore`.
 - TTS/haptic feedback is handled by `GuidanceFeedbackEngine`.
-- Live route progression, step changes and off-route logic are coordinated in `NaviliveViewModel`.
+- Live route progression, step changes and off-route logic are coordinated in `NaviLiveViewModel`.
 - Navigation telemetry is buffered by `NavigationTelemetryLogger` and can be exported from `Settings`.
 - App updates are fetched from GitHub Releases by `GitHubUpdateRepository`.
 - Navi Live now performs one silent update check on app startup after preferences finish loading.

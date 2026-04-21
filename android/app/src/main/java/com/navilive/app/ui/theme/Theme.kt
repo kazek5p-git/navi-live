@@ -31,7 +31,7 @@ private val DarkScheme = darkColorScheme(
 )
 
 @Composable
-fun NaviliveTheme(
+fun NaviLiveTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {

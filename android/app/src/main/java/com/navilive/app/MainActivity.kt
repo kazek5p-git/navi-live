@@ -8,19 +8,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.navilive.app.ui.NaviliveViewModel
-import com.navilive.app.ui.navigation.NaviliveNavHost
-import com.navilive.app.ui.theme.NaviliveTheme
+import com.navilive.app.ui.NaviLiveViewModel
+import com.navilive.app.ui.navigation.NaviLiveNavHost
+import com.navilive.app.ui.theme.NaviLiveTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            NaviliveTheme {
+            NaviLiveTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    val naviliveViewModel: NaviliveViewModel = viewModel()
-                    NaviliveNavHost(viewModel = naviliveViewModel)
+                    val naviLiveViewModel: NaviLiveViewModel = viewModel()
+                    NaviLiveNavHost(viewModel = naviLiveViewModel)
                 }
             }
         }

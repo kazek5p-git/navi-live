@@ -31,7 +31,7 @@ import androidx.navigation.navArgument
 import com.navilive.app.R
 import com.navilive.app.data.location.LocationForegroundService
 import com.navilive.app.model.AppUpdatePhase
-import com.navilive.app.ui.NaviliveViewModel
+import com.navilive.app.ui.NaviLiveViewModel
 import com.navilive.app.ui.screens.ActiveNavigationScreen
 import com.navilive.app.ui.screens.ArrivalScreen
 import com.navilive.app.ui.screens.BootstrapScreen
@@ -51,7 +51,7 @@ import com.navilive.app.ui.screens.TutorialScreen
 import java.io.File
 
 @Composable
-fun NaviliveNavHost(viewModel: NaviliveViewModel) {
+fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
