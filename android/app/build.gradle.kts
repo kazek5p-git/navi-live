@@ -7,15 +7,15 @@ plugins {
 }
 
 android {
-    namespace = "com.navilive.app"
+    namespace = "com.navilive.android"
     compileSdk = 36
 
     defaultConfig {
         applicationId = "com.navilive.app"
         minSdk = 23
         targetSdk = 36
-        versionCode = 9
-        versionName = "0.6.1"
+        versionCode = 10
+        versionName = "0.6.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

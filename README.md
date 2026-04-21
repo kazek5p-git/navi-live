@@ -30,3 +30,8 @@ GitHub release publish:
 ```powershell
 .\scripts\publish-github-release.ps1
 ```
+
+Technical note:
+
+- Android namespace and source packages now use `com.navilive.android`.
+- `applicationId` intentionally remains `com.navilive.app` so existing installs continue to receive in-place updates.

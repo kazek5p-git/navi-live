@@ -99,3 +99,6 @@ Current Android MVP now follows the local `NAVILIVE_UX_BLUEPRINT.md` more closel
 - When the user starts an in-app `download and install` flow, Navi Live will automatically continue with APK installation after the required Android permission screen returns.
 - The updater now prefers GitHub release assets named `navi-live.apk`, then falls back to older APK names when needed.
 - The repository release flow is automated by `..\scripts\publish-github-release.ps1`, which builds `navi-live.apk`, updates or creates the GitHub release, removes old APK assets and uploads the new one.
+- Android source packages and the Gradle `namespace` now use `com.navilive.android`.
+- `applicationId` intentionally stays `com.navilive.app`, so current users keep the existing install, updater path and app data during upgrades.
+- Preferences now migrate automatically from the legacy `navilive_preferences` DataStore file into the current `navi_live_preferences` store on first launch after upgrade.

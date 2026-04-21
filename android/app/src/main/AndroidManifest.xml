@@ -19,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NaviLive">
         <activity
-            android:name=".MainActivity"
+            android:name="com.navilive.android.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.NaviLive">
             <intent-filter>
@@ -30,7 +30,7 @@
         </activity>
 
         <service
-            android:name=".data.location.LocationForegroundService"
+            android:name="com.navilive.android.data.location.LocationForegroundService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location" />
