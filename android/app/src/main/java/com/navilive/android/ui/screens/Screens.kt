@@ -155,7 +155,6 @@ private fun ScreenScaffold(
 fun StartScreen(
     currentLocation: String,
     statusMessage: String,
-    updateState: AppUpdateState,
     lastRoutePlaceId: String?,
     quickFavorites: List<Place>,
     accuracyMeters: Float?,
@@ -167,7 +166,6 @@ fun StartScreen(
     onResumeLastRoute: (String) -> Unit,
     onOpenQuickFavorite: (String) -> Unit,
     onSettings: () -> Unit,
-    onPrimaryUpdateAction: () -> Unit,
     onGrantLocationPermission: () -> Unit,
     onToggleTracking: () -> Unit,
 ) {
@@ -195,12 +193,6 @@ fun StartScreen(
                 title = locationStatus.title,
                 message = locationStatus.message,
                 tone = locationStatus.tone,
-            )
-
-            StartVersionCard(
-                updateState = updateState,
-                onPrimaryUpdateAction = onPrimaryUpdateAction,
-                onOpenSettings = onSettings,
             )
 
             FilledTonalButton(
@@ -2020,75 +2012,6 @@ private fun SettingsToggleCard(
                 Switch(checked = checked, onCheckedChange = onCheckedChange)
             }
             Text(description, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
-}
-
-@Composable
-private fun StartVersionCard(
-    updateState: AppUpdateState,
-    onPrimaryUpdateAction: () -> Unit,
-    onOpenSettings: () -> Unit,
-) {
-    val action = updatePrimaryActionPresentation(updateState)
-
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            SectionHeading(stringResource(R.string.start_version_card_title))
-            LabelValue(
-                label = stringResource(R.string.start_version_label),
-                value = updateState.currentVersionLabel,
-            )
-            LabelValue(
-                label = stringResource(R.string.start_build_label),
-                value = updateState.currentBuildLabel,
-            )
-            updateState.latestVersionLabel?.let { latestVersion ->
-                LabelValue(
-                    label = stringResource(R.string.start_latest_release_label),
-                    value = latestVersion,
-                )
-            }
-            Text(
-                text = updateState.statusMessage,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            if (updateState.releaseNotes.isNotBlank()) {
-                HorizontalDivider()
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text(
-                        text = stringResource(R.string.start_changelog_title),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Text(
-                        text = updateState.releaseNotes,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 6,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
-            FilledTonalButton(
-                onClick = onPrimaryUpdateAction,
-                enabled = action.enabled,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Icon(action.icon, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
-                Text(action.label)
-            }
-            TextButton(
-                onClick = onOpenSettings,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(stringResource(R.string.start_open_update_settings))
-            }
         }
     }
 }

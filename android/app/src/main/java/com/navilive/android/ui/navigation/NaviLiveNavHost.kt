@@ -245,7 +245,6 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
             StartScreen(
                 currentLocation = uiState.value.currentLocationLabel,
                 statusMessage = uiState.value.statusMessage,
-                updateState = uiState.value.appUpdateState,
                 lastRoutePlaceId = resumeLastRoutePlaceId,
                 quickFavorites = quickFavorites,
                 accuracyMeters = uiState.value.locationState.latestFix?.accuracyMeters,
@@ -261,7 +260,6 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
                     navController.navigate(Routes.routeSummary(placeId))
                 },
                 onSettings = { navController.navigate(Routes.Settings) },
-                onPrimaryUpdateAction = runPrimaryUpdateAction,
                 onGrantLocationPermission = {
                     permissionLauncher.launch(locationPermissionsForRequest())
                 },
