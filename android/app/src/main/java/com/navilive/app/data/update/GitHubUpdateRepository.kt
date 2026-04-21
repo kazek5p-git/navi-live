@@ -1,5 +1,6 @@
 package com.navilive.app.data.update
 
+import com.navilive.app.model.UpdateChannel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -22,6 +23,7 @@ data class GitHubReleaseInfo(
     val body: String,
     val htmlUrl: String,
     val publishedAt: String?,
+    val isPrerelease: Boolean,
     val asset: GitHubReleaseAsset,
 )
 
@@ -30,21 +32,38 @@ class GitHubUpdateRepository(
     private val repo: String = "navilive",
 ) {
 
-    suspend fun fetchLatestRelease(): GitHubReleaseInfo = withContext(Dispatchers.IO) {
-        val endpoint = "https://api.github.com/repos/$owner/$repo/releases/latest"
+    suspend fun fetchLatestRelease(channel: UpdateChannel): GitHubReleaseInfo = withContext(Dispatchers.IO) {
+        if (channel == UpdateChannel.Stable) {
+            val endpoint = "https://api.github.com/repos/$owner/$repo/releases/latest"
+            val payload = requestText(endpoint)
+            return@withContext parseRelease(JSONObject(payload))
+        }
+
+        val endpoint = "https://api.github.com/repos/$owner/$repo/releases"
         val payload = requestText(endpoint)
-        val root = JSONObject(payload)
+        val releases = JSONArray(payload)
+        for (index in 0 until releases.length()) {
+            val item = releases.optJSONObject(index) ?: continue
+            if (item.optBoolean("draft")) continue
+            val candidate = runCatching { parseRelease(item) }.getOrNull() ?: continue
+            return@withContext candidate
+        }
+        throw IllegalStateException("GitHub does not currently expose any test releases with an APK asset.")
+    }
+
+    private fun parseRelease(root: JSONObject): GitHubReleaseInfo {
         val tagName = root.optString("tag_name").ifBlank {
             throw IllegalStateException("GitHub release did not include a tag.")
         }
         val asset = selectApkAsset(root.optJSONArray("assets"))
-        GitHubReleaseInfo(
+        return GitHubReleaseInfo(
             tagName = tagName,
             versionLabel = normalizeVersionLabel(tagName),
             releaseName = root.optString("name").ifBlank { tagName },
             body = root.optString("body").trim(),
             htmlUrl = root.optString("html_url"),
             publishedAt = root.optString("published_at").takeIf { it.isNotBlank() },
+            isPrerelease = root.optBoolean("prerelease"),
             asset = asset,
         )
     }

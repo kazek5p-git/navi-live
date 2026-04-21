@@ -17,6 +17,9 @@ This directory contains the first working Android implementation for `navilive`:
 - Blueprint-aligned accessibility-first screen hierarchy
 - Automatic localization from the phone language with European locale coverage
 - GitHub Releases updater with in-app check, APK download and installer handoff
+- One primary updater action that can run `download -> allow installs -> install` as a single flow
+- Stable/test update channels
+- Version/build and latest changelog preview directly on the start screen
 - Build confirmed with `assembleDebug`
 
 ## Requirements
@@ -79,5 +82,7 @@ Current Android MVP now follows the local `NAVILIVE_UX_BLUEPRINT.md` more closel
 - Live route progression, step changes and off-route logic are coordinated in `NaviliveViewModel`.
 - Navigation telemetry is buffered by `NavigationTelemetryLogger` and can be exported from `Settings`.
 - App updates are fetched from GitHub Releases by `GitHubUpdateRepository`.
+- Stable channel follows the latest regular GitHub release; test channel scans the full GitHub releases list and will surface prereleases when they exist.
 - Downloaded update APKs are stored under app-internal `files/debug/updates` and persisted across app restarts until installed or superseded.
 - Installation is handed off to the Android package installer through the app `FileProvider`.
+- When the user starts an in-app `download and install` flow, navilive will automatically continue with APK installation after the required Android permission screen returns.

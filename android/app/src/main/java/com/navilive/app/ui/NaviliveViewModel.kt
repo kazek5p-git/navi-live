@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.StringRes
+import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.navilive.app.R
@@ -27,6 +28,7 @@ import com.navilive.app.model.RouteStep
 import com.navilive.app.model.RouteSummary
 import com.navilive.app.model.SettingsState
 import com.navilive.app.model.SpeechOutputMode
+import com.navilive.app.model.UpdateChannel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -99,6 +101,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
     private var lastTrackingState: Boolean? = null
     private var lastTelemetryFixPoint: GeoPoint? = null
     private var lastTelemetryFixTimestampMs: Long = 0L
+    private var lastAutoCheckedUpdateChannel: UpdateChannel? = null
 
     private val _uiState = MutableStateFlow(
         NaviliveUiState(
@@ -128,6 +131,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             preferencesStore.state.collect { persisted ->
                 val currentVersionLabel = currentAppVersionLabel()
+                val currentBuildLabel = currentAppBuildLabel()
                 val sanitizedFavoriteIds = persisted.favoriteIds - retiredDemoPlaceIds
                 val sanitizedLastRoutePlaceId = persisted.lastRoutePlaceId?.takeUnless { it in retiredDemoPlaceIds }
                 val sanitizedDownloadedUpdate = sanitizePersistedDownloadedUpdate(
@@ -135,6 +139,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                     apkPath = persisted.downloadedUpdateApkPath,
                     versionLabel = persisted.downloadedUpdateVersionLabel,
                 )
+                val selectedUpdateChannel = persisted.settingsState.updateChannel
                 if (
                     sanitizedFavoriteIds != persisted.favoriteIds ||
                     sanitizedLastRoutePlaceId != persisted.lastRoutePlaceId
@@ -173,6 +178,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                         settingsState = synchronizeSpeechSettings(persisted.settingsState),
                         appUpdateState = current.appUpdateState.copy(
                             currentVersionLabel = currentVersionLabel,
+                            currentBuildLabel = currentBuildLabel,
                             downloadedApkPath = sanitizedDownloadedUpdate.apkPath,
                             downloadedVersionLabel = sanitizedDownloadedUpdate.versionLabel,
                             canRequestPackageInstalls = canRequestPackageInstalls(),
@@ -204,6 +210,10 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                         isPreferencesLoaded = true,
                     )
                 }
+                if (lastAutoCheckedUpdateChannel != selectedUpdateChannel) {
+                    lastAutoCheckedUpdateChannel = selectedUpdateChannel
+                    checkForAppUpdates(silent = true)
+                }
             }
         }
     }
@@ -216,23 +226,31 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
     private fun initialAppUpdateState(): AppUpdateState {
         return AppUpdateState(
             currentVersionLabel = currentAppVersionLabel(),
+            currentBuildLabel = currentAppBuildLabel(),
             statusMessage = string(R.string.update_status_idle),
             canRequestPackageInstalls = canRequestPackageInstalls(),
         )
     }
 
+    private fun currentPackageInfo() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        appContext.packageManager.getPackageInfo(
+            appContext.packageName,
+            PackageManager.PackageInfoFlags.of(0),
+        )
+    } else {
+        @Suppress("DEPRECATION")
+        appContext.packageManager.getPackageInfo(appContext.packageName, 0)
+    }
+
     private fun currentAppVersionLabel(): String {
-        val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            appContext.packageManager.getPackageInfo(
-                appContext.packageName,
-                PackageManager.PackageInfoFlags.of(0),
-            )
-        } else {
-            @Suppress("DEPRECATION")
-            appContext.packageManager.getPackageInfo(appContext.packageName, 0)
-        }
+        val packageInfo = currentPackageInfo()
         val versionName = packageInfo.versionName?.takeIf { it.isNotBlank() }
-        return versionName ?: packageInfo.versionCode.toString()
+        return versionName ?: currentAppBuildLabel()
+    }
+
+    private fun currentAppBuildLabel(): String {
+        val packageInfo = currentPackageInfo()
+        return PackageInfoCompat.getLongVersionCode(packageInfo).toString()
     }
 
     private fun canRequestPackageInstalls(): Boolean {
@@ -830,6 +848,37 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun setUpdateChannel(channel: UpdateChannel) {
+        _uiState.update { current ->
+            current.copy(
+                settingsState = current.settingsState.copy(updateChannel = channel),
+                appUpdateState = current.appUpdateState.copy(
+                    phase = AppUpdatePhase.Idle,
+                    latestVersionLabel = null,
+                    latestReleaseName = null,
+                    latestAssetName = null,
+                    latestAssetDownloadUrl = null,
+                    releaseNotes = "",
+                    releasePageUrl = null,
+                    downloadProgressPercent = null,
+                    isAutoInstallRequested = false,
+                    statusMessage = string(
+                        if (channel == UpdateChannel.Test) {
+                            R.string.status_update_channel_test_selected
+                        } else {
+                            R.string.status_update_channel_stable_selected
+                        },
+                    ),
+                ),
+            )
+        }
+        viewModelScope.launch {
+            preferencesStore.setUpdateChannel(channel)
+        }
+        lastAutoCheckedUpdateChannel = channel
+        checkForAppUpdates(silent = true)
+    }
+
     fun setSpeechOutputMode(mode: SpeechOutputMode) {
         val updated = synchronizeSpeechSettings(
             _uiState.value.settingsState.copy(speechOutputMode = mode),
@@ -931,11 +980,13 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
 
     fun refreshUpdateRuntimeState() {
         _uiState.update { current ->
+            val currentVersionLabel = currentAppVersionLabel()
             val downloadedPath = current.appUpdateState.downloadedApkPath
                 ?.takeIf { File(it).exists() }
             current.copy(
                 appUpdateState = current.appUpdateState.copy(
-                    currentVersionLabel = currentAppVersionLabel(),
+                    currentVersionLabel = currentVersionLabel,
+                    currentBuildLabel = currentAppBuildLabel(),
                     downloadedApkPath = downloadedPath,
                     downloadedVersionLabel = downloadedVersionLabelOrNull(
                         current.appUpdateState.downloadedVersionLabel,
@@ -948,7 +999,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                                 R.string.format_update_ready_to_install,
                                 current.appUpdateState.downloadedVersionLabel
                                     ?: current.appUpdateState.latestVersionLabel
-                                    ?: currentAppVersionLabel(),
+                                    ?: currentVersionLabel,
                             )
                         current.appUpdateState.phase == AppUpdatePhase.Idle ->
                             string(R.string.update_status_idle)
@@ -959,23 +1010,29 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun checkForAppUpdates() {
+    fun checkForAppUpdates(silent: Boolean = false) {
         updateCheckJob?.cancel()
         updateCheckJob = viewModelScope.launch {
             val currentVersion = currentAppVersionLabel()
-            _uiState.update { current ->
-                current.copy(
-                    appUpdateState = current.appUpdateState.copy(
-                        currentVersionLabel = currentVersion,
-                        phase = AppUpdatePhase.Checking,
-                        statusMessage = string(R.string.update_status_checking),
-                        downloadProgressPercent = null,
-                        canRequestPackageInstalls = canRequestPackageInstalls(),
-                    ),
-                )
+            val currentBuild = currentAppBuildLabel()
+            val updateChannel = _uiState.value.settingsState.updateChannel
+            if (!silent) {
+                _uiState.update { current ->
+                    current.copy(
+                        appUpdateState = current.appUpdateState.copy(
+                            currentVersionLabel = currentVersion,
+                            currentBuildLabel = currentBuild,
+                            phase = AppUpdatePhase.Checking,
+                            statusMessage = string(R.string.update_status_checking),
+                            downloadProgressPercent = null,
+                            canRequestPackageInstalls = canRequestPackageInstalls(),
+                            isAutoInstallRequested = false,
+                        ),
+                    )
+                }
             }
             try {
-                val release = updateRepository.fetchLatestRelease()
+                val release = updateRepository.fetchLatestRelease(updateChannel)
                 val isRemoteNewer = updateRepository.compareVersions(
                     currentVersionLabel = currentVersion,
                     remoteVersionLabel = release.versionLabel,
@@ -988,7 +1045,9 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                     current.copy(
                         appUpdateState = current.appUpdateState.copy(
                             currentVersionLabel = currentVersion,
+                            currentBuildLabel = currentBuild,
                             latestVersionLabel = release.versionLabel,
+                            latestReleaseName = release.releaseName,
                             latestAssetName = release.asset.name,
                             latestAssetDownloadUrl = release.asset.downloadUrl,
                             releaseNotes = release.body,
@@ -999,6 +1058,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                                 else -> AppUpdatePhase.UpToDate
                             },
                             downloadedApkPath = downloadedPath,
+                            canRequestPackageInstalls = canRequestPackageInstalls(),
                             statusMessage = when {
                                 alreadyDownloaded -> string(
                                     R.string.format_update_ready_to_install,
@@ -1017,23 +1077,31 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                     )
                 }
             } catch (error: Exception) {
-                _uiState.update { current ->
-                    current.copy(
-                        appUpdateState = current.appUpdateState.copy(
-                            currentVersionLabel = currentVersion,
-                            phase = AppUpdatePhase.Error,
-                            statusMessage = string(
-                                R.string.format_update_check_failed,
-                                error.message ?: error.javaClass.simpleName,
+                if (!silent) {
+                    _uiState.update { current ->
+                        current.copy(
+                            appUpdateState = current.appUpdateState.copy(
+                                currentVersionLabel = currentVersion,
+                                currentBuildLabel = currentBuild,
+                                phase = AppUpdatePhase.Error,
+                                isAutoInstallRequested = false,
+                                statusMessage = string(
+                                    R.string.format_update_check_failed,
+                                    error.message ?: error.javaClass.simpleName,
+                                ),
                             ),
-                        ),
-                    )
+                        )
+                    }
                 }
             }
         }
     }
 
-    fun downloadAvailableUpdate() {
+    fun downloadAndInstallAvailableUpdate() {
+        downloadAvailableUpdate(autoInstallAfterDownload = true)
+    }
+
+    fun downloadAvailableUpdate(autoInstallAfterDownload: Boolean = false) {
         val updateState = _uiState.value.appUpdateState
         val assetUrl = updateState.latestAssetDownloadUrl ?: return
         val assetName = updateState.latestAssetName ?: "navilive-update.apk"
@@ -1046,6 +1114,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                         phase = AppUpdatePhase.Downloading,
                         statusMessage = string(R.string.format_update_downloading, versionLabel),
                         downloadProgressPercent = 0,
+                        isAutoInstallRequested = autoInstallAfterDownload,
                     ),
                 )
             }
@@ -1069,6 +1138,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                                 appUpdateState = current.appUpdateState.copy(
                                     phase = AppUpdatePhase.Downloading,
                                     downloadProgressPercent = progress,
+                                    isAutoInstallRequested = autoInstallAfterDownload,
                                     statusMessage = if (progress == null) {
                                         string(R.string.format_update_downloading, versionLabel)
                                     } else {
@@ -1087,6 +1157,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                             downloadedVersionLabel = versionLabel,
                             downloadProgressPercent = 100,
                             canRequestPackageInstalls = canRequestPackageInstalls(),
+                            isAutoInstallRequested = autoInstallAfterDownload,
                             statusMessage = string(
                                 R.string.format_update_ready_to_install,
                                 versionLabel,
@@ -1104,6 +1175,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                         appUpdateState = current.appUpdateState.copy(
                             phase = AppUpdatePhase.Error,
                             downloadProgressPercent = null,
+                            isAutoInstallRequested = false,
                             statusMessage = string(
                                 R.string.format_update_download_failed,
                                 error.message ?: error.javaClass.simpleName,
@@ -1124,11 +1196,32 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                 appUpdateState = current.appUpdateState.copy(
                     phase = AppUpdatePhase.ReadyToInstall,
                     canRequestPackageInstalls = canRequestPackageInstalls(),
+                    isAutoInstallRequested = false,
                     statusMessage = if (canRequestPackageInstalls()) {
                         string(R.string.format_update_install_started, versionLabel)
                     } else {
                         string(R.string.update_status_install_permission_required)
                     },
+                ),
+            )
+        }
+    }
+
+    fun clearAutoInstallRequest() {
+        _uiState.update { current ->
+            current.copy(
+                appUpdateState = current.appUpdateState.copy(
+                    isAutoInstallRequested = false,
+                ),
+            )
+        }
+    }
+
+    fun requestAutoInstallForDownloadedUpdate() {
+        _uiState.update { current ->
+            current.copy(
+                appUpdateState = current.appUpdateState.copy(
+                    isAutoInstallRequested = true,
                 ),
             )
         }

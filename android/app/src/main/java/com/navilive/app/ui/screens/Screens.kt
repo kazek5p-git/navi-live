@@ -89,6 +89,7 @@ import com.navilive.app.model.Place
 import com.navilive.app.model.RouteSummary
 import com.navilive.app.model.SettingsState
 import com.navilive.app.model.SpeechOutputMode
+import com.navilive.app.model.UpdateChannel
 import kotlin.math.roundToInt
 
 private enum class BannerTone {
@@ -146,6 +147,7 @@ private fun ScreenScaffold(
 fun StartScreen(
     currentLocation: String,
     statusMessage: String,
+    updateState: AppUpdateState,
     lastRoutePlaceId: String?,
     quickFavorites: List<Place>,
     accuracyMeters: Float?,
@@ -157,6 +159,7 @@ fun StartScreen(
     onResumeLastRoute: (String) -> Unit,
     onOpenQuickFavorite: (String) -> Unit,
     onSettings: () -> Unit,
+    onPrimaryUpdateAction: () -> Unit,
     onGrantLocationPermission: () -> Unit,
     onToggleTracking: () -> Unit,
 ) {
@@ -184,6 +187,12 @@ fun StartScreen(
                 title = locationStatus.title,
                 message = locationStatus.message,
                 tone = locationStatus.tone,
+            )
+
+            StartVersionCard(
+                updateState = updateState,
+                onPrimaryUpdateAction = onPrimaryUpdateAction,
+                onOpenSettings = onSettings,
             )
 
             FilledTonalButton(
@@ -1010,17 +1019,15 @@ fun SettingsScreen(
     onAutoRecalculateChange: (Boolean) -> Unit,
     onJunctionAlertChange: (Boolean) -> Unit,
     onTurnByTurnChange: (Boolean) -> Unit,
+    onUpdateChannelChange: (UpdateChannel) -> Unit,
     onSpeechOutputModeChange: (SpeechOutputMode) -> Unit,
     onSystemTtsEngineChange: (String?) -> Unit,
     onOpenSystemTtsSettings: () -> Unit,
     onSpeechRateChange: (Int) -> Unit,
     onSpeechVolumeChange: (Int) -> Unit,
     onPreviewSpeech: () -> Unit,
-    onCheckForUpdates: () -> Unit,
-    onDownloadUpdate: () -> Unit,
-    onInstallDownloadedUpdate: (String) -> Unit,
+    onPrimaryUpdateAction: () -> Unit,
     onOpenReleasePage: (String) -> Unit,
-    onOpenUnknownSourcesSettings: () -> Unit,
     onExportDiagnostics: () -> Unit,
     onClearDiagnostics: () -> Unit,
     onShareDiagnostics: (() -> Unit)?,
@@ -1114,12 +1121,11 @@ fun SettingsScreen(
             )
 
             AppUpdateCard(
+                settingsState = state,
                 updateState = updateState,
-                onCheckForUpdates = onCheckForUpdates,
-                onDownloadUpdate = onDownloadUpdate,
-                onInstallDownloadedUpdate = onInstallDownloadedUpdate,
+                onUpdateChannelChange = onUpdateChannelChange,
+                onPrimaryUpdateAction = onPrimaryUpdateAction,
                 onOpenReleasePage = onOpenReleasePage,
-                onOpenUnknownSourcesSettings = onOpenUnknownSourcesSettings,
             )
 
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
@@ -1659,18 +1665,86 @@ private fun SettingsToggleCard(
 }
 
 @Composable
-private fun AppUpdateCard(
+private fun StartVersionCard(
     updateState: AppUpdateState,
-    onCheckForUpdates: () -> Unit,
-    onDownloadUpdate: () -> Unit,
-    onInstallDownloadedUpdate: (String) -> Unit,
+    onPrimaryUpdateAction: () -> Unit,
+    onOpenSettings: () -> Unit,
+) {
+    val action = updatePrimaryActionPresentation(updateState)
+
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            SectionHeading(stringResource(R.string.start_version_card_title))
+            LabelValue(
+                label = stringResource(R.string.start_version_label),
+                value = updateState.currentVersionLabel,
+            )
+            LabelValue(
+                label = stringResource(R.string.start_build_label),
+                value = updateState.currentBuildLabel,
+            )
+            updateState.latestVersionLabel?.let { latestVersion ->
+                LabelValue(
+                    label = stringResource(R.string.start_latest_release_label),
+                    value = latestVersion,
+                )
+            }
+            Text(
+                text = updateState.statusMessage,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            if (updateState.releaseNotes.isNotBlank()) {
+                HorizontalDivider()
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(
+                        text = stringResource(R.string.start_changelog_title),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        text = updateState.releaseNotes,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 6,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            FilledTonalButton(
+                onClick = onPrimaryUpdateAction,
+                enabled = action.enabled,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(action.icon, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(action.label)
+            }
+            TextButton(
+                onClick = onOpenSettings,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.start_open_update_settings))
+            }
+        }
+    }
+}
+
+@Composable
+private fun AppUpdateCard(
+    settingsState: SettingsState,
+    updateState: AppUpdateState,
+    onUpdateChannelChange: (UpdateChannel) -> Unit,
+    onPrimaryUpdateAction: () -> Unit,
     onOpenReleasePage: (String) -> Unit,
-    onOpenUnknownSourcesSettings: () -> Unit,
 ) {
     val latestVersionLabel = updateState.latestVersionLabel
         ?: updateState.downloadedVersionLabel
         ?: stringResource(R.string.settings_updates_not_checked)
-    val isBusy = updateState.phase == AppUpdatePhase.Checking || updateState.phase == AppUpdatePhase.Downloading
+    val action = updatePrimaryActionPresentation(updateState)
 
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -1688,13 +1762,27 @@ private fun AppUpdateCard(
                 value = updateState.currentVersionLabel,
             )
             LabelValue(
+                label = stringResource(R.string.settings_updates_current_build),
+                value = updateState.currentBuildLabel,
+            )
+            LabelValue(
                 label = stringResource(R.string.settings_updates_latest_version),
                 value = latestVersionLabel,
+            )
+            UpdateChannelCard(
+                selectedChannel = settingsState.updateChannel,
+                onUpdateChannelChange = onUpdateChannelChange,
             )
             updateState.latestAssetName?.let { assetName ->
                 LabelValue(
                     label = stringResource(R.string.settings_updates_asset),
                     value = assetName,
+                )
+            }
+            updateState.latestReleaseName?.takeIf { it.isNotBlank() }?.let { releaseName ->
+                LabelValue(
+                    label = stringResource(R.string.settings_updates_release_name),
+                    value = releaseName,
                 )
             }
             Text(
@@ -1734,44 +1822,13 @@ private fun AppUpdateCard(
                 }
             }
             FilledTonalButton(
-                onClick = onCheckForUpdates,
+                onClick = onPrimaryUpdateAction,
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isBusy,
+                enabled = action.enabled,
             ) {
-                Icon(Icons.Filled.Refresh, contentDescription = null)
+                Icon(action.icon, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.settings_updates_check))
-            }
-            if (updateState.phase == AppUpdatePhase.Available) {
-                Button(
-                    onClick = onDownloadUpdate,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Icon(Icons.Filled.FileDownload, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.settings_updates_download))
-                }
-            }
-            if (updateState.phase == AppUpdatePhase.ReadyToInstall && updateState.downloadedApkPath != null) {
-                if (updateState.canRequestPackageInstalls) {
-                    Button(
-                        onClick = { onInstallDownloadedUpdate(updateState.downloadedApkPath) },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Icon(Icons.Filled.CheckCircle, contentDescription = null)
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.settings_updates_install))
-                    }
-                } else {
-                    OutlinedButton(
-                        onClick = onOpenUnknownSourcesSettings,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Icon(Icons.Filled.Settings, contentDescription = null)
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.settings_updates_allow_installs))
-                    }
-                }
+                Text(action.label)
             }
             updateState.releasePageUrl?.let { releaseUrl ->
                 OutlinedButton(
@@ -1784,6 +1841,85 @@ private fun AppUpdateCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun UpdateChannelCard(
+    selectedChannel: UpdateChannel,
+    onUpdateChannelChange: (UpdateChannel) -> Unit,
+) {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            SectionHeading(stringResource(R.string.settings_updates_channel_title))
+            Text(
+                text = stringResource(R.string.settings_updates_channel_message),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            SelectableOptionRow(
+                title = stringResource(R.string.settings_updates_channel_stable_title),
+                description = stringResource(R.string.settings_updates_channel_stable_message),
+                selected = selectedChannel == UpdateChannel.Stable,
+                onSelect = { onUpdateChannelChange(UpdateChannel.Stable) },
+            )
+            SelectableOptionRow(
+                title = stringResource(R.string.settings_updates_channel_test_title),
+                description = stringResource(R.string.settings_updates_channel_test_message),
+                selected = selectedChannel == UpdateChannel.Test,
+                onSelect = { onUpdateChannelChange(UpdateChannel.Test) },
+            )
+        }
+    }
+}
+
+private data class UpdatePrimaryActionPresentation(
+    val label: String,
+    val icon: ImageVector,
+    val enabled: Boolean,
+)
+
+@Composable
+private fun updatePrimaryActionPresentation(updateState: AppUpdateState): UpdatePrimaryActionPresentation {
+    return when (updateState.phase) {
+        AppUpdatePhase.Checking -> UpdatePrimaryActionPresentation(
+            label = stringResource(R.string.settings_updates_checking_action),
+            icon = Icons.Filled.Refresh,
+            enabled = false,
+        )
+        AppUpdatePhase.Downloading -> UpdatePrimaryActionPresentation(
+            label = stringResource(R.string.settings_updates_downloading_action),
+            icon = Icons.Filled.FileDownload,
+            enabled = false,
+        )
+        AppUpdatePhase.Available -> UpdatePrimaryActionPresentation(
+            label = stringResource(R.string.settings_updates_download_install),
+            icon = Icons.Filled.FileDownload,
+            enabled = true,
+        )
+        AppUpdatePhase.ReadyToInstall -> UpdatePrimaryActionPresentation(
+            label = stringResource(
+                if (updateState.canRequestPackageInstalls) {
+                    R.string.settings_updates_install
+                } else {
+                    R.string.settings_updates_allow_installs
+                },
+            ),
+            icon = if (updateState.canRequestPackageInstalls) {
+                Icons.Filled.CheckCircle
+            } else {
+                Icons.Filled.Settings
+            },
+            enabled = true,
+        )
+        else -> UpdatePrimaryActionPresentation(
+            label = stringResource(R.string.settings_updates_check),
+            icon = Icons.Filled.Refresh,
+            enabled = true,
+        )
     }
 }
 

@@ -74,6 +74,18 @@ enum class SpeechOutputMode(val storageValue: String) {
     }
 }
 
+enum class UpdateChannel(val storageValue: String) {
+    Stable("stable"),
+    Test("test"),
+    ;
+
+    companion object {
+        fun fromStorageValue(value: String?): UpdateChannel {
+            return entries.firstOrNull { it.storageValue == value } ?: Stable
+        }
+    }
+}
+
 data class SystemTtsEngineOption(
     val packageName: String?,
     val displayName: String,
@@ -86,6 +98,7 @@ data class SettingsState(
     val autoRecalculate: Boolean = true,
     val junctionAlerts: Boolean = true,
     val turnByTurnAnnouncements: Boolean = true,
+    val updateChannel: UpdateChannel = UpdateChannel.Stable,
     val speechOutputMode: SpeechOutputMode = SpeechOutputMode.System,
     val selectedSystemTtsEnginePackage: String? = null,
     val speechRatePercent: Int = 100,
@@ -117,7 +130,9 @@ enum class AppUpdatePhase {
 
 data class AppUpdateState(
     val currentVersionLabel: String = "",
+    val currentBuildLabel: String = "",
     val latestVersionLabel: String? = null,
+    val latestReleaseName: String? = null,
     val latestAssetName: String? = null,
     val latestAssetDownloadUrl: String? = null,
     val releaseNotes: String = "",
@@ -128,6 +143,7 @@ data class AppUpdateState(
     val downloadedApkPath: String? = null,
     val downloadedVersionLabel: String? = null,
     val canRequestPackageInstalls: Boolean = true,
+    val isAutoInstallRequested: Boolean = false,
 )
 
 data class NaviliveUiState(

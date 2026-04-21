@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.navilive.app.model.UpdateChannel
 import com.navilive.app.model.SpeechOutputMode
 import com.navilive.app.model.SettingsState
 import kotlinx.coroutines.flow.Flow
@@ -95,6 +96,12 @@ class NavilivePreferencesStore(
         }
     }
 
+    suspend fun setUpdateChannel(channel: UpdateChannel) {
+        context.dataStore.edit { prefs ->
+            prefs[Keys.UpdateChannel] = channel.storageValue
+        }
+    }
+
     suspend fun setSpeechOutputMode(mode: SpeechOutputMode) {
         context.dataStore.edit { prefs ->
             prefs[Keys.SpeechOutputMode] = mode.storageValue
@@ -149,6 +156,7 @@ class NavilivePreferencesStore(
                 junctionAlerts = preferences[Keys.JunctionAlerts] ?: SettingsState().junctionAlerts,
                 turnByTurnAnnouncements = preferences[Keys.TurnByTurnAnnouncements]
                     ?: SettingsState().turnByTurnAnnouncements,
+                updateChannel = UpdateChannel.fromStorageValue(preferences[Keys.UpdateChannel]),
                 speechOutputMode = SpeechOutputMode.fromStorageValue(preferences[Keys.SpeechOutputMode]),
                 selectedSystemTtsEnginePackage = preferences[Keys.SelectedSystemTtsEnginePackage],
                 speechRatePercent = preferences[Keys.SpeechRatePercent] ?: SettingsState().speechRatePercent,
@@ -168,6 +176,7 @@ class NavilivePreferencesStore(
         val AutoRecalculate = booleanPreferencesKey("auto_recalculate")
         val JunctionAlerts = booleanPreferencesKey("junction_alerts")
         val TurnByTurnAnnouncements = booleanPreferencesKey("turn_by_turn_announcements")
+        val UpdateChannel = stringPreferencesKey("update_channel")
         val SpeechOutputMode = stringPreferencesKey("speech_output_mode")
         val SelectedSystemTtsEnginePackage = stringPreferencesKey("selected_system_tts_engine_package")
         val SpeechRatePercent = intPreferencesKey("speech_rate_percent")

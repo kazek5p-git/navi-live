@@ -30,6 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.navilive.app.R
 import com.navilive.app.data.location.LocationForegroundService
+import com.navilive.app.model.AppUpdatePhase
 import com.navilive.app.ui.NaviliveViewModel
 import com.navilive.app.ui.screens.ActiveNavigationScreen
 import com.navilive.app.ui.screens.ArrivalScreen
@@ -80,6 +81,55 @@ fun NaviliveNavHost(viewModel: NaviliveViewModel) {
             ContextCompat.startForegroundService(context, LocationForegroundService.startIntent(context))
         } else {
             context.startService(LocationForegroundService.stopIntent(context))
+        }
+    }
+
+    val runPrimaryUpdateAction = {
+        val updateState = uiState.value.appUpdateState
+        when {
+            updateState.phase == AppUpdatePhase.Available -> {
+                viewModel.downloadAndInstallAvailableUpdate()
+            }
+            updateState.phase == AppUpdatePhase.ReadyToInstall &&
+                updateState.downloadedApkPath != null &&
+                updateState.canRequestPackageInstalls -> {
+                if (installDownloadedApk(context, updateState.downloadedApkPath)) {
+                    viewModel.markUpdateInstallStarted()
+                } else {
+                    viewModel.clearAutoInstallRequest()
+                }
+            }
+            updateState.phase == AppUpdatePhase.ReadyToInstall -> {
+                viewModel.requestAutoInstallForDownloadedUpdate()
+                openUnknownAppSourcesSettings(context)
+            }
+            else -> {
+                viewModel.checkForAppUpdates()
+            }
+        }
+    }
+
+    LaunchedEffect(
+        uiState.value.appUpdateState.phase,
+        uiState.value.appUpdateState.downloadedApkPath,
+        uiState.value.appUpdateState.canRequestPackageInstalls,
+        uiState.value.appUpdateState.isAutoInstallRequested,
+    ) {
+        val updateState = uiState.value.appUpdateState
+        if (
+            updateState.phase == AppUpdatePhase.ReadyToInstall &&
+            updateState.downloadedApkPath != null &&
+            updateState.isAutoInstallRequested
+        ) {
+            if (updateState.canRequestPackageInstalls) {
+                if (installDownloadedApk(context, updateState.downloadedApkPath)) {
+                    viewModel.markUpdateInstallStarted()
+                } else {
+                    viewModel.clearAutoInstallRequest()
+                }
+            } else {
+                openUnknownAppSourcesSettings(context)
+            }
         }
     }
 
@@ -150,6 +200,7 @@ fun NaviliveNavHost(viewModel: NaviliveViewModel) {
             StartScreen(
                 currentLocation = uiState.value.currentLocationLabel,
                 statusMessage = uiState.value.statusMessage,
+                updateState = uiState.value.appUpdateState,
                 lastRoutePlaceId = resumeLastRoutePlaceId,
                 quickFavorites = quickFavorites,
                 accuracyMeters = uiState.value.locationState.latestFix?.accuracyMeters,
@@ -165,6 +216,7 @@ fun NaviliveNavHost(viewModel: NaviliveViewModel) {
                     navController.navigate(Routes.routeSummary(placeId))
                 },
                 onSettings = { navController.navigate(Routes.Settings) },
+                onPrimaryUpdateAction = runPrimaryUpdateAction,
                 onGrantLocationPermission = {
                     permissionLauncher.launch(locationPermissionsForRequest())
                 },
@@ -365,6 +417,7 @@ fun NaviliveNavHost(viewModel: NaviliveViewModel) {
                 onAutoRecalculateChange = viewModel::setAutoRecalculate,
                 onJunctionAlertChange = viewModel::setJunctionAlerts,
                 onTurnByTurnChange = viewModel::setTurnByTurnAnnouncements,
+                onUpdateChannelChange = viewModel::setUpdateChannel,
                 onSpeechOutputModeChange = viewModel::setSpeechOutputMode,
                 onSystemTtsEngineChange = viewModel::setSystemTtsEnginePackage,
                 onOpenSystemTtsSettings = {
@@ -373,18 +426,9 @@ fun NaviliveNavHost(viewModel: NaviliveViewModel) {
                 onSpeechRateChange = viewModel::setSpeechRatePercent,
                 onSpeechVolumeChange = viewModel::setSpeechVolumePercent,
                 onPreviewSpeech = viewModel::previewSpeechOutput,
-                onCheckForUpdates = viewModel::checkForAppUpdates,
-                onDownloadUpdate = viewModel::downloadAvailableUpdate,
-                onInstallDownloadedUpdate = { apkPath ->
-                    if (installDownloadedApk(context, apkPath)) {
-                        viewModel.markUpdateInstallStarted()
-                    }
-                },
+                onPrimaryUpdateAction = runPrimaryUpdateAction,
                 onOpenReleasePage = { releaseUrl ->
                     openExternalUrl(context, releaseUrl)
-                },
-                onOpenUnknownSourcesSettings = {
-                    openUnknownAppSourcesSettings(context)
                 },
                 onExportDiagnostics = viewModel::exportDiagnostics,
                 onClearDiagnostics = viewModel::clearDiagnostics,
