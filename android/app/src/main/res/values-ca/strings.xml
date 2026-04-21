@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Progrés de la baixada</string>
     <string name="settings_updates_not_checked">Encara no s\'ha comprovat</string>
     <string name="settings_updates_channel_title">Actualitza el canal</string>
+    <string name="settings_updates_channel_description">navilive comprova GitHub automàticament a l\'inici. Trieu si només ha de seguir versions estables o també versions beta més noves.</string>
     <string name="settings_updates_channel_message">Trieu si navilive ha de seguir només versions estables o també versions de prova més noves.</string>
     <string name="settings_updates_channel_stable_title">Estable</string>
     <string name="settings_updates_channel_stable_message">Utilitzeu només versions públiques regulars destinades a un ús més ampli.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Permet les versions beta o prèvies de GitHub més noves quan existeixin.</string>
     <string name="settings_updates_channel_test_title">Prova</string>
     <string name="settings_updates_channel_test_message">Permet proves de GitHub més noves o versions prèvies quan existeixin.</string>
     <string name="settings_updates_check">Comproveu si hi ha actualitzacions</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Últim llançament conegut</string>
     <string name="start_changelog_title">Últims canvis</string>
     <string name="start_open_update_settings">Obriu la configuració d\'actualització</string>
+    <string name="update_status_idle_auto">navilive també verifica GitHub automàticament a l\'inici.</string>
     <string name="update_status_idle">Obriu aquesta secció per comprovar la versió més recent de GitHub.</string>
     <string name="update_status_checking">S\'està comprovant la darrera versió de GitHub...</string>
     <string name="format_update_ready_to_install">L\'actualització %1$s està baixada i llesta per instal·lar.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">S\'obre l\'instal·lador d\'Android per al %1$s.</string>
     <string name="update_status_install_permission_required">Permet que navilive instal·li fitxers APK per continuar.</string>
     <string name="status_update_channel_stable_selected">S\'ha seleccionat el canal d\'actualització estable.</string>
+    <string name="status_update_channel_beta_selected">Canal d\'actualització beta seleccionat.</string>
     <string name="status_update_channel_test_selected">S\'ha seleccionat el canal d\'actualització de prova.</string>
     <string name="heading_instruction_rotate_right">Gireu lleugerament a la dreta per alinear-vos amb la ruta.</string>
     <string name="heading_instruction_almost_aligned">Gairebé alineats. Mou una mica a l\'esquerra.</string>

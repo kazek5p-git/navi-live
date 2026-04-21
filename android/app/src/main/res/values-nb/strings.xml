@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Nedlastingsfremdrift</string>
     <string name="settings_updates_not_checked">Ikke merket ennå</string>
     <string name="settings_updates_channel_title">Oppdater kanalen</string>
+    <string name="settings_updates_channel_description">navilive sjekker GitHub automatisk ved oppstart. Velg om den kun skal følge stabile utgivelser eller også nyere beta-bygg.</string>
     <string name="settings_updates_channel_message">Velg om navilive kun skal følge stabile utgivelser eller også nyere testbygg.</string>
     <string name="settings_updates_channel_stable_title">Stabil</string>
     <string name="settings_updates_channel_stable_message">Bruk kun vanlige offentlige utgivelser beregnet på bredere bruk.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Tillat nyere GitHub beta eller forhåndsutgivelser når de eksisterer.</string>
     <string name="settings_updates_channel_test_title">Test</string>
     <string name="settings_updates_channel_test_message">Tillat nyere GitHub-test- eller forhåndsutgivelser når de eksisterer.</string>
     <string name="settings_updates_check">Se etter oppdateringer</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Siste kjente utgivelse</string>
     <string name="start_changelog_title">Siste endringer</string>
     <string name="start_open_update_settings">Åpne oppdateringsinnstillinger</string>
+    <string name="update_status_idle_auto">navilive sjekker også GitHub automatisk ved oppstart.</string>
     <string name="update_status_idle">_IT sjekk denne APK_SPLIT_seksjonen GitHub for en nyere versjon.</string>
     <string name="update_status_checking">Sjekker siste GitHub-utgivelse...</string>
     <string name="format_update_ready_to_install">Oppdatering %1$s er lastet ned og klar til å installeres.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Åpner Android-installasjonsprogram for %1$s.</string>
     <string name="update_status_install_permission_required">La navilive installere APK-filer for å fortsette.</string>
     <string name="status_update_channel_stable_selected">Stabil oppdateringskanal er valgt.</string>
+    <string name="status_update_channel_beta_selected">Betaoppdateringskanal valgt.</string>
     <string name="status_update_channel_test_selected">Testoppdateringskanal valgt.</string>
     <string name="heading_instruction_rotate_right">Roter litt til høyre for å justere med ruten.</string>
     <string name="heading_instruction_almost_aligned">Nesten justert. Flytt litt til venstre.</string>

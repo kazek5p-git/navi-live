@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Напредак преузимања</string>
     <string name="settings_updates_not_checked">Још није проверено</string>
     <string name="settings_updates_channel_title">Ажурирајте канал</string>
+    <string name="settings_updates_channel_description">навиливе аутоматски проверава ГитХуб при покретању. Одаберите да ли треба да прати само стабилна издања или и новије бета верзије.</string>
     <string name="settings_updates_channel_message">Одаберите да ли навиливе треба да прати само стабилна издања или и новије тестне верзије.</string>
     <string name="settings_updates_channel_stable_title">Стабилно</string>
     <string name="settings_updates_channel_stable_message">Користите само редовна јавна издања намењена широј употреби.</string>
+    <string name="settings_updates_channel_beta_title">Бета</string>
+    <string name="settings_updates_channel_beta_message">Дозволите новије ГитХуб бета верзије или верзије пре издања када постоје.</string>
     <string name="settings_updates_channel_test_title">Тест</string>
     <string name="settings_updates_channel_test_message">Дозволите новије верзије ГитХуб теста или пре-издања када постоје.</string>
     <string name="settings_updates_check">Проверите ажурирања</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Најновије познато издање</string>
     <string name="start_changelog_title">Најновије промене</string>
     <string name="start_open_update_settings">Отворите подешавања ажурирања</string>
+    <string name="update_status_idle_auto">навиливе такође аутоматски проверава ГитХуб при покретању.</string>
     <string name="update_status_idle">Отворите овај одељак да бисте проверили да ли ГитХуб има новију верзију.</string>
     <string name="update_status_checking">Проверавам најновије ГитХуб издање...</string>
     <string name="format_update_ready_to_install">Ажурирање %1$s је преузето и спремно за инсталацију.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Отварање Андроид инсталатера за %1$s.</string>
     <string name="update_status_install_permission_required">Дозволите навиливе-у да инсталира АПК датотеке да бисте наставили.</string>
     <string name="status_update_channel_stable_selected">Изабран је стабилан канал за ажурирање.</string>
+    <string name="status_update_channel_beta_selected">Изабран је канал за ажурирање бета верзије.</string>
     <string name="status_update_channel_test_selected">Изабран је канал за пробно ажурирање.</string>
     <string name="heading_instruction_rotate_right">Ротирајте мало удесно да бисте се поравнали са рутом.</string>
     <string name="heading_instruction_almost_aligned">Скоро усклађени. Померите се мало лево.</string>

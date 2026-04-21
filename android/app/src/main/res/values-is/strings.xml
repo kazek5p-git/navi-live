@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Niðurhalsframvinda</string>
     <string name="settings_updates_not_checked">Ekki merkt enn</string>
     <string name="settings_updates_channel_title">Uppfæra rás</string>
+    <string name="settings_updates_channel_description">navilive athugar GitHub sjálfkrafa við ræsingu. Veldu hvort það ætti að fylgja aðeins stöðugum útgáfum eða einnig nýrri beta byggingu.</string>
     <string name="settings_updates_channel_message">Veldu hvort navilive ætti að fylgja aðeins stöðugum útgáfum eða einnig nýrri prufusmíðar.</string>
     <string name="settings_updates_channel_stable_title">Stöðugt</string>
     <string name="settings_updates_channel_stable_message">Notaðu aðeins venjulegar opinberar útgáfur sem ætlaðar eru til víðtækari notkunar.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Leyfa nýrri GitHub beta eða forútgáfusmíði þegar þau eru til.</string>
     <string name="settings_updates_channel_test_title">Próf</string>
     <string name="settings_updates_channel_test_message">Leyfa nýrri GitHub prófunar- eða forútgáfubyggingar þegar þær eru til.</string>
     <string name="settings_updates_check">Athuga hvort uppfærslur séu</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Nýjasta þekkta útgáfan</string>
     <string name="start_changelog_title">Síðustu breytingar</string>
     <string name="start_open_update_settings">Opnaðu uppfærslustillingar</string>
+    <string name="update_status_idle_auto">navilive athugar einnig GitHub sjálfkrafa við ræsingu.</string>
     <string name="update_status_idle">GitHub fyrir nýrri útgáfu.</string>
     <string name="update_status_checking">Athugar nýjustu GitHub útgáfuna...</string>
     <string name="format_update_ready_to_install">Uppfærsla %1$s er hlaðið niður og tilbúin til uppsetningar.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Opnar Android uppsetningarforrit fyrir %1$s.</string>
     <string name="update_status_install_permission_required">Leyfðu navilive að setja upp APK skrár til að halda áfram.</string>
     <string name="status_update_channel_stable_selected">Stöðug uppfærslurás valin.</string>
+    <string name="status_update_channel_beta_selected">Beta uppfærslurás valin.</string>
     <string name="status_update_channel_test_selected">Prófunaruppfærslurás valin.</string>
     <string name="heading_instruction_rotate_right">Snúðu örlítið til hægri til að samræma leiðina.</string>
     <string name="heading_instruction_almost_aligned">Næstum jafnað. Færðu þig aðeins til vinstri.</string>

@@ -243,9 +243,12 @@
     <string name="settings_updates_progress">Download progress</string>
     <string name="settings_updates_not_checked">Not checked yet</string>
     <string name="settings_updates_channel_title">Update channel</string>
+    <string name="settings_updates_channel_description">navilive checks GitHub automatically at startup. Choose whether it should follow only stable releases or also newer beta builds.</string>
     <string name="settings_updates_channel_message">Choose whether navilive should follow only stable releases or also newer test builds.</string>
     <string name="settings_updates_channel_stable_title">Stable</string>
     <string name="settings_updates_channel_stable_message">Use only regular public releases intended for wider use.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Allow newer GitHub beta or pre-release builds when they exist.</string>
     <string name="settings_updates_channel_test_title">Test</string>
     <string name="settings_updates_channel_test_message">Allow newer GitHub test or pre-release builds when they exist.</string>
     <string name="settings_updates_check">Check for updates</string>
@@ -262,6 +265,7 @@
     <string name="start_latest_release_label">Latest known release</string>
     <string name="start_changelog_title">Latest changes</string>
     <string name="start_open_update_settings">Open update settings</string>
+    <string name="update_status_idle_auto">navilive also checks GitHub automatically at startup.</string>
     <string name="update_status_idle">Open this section to check GitHub for a newer version.</string>
     <string name="update_status_checking">Checking the latest GitHub release...</string>
     <string name="format_update_ready_to_install">Update %1$s is downloaded and ready to install.</string>
@@ -274,6 +278,7 @@
     <string name="format_update_install_started">Opening Android installer for %1$s.</string>
     <string name="update_status_install_permission_required">Allow navilive to install APK files to continue.</string>
     <string name="status_update_channel_stable_selected">Stable update channel selected.</string>
+    <string name="status_update_channel_beta_selected">Beta update channel selected.</string>
     <string name="status_update_channel_test_selected">Test update channel selected.</string>
 
     <string name="heading_instruction_rotate_right">Rotate slightly right to align with route.</string>

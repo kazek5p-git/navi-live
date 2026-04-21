@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">İndirme ilerlemesi</string>
     <string name="settings_updates_not_checked">Henüz kontrol edilmedi</string>
     <string name="settings_updates_channel_title">Güncelleme kanalı</string>
+    <string name="settings_updates_channel_description">navilive başlangıçta GitHub\'u otomatik olarak kontrol eder. Yalnızca kararlı sürümleri mi yoksa daha yeni beta sürümlerini mi takip edeceğini seçin.</string>
     <string name="settings_updates_channel_message">Navilive\'in yalnızca kararlı sürümleri mi yoksa daha yeni test yapılarını mı takip edeceğini seçin.</string>
     <string name="settings_updates_channel_stable_title">Kararlı</string>
     <string name="settings_updates_channel_stable_message">Yalnızca daha geniş kullanıma yönelik normal genel yayınları kullanın.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Daha yeni GitHub beta sürümlerine veya mevcut olduklarında yayın öncesi derlemelere izin verin.</string>
     <string name="settings_updates_channel_test_title">Test</string>
     <string name="settings_updates_channel_test_message">Mevcut olduklarında daha yeni GitHub testine veya yayın öncesi derlemelere izin verin.</string>
     <string name="settings_updates_check">Güncellemeleri kontrol et</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Bilinen en son sürüm</string>
     <string name="start_changelog_title">En son değişiklikler</string>
     <string name="start_open_update_settings">Güncelleme ayarlarını aç</string>
+    <string name="update_status_idle_auto">navilive ayrıca başlangıçta GitHub\'u otomatik olarak kontrol eder.</string>
     <string name="update_status_idle">GitHub\'u kontrol etmek için bu bölümü açın daha yeni bir versiyon.</string>
     <string name="update_status_checking">En son GitHub sürümü kontrol ediliyor...</string>
     <string name="format_update_ready_to_install">%1$s numaralı güncelleme indirildi ve kuruluma hazır.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">%1$s için Android yükleyicisi açılıyor.</string>
     <string name="update_status_install_permission_required">İzin Ver Devam etmek için APK dosyalarını yüklemek üzere navilive.</string>
     <string name="status_update_channel_stable_selected">Kararlı güncelleme kanalı seçildi.</string>
+    <string name="status_update_channel_beta_selected">Beta güncelleme kanalı seçildi.</string>
     <string name="status_update_channel_test_selected">Test güncelleme kanalı seçildi.</string>
     <string name="heading_instruction_rotate_right">Rotaya hizalamak için hafifçe sağa döndürün.</string>
     <string name="heading_instruction_almost_aligned">Neredeyse hizalanmış. Biraz sola ilerleyin.</string>

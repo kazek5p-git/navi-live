@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Përparimi i shkarkimit</string>
     <string name="settings_updates_not_checked">Nuk është kontrolluar ende</string>
     <string name="settings_updates_channel_title">Përditëso kanalin</string>
+    <string name="settings_updates_channel_description">navilive kontrollon GitHub automatikisht në fillim. Zgjidh nëse duhet të ndjekë vetëm publikimet e qëndrueshme apo edhe ato më të reja beta.</string>
     <string name="settings_updates_channel_message">Zgjidhni nëse navilive duhet të ndjekë vetëm versionet e qëndrueshme apo edhe versionet më të reja të testimit.</string>
     <string name="settings_updates_channel_stable_title">E qëndrueshme</string>
     <string name="settings_updates_channel_stable_message">Përdorni vetëm publikime të rregullta publike të destinuara për përdorim më të gjerë.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Lejo versione më të reja të GitHub beta ose para-publikime kur ato ekzistojnë.</string>
     <string name="settings_updates_channel_test_title">Test</string>
     <string name="settings_updates_channel_test_message">Lejo testimet më të reja të GitHub ose versionet e para-publikimit kur ato ekzistojnë.</string>
     <string name="settings_updates_check">Kontrolloni për përditësime</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Publikimi i fundit i njohur</string>
     <string name="start_changelog_title">Ndryshimet e fundit</string>
     <string name="start_open_update_settings">Hap cilësimet e përditësimit</string>
+    <string name="update_status_idle_auto">navilive gjithashtu kontrollon GitHub automatikisht në fillim.</string>
     <string name="update_status_idle">Hapni këtë seksion për të kontrolluar GitHub për një version më të ri.</string>
     <string name="update_status_checking">Po kontrollon versionin më të fundit të GitHub...</string>
     <string name="format_update_ready_to_install">Përditësimi %1$s është shkarkuar dhe gati për t\'u instaluar.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Hapja e instaluesit të Android 7979791799.</string>
     <string name="update_status_install_permission_required">Lejo që navilive të instalojë skedarët APK për të vazhduar.</string>
     <string name="status_update_channel_stable_selected">Është zgjedhur kanali i qëndrueshëm i përditësimit.</string>
+    <string name="status_update_channel_beta_selected">Kanali i përditësimit beta i zgjedhur.</string>
     <string name="status_update_channel_test_selected">Testoni kanalin e përditësimit të zgjedhur.</string>
     <string name="heading_instruction_rotate_right">Rrotullo pak djathtas për t\'u lidhur me itinerarin.</string>
     <string name="heading_instruction_almost_aligned">Pothuajse në linjë. Lëvizni pak majtas.</string>

@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Download-Fortschritt</string>
     <string name="settings_updates_not_checked">Noch nicht überprüft</string>
     <string name="settings_updates_channel_title">Update-Kanal</string>
+    <string name="settings_updates_channel_description">Navilive überprüft GitHub automatisch beim Start. Wählen Sie, ob nur stabile Releases oder auch neuere Beta-Builds folgen sollen.</string>
     <string name="settings_updates_channel_message">Wählen Sie, ob Navilive nur stabile Releases oder auch neuere Test-Builds verfolgen soll.</string>
     <string name="settings_updates_channel_stable_title">Stabil</string>
     <string name="settings_updates_channel_stable_message">Verwenden Sie nur reguläre öffentliche Versionen, die für eine breitere Verwendung vorgesehen sind.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Erlauben Sie neuere GitHub-Beta- oder Vorabversions-Builds, sofern vorhanden.</string>
     <string name="settings_updates_channel_test_title">Test</string>
     <string name="settings_updates_channel_test_message">Erlauben Sie neuere GitHub-Test- oder Vorabversions-Builds, sofern vorhanden.</string>
     <string name="settings_updates_check">Nach Updates suchen</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Neueste bekannte Version</string>
     <string name="start_changelog_title">Neueste Änderungen</string>
     <string name="start_open_update_settings">Update-Einstellungen öffnen</string>
+    <string name="update_status_idle_auto">navilive überprüft GitHub beim Start auch automatisch.</string>
     <string name="update_status_idle">Öffnen Sie diesen Abschnitt, um GitHub auf eine neuere Version zu prüfen.</string>
     <string name="update_status_checking">Überprüfen Sie die neueste GitHub-Version ...</string>
     <string name="format_update_ready_to_install">Das Update %1$s ist heruntergeladen und kann installiert werden.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Android-Installationsprogramm für %1$s wird geöffnet.</string>
     <string name="update_status_install_permission_required">Erlauben Sie navilive, APK-Dateien zu installieren, um fortzufahren.</string>
     <string name="status_update_channel_stable_selected">Stabiler Update-Kanal ausgewählt.</string>
+    <string name="status_update_channel_beta_selected">Beta-Update-Kanal ausgewählt.</string>
     <string name="status_update_channel_test_selected">Testaktualisierungskanal ausgewählt.</string>
     <string name="heading_instruction_rotate_right">Leicht nach rechts drehen, um sich an der Route auszurichten.</string>
     <string name="heading_instruction_almost_aligned">Fast ausgerichtet. Bewegen Sie sich ein wenig nach links.</string>

@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Cynnydd lawrlwytho</string>
     <string name="settings_updates_not_checked">Heb ei wirio eto</string>
     <string name="settings_updates_channel_title">Diweddaru sianel</string>
+    <string name="settings_updates_channel_description">mae navilive yn gwirio GitHub yn awtomatig wrth gychwyn. Dewiswch a ddylai ddilyn datganiadau sefydlog yn unig neu hefyd adeiladau beta mwy newydd.</string>
     <string name="settings_updates_channel_message">Dewiswch a ddylai navilive ddilyn datganiadau sefydlog yn unig neu hefyd adeiladu prawf mwy newydd.</string>
     <string name="settings_updates_channel_stable_title">Stabl</string>
     <string name="settings_updates_channel_stable_message">Defnyddiwch ddatganiadau cyhoeddus rheolaidd yn unig a fwriedir ar gyfer defnydd ehangach.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Caniatáu beta GitHub mwy newydd neu adeiladu cyn rhyddhau pan fyddant yn bodoli. Mae</string>
     <string name="settings_updates_channel_test_title">Prawf</string>
     <string name="settings_updates_channel_test_message">Caniatáu prawf GitHub mwy newydd neu adeiladau cyn rhyddhau pan fyddant yn bodoli.</string>
     <string name="settings_updates_check">Gwiriwch am ddiweddariadau</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Y datganiad hysbys diweddaraf</string>
     <string name="start_changelog_title">Newidiadau diweddaraf</string>
     <string name="start_open_update_settings">Agor gosodiadau diweddaru</string>
+    <string name="update_status_idle_auto">navilive hefyd yn gwirio GitHub yn awtomatig wrth gychwyn.</string>
     <string name="update_status_idle">Agorwch yr adran hon i wirio GitHub am fersiwn mwy diweddar.</string>
     <string name="update_status_checking">Wrthi\'n gwirio\'r datganiad GitHub diweddaraf...</string>
     <string name="format_update_ready_to_install">Mae diweddariad %1$s wedi\'i lawrlwytho ac yn barod i\'w osod.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Agor gosodwr Android ar gyfer %1$s.</string>
     <string name="update_status_install_permission_required">Caniatáu i navilive osod ffeiliau APK i barhau.</string>
     <string name="status_update_channel_stable_selected">Sianel diweddaru sefydlog wedi\'i dewis.</string>
+    <string name="status_update_channel_beta_selected">sianel diweddaru beta wedi\'i dewis.</string>
     <string name="status_update_channel_test_selected">Sianel diweddaru prawf wedi\'i dewis.</string>
     <string name="heading_instruction_rotate_right">Cylchdroi ychydig i\'r dde i alinio â\'r llwybr.</string>
     <string name="heading_instruction_almost_aligned">Wedi\'i alinio bron. Symudwch ychydig i\'r chwith.</string>

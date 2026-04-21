@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Letöltés folyamata</string>
     <string name="settings_updates_not_checked">Még nincs bejelölve</string>
     <string name="settings_updates_channel_title">Frissítse a csatornát</string>
+    <string name="settings_updates_channel_description">A navilive indításkor automatikusan ellenőrzi a GitHubot. Válassza ki, hogy csak a stabil kiadásokat kövesse-e, vagy az újabb béta verziókat is.</string>
     <string name="settings_updates_channel_message">Válassza ki, hogy a navilive csak stabil kiadásokat kövessen, vagy újabb teszt buildeket.</string>
     <string name="settings_updates_channel_stable_title">Stabil</string>
     <string name="settings_updates_channel_stable_message">Csak a szélesebb körű felhasználásra szánt rendszeres nyilvános kiadásokat használja.</string>
+    <string name="settings_updates_channel_beta_title">Béta</string>
+    <string name="settings_updates_channel_beta_message">Engedélyezze az újabb GitHub béta- vagy kiadás előtti buildeket, ha léteznek.</string>
     <string name="settings_updates_channel_test_title">Teszt</string>
     <string name="settings_updates_channel_test_message">Engedélyezze az újabb GitHub teszt- vagy kiadás előtti buildeket, ha léteznek.</string>
     <string name="settings_updates_check">Frissítések keresése</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Legutóbbi ismert kiadás</string>
     <string name="start_changelog_title">Legújabb változások</string>
     <string name="start_open_update_settings">Nyissa meg a frissítési beállításokat</string>
+    <string name="update_status_idle_auto">a navilive a GitHubot is automatikusan ellenőrzi indításkor.</string>
     <string name="update_status_idle">Nyissa meg ezt a részt a GitHub újabb verziójának ellenőrzéséhez.</string>
     <string name="update_status_checking">A legújabb GitHub-kiadás ellenőrzése...</string>
     <string name="format_update_ready_to_install">A %1$s-es frissítés letöltődött, és készen áll a telepítésre.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Az Android1 telepítő megnyitása 9707991 Android979.</string>
     <string name="update_status_install_permission_required">A folytatáshoz engedélyezze a Navilive számára az APK-fájlok telepítését.</string>
     <string name="status_update_channel_stable_selected">Stabil frissítési csatorna kiválasztva.</string>
+    <string name="status_update_channel_beta_selected">Béta frissítési csatorna kiválasztva.</string>
     <string name="status_update_channel_test_selected">Teszt frissítési csatorna kiválasztva.</string>
     <string name="heading_instruction_rotate_right">Forgassa el kissé jobbra az útvonalhoz igazodáshoz.</string>
     <string name="heading_instruction_almost_aligned">Majdnem igazítva. Mozdulj egy kicsit balra.</string>

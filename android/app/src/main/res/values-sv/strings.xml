@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Nedladdningsförlopp</string>
     <string name="settings_updates_not_checked">Ej markerad ännu</string>
     <string name="settings_updates_channel_title">Uppdatera kanal</string>
+    <string name="settings_updates_channel_description">navilive kontrollerar GitHub automatiskt vid start. Välj om den bara ska följa stabila utgåvor eller även nyare betaversioner.</string>
     <string name="settings_updates_channel_message">Välj om navilive endast ska följa stabila utgåvor eller även nyare testbyggen.</string>
     <string name="settings_updates_channel_stable_title">Stabil</string>
     <string name="settings_updates_channel_stable_message">Använd endast vanliga offentliga utgåvor avsedda för bredare användning.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Tillåt nyare GitHub beta- eller pre-release-versioner när de finns.</string>
     <string name="settings_updates_channel_test_title">Testa</string>
     <string name="settings_updates_channel_test_message">Tillåt nyare GitHub-test eller pre-release builds när de finns.</string>
     <string name="settings_updates_check">Sök efter uppdateringar</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Senaste kända release</string>
     <string name="start_changelog_title">Senaste ändringarna</string>
     <string name="start_open_update_settings">Öppna uppdateringsinställningar</string>
+    <string name="update_status_idle_auto">navilive kontrollerar också GitHub automatiskt vid start.</string>
     <string name="update_status_idle">_IT kontrollera detta avsnitt för att installera APK_SPLIT___IT. GitHub för en nyare version.</string>
     <string name="update_status_checking">Kontrollerar den senaste GitHub-versionen...</string>
     <string name="format_update_ready_to_install">Uppdatering %1$s är nedladdad och redo att installeras.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Öppnar Android installationsprogram för %1$s.</string>
     <string name="update_status_install_permission_required">Tillåt navilive att installera APK-filer för att fortsätta.</string>
     <string name="status_update_channel_stable_selected">Stabil uppdateringskanal vald.</string>
+    <string name="status_update_channel_beta_selected">Betauppdateringskanal vald.</string>
     <string name="status_update_channel_test_selected">Testuppdateringskanal vald.</string>
     <string name="heading_instruction_rotate_right">Rotera något åt ​​höger för att justera med rutten.</string>
     <string name="heading_instruction_almost_aligned">Nästan justerad. Flytta lite åt vänster.</string>

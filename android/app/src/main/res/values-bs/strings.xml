@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Napredak preuzimanja</string>
     <string name="settings_updates_not_checked">Još nije provjereno</string>
     <string name="settings_updates_channel_title">Kanal ažuriranja</string>
+    <string name="settings_updates_channel_description">navilive provjerava GitHub automatski pri pokretanju. Odaberite hoće li pratiti samo stabilna izdanja ili i novije beta verzije.</string>
     <string name="settings_updates_channel_message">Odaberite da li navilive treba pratiti samo stabilna izdanja ili također novije testne verzije.</string>
     <string name="settings_updates_channel_stable_title">Stabilno</string>
     <string name="settings_updates_channel_stable_message">Koristite samo redovna javna izdanja namijenjena široj upotrebi.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Dozvoli novije GitHub beta ili pre-izdanje verzije kada postoje.</string>
     <string name="settings_updates_channel_test_title">Test</string>
     <string name="settings_updates_channel_test_message">Dozvoli novije GitHub testne ili pre-izdanje verzije kada postoje.</string>
     <string name="settings_updates_check">Provjeri ažuriranja</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Najnovije poznato izdanje</string>
     <string name="start_changelog_title">Najnovije promjene</string>
     <string name="start_open_update_settings">Otvorite postavke ažuriranja</string>
+    <string name="update_status_idle_auto">navilive također automatski provjerava GitHub pri pokretanju.</string>
     <string name="update_status_idle">Otvorite ovaj odjeljak da provjerite da li GitHub ima noviju verziju.</string>
     <string name="update_status_checking">Provjeravam najnovije GitHub izdanje...</string>
     <string name="format_update_ready_to_install">Ažuriranje %1$s je preuzeto i spremno za instalaciju.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Otvaranje instalacijskog programa za Android079179.</string>
     <string name="update_status_install_permission_required">Dozvolite navilive-u da instalira APK fajlove za nastavak.</string>
     <string name="status_update_channel_stable_selected">Odabran je stabilan kanal ažuriranja.</string>
+    <string name="status_update_channel_beta_selected">Odabran kanal za ažuriranje beta verzije.</string>
     <string name="status_update_channel_test_selected">Odabran kanal za testiranje ažuriranja.</string>
     <string name="heading_instruction_rotate_right">Rotirajte blago udesno da se poravnate s rutom.</string>
     <string name="heading_instruction_almost_aligned">Skoro poravnato. Pomeri se malo levo.</string>

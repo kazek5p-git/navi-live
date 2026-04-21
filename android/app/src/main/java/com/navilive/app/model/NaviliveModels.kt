@@ -76,11 +76,14 @@ enum class SpeechOutputMode(val storageValue: String) {
 
 enum class UpdateChannel(val storageValue: String) {
     Stable("stable"),
-    Test("test"),
+    Beta("beta"),
     ;
 
     companion object {
         fun fromStorageValue(value: String?): UpdateChannel {
+            if (value == "test") {
+                return Beta
+            }
             return entries.firstOrNull { it.storageValue == value } ?: Stable
         }
     }

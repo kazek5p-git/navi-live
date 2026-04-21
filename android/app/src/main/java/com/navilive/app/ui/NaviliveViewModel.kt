@@ -101,7 +101,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
     private var lastTrackingState: Boolean? = null
     private var lastTelemetryFixPoint: GeoPoint? = null
     private var lastTelemetryFixTimestampMs: Long = 0L
-    private var lastAutoCheckedUpdateChannel: UpdateChannel? = null
+    private var hasPerformedStartupUpdateCheck = false
 
     private val _uiState = MutableStateFlow(
         NaviliveUiState(
@@ -139,7 +139,6 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                     apkPath = persisted.downloadedUpdateApkPath,
                     versionLabel = persisted.downloadedUpdateVersionLabel,
                 )
-                val selectedUpdateChannel = persisted.settingsState.updateChannel
                 if (
                     sanitizedFavoriteIds != persisted.favoriteIds ||
                     sanitizedLastRoutePlaceId != persisted.lastRoutePlaceId
@@ -202,17 +201,13 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                                         sanitizedDownloadedUpdate.versionLabel,
                                     )
                                 current.appUpdateState.phase == AppUpdatePhase.ReadyToInstall ->
-                                    string(R.string.update_status_idle)
+                                    string(R.string.update_status_idle_auto)
                                 else -> current.appUpdateState.statusMessage
                             },
                         ),
                         hasCompletedOnboarding = persisted.hasCompletedOnboarding,
                         isPreferencesLoaded = true,
                     )
-                }
-                if (lastAutoCheckedUpdateChannel != selectedUpdateChannel) {
-                    lastAutoCheckedUpdateChannel = selectedUpdateChannel
-                    checkForAppUpdates(silent = true)
                 }
             }
         }
@@ -227,7 +222,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
         return AppUpdateState(
             currentVersionLabel = currentAppVersionLabel(),
             currentBuildLabel = currentAppBuildLabel(),
-            statusMessage = string(R.string.update_status_idle),
+            statusMessage = string(R.string.update_status_idle_auto),
             canRequestPackageInstalls = canRequestPackageInstalls(),
         )
     }
@@ -849,6 +844,9 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun setUpdateChannel(channel: UpdateChannel) {
+        if (channel == _uiState.value.settingsState.updateChannel) {
+            return
+        }
         _uiState.update { current ->
             current.copy(
                 settingsState = current.settingsState.copy(updateChannel = channel),
@@ -863,8 +861,8 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                     downloadProgressPercent = null,
                     isAutoInstallRequested = false,
                     statusMessage = string(
-                        if (channel == UpdateChannel.Test) {
-                            R.string.status_update_channel_test_selected
+                        if (channel == UpdateChannel.Beta) {
+                            R.string.status_update_channel_beta_selected
                         } else {
                             R.string.status_update_channel_stable_selected
                         },
@@ -875,7 +873,14 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             preferencesStore.setUpdateChannel(channel)
         }
-        lastAutoCheckedUpdateChannel = channel
+        checkForAppUpdates(silent = true)
+    }
+
+    fun performStartupUpdateCheckIfNeeded() {
+        if (hasPerformedStartupUpdateCheck || !_uiState.value.isPreferencesLoaded) {
+            return
+        }
+        hasPerformedStartupUpdateCheck = true
         checkForAppUpdates(silent = true)
     }
 
@@ -1002,7 +1007,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                                     ?: currentVersionLabel,
                             )
                         current.appUpdateState.phase == AppUpdatePhase.Idle ->
-                            string(R.string.update_status_idle)
+                            string(R.string.update_status_idle_auto)
                         else -> current.appUpdateState.statusMessage
                     },
                 ),

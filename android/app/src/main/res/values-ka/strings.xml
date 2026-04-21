@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">ჩამოტვირთვის პროგრესი</string>
     <string name="settings_updates_not_checked">ჯერ არ არის შემოწმებული</string>
     <string name="settings_updates_channel_title">არხის განახლება</string>
+    <string name="settings_updates_channel_description">ნავილივი ავტომატურად ამოწმებს GitHub-ს გაშვებისას. აირჩიეთ, უნდა დაიცვას მხოლოდ სტაბილური გამოშვებები თუ ასევე უფრო ახალი ბეტა ვერსიები.</string>
     <string name="settings_updates_channel_message">აირჩიეთ, ნავილივი უნდა მიჰყვეს მხოლოდ სტაბილურ გამოშვებებს თუ ასევე უფრო ახალ სატესტო ნაგებობებს.</string>
     <string name="settings_updates_channel_stable_title">სტაბილური</string>
     <string name="settings_updates_channel_stable_message">გამოიყენეთ მხოლოდ რეგულარული საჯარო გამოშვებები, რომლებიც განკუთვნილია ფართო გამოყენებისთვის.</string>
+    <string name="settings_updates_channel_beta_title">ბეტა</string>
+    <string name="settings_updates_channel_beta_message">დაუშვით უფრო ახალი GitHub ბეტა ან წინასწარი გამოშვება, როდესაც ისინი არსებობს.</string>
     <string name="settings_updates_channel_test_title">ტესტი</string>
     <string name="settings_updates_channel_test_message">დაუშვით უფრო ახალი GitHub ტესტის ან წინასწარი გამოშვების ნაგებობები, როდესაც ისინი არსებობს.</string>
     <string name="settings_updates_check">შეამოწმეთ განახლებები</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">უახლესი ცნობილი გამოშვება</string>
     <string name="start_changelog_title">უახლესი ცვლილებები</string>
     <string name="start_open_update_settings">გახსენით განახლების პარამეტრები</string>
+    <string name="update_status_idle_auto">navilive ასევე ავტომატურად ამოწმებს GitHub-ს გაშვებისას. არჩეულია</string>
     <string name="update_status_idle">გახსენით ეს განყოფილება, რათა შეამოწმოთ GitHub უფრო ახალი ვერსიისთვის.</string>
     <string name="update_status_checking">მიმდინარეობს GitHub-ის უახლესი გამოშვების შემოწმება...</string>
     <string name="format_update_ready_to_install">განახლება %1$s ჩამოტვირთულია და მზად არის ინსტალაციისთვის.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">გახსნა Android71 ინსტალერი 7799999-ისთვის.</string>
     <string name="update_status_install_permission_required">ნება დართეთ navilive-ს დააინსტალიროს APK ფაილები გასაგრძელებლად.</string>
     <string name="status_update_channel_stable_selected">არჩეულია სტაბილური განახლების არხი.</string>
+    <string name="status_update_channel_beta_selected">ბეტა განახლების არხი.</string>
     <string name="status_update_channel_test_selected">არჩეულია სატესტო განახლების არხი.</string>
     <string name="heading_instruction_rotate_right">ოდნავ გადაატრიალეთ მარჯვნივ მარშრუტის გასასწორებლად.</string>
     <string name="heading_instruction_almost_aligned">თითქმის გასწორებულია. ცოტა მარცხნივ იმოძრავეთ.</string>

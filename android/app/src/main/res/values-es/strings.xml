@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Progreso de la descarga</string>
     <string name="settings_updates_not_checked">Aún no verificado</string>
     <string name="settings_updates_channel_title">Canal de actualización</string>
+    <string name="settings_updates_channel_description">navilive comprueba GitHub automáticamente al inicio. Elija si debe seguir solo las versiones estables o también las versiones beta más recientes.</string>
     <string name="settings_updates_channel_message">Elija si navilive debe seguir solo versiones estables o también versiones de prueba más nuevas.</string>
     <string name="settings_updates_channel_stable_title">Estable</string>
     <string name="settings_updates_channel_stable_message">Utilice únicamente versiones públicas regulares destinadas a un uso más amplio.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Permitir versiones beta o preliminares de GitHub más recientes cuando existan.</string>
     <string name="settings_updates_channel_test_title">Prueba</string>
     <string name="settings_updates_channel_test_message">Permitir pruebas de GitHub más nuevas o versiones preliminares cuando existan.</string>
     <string name="settings_updates_check">Buscar actualizaciones</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Última versión conocida</string>
     <string name="start_changelog_title">Últimos cambios</string>
     <string name="start_open_update_settings">Abrir configuración de actualización</string>
+    <string name="update_status_idle_auto">navilive también verifica GitHub automáticamente al inicio.</string>
     <string name="update_status_idle">Abra esta sección para buscar en GitHub una versión más reciente.</string>
     <string name="update_status_checking">Comprobando la última versión de GitHub...</string>
     <string name="format_update_ready_to_install">La actualización %1$s está descargada y lista para instalar.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Abriendo el instalador de Android para %1$s.</string>
     <string name="update_status_install_permission_required">Permita que navilive instale archivos APK para continuar.</string>
     <string name="status_update_channel_stable_selected">Canal de actualización estable seleccionado.</string>
+    <string name="status_update_channel_beta_selected">Canal de actualización Beta seleccionado.</string>
     <string name="status_update_channel_test_selected">Canal de actualización de prueba seleccionado.</string>
     <string name="heading_instruction_rotate_right">Gire ligeramente hacia la derecha para alinearse con la ruta.</string>
     <string name="heading_instruction_almost_aligned">Casi alineado. Muévete un poco a la izquierda.</string>

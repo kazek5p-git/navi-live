@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Lejupielādes norise</string>
     <string name="settings_updates_not_checked">Vēl nav pārbaudīts</string>
     <string name="settings_updates_channel_title">Atjaunināt kanālu</string>
+    <string name="settings_updates_channel_description">navilive startēšanas laikā automātiski pārbauda GitHub. Izvēlieties, vai tam vajadzētu sekot tikai stabiliem laidieniem vai arī jaunākām beta versijām.</string>
     <string name="settings_updates_channel_message">Izvēlieties, vai navilive vajadzētu sekot tikai stabiliem laidieniem vai arī jaunākām testa versijām.</string>
     <string name="settings_updates_channel_stable_title">Stabils</string>
     <string name="settings_updates_channel_stable_message">Izmantojiet tikai regulārus publiskos izdevumus, kas paredzēti plašākai lietošanai.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Atļaut jaunākas GitHub beta versijas vai pirmsizlaides versijas, ja tādas ir.</string>
     <string name="settings_updates_channel_test_title">Pārbaude</string>
     <string name="settings_updates_channel_test_message">Atļaut jaunākas GitHub testa vai pirmsizlaides versijas, ja tādas ir.</string>
     <string name="settings_updates_check">Pārbaudīt atjauninājumus</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Jaunākais zināmais izlaidums</string>
     <string name="start_changelog_title">Jaunākās izmaiņas</string>
     <string name="start_open_update_settings">Atveriet atjaunināšanas iestatījumus</string>
+    <string name="update_status_idle_auto">navilive startēšanas laikā arī automātiski pārbauda GitHub.</string>
     <string name="update_status_idle">Atveriet šo sadaļu, lai pārbaudītu GitHub jaunāku versiju.</string>
     <string name="update_status_checking">Tiek pārbaudīts jaunākais GitHub laidiens...</string>
     <string name="format_update_ready_to_install">Atjauninājums %1$s ir lejupielādēts un gatavs instalēšanai.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Tiek atvērta Android79797991 instalēšanas programma.</string>
     <string name="update_status_install_permission_required">Lai turpinātu, ļaujiet navilive instalēt APK failus.</string>
     <string name="status_update_channel_stable_selected">Atlasīts stabils atjaunināšanas kanāls.</string>
+    <string name="status_update_channel_beta_selected">Atlasīts beta versijas atjaunināšanas kanāls.</string>
     <string name="status_update_channel_test_selected">Atlasīts testa atjaunināšanas kanāls.</string>
     <string name="heading_instruction_rotate_right">Pagrieziet nedaudz pa labi, lai saskaņotu ar maršrutu.</string>
     <string name="heading_instruction_almost_aligned">Gandrīz līdzināts. Pārvietojieties nedaudz pa kreisi.</string>

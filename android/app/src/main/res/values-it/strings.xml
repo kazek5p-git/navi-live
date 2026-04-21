@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Avanzamento download</string>
     <string name="settings_updates_not_checked">Non ancora selezionato</string>
     <string name="settings_updates_channel_title">Canale di aggiornamento</string>
+    <string name="settings_updates_channel_description">navilive controlla GitHub automaticamente all\'avvio. Scegli se deve seguire solo versioni stabili o anche build beta più recenti.</string>
     <string name="settings_updates_channel_message">Scegli se navilive deve seguire solo versioni stabili o anche build di test più recenti.</string>
     <string name="settings_updates_channel_stable_title">Stabile</string>
     <string name="settings_updates_channel_stable_message">Utilizzare solo versioni pubbliche regolari destinate ad un uso più ampio.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Consenti build GitHub beta o pre-release più recenti quando esistono.</string>
     <string name="settings_updates_channel_test_title">Test</string>
     <string name="settings_updates_channel_test_message">Consenti test GitHub più recenti o build pre-release quando esistono.</string>
     <string name="settings_updates_check">Controlla aggiornamenti</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Ultima versione conosciuta</string>
     <string name="start_changelog_title">Ultime modifiche</string>
     <string name="start_open_update_settings">Apri impostazioni di aggiornamento</string>
+    <string name="update_status_idle_auto">navilive controlla anche GitHub automaticamente all\'avvio.</string>
     <string name="update_status_idle">Apri questa sezione per verificare la disponibilità di una versione più recente su GitHub.</string>
     <string name="update_status_checking">Controllo dell\'ultima versione di GitHub...</string>
     <string name="format_update_ready_to_install">L\'aggiornamento %1$s è stato scaricato ed è pronto per l\'installazione.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Apertura del programma di installazione Android per %1$s.</string>
     <string name="update_status_install_permission_required">Consenti navilive per installare i file APK per continuare.</string>
     <string name="status_update_channel_stable_selected">Canale di aggiornamento stabile selezionato.</string>
+    <string name="status_update_channel_beta_selected">Canale di aggiornamento beta selezionato.</string>
     <string name="status_update_channel_test_selected">Canale di aggiornamento test selezionato.</string>
     <string name="heading_instruction_rotate_right">Ruota leggermente a destra per allinearsi con la rotta.</string>
     <string name="heading_instruction_almost_aligned">Quasi allineato. Spostati un po\' a sinistra.</string>

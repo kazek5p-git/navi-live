@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Napredek prenosa</string>
     <string name="settings_updates_not_checked">Še ni označeno</string>
     <string name="settings_updates_channel_title">Posodobi kanal</string>
+    <string name="settings_updates_channel_description">navilive ob zagonu samodejno preveri GitHub. Izberite, ali naj sledi samo stabilnim izdajam ali tudi novejšim različicam beta.</string>
     <string name="settings_updates_channel_message">Izberite, ali naj navilive sledi samo stabilnim izdajam ali tudi novejšim preskusnim različicam.</string>
     <string name="settings_updates_channel_stable_title">Stabilen</string>
     <string name="settings_updates_channel_stable_message">Uporabljajte samo običajne javne izdaje, namenjene širši uporabi.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Dovoli novejše različice beta ali predizdajne različice GitHub, ko obstajajo.</string>
     <string name="settings_updates_channel_test_title">Preizkus</string>
     <string name="settings_updates_channel_test_message">Dovoli novejši preskus GitHub ali gradnje pred izdajo, ko obstajajo.</string>
     <string name="settings_updates_check">Preveri posodobitve</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Najnovejša znana izdaja</string>
     <string name="start_changelog_title">Najnovejše spremembe</string>
     <string name="start_open_update_settings">Odpri nastavitve posodobitve</string>
+    <string name="update_status_idle_auto">navilive ob zagonu samodejno preveri tudi GitHub.</string>
     <string name="update_status_idle">Odprite ta razdelek, da preverite GitHub za novejšo različico.</string>
     <string name="update_status_checking">Preverjanje najnovejše izdaje GitHub ...</string>
     <string name="format_update_ready_to_install">Posodobitev %1$s je prenesena in pripravljena za namestitev.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Odpiranje namestitvenega programa za Android za %1$s.</string>
     <string name="update_status_install_permission_required">Za nadaljevanje dovolite Navilive namestitvi datotek APK.</string>
     <string name="status_update_channel_stable_selected">Izbran je stabilen kanal posodobitve.</string>
+    <string name="status_update_channel_beta_selected">Izbran kanal za posodobitev beta.</string>
     <string name="status_update_channel_test_selected">Izbran preizkusni kanal posodobitve.</string>
     <string name="heading_instruction_rotate_right">Zasukajte rahlo v desno, da se poravnate s potjo.</string>
     <string name="heading_instruction_almost_aligned">Skoraj poravnano. Premakni se malo levo.</string>

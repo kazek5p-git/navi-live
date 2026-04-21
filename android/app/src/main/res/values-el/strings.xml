@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Πρόοδος λήψης</string>
     <string name="settings_updates_not_checked">Δεν έχει ελεγχθεί ακόμα</string>
     <string name="settings_updates_channel_title">Ενημέρωση καναλιού</string>
+    <string name="settings_updates_channel_description">Το navilive ελέγχει αυτόματα το GitHub κατά την εκκίνηση. Επιλέξτε εάν θα πρέπει να ακολουθεί μόνο σταθερές εκδόσεις ή και νεότερες εκδόσεις beta.</string>
     <string name="settings_updates_channel_message">Επιλέξτε εάν το navilive θα πρέπει να ακολουθεί μόνο σταθερές εκδόσεις ή και νεότερες δοκιμαστικές εκδόσεις.</string>
     <string name="settings_updates_channel_stable_title">Σταθερός</string>
     <string name="settings_updates_channel_stable_message">Χρησιμοποιείτε μόνο τακτικές δημόσιες εκδόσεις που προορίζονται για ευρύτερη χρήση.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Να επιτρέπεται νεότερες εκδόσεις GitHub beta ή προέκδοσης όταν υπάρχουν. Το</string>
     <string name="settings_updates_channel_test_title">Δοκιμή</string>
     <string name="settings_updates_channel_test_message">Να επιτρέπονται νεότερες εκδόσεις δοκιμής ή προέκδοσης του GitHub όταν υπάρχουν.</string>
     <string name="settings_updates_check">Ελέγξτε για ενημερώσεις</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Τελευταία γνωστή έκδοση</string>
     <string name="start_changelog_title">Τελευταίες αλλαγές</string>
     <string name="start_open_update_settings">Ανοίξτε τις ρυθμίσεις ενημέρωσης</string>
+    <string name="update_status_idle_auto">navilive ελέγχει επίσης το GitHub αυτόματα κατά την εκκίνηση.</string>
     <string name="update_status_idle">Ανοίξτε αυτήν την ενότητα για να ελέγξετε το GitHub για νεότερη έκδοση.</string>
     <string name="update_status_checking">Έλεγχος της πιο πρόσφατης έκδοσης του GitHub...</string>
     <string name="format_update_ready_to_install">Η ενημέρωση %1$s έχει ληφθεί και είναι έτοιμη για εγκατάσταση.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Άνοιγμα του προγράμματος εγκατάστασης Android 7997979.</string>
     <string name="update_status_install_permission_required">Επιτρέψτε στο navilive να εγκαταστήσει αρχεία APK για να συνεχίσει.</string>
     <string name="status_update_channel_stable_selected">Επιλέχθηκε σταθερό κανάλι ενημέρωσης.</string>
+    <string name="status_update_channel_beta_selected">Επιλέχθηκε το κανάλι ενημέρωσης beta.</string>
     <string name="status_update_channel_test_selected">Επιλέχθηκε δοκιμαστικό κανάλι ενημέρωσης.</string>
     <string name="heading_instruction_rotate_right">Περιστρέψτε ελαφρώς προς τα δεξιά για ευθυγράμμιση με τη διαδρομή.</string>
     <string name="heading_instruction_almost_aligned">Σχεδόν ευθυγραμμισμένο. Μετακινηθείτε λίγο αριστερά.</string>

@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Хід завантаження</string>
     <string name="settings_updates_not_checked">Ще не перевірено</string>
     <string name="settings_updates_channel_title">Канал оновлення</string>
+    <string name="settings_updates_channel_description">navilive автоматично перевіряє GitHub під час запуску. Виберіть, чи слід використовувати лише стабільні випуски чи нові бета-версії.</string>
     <string name="settings_updates_channel_message">Виберіть, чи має navilive використовувати лише стабільні випуски чи також нові тестові збірки.</string>
     <string name="settings_updates_channel_stable_title">Стабільний</string>
     <string name="settings_updates_channel_stable_message">Використовуйте лише звичайні публічні випуски, призначені для широкого використання.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Дозволити новіші бета-версії GitHub або попередні версії, якщо вони існують.</string>
     <string name="settings_updates_channel_test_title">Test</string>
     <string name="settings_updates_channel_test_message">Дозволити новіші тестові GitHub або попередні версії, якщо вони існують.</string>
     <string name="settings_updates_check">Перевірити наявність оновлень</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Останній відомий випуск</string>
     <string name="start_changelog_title">Останні зміни</string>
     <string name="start_open_update_settings">Відкрити налаштування оновлення</string>
+    <string name="update_status_idle_auto">navilive також автоматично перевіряє GitHub під час запуску.</string>
     <string name="update_status_idle">Відкрийте цей розділ, щоб перевірити GitHub на наявність новішої версії.</string>
     <string name="update_status_checking">Перевірка останнього випуску GitHub...</string>
     <string name="format_update_ready_to_install">Оновлення %1$s завантажено та готове до встановлення.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Відкриття інсталятора Android для %1$s.</string>
     <string name="update_status_install_permission_required">Дозвольте navilive інсталювати файли APK, щоб продовжити.</string>
     <string name="status_update_channel_stable_selected">Вибрано стабільний канал оновлення.</string>
+    <string name="status_update_channel_beta_selected">Вибрано бета-канал оновлення.</string>
     <string name="status_update_channel_test_selected">Вибрано тестовий канал оновлення.</string>
     <string name="heading_instruction_rotate_right">Трохи поверніть праворуч, щоб вирівняти маршрут.</string>
     <string name="heading_instruction_almost_aligned">Майже вирівняно. Посуньтеся трохи вліво.</string>

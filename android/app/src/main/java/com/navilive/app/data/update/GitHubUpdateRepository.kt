@@ -48,7 +48,7 @@ class GitHubUpdateRepository(
             val candidate = runCatching { parseRelease(item) }.getOrNull() ?: continue
             return@withContext candidate
         }
-        throw IllegalStateException("GitHub does not currently expose any test releases with an APK asset.")
+        throw IllegalStateException("GitHub does not currently expose any public releases with an APK asset.")
     }
 
     private fun parseRelease(root: JSONObject): GitHubReleaseInfo {

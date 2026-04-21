@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Priebeh sťahovania</string>
     <string name="settings_updates_not_checked">Zatiaľ nekontrolované</string>
     <string name="settings_updates_channel_title">Aktualizovať kanál</string>
+    <string name="settings_updates_channel_description">navilive automaticky kontroluje GitHub pri spustení. Vyberte, či má nasledovať len stabilné vydania alebo aj novšie beta verzie.</string>
     <string name="settings_updates_channel_message">Vyberte, či má navilive nasledovať iba stabilné vydania alebo aj novšie testovacie zostavy.</string>
     <string name="settings_updates_channel_stable_title">Stabilný</string>
     <string name="settings_updates_channel_stable_message">Používajte iba bežné verejné vydania určené na širšie použitie.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Povoliť novšie verzie GitHub beta alebo predbežné verzie, ak existujú.</string>
     <string name="settings_updates_channel_test_title">Test</string>
     <string name="settings_updates_channel_test_message">Povoliť novšie testovacie alebo predbežné zostavy GitHub, ak existujú.</string>
     <string name="settings_updates_check">Skontrolujte aktualizácie</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Najnovšie známe vydanie</string>
     <string name="start_changelog_title">Najnovšie zmeny</string>
     <string name="start_open_update_settings">Otvorte nastavenia aktualizácie</string>
+    <string name="update_status_idle_auto">navilive tiež automaticky kontroluje GitHub pri spustení.</string>
     <string name="update_status_idle">Otvorte túto sekciu a skontrolujte, či GitHub neobsahuje novšiu verziu.</string>
     <string name="update_status_checking">Kontroluje sa najnovšie vydanie GitHub...</string>
     <string name="format_update_ready_to_install">Aktualizácia %1$s je stiahnutá a pripravená na inštaláciu.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Otvára sa inštalátor systému Android 91 pre 97909.</string>
     <string name="update_status_install_permission_required">Povoľte navilive inštalovať súbory APK, aby ste mohli pokračovať.</string>
     <string name="status_update_channel_stable_selected">Vybraný stabilný kanál aktualizácie.</string>
+    <string name="status_update_channel_beta_selected">Vybraný kanál aktualizácie beta.</string>
     <string name="status_update_channel_test_selected">Vybraný testovací kanál aktualizácie.</string>
     <string name="heading_instruction_rotate_right">Otočte mierne doprava, aby ste zarovnali trasu.</string>
     <string name="heading_instruction_almost_aligned">Takmer zarovnané. Posuňte sa trochu doľava.</string>

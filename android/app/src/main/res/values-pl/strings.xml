@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Postęp pobierania</string>
     <string name="settings_updates_not_checked">Jeszcze nie sprawdzano</string>
     <string name="settings_updates_channel_title">Kanał aktualizacji</string>
+    <string name="settings_updates_channel_description">navilive automatycznie sprawdza GitHuba przy starcie. Wybierz, czy ma śledzić tylko wydania stabilne, czy także nowsze buildy beta.</string>
     <string name="settings_updates_channel_message">Wybierz, czy navilive ma śledzić tylko wydania stabilne, czy także nowsze buildy testowe.</string>
     <string name="settings_updates_channel_stable_title">Stabilny</string>
     <string name="settings_updates_channel_stable_message">Używaj tylko zwykłych publicznych wydań przeznaczonych do szerszego użycia.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Pozwalaj na nowsze buildy beta lub pre-release z GitHuba, jeśli są dostępne.</string>
     <string name="settings_updates_channel_test_title">Testowy</string>
     <string name="settings_updates_channel_test_message">Pozwalaj na nowsze buildy testowe lub pre-release z GitHuba, jeśli są dostępne.</string>
     <string name="settings_updates_check">Sprawdź aktualizacje</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Ostatnio znane wydanie</string>
     <string name="start_changelog_title">Najnowsze zmiany</string>
     <string name="start_open_update_settings">Otwórz ustawienia aktualizacji</string>
+    <string name="update_status_idle_auto">navilive automatycznie sprawdza też GitHuba przy starcie.</string>
     <string name="update_status_idle">Otwórz tę sekcję, aby sprawdzić na GitHubie nowszą wersję.</string>
     <string name="update_status_checking">Sprawdzam najnowsze wydanie na GitHubie...</string>
     <string name="format_update_ready_to_install">Aktualizacja %1$s jest pobrana i gotowa do instalacji.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Otwieram instalator Androida dla wersji %1$s.</string>
     <string name="update_status_install_permission_required">Aby kontynuować, zezwól navilive na instalowanie plików APK.</string>
     <string name="status_update_channel_stable_selected">Wybrano stabilny kanał aktualizacji.</string>
+    <string name="status_update_channel_beta_selected">Wybrano kanał aktualizacji beta.</string>
     <string name="status_update_channel_test_selected">Wybrano testowy kanał aktualizacji.</string>
     <string name="heading_instruction_rotate_right">Obróć lekko w prawo, aby ustawić się do trasy.</string>
     <string name="heading_instruction_almost_aligned">Prawie dobrze. Przesuń się trochę w lewo.</string>

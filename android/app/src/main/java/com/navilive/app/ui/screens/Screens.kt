@@ -1856,7 +1856,7 @@ private fun UpdateChannelCard(
         ) {
             SectionHeading(stringResource(R.string.settings_updates_channel_title))
             Text(
-                text = stringResource(R.string.settings_updates_channel_message),
+                text = stringResource(R.string.settings_updates_channel_description),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -1867,10 +1867,10 @@ private fun UpdateChannelCard(
                 onSelect = { onUpdateChannelChange(UpdateChannel.Stable) },
             )
             SelectableOptionRow(
-                title = stringResource(R.string.settings_updates_channel_test_title),
-                description = stringResource(R.string.settings_updates_channel_test_message),
-                selected = selectedChannel == UpdateChannel.Test,
-                onSelect = { onUpdateChannelChange(UpdateChannel.Test) },
+                title = stringResource(R.string.settings_updates_channel_beta_title),
+                description = stringResource(R.string.settings_updates_channel_beta_message),
+                selected = selectedChannel == UpdateChannel.Beta,
+                onSelect = { onUpdateChannelChange(UpdateChannel.Beta) },
             )
         }
     }

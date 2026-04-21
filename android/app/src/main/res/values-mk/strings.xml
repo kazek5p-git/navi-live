@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Напредокот на преземањето</string>
     <string name="settings_updates_not_checked">Сè уште не е проверено</string>
     <string name="settings_updates_channel_title">Ажурирајте го каналот</string>
+    <string name="settings_updates_channel_description">Navilive автоматски го проверува GitHub при стартување. Изберете дали треба да следи само стабилни изданија или, исто така, понови бета-изданија.</string>
     <string name="settings_updates_channel_message">Изберете дали navilive треба да следи само стабилни изданија или, исто така, поновите тест-изданија.</string>
     <string name="settings_updates_channel_stable_title">Стабилна</string>
     <string name="settings_updates_channel_stable_message">Користете само редовни јавни изданија наменети за поширока употреба.</string>
+    <string name="settings_updates_channel_beta_title">Бета</string>
+    <string name="settings_updates_channel_beta_message">Дозволете понови GitHub бета или предиздадени изданија кога тие постојат.</string>
     <string name="settings_updates_channel_test_title">Тест</string>
     <string name="settings_updates_channel_test_message">Дозволете понови GitHub тест или предиздадени изданија кога тие постојат.</string>
     <string name="settings_updates_check">Проверете дали има ажурирања</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Последно познато издание</string>
     <string name="start_changelog_title">Најнови промени</string>
     <string name="start_open_update_settings">Отворете ги поставките за ажурирање</string>
+    <string name="update_status_idle_auto">navilive исто така автоматски го проверува GitHub при стартување.</string>
     <string name="update_status_idle">Отворете го овој дел за да го проверите GitHub за понова верзија.</string>
     <string name="update_status_checking">Се проверува најновото издание на GitHub...</string>
     <string name="format_update_ready_to_install">Ажурирањето %1$s е преземено и подготвено за инсталирање.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Се отвора 1 инсталатер за Android7979799799.</string>
     <string name="update_status_install_permission_required">Дозволете navilive да инсталира APK-датотеки за да продолжи.</string>
     <string name="status_update_channel_stable_selected">Избран е стабилен канал за ажурирање.</string>
+    <string name="status_update_channel_beta_selected">Избран е канал за бета ажурирање.</string>
     <string name="status_update_channel_test_selected">Избран е канал за тестирање за ажурирање.</string>
     <string name="heading_instruction_rotate_right">Завртете малку надесно за да се усогласите со маршрутата.</string>
     <string name="heading_instruction_almost_aligned">Речиси порамнети. Движете се малку лево.</string>

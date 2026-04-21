@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Latauksen edistyminen</string>
     <string name="settings_updates_not_checked">Ei vielä tarkistettu</string>
     <string name="settings_updates_channel_title">Päivitä kanava</string>
+    <string name="settings_updates_channel_description">navilive tarkistaa GitHubin automaattisesti käynnistyksen yhteydessä. Valitse, seuraako se vain vakaita julkaisuja vai myös uudempia beta-versioita.</string>
     <string name="settings_updates_channel_message">Valitse, seuraako navilive vain vakaita julkaisuja vai myös uudempia testiversioita.</string>
     <string name="settings_updates_channel_stable_title">Vakaa</string>
     <string name="settings_updates_channel_stable_message">Käytä vain tavallisia julkisia julkaisuja, jotka on tarkoitettu laajempaan käyttöön.</string>
+    <string name="settings_updates_channel_beta_title">Beta</string>
+    <string name="settings_updates_channel_beta_message">Salli uudemmat GitHubin beta- tai esijulkaisuversiot, kun niitä on olemassa.</string>
     <string name="settings_updates_channel_test_title">Testata</string>
     <string name="settings_updates_channel_test_message">Salli uudemmat GitHub-testi- tai esijulkaisuversiot, kun niitä on olemassa.</string>
     <string name="settings_updates_check">Tarkista päivitykset</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Viimeisin tunnettu julkaisu</string>
     <string name="start_changelog_title">Viimeisimmät muutokset</string>
     <string name="start_open_update_settings">Avaa päivitysasetukset</string>
+    <string name="update_status_idle_auto">navilive tarkistaa myös GitHubin automaattisesti käynnistyksen yhteydessä.</string>
     <string name="update_status_idle">Avaa tämä osio tarkistaaksesi GitHubista uudemman version.</string>
     <string name="update_status_checking">Tarkistetaan uusinta GitHub-julkaisua...</string>
     <string name="format_update_ready_to_install">Päivitys %1$s on ladattu ja valmis asennettavaksi.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Avataan Android-asennusohjelma 970791 Android770.</string>
     <string name="update_status_install_permission_required">Salli naviliven asentaa APK-tiedostoja jatkaaksesi.</string>
     <string name="status_update_channel_stable_selected">Vakaa päivityskanava valittu.</string>
+    <string name="status_update_channel_beta_selected">Betapäivityskanava valittu.</string>
     <string name="status_update_channel_test_selected">Testipäivityskanava valittu.</string>
     <string name="heading_instruction_rotate_right">Kierrä hieman oikealle kohdistaaksesi reitin.</string>
     <string name="heading_instruction_almost_aligned">Melkein tasattu. Siirrä hieman vasemmalle.</string>

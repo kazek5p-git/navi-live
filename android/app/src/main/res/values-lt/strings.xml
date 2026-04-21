@@ -223,9 +223,12 @@
     <string name="settings_updates_progress">Atsisiuntimo eiga</string>
     <string name="settings_updates_not_checked">Dar nepatikrinta</string>
     <string name="settings_updates_channel_title">Atnaujinti kanalą</string>
+    <string name="settings_updates_channel_description">„navilive“ automatiškai patikrina „GitHub“ paleidžiant. Pasirinkite, ar jis turėtų būti tik stabilus, ar taip pat naujesnės beta versijos.</string>
     <string name="settings_updates_channel_message">Pasirinkite, ar „navilive“ turėtų sekti tik stabilius leidimus, ar taip pat naujesnes bandomąsias versijas.</string>
     <string name="settings_updates_channel_stable_title">Stabilus</string>
     <string name="settings_updates_channel_stable_message">Naudokite tik įprastus viešus leidimus, skirtus platesniam naudojimui.</string>
+    <string name="settings_updates_channel_beta_title">Beta versija</string>
+    <string name="settings_updates_channel_beta_message">Leisti naujesnes GitHub beta versijas arba išankstinio leidimo versijas, kai jos yra.</string>
     <string name="settings_updates_channel_test_title">Testas</string>
     <string name="settings_updates_channel_test_message">Leisti naujesnes „GitHub“ bandomąsias arba išankstinio leidimo versijas, kai jos yra.</string>
     <string name="settings_updates_check">Patikrinkite, ar yra naujinimų</string>
@@ -242,6 +245,7 @@
     <string name="start_latest_release_label">Naujausias žinomas leidimas</string>
     <string name="start_changelog_title">Naujausi pakeitimai</string>
     <string name="start_open_update_settings">Atidarykite naujinimo nustatymus</string>
+    <string name="update_status_idle_auto">navilive taip pat automatiškai patikrina „GitHub“ paleidžiant.</string>
     <string name="update_status_idle">Atidarykite šį skyrių, kad patikrintumėte, ar GitHub yra naujesnė versija.</string>
     <string name="update_status_checking">Tikrinama naujausia „GitHub“ versija...</string>
     <string name="format_update_ready_to_install">Naujinimas %1$s atsisiųstas ir paruoštas įdiegti.</string>
@@ -254,6 +258,7 @@
     <string name="format_update_install_started">Atidaroma Android1 diegimo programa 97, skirta 7991.</string>
     <string name="update_status_install_permission_required">Norėdami tęsti, leiskite „navilive“ įdiegti APK failus.</string>
     <string name="status_update_channel_stable_selected">Pasirinktas stabilaus atnaujinimo kanalas.</string>
+    <string name="status_update_channel_beta_selected">Pasirinktas beta versijos naujinimo kanalas.</string>
     <string name="status_update_channel_test_selected">Pasirinktas bandomasis naujinimo kanalas.</string>
     <string name="heading_instruction_rotate_right">Pasukite šiek tiek į dešinę, kad lygiuotumėte su maršrutu.</string>
     <string name="heading_instruction_almost_aligned">Beveik sulygiuotas. Pasukite šiek tiek į kairę.</string>

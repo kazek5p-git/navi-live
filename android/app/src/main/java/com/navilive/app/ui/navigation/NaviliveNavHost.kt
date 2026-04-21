@@ -84,6 +84,12 @@ fun NaviliveNavHost(viewModel: NaviliveViewModel) {
         }
     }
 
+    LaunchedEffect(uiState.value.isPreferencesLoaded) {
+        if (uiState.value.isPreferencesLoaded) {
+            viewModel.performStartupUpdateCheckIfNeeded()
+        }
+    }
+
     val runPrimaryUpdateAction = {
         val updateState = uiState.value.appUpdateState
         when {
