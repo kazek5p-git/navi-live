@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.Copy
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -77,4 +79,11 @@ dependencies {
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+}
+
+tasks.register<Copy>("stageDebugReleaseAsset") {
+    dependsOn("assembleDebug")
+    from(layout.buildDirectory.file("outputs/apk/debug/app-debug.apk"))
+    into(layout.buildDirectory.dir("release-asset"))
+    rename { "navilive.apk" }
 }

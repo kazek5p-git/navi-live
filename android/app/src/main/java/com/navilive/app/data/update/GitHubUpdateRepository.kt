@@ -164,7 +164,8 @@ class GitHubUpdateRepository(
             }
         }
 
-        return parsed.firstOrNull { it.name.equals("app-release.apk", ignoreCase = true) }
+        return parsed.firstOrNull { it.name.equals("navilive.apk", ignoreCase = true) }
+            ?: parsed.firstOrNull { it.name.equals("app-release.apk", ignoreCase = true) }
             ?: parsed.firstOrNull { it.name.equals("app-debug.apk", ignoreCase = true) }
             ?: parsed.firstOrNull { it.name.endsWith(".apk", ignoreCase = true) }
             ?: throw IllegalStateException("GitHub release does not contain an APK asset.")

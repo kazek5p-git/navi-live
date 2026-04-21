@@ -39,6 +39,16 @@ APK output:
 
 `app\build\outputs\apk\debug\app-debug.apk`
 
+Staged GitHub release asset:
+
+`app\build\release-asset\navilive.apk`
+
+Prepare that asset directly:
+
+```powershell
+.\gradlew.bat :app:stageDebugReleaseAsset
+```
+
 ## Implemented flow
 
 `Bootstrap -> Onboarding -> Permissions -> Start -> Search -> Place Details -> Route Summary -> Heading Align -> Active Navigation -> Arrival`
@@ -87,3 +97,5 @@ Current Android MVP now follows the local `NAVILIVE_UX_BLUEPRINT.md` more closel
 - Downloaded update APKs are stored under app-internal `files/debug/updates` and persisted across app restarts until installed or superseded.
 - Installation is handed off to the Android package installer through the app `FileProvider`.
 - When the user starts an in-app `download and install` flow, navilive will automatically continue with APK installation after the required Android permission screen returns.
+- The updater now prefers GitHub release assets named `navilive.apk`, then falls back to older APK names when needed.
+- The repository release flow is automated by `..\scripts\publish-github-release.ps1`, which builds `navilive.apk`, updates or creates the GitHub release, removes old APK assets and uploads the new one.

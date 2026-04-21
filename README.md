@@ -20,3 +20,13 @@ cd android
 APK output:
 
 `android\app\build\outputs\apk\debug\app-debug.apk`
+
+Staged release asset:
+
+`android\app\build\release-asset\navilive.apk`
+
+GitHub release publish:
+
+```powershell
+.\scripts\publish-github-release.ps1
+```
