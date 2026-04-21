@@ -105,6 +105,31 @@ data class DiagnosticsState(
     val lastExportPath: String? = null,
 )
 
+enum class AppUpdatePhase {
+    Idle,
+    Checking,
+    UpToDate,
+    Available,
+    Downloading,
+    ReadyToInstall,
+    Error,
+}
+
+data class AppUpdateState(
+    val currentVersionLabel: String = "",
+    val latestVersionLabel: String? = null,
+    val latestAssetName: String? = null,
+    val latestAssetDownloadUrl: String? = null,
+    val releaseNotes: String = "",
+    val releasePageUrl: String? = null,
+    val statusMessage: String = "",
+    val phase: AppUpdatePhase = AppUpdatePhase.Idle,
+    val downloadProgressPercent: Int? = null,
+    val downloadedApkPath: String? = null,
+    val downloadedVersionLabel: String? = null,
+    val canRequestPackageInstalls: Boolean = true,
+)
+
 data class NaviliveUiState(
     val currentLocationLabel: String = "",
     val places: List<Place> = emptyList(),
@@ -116,6 +141,7 @@ data class NaviliveUiState(
     val activeNavigationState: ActiveNavigationState = ActiveNavigationState(),
     val settingsState: SettingsState = SettingsState(),
     val diagnosticsState: DiagnosticsState = DiagnosticsState(),
+    val appUpdateState: AppUpdateState = AppUpdateState(),
     val statusMessage: String = "",
     val isLoadingSearch: Boolean = false,
     val isLoadingRoute: Boolean = false,

@@ -23,6 +23,8 @@ data class PersistedNaviliveState(
     val lastRoutePlaceId: String?,
     val hasCompletedOnboarding: Boolean,
     val settingsState: SettingsState,
+    val downloadedUpdateApkPath: String?,
+    val downloadedUpdateVersionLabel: String?,
 )
 
 class NavilivePreferencesStore(
@@ -121,6 +123,20 @@ class NavilivePreferencesStore(
         }
     }
 
+    suspend fun setDownloadedUpdate(apkPath: String, versionLabel: String) {
+        context.dataStore.edit { prefs ->
+            prefs[Keys.DownloadedUpdateApkPath] = apkPath
+            prefs[Keys.DownloadedUpdateVersionLabel] = versionLabel
+        }
+    }
+
+    suspend fun clearDownloadedUpdate() {
+        context.dataStore.edit { prefs ->
+            prefs.remove(Keys.DownloadedUpdateApkPath)
+            prefs.remove(Keys.DownloadedUpdateVersionLabel)
+        }
+    }
+
     private fun mapPreferences(preferences: Preferences): PersistedNaviliveState {
         return PersistedNaviliveState(
             favoriteIds = preferences[Keys.FavoriteIds] ?: defaultFavoriteIds,
@@ -138,6 +154,8 @@ class NavilivePreferencesStore(
                 speechRatePercent = preferences[Keys.SpeechRatePercent] ?: SettingsState().speechRatePercent,
                 speechVolumePercent = preferences[Keys.SpeechVolumePercent] ?: SettingsState().speechVolumePercent,
             ),
+            downloadedUpdateApkPath = preferences[Keys.DownloadedUpdateApkPath],
+            downloadedUpdateVersionLabel = preferences[Keys.DownloadedUpdateVersionLabel],
         )
     }
 
@@ -154,5 +172,7 @@ class NavilivePreferencesStore(
         val SelectedSystemTtsEnginePackage = stringPreferencesKey("selected_system_tts_engine_package")
         val SpeechRatePercent = intPreferencesKey("speech_rate_percent")
         val SpeechVolumePercent = intPreferencesKey("speech_volume_percent")
+        val DownloadedUpdateApkPath = stringPreferencesKey("downloaded_update_apk_path")
+        val DownloadedUpdateVersionLabel = stringPreferencesKey("downloaded_update_version_label")
     }
 }

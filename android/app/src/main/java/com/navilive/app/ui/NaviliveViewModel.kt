@@ -1,6 +1,8 @@
 package com.navilive.app.ui
 
 import android.app.Application
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,9 +12,12 @@ import com.navilive.app.data.location.LocationTrackerStore
 import com.navilive.app.data.preferences.NavilivePreferencesStore
 import com.navilive.app.data.routing.OpenStreetRoutingRepository
 import com.navilive.app.data.telemetry.NavigationTelemetryLogger
+import com.navilive.app.data.update.GitHubUpdateRepository
 import com.navilive.app.guidance.GuidanceFeedbackEngine
 import com.navilive.app.i18n.localizedLanguageDisplayName
 import com.navilive.app.model.ActiveNavigationState
+import com.navilive.app.model.AppUpdatePhase
+import com.navilive.app.model.AppUpdateState
 import com.navilive.app.model.GeoPoint
 import com.navilive.app.model.HeadingState
 import com.navilive.app.model.LocationFix
@@ -30,6 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 import kotlin.math.roundToInt
 
 private data class RouteSession(
@@ -57,6 +63,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
     )
     private val feedbackEngine = GuidanceFeedbackEngine(appContext)
     private val telemetryLogger = NavigationTelemetryLogger(appContext)
+    private val updateRepository = GitHubUpdateRepository()
 
     private val headingSequence = listOf(
         HeadingState(
@@ -79,6 +86,8 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
     private var headingIndex = 0
     private var searchJob: Job? = null
     private var reverseGeocodeJob: Job? = null
+    private var updateCheckJob: Job? = null
+    private var updateDownloadJob: Job? = null
     private val routeCache = mutableMapOf<String, RouteSummary>()
     private var lastReversePoint: GeoPoint? = null
     private var lastReverseTimestampMs: Long = 0L
@@ -102,6 +111,7 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                 SettingsState(language = systemLanguageDisplayName()),
             ),
             diagnosticsState = telemetryLogger.snapshotState(),
+            appUpdateState = initialAppUpdateState(),
             statusMessage = string(R.string.location_status_ready_title),
         ),
     )
@@ -111,13 +121,20 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
         observePreferencesStore()
         observeLocationStore()
         refreshDiagnosticsState()
+        refreshUpdateRuntimeState()
     }
 
     private fun observePreferencesStore() {
         viewModelScope.launch {
             preferencesStore.state.collect { persisted ->
+                val currentVersionLabel = currentAppVersionLabel()
                 val sanitizedFavoriteIds = persisted.favoriteIds - retiredDemoPlaceIds
                 val sanitizedLastRoutePlaceId = persisted.lastRoutePlaceId?.takeUnless { it in retiredDemoPlaceIds }
+                val sanitizedDownloadedUpdate = sanitizePersistedDownloadedUpdate(
+                    currentVersionLabel = currentVersionLabel,
+                    apkPath = persisted.downloadedUpdateApkPath,
+                    versionLabel = persisted.downloadedUpdateVersionLabel,
+                )
                 if (
                     sanitizedFavoriteIds != persisted.favoriteIds ||
                     sanitizedLastRoutePlaceId != persisted.lastRoutePlaceId
@@ -125,11 +142,64 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
                     preferencesStore.setFavoriteIds(sanitizedFavoriteIds)
                     preferencesStore.setLastRoutePlaceId(sanitizedLastRoutePlaceId)
                 }
+                if (
+                    sanitizedDownloadedUpdate.apkPath != persisted.downloadedUpdateApkPath ||
+                    sanitizedDownloadedUpdate.versionLabel != persisted.downloadedUpdateVersionLabel
+                ) {
+                    val stalePath = persisted.downloadedUpdateApkPath
+                    if (
+                        stalePath != null &&
+                        stalePath != sanitizedDownloadedUpdate.apkPath &&
+                        File(stalePath).exists()
+                    ) {
+                        File(stalePath).delete()
+                    }
+                    if (
+                        sanitizedDownloadedUpdate.apkPath != null &&
+                        sanitizedDownloadedUpdate.versionLabel != null
+                    ) {
+                        preferencesStore.setDownloadedUpdate(
+                            apkPath = sanitizedDownloadedUpdate.apkPath,
+                            versionLabel = sanitizedDownloadedUpdate.versionLabel,
+                        )
+                    } else {
+                        preferencesStore.clearDownloadedUpdate()
+                    }
+                }
                 _uiState.update { current ->
                     current.copy(
                         favoriteIds = sanitizedFavoriteIds,
                         lastRoutePlaceId = sanitizedLastRoutePlaceId,
                         settingsState = synchronizeSpeechSettings(persisted.settingsState),
+                        appUpdateState = current.appUpdateState.copy(
+                            currentVersionLabel = currentVersionLabel,
+                            downloadedApkPath = sanitizedDownloadedUpdate.apkPath,
+                            downloadedVersionLabel = sanitizedDownloadedUpdate.versionLabel,
+                            canRequestPackageInstalls = canRequestPackageInstalls(),
+                            phase = when {
+                                current.appUpdateState.phase == AppUpdatePhase.Downloading ->
+                                    AppUpdatePhase.Downloading
+                                sanitizedDownloadedUpdate.apkPath != null &&
+                                    sanitizedDownloadedUpdate.versionLabel != null ->
+                                    AppUpdatePhase.ReadyToInstall
+                                current.appUpdateState.phase == AppUpdatePhase.ReadyToInstall ->
+                                    AppUpdatePhase.Idle
+                                else -> current.appUpdateState.phase
+                            },
+                            statusMessage = when {
+                                current.appUpdateState.phase == AppUpdatePhase.Downloading ->
+                                    current.appUpdateState.statusMessage
+                                sanitizedDownloadedUpdate.apkPath != null &&
+                                    sanitizedDownloadedUpdate.versionLabel != null ->
+                                    string(
+                                        R.string.format_update_ready_to_install,
+                                        sanitizedDownloadedUpdate.versionLabel,
+                                    )
+                                current.appUpdateState.phase == AppUpdatePhase.ReadyToInstall ->
+                                    string(R.string.update_status_idle)
+                                else -> current.appUpdateState.statusMessage
+                            },
+                        ),
                         hasCompletedOnboarding = persisted.hasCompletedOnboarding,
                         isPreferencesLoaded = true,
                     )
@@ -142,6 +212,63 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
 
     private fun systemLanguageDisplayName(): String =
         localizedLanguageDisplayName(appContext.resources.configuration)
+
+    private fun initialAppUpdateState(): AppUpdateState {
+        return AppUpdateState(
+            currentVersionLabel = currentAppVersionLabel(),
+            statusMessage = string(R.string.update_status_idle),
+            canRequestPackageInstalls = canRequestPackageInstalls(),
+        )
+    }
+
+    private fun currentAppVersionLabel(): String {
+        val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            appContext.packageManager.getPackageInfo(
+                appContext.packageName,
+                PackageManager.PackageInfoFlags.of(0),
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            appContext.packageManager.getPackageInfo(appContext.packageName, 0)
+        }
+        val versionName = packageInfo.versionName?.takeIf { it.isNotBlank() }
+        return versionName ?: packageInfo.versionCode.toString()
+    }
+
+    private fun canRequestPackageInstalls(): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
+            appContext.packageManager.canRequestPackageInstalls()
+    }
+
+    private fun updatesDirectory(): File = File(appContext.filesDir, "debug/updates")
+
+    private data class DownloadedUpdateSnapshot(
+        val apkPath: String?,
+        val versionLabel: String?,
+    )
+
+    private fun sanitizePersistedDownloadedUpdate(
+        currentVersionLabel: String,
+        apkPath: String?,
+        versionLabel: String?,
+    ): DownloadedUpdateSnapshot {
+        val existingPath = apkPath?.takeIf { File(it).exists() }
+        val existingVersion = versionLabel?.takeIf { it.isNotBlank() }
+        val canInstall = existingPath != null &&
+            existingVersion != null &&
+            updateRepository.compareVersions(
+                currentVersionLabel = currentVersionLabel,
+                remoteVersionLabel = existingVersion,
+            ) > 0
+        return if (canInstall) {
+            DownloadedUpdateSnapshot(
+                apkPath = existingPath,
+                versionLabel = existingVersion,
+            )
+        } else {
+            DownloadedUpdateSnapshot(apkPath = null, versionLabel = null)
+        }
+    }
 
     private fun observeLocationStore() {
         viewModelScope.launch {
@@ -802,6 +929,211 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun refreshUpdateRuntimeState() {
+        _uiState.update { current ->
+            val downloadedPath = current.appUpdateState.downloadedApkPath
+                ?.takeIf { File(it).exists() }
+            current.copy(
+                appUpdateState = current.appUpdateState.copy(
+                    currentVersionLabel = currentAppVersionLabel(),
+                    downloadedApkPath = downloadedPath,
+                    downloadedVersionLabel = downloadedVersionLabelOrNull(
+                        current.appUpdateState.downloadedVersionLabel,
+                        downloadedPath,
+                    ),
+                    canRequestPackageInstalls = canRequestPackageInstalls(),
+                    statusMessage = when {
+                        current.appUpdateState.phase == AppUpdatePhase.ReadyToInstall && downloadedPath != null ->
+                            string(
+                                R.string.format_update_ready_to_install,
+                                current.appUpdateState.downloadedVersionLabel
+                                    ?: current.appUpdateState.latestVersionLabel
+                                    ?: currentAppVersionLabel(),
+                            )
+                        current.appUpdateState.phase == AppUpdatePhase.Idle ->
+                            string(R.string.update_status_idle)
+                        else -> current.appUpdateState.statusMessage
+                    },
+                ),
+            )
+        }
+    }
+
+    fun checkForAppUpdates() {
+        updateCheckJob?.cancel()
+        updateCheckJob = viewModelScope.launch {
+            val currentVersion = currentAppVersionLabel()
+            _uiState.update { current ->
+                current.copy(
+                    appUpdateState = current.appUpdateState.copy(
+                        currentVersionLabel = currentVersion,
+                        phase = AppUpdatePhase.Checking,
+                        statusMessage = string(R.string.update_status_checking),
+                        downloadProgressPercent = null,
+                        canRequestPackageInstalls = canRequestPackageInstalls(),
+                    ),
+                )
+            }
+            try {
+                val release = updateRepository.fetchLatestRelease()
+                val isRemoteNewer = updateRepository.compareVersions(
+                    currentVersionLabel = currentVersion,
+                    remoteVersionLabel = release.versionLabel,
+                ) > 0
+                _uiState.update { current ->
+                    val downloadedPath = current.appUpdateState.downloadedApkPath
+                        ?.takeIf { File(it).exists() }
+                    val alreadyDownloaded = downloadedPath != null &&
+                        current.appUpdateState.downloadedVersionLabel == release.versionLabel
+                    current.copy(
+                        appUpdateState = current.appUpdateState.copy(
+                            currentVersionLabel = currentVersion,
+                            latestVersionLabel = release.versionLabel,
+                            latestAssetName = release.asset.name,
+                            latestAssetDownloadUrl = release.asset.downloadUrl,
+                            releaseNotes = release.body,
+                            releasePageUrl = release.htmlUrl,
+                            phase = when {
+                                alreadyDownloaded -> AppUpdatePhase.ReadyToInstall
+                                isRemoteNewer -> AppUpdatePhase.Available
+                                else -> AppUpdatePhase.UpToDate
+                            },
+                            downloadedApkPath = downloadedPath,
+                            statusMessage = when {
+                                alreadyDownloaded -> string(
+                                    R.string.format_update_ready_to_install,
+                                    release.versionLabel,
+                                )
+                                isRemoteNewer -> string(
+                                    R.string.format_update_available,
+                                    release.versionLabel,
+                                )
+                                else -> string(
+                                    R.string.format_update_up_to_date,
+                                    currentVersion,
+                                )
+                            },
+                        ),
+                    )
+                }
+            } catch (error: Exception) {
+                _uiState.update { current ->
+                    current.copy(
+                        appUpdateState = current.appUpdateState.copy(
+                            currentVersionLabel = currentVersion,
+                            phase = AppUpdatePhase.Error,
+                            statusMessage = string(
+                                R.string.format_update_check_failed,
+                                error.message ?: error.javaClass.simpleName,
+                            ),
+                        ),
+                    )
+                }
+            }
+        }
+    }
+
+    fun downloadAvailableUpdate() {
+        val updateState = _uiState.value.appUpdateState
+        val assetUrl = updateState.latestAssetDownloadUrl ?: return
+        val assetName = updateState.latestAssetName ?: "navilive-update.apk"
+        val versionLabel = updateState.latestVersionLabel ?: return
+        updateDownloadJob?.cancel()
+        updateDownloadJob = viewModelScope.launch {
+            _uiState.update { current ->
+                current.copy(
+                    appUpdateState = current.appUpdateState.copy(
+                        phase = AppUpdatePhase.Downloading,
+                        statusMessage = string(R.string.format_update_downloading, versionLabel),
+                        downloadProgressPercent = 0,
+                    ),
+                )
+            }
+            try {
+                val sanitizedVersion = versionLabel.replace(Regex("""[^0-9A-Za-z._-]"""), "_")
+                val baseName = assetName.substringBeforeLast(".apk", assetName)
+                val destination = File(
+                    updatesDirectory(),
+                    "${baseName}_$sanitizedVersion.apk",
+                )
+                val downloaded = updateRepository.downloadReleaseAsset(
+                    asset = com.navilive.app.data.update.GitHubReleaseAsset(
+                        name = assetName,
+                        downloadUrl = assetUrl,
+                        sizeBytes = 0L,
+                    ),
+                    destination = destination,
+                    onProgress = { progress ->
+                        _uiState.update { current ->
+                            current.copy(
+                                appUpdateState = current.appUpdateState.copy(
+                                    phase = AppUpdatePhase.Downloading,
+                                    downloadProgressPercent = progress,
+                                    statusMessage = if (progress == null) {
+                                        string(R.string.format_update_downloading, versionLabel)
+                                    } else {
+                                        string(R.string.format_update_downloading_progress, progress)
+                                    },
+                                ),
+                            )
+                        }
+                    },
+                )
+                _uiState.update { current ->
+                    current.copy(
+                        appUpdateState = current.appUpdateState.copy(
+                            phase = AppUpdatePhase.ReadyToInstall,
+                            downloadedApkPath = downloaded.absolutePath,
+                            downloadedVersionLabel = versionLabel,
+                            downloadProgressPercent = 100,
+                            canRequestPackageInstalls = canRequestPackageInstalls(),
+                            statusMessage = string(
+                                R.string.format_update_ready_to_install,
+                                versionLabel,
+                            ),
+                        ),
+                    )
+                }
+                preferencesStore.setDownloadedUpdate(
+                    apkPath = downloaded.absolutePath,
+                    versionLabel = versionLabel,
+                )
+            } catch (error: Exception) {
+                _uiState.update { current ->
+                    current.copy(
+                        appUpdateState = current.appUpdateState.copy(
+                            phase = AppUpdatePhase.Error,
+                            downloadProgressPercent = null,
+                            statusMessage = string(
+                                R.string.format_update_download_failed,
+                                error.message ?: error.javaClass.simpleName,
+                            ),
+                        ),
+                    )
+                }
+            }
+        }
+    }
+
+    fun markUpdateInstallStarted() {
+        val versionLabel = _uiState.value.appUpdateState.downloadedVersionLabel
+            ?: _uiState.value.appUpdateState.latestVersionLabel
+            ?: currentAppVersionLabel()
+        _uiState.update { current ->
+            current.copy(
+                appUpdateState = current.appUpdateState.copy(
+                    phase = AppUpdatePhase.ReadyToInstall,
+                    canRequestPackageInstalls = canRequestPackageInstalls(),
+                    statusMessage = if (canRequestPackageInstalls()) {
+                        string(R.string.format_update_install_started, versionLabel)
+                    } else {
+                        string(R.string.update_status_install_permission_required)
+                    },
+                ),
+            )
+        }
+    }
+
     fun exportDiagnostics() {
         viewModelScope.launch {
             try {
@@ -1105,6 +1437,13 @@ class NaviliveViewModel(application: Application) : AndroidViewModel(application
         _uiState.update { current ->
             current.copy(diagnosticsState = diagnosticsState)
         }
+    }
+
+    private fun downloadedVersionLabelOrNull(
+        versionLabel: String?,
+        downloadedPath: String?,
+    ): String? {
+        return if (downloadedPath != null && File(downloadedPath).exists()) versionLabel else null
     }
 
     private fun synchronizeSpeechSettings(settings: SettingsState): SettingsState {

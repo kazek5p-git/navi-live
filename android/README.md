@@ -16,6 +16,7 @@ This directory contains the first working Android implementation for `navilive`:
 - Debug telemetry buffer with export and share from Settings
 - Blueprint-aligned accessibility-first screen hierarchy
 - Automatic localization from the phone language with European locale coverage
+- GitHub Releases updater with in-app check, APK download and installer handoff
 - Build confirmed with `assembleDebug`
 
 ## Requirements
@@ -77,3 +78,6 @@ Current Android MVP now follows the local `NAVILIVE_UX_BLUEPRINT.md` more closel
 - TTS/haptic feedback is handled by `GuidanceFeedbackEngine`.
 - Live route progression, step changes and off-route logic are coordinated in `NaviliveViewModel`.
 - Navigation telemetry is buffered by `NavigationTelemetryLogger` and can be exported from `Settings`.
+- App updates are fetched from GitHub Releases by `GitHubUpdateRepository`.
+- Downloaded update APKs are stored under app-internal `files/debug/updates` and persisted across app restarts until installed or superseded.
+- Installation is handed off to the Android package installer through the app `FileProvider`.

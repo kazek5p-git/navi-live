@@ -4,20 +4,24 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.speech.tts.TextToSpeech
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -47,6 +51,7 @@ import java.io.File
 fun NaviliveNavHost(viewModel: NaviliveViewModel) {
     val navController = rememberNavController()
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
     var hasLocationPermission by remember {
@@ -336,11 +341,25 @@ fun NaviliveNavHost(viewModel: NaviliveViewModel) {
         }
 
         composable(Routes.Settings) {
+            DisposableEffect(lifecycleOwner) {
+                val observer = LifecycleEventObserver { _, event ->
+                    if (event == Lifecycle.Event.ON_RESUME) {
+                        viewModel.refreshSpeechRuntimeState()
+                        viewModel.refreshUpdateRuntimeState()
+                    }
+                }
+                lifecycleOwner.lifecycle.addObserver(observer)
+                onDispose {
+                    lifecycleOwner.lifecycle.removeObserver(observer)
+                }
+            }
             LaunchedEffect(Unit) {
                 viewModel.refreshSpeechRuntimeState()
+                viewModel.refreshUpdateRuntimeState()
             }
             SettingsScreen(
                 state = uiState.value.settingsState,
+                updateState = uiState.value.appUpdateState,
                 diagnosticsState = uiState.value.diagnosticsState,
                 onVibrationChange = viewModel::setVibration,
                 onAutoRecalculateChange = viewModel::setAutoRecalculate,
@@ -354,6 +373,19 @@ fun NaviliveNavHost(viewModel: NaviliveViewModel) {
                 onSpeechRateChange = viewModel::setSpeechRatePercent,
                 onSpeechVolumeChange = viewModel::setSpeechVolumePercent,
                 onPreviewSpeech = viewModel::previewSpeechOutput,
+                onCheckForUpdates = viewModel::checkForAppUpdates,
+                onDownloadUpdate = viewModel::downloadAvailableUpdate,
+                onInstallDownloadedUpdate = { apkPath ->
+                    if (installDownloadedApk(context, apkPath)) {
+                        viewModel.markUpdateInstallStarted()
+                    }
+                },
+                onOpenReleasePage = { releaseUrl ->
+                    openExternalUrl(context, releaseUrl)
+                },
+                onOpenUnknownSourcesSettings = {
+                    openUnknownAppSourcesSettings(context)
+                },
                 onExportDiagnostics = viewModel::exportDiagnostics,
                 onClearDiagnostics = viewModel::clearDiagnostics,
                 onShareDiagnostics = uiState.value.diagnosticsState.lastExportPath?.let { exportPath ->
@@ -426,4 +458,54 @@ private fun openSystemTtsSettings(context: Context) {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     } ?: return
     context.startActivity(launchIntent)
+}
+
+private fun openUnknownAppSourcesSettings(context: Context) {
+    val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        Intent(
+            Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+            Uri.parse("package:${context.packageName}"),
+        )
+    } else {
+        Intent(Settings.ACTION_SECURITY_SETTINGS)
+    }.apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    context.startActivity(intent)
+}
+
+private fun openExternalUrl(context: Context, url: String) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    if (intent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(intent)
+    }
+}
+
+private fun installDownloadedApk(context: Context, apkPath: String): Boolean {
+    val apkFile = File(apkPath)
+    if (!apkFile.exists()) return false
+    val uri = FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider",
+        apkFile,
+    )
+    val installIntent = Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
+        data = uri
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+        putExtra(Intent.EXTRA_RETURN_RESULT, false)
+    }
+    val fallbackIntent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(uri, "application/vnd.android.package-archive")
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    val launchIntent = listOf(installIntent, fallbackIntent).firstOrNull { intent ->
+        intent.resolveActivity(context.packageManager) != null
+    } ?: return false
+    context.startActivity(launchIntent)
+    return true
 }

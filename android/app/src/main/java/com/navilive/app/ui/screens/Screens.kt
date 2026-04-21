@@ -77,9 +77,12 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.navilive.app.R
 import com.navilive.app.model.ActiveNavigationState
+import com.navilive.app.model.AppUpdatePhase
+import com.navilive.app.model.AppUpdateState
 import com.navilive.app.model.DiagnosticsState
 import com.navilive.app.model.HeadingState
 import com.navilive.app.model.Place
@@ -1001,6 +1004,7 @@ fun FavoritesScreen(
 @Composable
 fun SettingsScreen(
     state: SettingsState,
+    updateState: AppUpdateState,
     diagnosticsState: DiagnosticsState,
     onVibrationChange: (Boolean) -> Unit,
     onAutoRecalculateChange: (Boolean) -> Unit,
@@ -1012,6 +1016,11 @@ fun SettingsScreen(
     onSpeechRateChange: (Int) -> Unit,
     onSpeechVolumeChange: (Int) -> Unit,
     onPreviewSpeech: () -> Unit,
+    onCheckForUpdates: () -> Unit,
+    onDownloadUpdate: () -> Unit,
+    onInstallDownloadedUpdate: (String) -> Unit,
+    onOpenReleasePage: (String) -> Unit,
+    onOpenUnknownSourcesSettings: () -> Unit,
     onExportDiagnostics: () -> Unit,
     onClearDiagnostics: () -> Unit,
     onShareDiagnostics: (() -> Unit)?,
@@ -1102,6 +1111,15 @@ fun SettingsScreen(
                 description = stringResource(R.string.settings_junction_alerts_message),
                 checked = state.junctionAlerts,
                 onCheckedChange = onJunctionAlertChange,
+            )
+
+            AppUpdateCard(
+                updateState = updateState,
+                onCheckForUpdates = onCheckForUpdates,
+                onDownloadUpdate = onDownloadUpdate,
+                onInstallDownloadedUpdate = onInstallDownloadedUpdate,
+                onOpenReleasePage = onOpenReleasePage,
+                onOpenUnknownSourcesSettings = onOpenUnknownSourcesSettings,
             )
 
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
@@ -1636,6 +1654,135 @@ private fun SettingsToggleCard(
                 Switch(checked = checked, onCheckedChange = onCheckedChange)
             }
             Text(description, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+@Composable
+private fun AppUpdateCard(
+    updateState: AppUpdateState,
+    onCheckForUpdates: () -> Unit,
+    onDownloadUpdate: () -> Unit,
+    onInstallDownloadedUpdate: (String) -> Unit,
+    onOpenReleasePage: (String) -> Unit,
+    onOpenUnknownSourcesSettings: () -> Unit,
+) {
+    val latestVersionLabel = updateState.latestVersionLabel
+        ?: updateState.downloadedVersionLabel
+        ?: stringResource(R.string.settings_updates_not_checked)
+    val isBusy = updateState.phase == AppUpdatePhase.Checking || updateState.phase == AppUpdatePhase.Downloading
+
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            SectionHeading(stringResource(R.string.settings_updates_title))
+            Text(
+                text = stringResource(R.string.settings_updates_message),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            LabelValue(
+                label = stringResource(R.string.settings_updates_current_version),
+                value = updateState.currentVersionLabel,
+            )
+            LabelValue(
+                label = stringResource(R.string.settings_updates_latest_version),
+                value = latestVersionLabel,
+            )
+            updateState.latestAssetName?.let { assetName ->
+                LabelValue(
+                    label = stringResource(R.string.settings_updates_asset),
+                    value = assetName,
+                )
+            }
+            Text(
+                text = updateState.statusMessage,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+            )
+            if (updateState.phase == AppUpdatePhase.Downloading) {
+                val progress = (updateState.downloadProgressPercent ?: 0).coerceIn(0, 100)
+                LabelValue(
+                    label = stringResource(R.string.settings_updates_progress),
+                    value = stringResource(R.string.format_percent_value, progress),
+                )
+                LinearProgressIndicator(
+                    progress = progress / 100f,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            if (updateState.latestVersionLabel != null) {
+                HorizontalDivider()
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(
+                        text = stringResource(R.string.settings_updates_release_notes),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        text = updateState.releaseNotes.ifBlank {
+                            stringResource(R.string.settings_updates_release_notes_empty)
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 8,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            FilledTonalButton(
+                onClick = onCheckForUpdates,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isBusy,
+            ) {
+                Icon(Icons.Filled.Refresh, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.settings_updates_check))
+            }
+            if (updateState.phase == AppUpdatePhase.Available) {
+                Button(
+                    onClick = onDownloadUpdate,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Icon(Icons.Filled.FileDownload, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.settings_updates_download))
+                }
+            }
+            if (updateState.phase == AppUpdatePhase.ReadyToInstall && updateState.downloadedApkPath != null) {
+                if (updateState.canRequestPackageInstalls) {
+                    Button(
+                        onClick = { onInstallDownloadedUpdate(updateState.downloadedApkPath) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Icon(Icons.Filled.CheckCircle, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.settings_updates_install))
+                    }
+                } else {
+                    OutlinedButton(
+                        onClick = onOpenUnknownSourcesSettings,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Icon(Icons.Filled.Settings, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.settings_updates_allow_installs))
+                    }
+                }
+            }
+            updateState.releasePageUrl?.let { releaseUrl ->
+                OutlinedButton(
+                    onClick = { onOpenReleasePage(releaseUrl) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Icon(Icons.Filled.Share, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.settings_updates_open_release))
+                }
+            }
         }
     }
 }
