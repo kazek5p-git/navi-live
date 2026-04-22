@@ -1,0 +1,91 @@
+name: iOS Simulator Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "native-ios/**"
+      - ".github/workflows/ios-simulator-tests.yml"
+
+jobs:
+  test-ios-simulator:
+    runs-on: macos-15
+    permissions:
+      contents: read
+    concurrency:
+      group: navi-live-ios-simulator-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Select Xcode 26 or newer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os
+          import re
+          import subprocess
+          import sys
+
+          apps = []
+          pattern = re.compile(r"Xcode(?:_([0-9]+(?:\.[0-9]+)*))?\.app$")
+
+          for name in os.listdir("/Applications"):
+              match = pattern.fullmatch(name)
+              if not match:
+                  continue
+              version_text = match.group(1)
+              if not version_text:
+                  continue
+              parts = tuple(int(part) for part in version_text.split("."))
+              apps.append((parts, f"/Applications/{name}"))
+
+          apps.sort()
+          selected = None
+          for parts, path in apps:
+              if parts[0] >= 26:
+                  selected = (parts, path)
+
+          if selected is None:
+              print("::error::Xcode 26 or newer is not installed on this runner.")
+              sys.exit(1)
+
+          version_parts, xcode_path = selected
+          developer_dir = f"{xcode_path}/Contents/Developer"
+          subprocess.run(["sudo", "xcode-select", "-s", developer_dir], check=True)
+          subprocess.run(["xcodebuild", "-version"], check=True)
+          PY
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: |
+          cd native-ios
+          xcodegen generate
+
+      - name: Run simulator tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project native-ios/NaviLive.xcodeproj \
+            -scheme NaviLive \
+            -destination "platform=iOS Simulator,name=iPhone 16" \
+            -derivedDataPath native-ios/build-sim \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            clean test | tee native-ios-simulator.log
+
+      - name: Upload simulator log
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: Navi-Live-ios-simulator-log
+          path: native-ios-simulator.log
+          if-no-files-found: warn
+          retention-days: 7

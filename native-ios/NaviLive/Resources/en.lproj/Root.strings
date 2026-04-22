@@ -1,0 +1,12 @@
+"root.title" = "Navi Live";
+"root.section.status" = "Status";
+"root.section.routes" = "Scaffold";
+"root.status.scaffold_ready" = "The native iOS scaffold is ready. Navigation, accessibility and TestFlight pipeline will be added in the next stages.";
+"root.status.scaffold_ready_hint" = "This status explains that the iPhone project skeleton was created successfully.";
+"root.link.onboarding" = "Onboarding";
+"root.link.home" = "Home";
+"root.link.settings" = "Settings";
+"root.placeholder.onboarding" = "Onboarding flow will be implemented in the next stage.";
+"root.placeholder.home" = "The home screen for walking navigation will be implemented in the next stage.";
+"root.placeholder.settings" = "Settings, privacy and accessibility controls will be implemented in the next stage.";
+"root.bootstrapping" = "Preparing Navi Live for the first launch.";

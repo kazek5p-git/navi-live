@@ -1,0 +1,16 @@
+"onboarding.title" = "Witamy";
+"onboarding.section.intro" = "O Navi Live";
+"onboarding.intro" = "Navi Live to aplikacja do pieszej nawigacji projektowana dla osób niewidomych i słabowidzących. Interfejs pozostaje prosty, akcje są duże, a prowadzenie z VoiceOver jest na pierwszym miejscu.";
+"onboarding.section.features" = "Co możesz zrobić";
+"onboarding.feature.search" = "Wyszukiwać pobliskie miejsca i cele.";
+"onboarding.feature.navigation" = "Przygotować trasę pieszą z czytelnym podsumowaniem.";
+"onboarding.feature.accessibility" = "Korzystać z natywnych kontrolek iPhone’a z przyjazną strukturą dla VoiceOver.";
+"onboarding.feature.favorites" = "Zapisywać często używane cele do ulubionych.";
+"onboarding.action.start" = "Przejdź do uprawnień";
+"onboarding.footer" = "Do samouczka możesz wrócić później z Ustawień.";
+"permissions.title" = "Dostęp do lokalizacji";
+"permissions.status.title" = "Potrzebne uprawnienie lokalizacji";
+"permissions.status.message" = "Zezwól na dostęp do lokalizacji, aby Navi Live mogło wyszukiwać pobliskie miejsca i przygotowywać trasy piesze od Twojej bieżącej pozycji.";
+"permissions.action.allow" = "Zezwól na lokalizację";
+"permissions.action.later" = "Kontynuuj na razie";
+"permissions.footer" = "Dostęp do lokalizacji możesz później zmienić w ustawieniach iPhone’a.";

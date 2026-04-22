@@ -1,0 +1,16 @@
+"onboarding.title" = "Welcome";
+"onboarding.section.intro" = "About Navi Live";
+"onboarding.intro" = "Navi Live is a walking navigation app designed for blind and low-vision users. The interface stays simple, the actions are large, and VoiceOver guidance remains central.";
+"onboarding.section.features" = "What you can do";
+"onboarding.feature.search" = "Search nearby places and destinations.";
+"onboarding.feature.navigation" = "Prepare a walking route with clear route summary.";
+"onboarding.feature.accessibility" = "Use native iPhone controls with VoiceOver-friendly structure.";
+"onboarding.feature.favorites" = "Save frequently used destinations as favorites.";
+"onboarding.action.start" = "Continue to permissions";
+"onboarding.footer" = "You can reopen onboarding guidance later from Settings.";
+"permissions.title" = "Location access";
+"permissions.status.title" = "Location permission needed";
+"permissions.status.message" = "Allow location access so Navi Live can find nearby places and prepare walking routes from your current position.";
+"permissions.action.allow" = "Allow location access";
+"permissions.action.later" = "Continue for now";
+"permissions.footer" = "You can change location access later in iPhone Settings.";
