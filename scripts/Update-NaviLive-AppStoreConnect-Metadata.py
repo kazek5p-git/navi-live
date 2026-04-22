@@ -73,6 +73,13 @@ def load_sectioned_text(path: Path) -> dict[str, str]:
     return sections
 
 
+def load_plain_text(path: Path) -> str:
+    text = path.read_text(encoding="utf-8").replace("\r\n", "\n").strip()
+    if not text:
+        raise RuntimeError(f"Expected non-empty text in {path}")
+    return text
+
+
 @dataclass
 class AscClient:
     key_id: str
@@ -173,6 +180,27 @@ def patch_beta_review_detail(client: AscClient, review_id: str, notes: str, firs
         }
     }
     client.request("PATCH", f"/v1/betaAppReviewDetails/{review_id}", payload)
+
+
+def get_beta_license_agreement(client: AscClient, app_id: str) -> dict[str, Any]:
+    result = client.request("GET", f"/v1/apps/{app_id}/betaLicenseAgreement")
+    data = result.get("data")
+    if not data:
+        raise RuntimeError("ASC app is missing betaLicenseAgreement.")
+    return data
+
+
+def patch_beta_license_agreement(client: AscClient, agreement_id: str, agreement_text: str) -> None:
+    payload = {
+        "data": {
+            "type": "betaLicenseAgreements",
+            "id": agreement_id,
+            "attributes": {
+                "agreementText": agreement_text,
+            },
+        }
+    }
+    client.request("PATCH", f"/v1/betaLicenseAgreements/{agreement_id}", payload)
 
 
 def get_beta_app_localizations(client: AscClient, app_id: str) -> dict[str, dict[str, Any]]:
@@ -339,6 +367,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--contact-first-name", default=DEFAULT_CONTACT_FIRST_NAME)
     parser.add_argument("--contact-last-name", default=DEFAULT_CONTACT_LAST_NAME)
     parser.add_argument("--contact-phone", default=DEFAULT_CONTACT_PHONE)
+    parser.add_argument("--no-beta-license", action="store_true")
     parser.add_argument("--no-build-localization", action="store_true")
     return parser
 
@@ -351,6 +380,7 @@ def main() -> int:
     beta_description = load_sectioned_text(asc_dir / "TestFlight-beta-description.txt")
     review_notes = load_sectioned_text(asc_dir / "TestFlight-review-notes-strict.txt")
     what_to_test = load_sectioned_text(asc_dir / "TestFlight-what-to-test.txt")
+    beta_license_agreement = load_plain_text(asc_dir / "Beta-License-Agreement.txt")
 
     key_path = Path(load_env_required("EXPO_ASC_API_KEY_PATH"))
     key_id = load_env_required("EXPO_ASC_KEY_ID")
@@ -361,6 +391,15 @@ def main() -> int:
     app = get_app(client, args.bundle_id)
     app_id = app["id"]
     print(f"Resolved ASC app: {app_id} ({app['attributes']['name']})")
+
+    if not args.no_beta_license:
+        beta_license = get_beta_license_agreement(client, app_id)
+        patch_beta_license_agreement(
+            client=client,
+            agreement_id=beta_license["id"],
+            agreement_text=beta_license_agreement,
+        )
+        print("Updated beta license agreement.")
 
     review = get_beta_review_detail(client, app_id)
     patch_beta_review_detail(

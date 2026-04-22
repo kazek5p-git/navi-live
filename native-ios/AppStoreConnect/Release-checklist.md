@@ -6,8 +6,9 @@
 2. Confirm `native-ios` builds cleanly in CI.
 3. Confirm the signed workflow secrets are still present in GitHub.
 4. Review `TestFlight-beta-description.txt` and `TestFlight-what-to-test.txt`.
-5. Review `TestFlight-review-notes.txt` and `TestFlight-review-notes-strict.txt`.
-6. Re-check `App-Privacy-draft.md` against the current app behavior.
+5. Review `Beta-License-Agreement.txt`.
+6. Review `TestFlight-review-notes.txt` and `TestFlight-review-notes-strict.txt`.
+7. Re-check `App-Privacy-draft.md` against the current app behavior.
 
 ## Workflow
 
@@ -21,4 +22,5 @@
 2. Verify the new build appears in TestFlight processing.
 3. Paste the current tester notes from `TestFlight-what-to-test.txt`.
 4. Paste review notes if App Review requests extra information.
-5. Confirm external tester groups before distributing the build.
+5. Confirm the `Beta License Agreement` still matches the current beta scope and privacy link.
+6. Confirm external tester groups before distributing the build.

@@ -1,0 +1,79 @@
+ENGLISH
+
+Navi Live Beta License Agreement
+
+This beta version of Navi Live is licensed, not sold, to you by the developer for testing and evaluation through TestFlight.
+
+1. License scope
+You are granted a limited, non-exclusive, non-transferable, revocable license to install and use this beta build on Apple-branded devices that you own or control, only as permitted by Apple, TestFlight, and applicable law.
+
+2. Beta status
+This is pre-release software. It may contain errors, interruptions, inaccurate guidance, incomplete accessibility behavior, or other defects. Features may change or be removed at any time.
+
+3. No safety-critical or emergency use
+Navi Live is not an emergency, rescue, dispatch, or life-safety service. Do not rely on this beta as your only source of navigation or situational awareness. Always use your own judgment and follow real-world conditions, traffic rules, and accessibility cues.
+
+4. Location and network services
+The beta uses device location and network-based services for nearby search, route generation, live navigation, and address lookup. Search and routing results may be delayed, unavailable, incomplete, or inaccurate.
+
+5. Restrictions
+Except where applicable law clearly allows it, you may not copy, redistribute, sublicense, modify, decompile, reverse engineer, or create derivative works from the beta build.
+
+6. Feedback
+If you choose to send feedback, crash reports, suggestions, or test notes, you grant the developer a worldwide, non-exclusive, royalty-free right to use that feedback to improve Navi Live without additional compensation to you.
+
+7. Availability and termination
+The developer may update, suspend, limit, or end this beta program or your access to it at any time.
+
+8. No warranty
+To the maximum extent permitted by law, this beta is provided "as is" and "as available", without warranties of any kind, including implied warranties of merchantability, fitness for a particular purpose, accuracy, availability, and non-infringement.
+
+9. Limitation of liability
+To the maximum extent permitted by law, the developer is not liable for indirect, incidental, special, consequential, or exemplary damages, loss of data, loss of profits, loss of navigation continuity, or personal inconvenience arising from use of this beta.
+
+10. Privacy
+Use of Navi Live is also subject to the current privacy policy:
+https://kazek5p-git.github.io/navi-live/privacy/
+
+11. Contact
+For TestFlight communication and support, use the contact details configured for Navi Live in App Store Connect.
+
+POLSKI
+
+Umowa licencyjna wersji beta Navi Live
+
+Ta wersja beta aplikacji Navi Live jest licencjonowana, a nie sprzedawana, przez dewelopera wyłącznie do testów i oceny za pośrednictwem TestFlight.
+
+1. Zakres licencji
+Otrzymujesz ograniczoną, niewyłączną, niezbywalną i odwoływalną licencję na instalację i używanie tej wersji beta na urządzeniach Apple, które posiadasz lub kontrolujesz, wyłącznie zgodnie z zasadami Apple, TestFlight oraz obowiązującym prawem.
+
+2. Status beta
+To jest oprogramowanie przedpremierowe. Może zawierać błędy, przerwy w działaniu, nieprecyzyjne wskazówki, niepełne zachowanie dostępności oraz inne wady. Funkcje mogą zostać zmienione lub usunięte w dowolnym momencie.
+
+3. Brak zastosowania krytycznego lub ratunkowego
+Navi Live nie jest usługą alarmową, ratunkową, dyspozytorską ani systemem bezpieczeństwa życia. Nie polegaj na tej wersji beta jako jedynym źródle nawigacji lub orientacji. Zawsze kieruj się własną oceną sytuacji oraz rzeczywistymi warunkami otoczenia, przepisami ruchu i wskazówkami dostępnościowymi.
+
+4. Lokalizacja i usługi sieciowe
+Wersja beta korzysta z lokalizacji urządzenia oraz usług sieciowych do wyszukiwania pobliskich miejsc, wyznaczania tras, aktywnej nawigacji i ustalania adresu. Wyniki wyszukiwania i routingu mogą być opóźnione, niedostępne, niepełne lub niedokładne.
+
+5. Ograniczenia
+Poza przypadkami wyraźnie dozwolonymi przez obowiązujące prawo nie wolno kopiować, rozpowszechniać, sublicencjonować, modyfikować, dekompilować, odtwarzać kodu źródłowego ani tworzyć utworów zależnych na podstawie tej wersji beta.
+
+6. Informacja zwrotna
+Jeżeli zdecydujesz się przesłać opinię, raport błędu, sugestię lub notatkę testową, udzielasz deweloperowi ogólnoświatowego, niewyłącznego i nieodpłatnego prawa do wykorzystania takiej informacji zwrotnej w celu rozwijania Navi Live bez dodatkowego wynagrodzenia dla Ciebie.
+
+7. Dostępność i zakończenie udziału
+Deweloper może w dowolnym momencie zaktualizować, zawiesić, ograniczyć albo zakończyć program beta lub Twój dostęp do niego.
+
+8. Brak gwarancji
+W maksymalnym zakresie dozwolonym przez prawo ta wersja beta jest dostarczana "w stanie takim, w jakim jest" oraz "w miarę dostępności", bez jakichkolwiek gwarancji, w tym dorozumianych gwarancji przydatności handlowej, przydatności do określonego celu, dokładności, dostępności oraz braku naruszeń praw.
+
+9. Ograniczenie odpowiedzialności
+W maksymalnym zakresie dozwolonym przez prawo deweloper nie odpowiada za szkody pośrednie, uboczne, szczególne, następcze lub przykładowe, utratę danych, utratę korzyści, utratę ciągłości nawigacji ani niedogodności wynikające z korzystania z tej wersji beta.
+
+10. Prywatność
+Korzystanie z Navi Live podlega również aktualnej polityce prywatności:
+https://kazek5p-git.github.io/navi-live/privacy/
+
+11. Kontakt
+Do komunikacji dotyczącej TestFlight i wsparcia używaj danych kontaktowych skonfigurowanych dla Navi Live w App Store Connect.

@@ -71,6 +71,14 @@ Source text for that page:
 
 - [Privacy-Policy-Text.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/Privacy-Policy-Text.md)
 
+### Beta License Agreement
+
+Recommended current value:
+
+- set a custom `Beta License Agreement` for TestFlight
+- use the full text from [Beta-License-Agreement.txt](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/Beta-License-Agreement.txt)
+- keep the production App Store EULA on the Apple standard agreement for now
+
 ## 2. App Information
 
 ### App Name
@@ -107,6 +115,18 @@ This is a legal confirmation, not a cosmetic field.
 Recommended only if true:
 
 - confirm that you have the rights or permissions required for all shipped assets, text, branding, and any third-party content your app accesses or displays under the applicable terms
+
+### License Agreement
+
+Recommended current position:
+
+- keep the default Apple standard EULA for the App Store product page
+- do not switch to a custom production EULA unless you have a specific business or legal reason
+- use the TestFlight-specific beta license agreement separately
+
+Reference note:
+
+- [Custom-License-Agreement-Draft.txt](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/Custom-License-Agreement-Draft.txt)
 
 ### Age Rating Questionnaire
 

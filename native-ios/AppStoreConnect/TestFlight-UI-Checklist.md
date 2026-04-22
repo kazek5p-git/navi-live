@@ -13,9 +13,10 @@ Use this after a successful upload finishes in GitHub Actions and the build star
 1. Open `Apps -> Navi Live -> TestFlight`.
 2. Paste `Beta App Description` from [AppStoreConnect-UI-Copy-Pack.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/AppStoreConnect-UI-Copy-Pack.md).
 3. Paste `What to Test` from [AppStoreConnect-UI-Copy-Pack.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/AppStoreConnect-UI-Copy-Pack.md).
-4. Fill `Feedback Email` with a real monitored address.
-5. Fill `Marketing URL` if it is empty.
-6. Save changes.
+4. Set `Beta License Agreement` from [Beta-License-Agreement.txt](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/Beta-License-Agreement.txt) or sync it through the metadata script.
+5. Fill `Feedback Email` with a real monitored address.
+6. Fill `Marketing URL` if it is empty.
+7. Save changes.
 
 ## Beta App Review Information
 
@@ -47,6 +48,7 @@ Use this after a successful upload finishes in GitHub Actions and the build star
 1. Confirm the privacy answers in [App-Privacy-draft.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/App-Privacy-draft.md) still match the current app behavior.
 2. Publish a stable public privacy policy page before App Store release.
 3. Use the text from [Privacy-Policy-Text.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/Privacy-Policy-Text.md) as the source.
+4. Keep the App Store production EULA on the standard Apple agreement unless you intentionally switch to a reviewed custom license later.
 
 ## After Distribution
 

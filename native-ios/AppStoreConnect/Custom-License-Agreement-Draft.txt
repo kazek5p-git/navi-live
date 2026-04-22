@@ -1,0 +1,23 @@
+ENGLISH
+
+Navi Live End User License Agreement Draft
+
+Use this draft only if you later decide to replace Apple's standard App Store EULA with a custom license agreement.
+
+Recommended current position:
+- keep Apple's standard EULA for the App Store product page
+- use the separate TestFlight beta license agreement for prerelease distribution
+
+If you later need a custom production EULA, prepare it from Apple's current minimum-term requirements and review it legally before publishing.
+
+POLSKI
+
+Szkic umowy licencyjnej użytkownika końcowego Navi Live
+
+Używaj tego szkicu tylko wtedy, gdy później zdecydujesz się zastąpić standardową licencję Apple dla App Store własną umową licencyjną.
+
+Obecnie rekomendowane podejście:
+- pozostawić standardową EULA Apple dla strony produktu w App Store
+- używać osobnej umowy licencyjnej wersji beta dla dystrybucji przedpremierowej w TestFlight
+
+Jeżeli później będzie potrzebna własna produkcyjna EULA, przygotuj ją w oparciu o aktualne minimalne wymagania Apple i przeprowadź jej przegląd prawny przed publikacją.
