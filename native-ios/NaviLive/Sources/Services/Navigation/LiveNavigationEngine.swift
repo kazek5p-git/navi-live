@@ -152,7 +152,7 @@ final class LiveNavigationEngine {
   private func resolveStepIndex(session: RouteSession, fix: LocationFix) -> Int {
     var index = session.currentStepIndex
     let threshold = maneuverAdvanceThresholdMeters(accuracyMeters: fix.accuracyMeters)
-    while index < session.steps.lastIndex {
+    while index < session.steps.count - 1 {
       guard let nextManeuver = session.steps[index + 1].maneuverPoint else { break }
       if fix.point.distance(to: nextManeuver) <= threshold {
         index += 1
