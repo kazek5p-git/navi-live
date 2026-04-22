@@ -1,0 +1,45 @@
+APP REVIEW / TESTFLIGHT REVIEW NOTES - FORMAL VERSION
+
+POLSKI
+
+Aplikacja nie wymaga logowania, danych demonstracyjnych, konta testowego, subskrypcji, płatności ani zakupów w aplikacji. Do recenzji nie jest potrzebny żaden dodatkowy sprzęt ani osobne konto użytkownika.
+
+Przeznaczenie aplikacji:
+Navi Live jest natywną aplikacją iOS do pieszej nawigacji. Została zaprojektowana z myślą o osobach niewidomych i słabowidzących. Główne funkcje obejmują wyszukiwanie miejsc, wyznaczanie trasy pieszej, ustawienie początkowego kierunku marszu oraz aktywną nawigację z instrukcjami głosowymi i haptycznymi.
+
+Sposób weryfikacji podstawowej funkcjonalności:
+1. Uruchomić aplikację i przyznać dostęp do lokalizacji.
+2. Otworzyć wyszukiwanie miejsca na ekranie głównym.
+3. Wyszukać realny adres lub nazwę miejsca i wybrać wynik.
+4. Otworzyć podsumowanie trasy.
+5. Przejść do ekranu ustawienia kierunku i rozpocząć aktywną nawigację.
+6. Zweryfikować komunikaty głosowe, stan trasy, dystans do kolejnego kroku i działanie po zejściu z trasy.
+
+Istotne informacje dla recenzji:
+- Aplikacja korzysta z publicznych usług geokodowania i routingu opartych o OpenStreetMap. Wyniki zależą od dostępności zewnętrznych usług sieciowych.
+- Aplikacja wykorzystuje lokalizację urządzenia wyłącznie do działania funkcji nawigacyjnych i wyszukiwania pobliskich miejsc.
+- Interfejs korzysta z natywnych kontrolek iOS. Obsługa VoiceOver jest celową częścią projektu.
+- Aplikacja nie zawiera mechanizmów płatności, zakupów w aplikacji ani rejestracji użytkowników.
+- Informacje pomocnicze i prywatności są dostępne w ustawieniach aplikacji.
+
+ENGLISH
+
+The app does not require login, demo credentials, a test account, a subscription, payment, or in-app purchases. No additional hardware or separate user account is required for review.
+
+App purpose:
+Navi Live is a native iOS walking navigation app. It is designed with blind and low-vision users in mind. Its main features include place search, walking route generation, initial heading alignment, and active navigation with spoken and haptic guidance.
+
+How to verify the core functionality:
+1. Launch the app and grant location access.
+2. Open place search from the home screen.
+3. Search for a real address or place and select a result.
+4. Open the route summary.
+5. Continue to heading alignment and start active navigation.
+6. Verify spoken guidance, route state, distance to the next step, and behavior after going off route.
+
+Important review information:
+- The app uses public geocoding and routing services based on OpenStreetMap. Results depend on the availability of third-party network services.
+- The app uses device location only to support navigation features and nearby place search.
+- The interface uses native iOS controls. VoiceOver support is an intentional part of the product.
+- The app does not include payments, in-app purchases, or user registration.
+- Help and privacy information are available in the app settings.

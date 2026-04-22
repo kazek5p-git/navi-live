@@ -1,0 +1,35 @@
+REVIEW NOTES - POLSKI
+
+Aplikacja nie wymaga logowania, konta testowego, subskrypcji, płatności ani zakupów w aplikacji. Nie jest wymagany żaden dodatkowy sprzęt. Jest to natywna aplikacja iOS do pieszej nawigacji, zbudowana z myślą o osobach niewidomych i słabowidzących.
+
+Jak testować:
+1. Pozwól aplikacji na dostęp do lokalizacji.
+2. Na ekranie głównym wybierz wyszukiwanie miejsca.
+3. Wpisz dowolny realny cel i otwórz podsumowanie trasy.
+4. Przejdź do ustawienia kierunku, a następnie uruchom aktywną nawigację.
+5. Podczas ruchu sprawdź instrukcje głosowe, dystans do kolejnego manewru i reakcję na zejście z trasy.
+
+Uwagi dla recenzji:
+- Aplikacja korzysta z bieżącej lokalizacji urządzenia do wyszukiwania pobliskich miejsc, wyznaczania tras pieszych i prowadzenia nawigacji.
+- Interfejs został zbudowany w oparciu o systemowe kontrolki iOS. VoiceOver jest wspierany celowo, a część komunikatów jest publikowana także jako ogłoszenia dostępności.
+- Aplikacja korzysta z publicznych usług geokodowania i routingu opartych o OpenStreetMap. Jeśli konkretne wyszukiwanie lub trasa chwilowo nie zwraca wyniku, proszę spróbować innego celu.
+- Aplikacja nie udostępnia zakupów, funkcji płatnych ani rejestracji użytkownika.
+- Ustawienia pomocy i prywatności są dostępne bezpośrednio w aplikacji.
+
+REVIEW NOTES - ENGLISH
+
+The app does not require login, a test account, a subscription, payment, or in-app purchases. No additional hardware is required. It is a native iOS walking navigation app designed with blind and low-vision users in mind.
+
+How to test:
+1. Allow the app to access location.
+2. From the home screen, open place search.
+3. Enter any real destination and open the route summary.
+4. Continue to heading alignment and start active navigation.
+5. While moving, verify spoken guidance, distance to the next maneuver, and off-route behavior.
+
+Notes for review:
+- The app uses current device location for nearby search, walking route generation, and live navigation.
+- The interface is built with standard iOS controls. VoiceOver support is intentional, and selected messages are also posted as accessibility announcements.
+- The app uses public geocoding and routing services based on OpenStreetMap. If a specific search or route temporarily fails, please try another destination.
+- The app does not provide in-app purchases, paid unlocks, or user registration.
+- Help and privacy information are available directly inside the app.

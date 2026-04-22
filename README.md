@@ -5,6 +5,7 @@
 Project structure:
 
 - `android/` - Android application source
+- `native-ios/` - native iOS application source, App Store Connect material, and iOS publishing docs
 - `NAVILIVE_SPEC.md` - product and architecture specification
 - `NAVILIVE_UX_BLUEPRINT.md` - UX blueprint reconstructed from archived ViaOpta materials
 - `NAVILIVE_ANDROID_BACKLOG.md` - current Android implementation backlog
@@ -29,6 +30,12 @@ GitHub release publish:
 
 ```powershell
 .\scripts\publish-github-release.ps1
+```
+
+iOS TestFlight publish:
+
+```powershell
+.\scripts\Publish-NaviLive-iOS-TestFlight.ps1
 ```
 
 Technical note:

@@ -23,6 +23,8 @@ Implemented and validated on GitHub Actions:
 - arrival screen
 - simulator test workflow
 - unsigned IPA workflow for Sideloadly
+- signed IPA workflow
+- TestFlight upload workflow
 
 ## Accessibility
 
@@ -59,6 +61,10 @@ Available GitHub Actions:
 - `.github/workflows/ios-signed-testflight.yml`
 - `.github/workflows/sync-xcodeproj.yml`
 
+Publishing helper:
+
+- [Publish-NaviLive-iOS-TestFlight.ps1](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/scripts/Publish-NaviLive-iOS-TestFlight.ps1)
+
 ## Sideloadly install
 
 Local helper:
@@ -73,15 +79,29 @@ This script:
 
 ## TestFlight readiness
 
-The signed/TestFlight workflow is ready in code, but this repo still needs GitHub secrets.
+The signed/TestFlight workflow is already configured and has been validated successfully.
+Metadata and review material are stored in:
 
-Required secrets:
+- [native-ios/AppStoreConnect/README.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/README.md)
+- [TestFlight-beta-description.txt](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/TestFlight-beta-description.txt)
+- [TestFlight-what-to-test.txt](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/TestFlight-what-to-test.txt)
+- [TestFlight-review-notes.txt](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/TestFlight-review-notes.txt)
+- [TestFlight-review-notes-strict.txt](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/TestFlight-review-notes-strict.txt)
+- [App-Privacy-draft.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/App-Privacy-draft.md)
+- [Release-checklist.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/Release-checklist.md)
+
+The workflow also overrides `CURRENT_PROJECT_VERSION` with the GitHub Actions run number so repeated TestFlight uploads do not reuse the same build number.
+
+Minimum required secrets for automatic signing/upload:
 
 - `ASC_KEY_ID`
 - `ASC_ISSUER_ID`
 - `ASC_API_KEY_BASE64`
 - `APPLE_TEAM_ID`
 - `KEYCHAIN_PASSWORD`
+
+Optional manual-signing secrets:
+
 - `IOS_DIST_CERT_P12_BASE64`
 - `IOS_DIST_CERT_PASSWORD`
 - `IOS_PROVISION_PROFILE_BASE64`
@@ -96,6 +116,12 @@ Recommended local env vars, matching the ListenSDR/TestFlight tooling:
 - `EXPO_ASC_KEY_ID`
 - `EXPO_ASC_ISSUER_ID`
 - `EXPO_APPLE_TEAM_ID`
+
+Recommended publish command:
+
+```powershell
+.\scripts\Publish-NaviLive-iOS-TestFlight.ps1
+```
 
 ## Bundle and scheme
 

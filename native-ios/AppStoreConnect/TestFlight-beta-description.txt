@@ -1,0 +1,29 @@
+POLSKI
+
+Navi Live to natywna aplikacja na iPhone’a przeznaczona do pieszej nawigacji dla osób niewidomych i słabowidzących. Interfejs został zbudowany w oparciu o systemowe kontrolki iOS, z naciskiem na prostotę, stabilność i dobrą współpracę z VoiceOver.
+
+Aplikacja pozwala wyszukiwać miejsca, wyznaczać trasy piesze, zapisywać ulubione cele i prowadzić użytkownika krok po kroku. Podczas aktywnej nawigacji pokazuje bieżącą instrukcję, następny manewr, dystans do kolejnego punktu i stan zejścia z trasy. Wspiera komunikaty głosowe, haptykę oraz ponowne przeliczanie trasy.
+
+W ustawieniach dostępne są opcje mowy, wibracji, samouczka, pomocy i prywatności. Aplikacja korzysta z lokalizacji urządzenia wyłącznie do wyszukiwania, wyznaczania trasy i prowadzenia nawigacji.
+
+To wydanie ma charakter beta. Najważniejsze cele testów to:
+- poprawność działania wyszukiwania i wyznaczania trasy,
+- czytelność komunikatów i wygoda obsługi z VoiceOver,
+- zachowanie aktywnej nawigacji podczas spaceru,
+- reakcja na zejście z trasy i automatyczne przeliczanie,
+- ogólna stabilność aplikacji.
+
+ENGLISH
+
+Navi Live is a native iPhone app for walking navigation focused on blind and low-vision users. The interface is built with standard iOS controls, with emphasis on simplicity, stability, and strong VoiceOver usability.
+
+The app lets users search for places, build walking routes, save favorite destinations, and follow turn-by-turn guidance. During active navigation it presents the current instruction, the next maneuver, distance to the next point, and off-route state. It supports spoken announcements, haptics, and route recalculation.
+
+Settings include speech, vibration, tutorial, help, and privacy options. The app uses device location only for nearby search, route building, and live navigation.
+
+This build is a beta release. The main testing goals are:
+- correctness of place search and route generation,
+- clarity of spoken guidance and VoiceOver behavior,
+- active navigation behavior during real walks,
+- off-route detection and automatic recalculation,
+- overall stability of the app.

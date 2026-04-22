@@ -1,0 +1,19 @@
+POLSKI
+
+Najważniejsze rzeczy do sprawdzenia w tej becie:
+1. Wyszukaj realny cel i uruchom trasę pieszą.
+2. Przejdź przez ekran ustawienia kierunku i rozpocznij aktywną nawigację.
+3. Sprawdź, czy VoiceOver czyta sensownie główne informacje i akcje.
+4. Oceń, czy instrukcje głosowe i haptyka pojawiają się we właściwym momencie.
+5. Zejdź na chwilę z trasy i sprawdź reakcję aplikacji.
+6. Sprawdź ustawienia mowy, samouczka, pomocy i prywatności.
+
+ENGLISH
+
+Main things to test in this beta:
+1. Search for a real destination and start a walking route.
+2. Go through heading alignment and begin active navigation.
+3. Check whether VoiceOver reads the main information and actions clearly.
+4. Verify whether spoken guidance and haptics happen at appropriate moments.
+5. Step away from the route briefly and observe the app response.
+6. Review speech, tutorial, help, and privacy settings.
