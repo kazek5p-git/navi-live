@@ -34,7 +34,7 @@ final class AppModel: ObservableObject {
   private var knownPlaces: [String: Place] = [:]
   private var cancellables: Set<AnyCancellable> = []
 
-  init() {
+  convenience init() {
     self.init(
       settingsStore: SettingsStore(),
       locationService: LocationService(),
