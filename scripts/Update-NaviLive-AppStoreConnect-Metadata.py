@@ -5,6 +5,7 @@ import argparse
 import base64
 import json
 import os
+import re
 import sys
 import time
 from dataclasses import dataclass
@@ -19,8 +20,8 @@ from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
 
 API_BASE = "https://api.appstoreconnect.apple.com"
 DEFAULT_BUNDLE_ID = "com.kazek.navilive"
-DEFAULT_MARKETING_VERSION = "1.0"
-DEFAULT_BUILD_NUMBER = "1"
+DEFAULT_MARKETING_VERSION = "1.0.1"
+DEFAULT_BUILD_NUMBER = "10"
 DEFAULT_REPO_URL = "https://github.com/kazek5p-git/navi-live"
 DEFAULT_PRIVACY_URL = "https://kazek5p-git.github.io/navi-live/privacy/"
 DEFAULT_FEEDBACK_EMAIL = "kazek5p@gmail.com"
@@ -78,6 +79,15 @@ def load_plain_text(path: Path) -> str:
     if not text:
         raise RuntimeError(f"Expected non-empty text in {path}")
     return text
+
+
+def load_project_versions(project_path: Path) -> tuple[str, str]:
+    text = project_path.read_text(encoding="utf-8").replace("\r\n", "\n")
+    marketing_match = re.search(r"^\s*MARKETING_VERSION:\s*\"?([^\"]+?)\"?\s*$", text, re.MULTILINE)
+    build_match = re.search(r"^\s*CURRENT_PROJECT_VERSION:\s*\"?([0-9]+)\"?\s*$", text, re.MULTILINE)
+    if not marketing_match or not build_match:
+        raise RuntimeError(f"Unable to resolve MARKETING_VERSION/CURRENT_PROJECT_VERSION from {project_path}")
+    return marketing_match.group(1).strip(), build_match.group(1).strip()
 
 
 @dataclass
@@ -359,8 +369,8 @@ def upsert_beta_build_localization(
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Sync Navi Live TestFlight/App Store Connect metadata.")
     parser.add_argument("--bundle-id", default=DEFAULT_BUNDLE_ID)
-    parser.add_argument("--marketing-version", default=DEFAULT_MARKETING_VERSION)
-    parser.add_argument("--build-number", default=DEFAULT_BUILD_NUMBER)
+    parser.add_argument("--marketing-version")
+    parser.add_argument("--build-number")
     parser.add_argument("--feedback-email", default=DEFAULT_FEEDBACK_EMAIL)
     parser.add_argument("--marketing-url", default=DEFAULT_REPO_URL)
     parser.add_argument("--privacy-url", default=DEFAULT_PRIVACY_URL)
@@ -376,6 +386,12 @@ def main() -> int:
     args = build_parser().parse_args()
     repo_root = Path(__file__).resolve().parents[1]
     asc_dir = repo_root / "native-ios" / "AppStoreConnect"
+    project_path = repo_root / "native-ios" / "project.yml"
+    project_marketing_version, project_build_number = load_project_versions(project_path)
+    if not args.marketing_version:
+        args.marketing_version = project_marketing_version
+    if not args.build_number:
+        args.build_number = project_build_number
 
     beta_description = load_sectioned_text(asc_dir / "TestFlight-beta-description.txt")
     review_notes = load_sectioned_text(asc_dir / "TestFlight-review-notes-strict.txt")

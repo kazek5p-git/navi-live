@@ -92,7 +92,16 @@ jobs:
           if [ -n "${{ github.event.inputs.build_number_override }}" ]; then
             echo "CI_BUILD_NUMBER=${{ github.event.inputs.build_number_override }}" >> "$GITHUB_ENV"
           else
-            echo "CI_BUILD_NUMBER=${{ github.run_number }}" >> "$GITHUB_ENV"
+            python3 - <<'PY' >> "$GITHUB_ENV"
+            import re
+            from pathlib import Path
+
+            project = Path("native-ios/project.yml").read_text(encoding="utf-8")
+            match = re.search(r"^\s*CURRENT_PROJECT_VERSION:\s*\"?([0-9]+)\"?\s*$", project, re.MULTILINE)
+            if not match:
+                raise SystemExit("Unable to resolve CURRENT_PROJECT_VERSION from native-ios/project.yml")
+            print(f"CI_BUILD_NUMBER={match.group(1)}")
+            PY
           fi
 
       - name: Validate required secrets

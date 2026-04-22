@@ -96,7 +96,7 @@ Metadata and review material are stored in:
 - [TestFlight-UI-Checklist.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/TestFlight-UI-Checklist.md)
 - [Release-checklist.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/Release-checklist.md)
 
-The workflow also overrides `CURRENT_PROJECT_VERSION` with the GitHub Actions run number so repeated TestFlight uploads do not reuse the same build number.
+The workflow uses the explicit `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` stored in [project.yml](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/project.yml), matching the `ListenSDR` release model. You can still override the build number manually for exceptional cases.
 
 Minimum required secrets for automatic signing/upload:
 
@@ -132,13 +132,13 @@ Recommended publish command:
 Optional explicit build number:
 
 ```powershell
-.\scripts\Publish-NaviLive-iOS-TestFlight.ps1 -BuildNumber 1
+.\scripts\Publish-NaviLive-iOS-TestFlight.ps1 -BuildNumber 10
 ```
 
 Metadata sync after the upload:
 
 ```powershell
-python .\scripts\Update-NaviLive-AppStoreConnect-Metadata.py --marketing-version 1.0 --build-number 1
+python .\scripts\Update-NaviLive-AppStoreConnect-Metadata.py --marketing-version 1.0.1 --build-number 10
 ```
 
 ## Bundle and scheme
