@@ -44,26 +44,11 @@ private struct RootNavigationView: View {
           case .routeSummary(let placeID):
             RouteSummaryView(model: model, placeID: placeID)
           case .headingAlign(let placeID):
-            PlaceholderDestinationView(
-              title: L10n.text("navigation.placeholder.heading_title", table: .navigation),
-              message: L10n.text("navigation.placeholder.heading_message", table: .navigation),
-              model: model,
-              placeID: placeID
-            )
+            HeadingAlignView(model: model, placeID: placeID)
           case .activeNavigation(let placeID):
-            PlaceholderDestinationView(
-              title: L10n.text("navigation.placeholder.active_title", table: .navigation),
-              message: L10n.text("navigation.placeholder.active_message", table: .navigation),
-              model: model,
-              placeID: placeID
-            )
+            ActiveNavigationView(model: model, placeID: placeID)
           case .arrival(let placeID):
-            PlaceholderDestinationView(
-              title: L10n.text("navigation.placeholder.arrival_title", table: .navigation),
-              message: L10n.text("navigation.placeholder.arrival_message", table: .navigation),
-              model: model,
-              placeID: placeID
-            )
+            ArrivalView(model: model, placeID: placeID)
           case .currentPosition:
             CurrentPositionView(model: model)
           case .favorites:
@@ -91,34 +76,6 @@ private struct BootstrappingView: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color(.systemGroupedBackground))
     .accessibilityElement(children: .combine)
-  }
-}
-
-private struct PlaceholderDestinationView: View {
-  let title: String
-  let message: String
-  @ObservedObject var model: AppModel
-  let placeID: String
-
-  var body: some View {
-    let placeName = model.place(for: placeID)?.name ?? ""
-
-    List {
-      Section {
-        StatusCard(title: title, message: message, tone: .info)
-      }
-
-      if !placeName.isEmpty {
-        Section {
-          Text(placeName)
-            .font(.headline)
-        } header: {
-          Text(L10n.text("navigation.placeholder.destination", table: .navigation))
-        }
-      }
-    }
-    .navigationTitle(title)
-    .navigationBarTitleDisplayMode(.inline)
   }
 }
 

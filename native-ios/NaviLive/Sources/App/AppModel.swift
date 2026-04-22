@@ -21,6 +21,8 @@ final class AppModel: ObservableObject {
   @Published var favorites: [Place]
   @Published var lastRoutePlaceID: String?
   @Published var selectedRouteSummary: RouteSummary?
+  @Published var headingState: HeadingState
+  @Published var activeNavigationState: ActiveNavigationState
   @Published var isSearching = false
   @Published var isRouting = false
   @Published var hasCompletedOnboarding: Bool
@@ -30,9 +32,29 @@ final class AppModel: ObservableObject {
   private let settingsStore: SettingsStore
   private let navigationAPI: NavigationAPIClient
   private let announcer: VoiceOverAnnouncer
+  private let liveNavigationEngine = LiveNavigationEngine()
 
   private var knownPlaces: [String: Place] = [:]
   private var cancellables: Set<AnyCancellable> = []
+  private var isNavigationLive = false
+  private var headingIndex = 0
+  private let headingSequence = [
+    HeadingState(
+      instruction: L10n.text("heading.instruction.rotate_right", table: .navigation),
+      isAligned: false,
+      arrowRotationDegrees: 22
+    ),
+    HeadingState(
+      instruction: L10n.text("heading.instruction.almost_aligned", table: .navigation),
+      isAligned: false,
+      arrowRotationDegrees: 7
+    ),
+    HeadingState(
+      instruction: L10n.text("heading.instruction.aligned", table: .navigation),
+      isAligned: true,
+      arrowRotationDegrees: 0
+    )
+  ]
 
   convenience init() {
     self.init(
@@ -58,6 +80,8 @@ final class AppModel: ObservableObject {
     settings = snapshot.settings
     favorites = snapshot.favorites
     lastRoutePlaceID = snapshot.lastRoutePlaceID
+    headingState = headingSequence.first ?? HeadingState()
+    activeNavigationState = ActiveNavigationState()
     hasCompletedOnboarding = snapshot.hasCompletedOnboarding
     favorites.forEach { knownPlaces[$0.id] = $0 }
 
@@ -196,10 +220,96 @@ final class AppModel: ObservableObject {
       selectedRouteSummary = summary
       lastRoutePlaceID = place.id
       settingsStore.setLastRoutePlaceID(place.id)
+      headingIndex = 0
+      headingState = headingSequence[headingIndex]
+      activeNavigationState = liveNavigationEngine.loadRoute(
+        destination: place,
+        summary: summary,
+        fix: locationService.latestFix
+      )
+      isNavigationLive = false
       statusMessage = L10n.text("route.status.ready", table: .navigation)
+      announceSuccess(message: L10n.text("route.status.ready", table: .navigation))
     } catch {
       selectedRouteSummary = nil
+      activeNavigationState = ActiveNavigationState()
       statusMessage = L10n.text("route.status.error", table: .navigation)
+      announceWarning(message: L10n.text("route.status.error", table: .navigation))
+    }
+  }
+
+  func cycleHeadingInstruction() {
+    headingIndex = (headingIndex + 1) % headingSequence.count
+    headingState = headingSequence[headingIndex]
+  }
+
+  func markHeadingAligned() {
+    headingIndex = headingSequence.count - 1
+    headingState = headingSequence[headingIndex]
+    statusMessage = L10n.text("heading.status.aligned", table: .navigation)
+    announceSuccess(message: L10n.text("heading.instruction.aligned", table: .navigation))
+  }
+
+  func beginActiveNavigation() {
+    guard liveNavigationEngine.currentDestination != nil else { return }
+    isNavigationLive = true
+    activeNavigationState.isPaused = false
+    statusMessage = L10n.text("active.status.started", table: .navigation)
+    announcer.announce(activeNavigationState.currentInstruction, settings: settings)
+    hapticSuccessIfEnabled()
+    if let latestFix = locationService.latestFix {
+      syncActiveNavigationWithLocation(latestFix)
+    }
+  }
+
+  func repeatCurrentInstruction() {
+    let message = activeNavigationState.currentInstruction.isEmpty
+      ? L10n.text("route.follow_default", table: .navigation)
+      : activeNavigationState.currentInstruction
+    statusMessage = L10n.text("active.status.repeating", table: .navigation)
+    announcer.announce(message, settings: settings)
+  }
+
+  func togglePauseNavigation() {
+    activeNavigationState.isPaused.toggle()
+    if activeNavigationState.isPaused {
+      statusMessage = L10n.text("active.status.paused", table: .navigation)
+      announceWarning(message: L10n.text("active.status.paused", table: .navigation))
+    } else {
+      statusMessage = L10n.text("active.status.resumed", table: .navigation)
+      announceSuccess(message: L10n.text("active.status.resumed", table: .navigation))
+      if let latestFix = locationService.latestFix {
+        syncActiveNavigationWithLocation(latestFix)
+      }
+    }
+  }
+
+  func recalculateRoute() {
+    Task {
+      await recalculateRoute(autoTriggered: false)
+    }
+  }
+
+  func stopNavigation() {
+    isNavigationLive = false
+    liveNavigationEngine.reset()
+    headingIndex = 0
+    headingState = headingSequence[headingIndex]
+    activeNavigationState = ActiveNavigationState()
+    selectedRouteSummary = nil
+    statusMessage = L10n.text("active.status.stopped", table: .navigation)
+  }
+
+  func markArrived() {
+    guard let destination = liveNavigationEngine.currentDestination else { return }
+    isNavigationLive = false
+    activeNavigationState.isPaused = false
+    activeNavigationState.isOffRoute = false
+    activeNavigationState.isRecalculating = false
+    statusMessage = L10n.text("active.status.arrived", table: .navigation)
+    announceSuccess(message: L10n.text("active.spoken.arrived", table: .navigation))
+    if path.last != .arrival(placeID: destination.id) {
+      path.append(.arrival(placeID: destination.id))
     }
   }
 
@@ -213,6 +323,14 @@ final class AppModel: ObservableObject {
 
   func openRouteSummary(_ placeID: String) {
     path.append(.routeSummary(placeID: placeID))
+  }
+
+  func openHeadingAlign(_ placeID: String) {
+    path.append(.headingAlign(placeID: placeID))
+  }
+
+  func openActiveNavigation(_ placeID: String) {
+    path.append(.activeNavigation(placeID: placeID))
   }
 
   func openCurrentPosition() {
@@ -285,10 +403,100 @@ final class AppModel: ObservableObject {
 
     locationService.$latestFix
       .compactMap { $0 }
-      .sink { [weak self] _ in
+      .sink { [weak self] fix in
         guard let self else { return }
         Task { await self.loadCurrentAddress() }
+        self.syncActiveNavigationWithLocation(fix)
       }
       .store(in: &cancellables)
+  }
+
+  private func syncActiveNavigationWithLocation(_ fix: LocationFix) {
+    guard isNavigationLive, !activeNavigationState.isPaused else { return }
+    guard let update = liveNavigationEngine.update(
+      fix: fix,
+      previous: activeNavigationState,
+      autoRecalculateEnabled: settings.autoRecalculate
+    ) else {
+      return
+    }
+
+    activeNavigationState = update.state
+    if update.stepChanged && settings.turnByTurnAnnouncements {
+      announcer.announce(update.state.currentInstruction, settings: settings)
+      hapticSuccessIfEnabled()
+    }
+    if update.offRouteTriggered {
+      statusMessage = L10n.text("active.status.off_route", table: .navigation)
+      announceWarning(message: L10n.text("active.spoken.off_route", table: .navigation))
+    } else if update.state.isOffRoute {
+      statusMessage = L10n.text("active.status.off_route", table: .navigation)
+    } else if update.state.isRecalculating {
+      statusMessage = L10n.text("active.status.recalculating", table: .navigation)
+    } else if update.stepChanged {
+      statusMessage = update.state.currentInstruction
+    }
+
+    if update.shouldAutoRecalculate {
+      Task { await recalculateRoute(autoTriggered: true) }
+    } else if update.hasArrived {
+      markArrived()
+    }
+  }
+
+  private func recalculateRoute(autoTriggered: Bool) async {
+    guard let placeID = lastRoutePlaceID,
+          let place = place(for: placeID),
+          let start = locationService.latestFix?.point else {
+      statusMessage = L10n.text("route.status.cannot_recalculate", table: .navigation)
+      return
+    }
+
+    isRouting = true
+    activeNavigationState.isRecalculating = true
+    statusMessage = L10n.text("active.status.recalculating", table: .navigation)
+    defer {
+      isRouting = false
+    }
+
+    do {
+      let summary = try await navigationAPI.buildWalkingRoute(from: start, to: place)
+      selectedRouteSummary = summary
+      activeNavigationState = liveNavigationEngine.loadRoute(
+        destination: place,
+        summary: summary,
+        fix: locationService.latestFix
+      )
+      activeNavigationState.isRecalculating = false
+      if autoTriggered {
+        statusMessage = L10n.text("active.status.auto_recalculated", table: .navigation)
+      } else {
+        statusMessage = L10n.text("active.status.recalculated", table: .navigation)
+      }
+      announcer.announce(L10n.text("active.spoken.recalculated", table: .navigation), settings: settings)
+      hapticSuccessIfEnabled()
+    } catch {
+      activeNavigationState.isRecalculating = false
+      statusMessage = L10n.text("route.status.error", table: .navigation)
+      announceWarning(message: L10n.text("route.status.error", table: .navigation))
+    }
+  }
+
+  private func announceSuccess(message: String) {
+    announcer.announce(message, settings: settings)
+    hapticSuccessIfEnabled()
+  }
+
+  private func announceWarning(message: String) {
+    announcer.announce(message, settings: settings)
+    if settings.vibrationEnabled {
+      announcer.hapticWarning()
+    }
+  }
+
+  private func hapticSuccessIfEnabled() {
+    if settings.vibrationEnabled {
+      announcer.hapticSuccess()
+    }
   }
 }
