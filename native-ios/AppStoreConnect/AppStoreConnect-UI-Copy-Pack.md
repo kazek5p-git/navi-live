@@ -61,13 +61,15 @@ https://github.com/kazek5p-git/navi-live
 
 ### Privacy Policy URL
 
-Not required to be guessed.
+Recommended current value:
 
-Use a public URL that points to the text from:
+```text
+https://kazek5p-git.github.io/navi-live/privacy/
+```
+
+Source text for that page:
 
 - [Privacy-Policy-Text.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/Privacy-Policy-Text.md)
-
-If you want a quick public source before a dedicated website exists, publish that text to a stable public page first.
 
 ## 2. App Information
 
