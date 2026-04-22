@@ -9,6 +9,9 @@ Files are intentionally split by purpose:
 - `TestFlight-review-notes.txt` - standard review notes
 - `TestFlight-review-notes-strict.txt` - more formal fallback version for review
 - `App-Privacy-draft.md` - draft privacy answers and verification notes
+- `Privacy-Policy-Text.md` - public-facing privacy policy source text
+- `AppStoreConnect-UI-Copy-Pack.md` - exact copy/paste text for App Store Connect fields
+- `TestFlight-UI-Checklist.md` - practical App Store Connect / TestFlight checklist
 - `Release-checklist.md` - operational checklist before each upload
 
 Each text file contains both Polish and English where that helps future editing and reuse.

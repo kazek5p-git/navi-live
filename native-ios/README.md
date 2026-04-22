@@ -88,6 +88,9 @@ Metadata and review material are stored in:
 - [TestFlight-review-notes.txt](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/TestFlight-review-notes.txt)
 - [TestFlight-review-notes-strict.txt](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/TestFlight-review-notes-strict.txt)
 - [App-Privacy-draft.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/App-Privacy-draft.md)
+- [Privacy-Policy-Text.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/Privacy-Policy-Text.md)
+- [AppStoreConnect-UI-Copy-Pack.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/AppStoreConnect-UI-Copy-Pack.md)
+- [TestFlight-UI-Checklist.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/TestFlight-UI-Checklist.md)
 - [Release-checklist.md](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/Release-checklist.md)
 
 The workflow also overrides `CURRENT_PROJECT_VERSION` with the GitHub Actions run number so repeated TestFlight uploads do not reuse the same build number.
