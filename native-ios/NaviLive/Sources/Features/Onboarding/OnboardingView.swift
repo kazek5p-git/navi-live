@@ -36,7 +36,6 @@ struct OnboardingView: View {
       }
       .navigationTitle(L10n.text("onboarding.title", table: .onboarding))
       .navigationBarTitleDisplayMode(.inline)
-      .accessibilityElement(children: .contain)
     }
   }
 }

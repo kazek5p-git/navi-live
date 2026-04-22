@@ -1,6 +1,7 @@
 package com.navilive.android.data.preferences
 
 import android.content.Context
+import android.provider.Settings
 import androidx.datastore.core.DataMigration
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
@@ -182,12 +183,18 @@ class NaviLivePreferencesStore(
                 updateChannel = UpdateChannel.fromStorageValue(preferences[Keys.UpdateChannel]),
                 speechOutputMode = SpeechOutputMode.fromStorageValue(preferences[Keys.SpeechOutputMode]),
                 selectedSystemTtsEnginePackage = preferences[Keys.SelectedSystemTtsEnginePackage],
-                speechRatePercent = preferences[Keys.SpeechRatePercent] ?: SettingsState().speechRatePercent,
+                speechRatePercent = preferences[Keys.SpeechRatePercent] ?: systemDefaultSpeechRatePercent(),
                 speechVolumePercent = preferences[Keys.SpeechVolumePercent] ?: SettingsState().speechVolumePercent,
             ),
             downloadedUpdateApkPath = preferences[Keys.DownloadedUpdateApkPath],
             downloadedUpdateVersionLabel = preferences[Keys.DownloadedUpdateVersionLabel],
         )
+    }
+
+    private fun systemDefaultSpeechRatePercent(): Int {
+        return runCatching {
+            Settings.Secure.getInt(context.contentResolver, "tts_default_rate")
+        }.getOrDefault(SettingsState().speechRatePercent).coerceIn(50, 200)
     }
 
     private object Keys {

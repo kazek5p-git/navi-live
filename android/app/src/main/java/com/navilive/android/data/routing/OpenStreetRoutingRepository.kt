@@ -14,6 +14,8 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
+import java.text.Normalizer
+import java.util.Locale
 import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.pow
@@ -25,6 +27,14 @@ class OpenStreetRoutingRepository(
     context: Context,
 ) {
 
+    private data class SearchCandidate(
+        val place: Place,
+        val score: Int,
+        val distanceMeters: Int,
+        val importance: Double,
+        val isNearbyCandidate: Boolean,
+    )
+
     private val appContext = context.applicationContext
 
     suspend fun searchPlaces(query: String, currentPoint: GeoPoint?): List<Place> {
@@ -32,34 +42,37 @@ class OpenStreetRoutingRepository(
             return emptyList()
         }
         return withContext(Dispatchers.IO) {
-            val encoded = URLEncoder.encode(query, Charsets.UTF_8.name())
-            val endpoint =
-                "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&q=$encoded"
-            val response = requestText(endpoint)
-            val array = JSONArray(response)
-            val places = mutableListOf<Place>()
-            for (index in 0 until array.length()) {
-                val item = array.getJSONObject(index)
-                val latitude = item.optString("lat").toDoubleOrNull() ?: continue
-                val longitude = item.optString("lon").toDoubleOrNull() ?: continue
-                val displayName = item.optString("display_name").ifBlank { string(R.string.generic_unknown_place) }
-                val firstLabel = displayName.substringBefore(",").ifBlank { displayName }
-                val distance = if (currentPoint == null) {
-                    0
-                } else {
-                    haversineMeters(currentPoint, GeoPoint(latitude, longitude)).roundToInt()
-                }
-                val etaMinutes = if (distance <= 0) 0 else (distance / 75.0).roundToInt().coerceAtLeast(1)
-                places += Place(
-                    id = "nominatim_${latitude}_$longitude",
-                    name = firstLabel,
-                    address = displayName,
-                    walkDistanceMeters = distance,
-                    walkEtaMinutes = etaMinutes,
-                    point = GeoPoint(latitude, longitude),
-                )
+            val nearby = querySearchCandidates(
+                query = query,
+                currentPoint = currentPoint,
+                nearbyOnly = true,
+            )
+            val includeGlobalFallback = nearby.size < 5
+            val combined = linkedMapOf<String, SearchCandidate>()
+            nearby.forEach { candidate ->
+                combined[candidate.place.id] = candidate
             }
-            places
+            if (includeGlobalFallback) {
+                querySearchCandidates(
+                    query = query,
+                    currentPoint = currentPoint,
+                    nearbyOnly = false,
+                ).forEach { candidate ->
+                    val existing = combined[candidate.place.id]
+                    if (existing == null || isBetterSearchCandidate(candidate, existing)) {
+                        combined[candidate.place.id] = candidate
+                    }
+                }
+            }
+            combined.values
+                .sortedWith(
+                    compareByDescending<SearchCandidate> { it.score }
+                        .thenByDescending { it.isNearbyCandidate }
+                        .thenBy { if (it.distanceMeters > 0) it.distanceMeters else Int.MAX_VALUE }
+                        .thenByDescending { it.importance },
+                )
+                .map { it.place }
+                .take(8)
         }
     }
 
@@ -108,7 +121,8 @@ class OpenStreetRoutingRepository(
                 "&lat=${point.latitude}&lon=${point.longitude}&zoom=18&addressdetails=1"
         val response = requestText(endpoint)
         val root = JSONObject(response)
-        root.optString("display_name").ifBlank {
+        val displayName = root.optString("display_name")
+        formatAddress(root.optJSONObject("address"), displayName).ifBlank {
             val lat = "%.5f".format(point.latitude)
             val lon = "%.5f".format(point.longitude)
             string(R.string.format_coordinates_label, lat, lon)
@@ -198,6 +212,220 @@ class OpenStreetRoutingRepository(
         }
     }
 
+    private fun candidateName(item: JSONObject, fallback: String): String {
+        val explicitName = item.optString("name").ifBlank {
+            item.optJSONObject("namedetails")
+                ?.optString("name")
+                .orEmpty()
+        }
+        return explicitName.ifBlank {
+            fallback.substringBefore(",").trim().ifBlank { fallback }
+        }
+    }
+
+    private fun querySearchCandidates(
+        query: String,
+        currentPoint: GeoPoint?,
+        nearbyOnly: Boolean,
+    ): List<SearchCandidate> {
+        val endpoint = buildSearchEndpoint(
+            query = query,
+            currentPoint = currentPoint,
+            nearbyOnly = nearbyOnly,
+        )
+        val response = requestText(endpoint)
+        val array = JSONArray(response)
+        val candidates = mutableListOf<SearchCandidate>()
+        for (index in 0 until array.length()) {
+            val item = array.getJSONObject(index)
+            val latitude = item.optString("lat").toDoubleOrNull() ?: continue
+            val longitude = item.optString("lon").toDoubleOrNull() ?: continue
+            val displayName = item.optString("display_name").ifBlank { string(R.string.generic_unknown_place) }
+            val address = formatAddress(item.optJSONObject("address"), displayName)
+            val label = candidateName(item, displayName)
+            val point = GeoPoint(latitude, longitude)
+            val distance = if (currentPoint == null) {
+                0
+            } else {
+                haversineMeters(currentPoint, point).roundToInt()
+            }
+            val etaMinutes = if (distance <= 0) 0 else (distance / 75.0).roundToInt().coerceAtLeast(1)
+            val place = Place(
+                id = "nominatim_${latitude}_$longitude",
+                name = label,
+                address = address,
+                walkDistanceMeters = distance,
+                walkEtaMinutes = etaMinutes,
+                point = point,
+            )
+            candidates += SearchCandidate(
+                place = place,
+                score = searchScore(place, query, currentPoint) + if (nearbyOnly) 420 else 0,
+                distanceMeters = distance,
+                importance = item.optDouble("importance", 0.0),
+                isNearbyCandidate = nearbyOnly,
+            )
+        }
+        return candidates
+    }
+
+    private fun buildSearchEndpoint(
+        query: String,
+        currentPoint: GeoPoint?,
+        nearbyOnly: Boolean,
+    ): String {
+        val encoded = URLEncoder.encode(query, Charsets.UTF_8.name())
+        val base = StringBuilder("https://nominatim.openstreetmap.org/search")
+        base.append("?format=jsonv2")
+        base.append("&limit=").append(if (nearbyOnly) 10 else 16)
+        base.append("&addressdetails=1&namedetails=1&dedupe=1")
+        if (currentPoint != null) {
+            val radiusKm = if (nearbyOnly) 25.0 else 120.0
+            val (left, top, right, bottom) = searchViewBox(currentPoint, radiusKm)
+            base.append("&viewbox=")
+                .append(formatCoordinate(left))
+                .append(',')
+                .append(formatCoordinate(top))
+                .append(',')
+                .append(formatCoordinate(right))
+                .append(',')
+                .append(formatCoordinate(bottom))
+            if (nearbyOnly) {
+                base.append("&bounded=1")
+            }
+        }
+        base.append("&q=").append(encoded)
+        return base.toString()
+    }
+
+    private fun searchViewBox(
+        center: GeoPoint,
+        radiusKm: Double,
+    ): DoubleArray {
+        val latDelta = radiusKm / 111.32
+        val cosLatitude = cos(Math.toRadians(center.latitude)).let { if (it < 0.2) 0.2 else it }
+        val lonDelta = radiusKm / (111.32 * cosLatitude)
+        val left = center.longitude - lonDelta
+        val right = center.longitude + lonDelta
+        val top = center.latitude + latDelta
+        val bottom = center.latitude - latDelta
+        return doubleArrayOf(left, top, right, bottom)
+    }
+
+    private fun formatCoordinate(value: Double): String {
+        return String.format(Locale.US, "%.6f", value)
+    }
+
+    private fun formatAddress(address: JSONObject?, fallback: String): String {
+        if (address == null) return fallback
+
+        val streetName = firstNonBlank(
+            address.optString("road"),
+            address.optString("pedestrian"),
+            address.optString("footway"),
+            address.optString("path"),
+            address.optString("cycleway"),
+            address.optString("residential"),
+        )
+        val streetLine = listOf(
+            streetName,
+            address.optString("house_number").takeIf { it.isNotBlank() },
+        ).filterNotNull().joinToString(" ").trim()
+
+        val locality = firstNonBlank(
+            address.optString("suburb"),
+            address.optString("neighbourhood"),
+            address.optString("quarter"),
+            address.optString("city_district"),
+            address.optString("village"),
+            address.optString("town"),
+            address.optString("city"),
+            address.optString("hamlet"),
+            address.optString("municipality"),
+        )
+        val region = firstNonBlank(
+            address.optString("county"),
+            address.optString("state"),
+            address.optString("region"),
+        )
+        val country = address.optString("country").takeIf { it.isNotBlank() }
+
+        val parts = linkedSetOf<String>()
+        listOf(streetLine, locality, region, country)
+            .filterNotNull()
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .forEach(parts::add)
+        return parts.joinToString(", ").ifBlank { fallback }
+    }
+
+    private fun firstNonBlank(vararg values: String?): String? {
+        return values.firstOrNull { !it.isNullOrBlank() }?.trim()
+    }
+
+    private fun searchScore(place: Place, query: String, currentPoint: GeoPoint?): Int {
+        val normalizedQuery = normalizeForSearch(query)
+        if (normalizedQuery.isBlank()) return 0
+
+        val normalizedName = normalizeForSearch(place.name)
+        val normalizedAddress = normalizeForSearch(place.address)
+        val queryTokens = normalizedQuery.split(' ').filter { it.isNotBlank() }
+        val nameTokens = normalizedName.split(' ').filter { it.isNotBlank() }
+
+        var score = 0
+        if (normalizedName == normalizedQuery) score += 600
+        if (normalizedName.startsWith(normalizedQuery)) score += 320
+
+        queryTokens.forEach { token ->
+            when {
+                nameTokens.any { it == token } -> score += 220
+                nameTokens.any { it.startsWith(token) } -> score += 180
+                normalizedName.contains(token) -> score += 140
+            }
+            if (normalizedAddress.contains(token)) {
+                score += 60
+            }
+        }
+
+        if (currentPoint != null && place.point != null) {
+            val distance = haversineMeters(currentPoint, place.point).roundToInt()
+            score += when {
+                distance <= 500 -> 700
+                distance <= 2_000 -> 550
+                distance <= 10_000 -> 350
+                distance <= 50_000 -> 120
+                else -> 0
+            }
+            score -= (distance / 5_000).coerceAtMost(120)
+        }
+
+        return score
+    }
+
+    private fun isBetterSearchCandidate(
+        candidate: SearchCandidate,
+        existing: SearchCandidate,
+    ): Boolean {
+        return when {
+            candidate.score != existing.score -> candidate.score > existing.score
+            candidate.isNearbyCandidate != existing.isNearbyCandidate -> candidate.isNearbyCandidate
+            candidate.distanceMeters != existing.distanceMeters -> {
+                val candidateDistance = if (candidate.distanceMeters > 0) candidate.distanceMeters else Int.MAX_VALUE
+                val existingDistance = if (existing.distanceMeters > 0) existing.distanceMeters else Int.MAX_VALUE
+                candidateDistance < existingDistance
+            }
+            else -> candidate.importance > existing.importance
+        }
+    }
+
+    private fun normalizeForSearch(text: String): String {
+        val normalized = Normalizer.normalize(text.lowercase(Locale.getDefault()), Normalizer.Form.NFD)
+        return normalized
+            .replace("\\p{Mn}+".toRegex(), "")
+            .replace("[^\\p{Alnum}]+".toRegex(), " ")
+            .trim()
+    }
+
     private fun string(@StringRes resId: Int, vararg args: Any): String = appContext.getString(resId, *args)
 
     private fun requestText(rawUrl: String): String {
@@ -207,6 +435,7 @@ class OpenStreetRoutingRepository(
             readTimeout = 12_000
             setRequestProperty("Accept", "application/json")
             setRequestProperty("User-Agent", "navi-live/0.1 (accessibility-navigation-prototype)")
+            setRequestProperty("Accept-Language", Locale.getDefault().toLanguageTag())
         }
         return try {
             val status = connection.responseCode

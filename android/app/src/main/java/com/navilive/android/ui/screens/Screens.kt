@@ -1,5 +1,6 @@
 package com.navilive.android.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -75,6 +76,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
@@ -341,6 +344,8 @@ fun TutorialScreen(
     onDone: () -> Unit,
     onBack: () -> Unit,
 ) {
+    BackHandler(onBack = onBack)
+
     ScreenScaffold(
         title = stringResource(R.string.tutorial_navigation_title),
         showBack = true,
@@ -1249,7 +1254,11 @@ fun SettingsScreen(
 
 @Composable
 private fun TutorialOverviewCards() {
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {},
+    ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -1261,7 +1270,11 @@ private fun TutorialOverviewCards() {
         }
     }
 
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {},
+    ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -1280,7 +1293,11 @@ private fun TutorialStartupCard(
     showOnStartup: Boolean,
     onShowOnStartupChange: (Boolean) -> Unit,
 ) {
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {},
+    ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -1317,7 +1334,11 @@ private fun TutorialSettingsCard(
     onShowOnStartupChange: (Boolean) -> Unit,
     onOpenTutorial: () -> Unit,
 ) {
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {},
+    ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -1645,7 +1666,7 @@ private fun StatusCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .semantics { liveRegion = LiveRegionMode.Polite },
+            .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
         colors = CardDefaults.cardColors(
             containerColor = container,
             contentColor = content,
@@ -1678,7 +1699,12 @@ private fun SectionHeading(text: String) {
 
 @Composable
 private fun LabelValue(label: String, value: String) {
-    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+        modifier = Modifier.clearAndSetSemantics {
+            contentDescription = "$label. $value"
+        },
+    ) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelLarge,
