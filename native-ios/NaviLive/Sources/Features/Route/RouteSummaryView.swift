@@ -26,15 +26,15 @@ struct RouteSummaryView: View {
             Section {
               LabeledContent(
                 L10n.text("route.label.distance", table: .navigation),
-                AppFormatters.distance(summary.distanceMeters)
+                value: AppFormatters.distance(summary.distanceMeters)
               )
               LabeledContent(
                 L10n.text("route.label.eta", table: .navigation),
-                AppFormatters.eta(minutes: summary.etaMinutes)
+                value: AppFormatters.eta(minutes: summary.etaMinutes)
               )
               LabeledContent(
                 L10n.text("route.label.mode", table: .navigation),
-                summary.modeLabel
+                value: summary.modeLabel
               )
             } header: {
               Text(L10n.text("route.section.summary", table: .navigation))

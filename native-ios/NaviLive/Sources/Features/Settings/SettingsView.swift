@@ -121,8 +121,8 @@ struct SettingsView: View {
       }
 
       Section {
-        LabeledContent(L10n.text("settings.about.version", table: .settings), model.appVersionLabel)
-        LabeledContent(L10n.text("settings.about.build", table: .settings), model.appBuildLabel)
+        LabeledContent(L10n.text("settings.about.version", table: .settings), value: model.appVersionLabel)
+        LabeledContent(L10n.text("settings.about.build", table: .settings), value: model.appBuildLabel)
       } header: {
         Text(L10n.text("settings.section.about", table: .settings))
       }

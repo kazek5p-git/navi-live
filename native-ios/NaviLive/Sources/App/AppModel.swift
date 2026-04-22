@@ -34,11 +34,20 @@ final class AppModel: ObservableObject {
   private var knownPlaces: [String: Place] = [:]
   private var cancellables: Set<AnyCancellable> = []
 
+  init() {
+    self.init(
+      settingsStore: SettingsStore(),
+      locationService: LocationService(),
+      navigationAPI: NavigationAPIClient(),
+      announcer: VoiceOverAnnouncer()
+    )
+  }
+
   init(
-    settingsStore: SettingsStore = SettingsStore(),
-    locationService: LocationService = LocationService(),
-    navigationAPI: NavigationAPIClient = NavigationAPIClient(),
-    announcer: VoiceOverAnnouncer = VoiceOverAnnouncer()
+    settingsStore: SettingsStore,
+    locationService: LocationService,
+    navigationAPI: NavigationAPIClient,
+    announcer: VoiceOverAnnouncer
   ) {
     self.settingsStore = settingsStore
     self.locationService = locationService
@@ -267,9 +276,9 @@ final class AppModel: ObservableObject {
     locationService.$authorizationStatus
       .sink { [weak self] _ in
         guard let self else { return }
-        refreshLaunchState()
-        if hasLocationPermission {
-          locationService.startUpdates()
+        self.refreshLaunchState()
+        if self.hasLocationPermission {
+          self.locationService.startUpdates()
         }
       }
       .store(in: &cancellables)
@@ -278,7 +287,7 @@ final class AppModel: ObservableObject {
       .compactMap { $0 }
       .sink { [weak self] _ in
         guard let self else { return }
-        Task { await loadCurrentAddress() }
+        Task { await self.loadCurrentAddress() }
       }
       .store(in: &cancellables)
   }

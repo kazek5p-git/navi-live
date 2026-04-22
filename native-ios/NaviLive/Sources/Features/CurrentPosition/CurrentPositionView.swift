@@ -18,7 +18,7 @@ struct CurrentPositionView: View {
       Section {
         LabeledContent(
           L10n.text("current.label.accuracy", table: .home),
-          AppFormatters.accuracy(model.locationService.latestFix?.accuracyMeters)
+          value: AppFormatters.accuracy(model.locationService.latestFix?.accuracyMeters)
         )
       } header: {
         Text(L10n.text("current.section.details", table: .home))
