@@ -7,6 +7,7 @@ Files are intentionally split by purpose:
 - `TestFlight-beta-description.txt` - beta description draft for testers
 - `TestFlight-what-to-test.txt` - short tester guidance for the current beta channel
 - `Beta-License-Agreement.txt` - plain-text TestFlight beta license agreement draft and API source
+- `End-User-License-Agreement.txt` - plain-text custom App Store license agreement for the app record
 - `TestFlight-review-notes.txt` - standard review notes
 - `TestFlight-review-notes-strict.txt` - more formal fallback version for review
 - `App-Privacy-draft.md` - draft privacy answers and verification notes

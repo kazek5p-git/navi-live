@@ -1,0 +1,109 @@
+ENGLISH
+
+Navi Live End User License Agreement
+
+This application is licensed, not sold, to you by the developer for use only under the terms of this End User License Agreement. By downloading, installing, or using Navi Live, you agree to this agreement.
+
+1. Scope of license
+You are granted a limited, non-exclusive, non-transferable, revocable license to use Navi Live on Apple-branded devices that you own or control, as permitted by the Apple Media Services Terms and Conditions and Family Sharing rules where applicable.
+
+2. Ownership
+Navi Live is licensed, not sold. The developer and its licensors retain all rights, title, and interest in and to the application, including all intellectual property rights.
+
+3. Restrictions
+Except as expressly permitted by applicable law, you may not copy, redistribute, sublicense, rent, lease, lend, sell, modify, decompile, reverse engineer, disassemble, or create derivative works based on Navi Live.
+
+4. Service limitations and navigation disclaimer
+Navi Live provides walking navigation, route guidance, search, accessibility announcements, and related features. Location, routing, geocoding, network access, and spoken guidance may be delayed, incomplete, inaccurate, or unavailable. Navi Live is not an emergency, rescue, dispatch, or life-safety service, and must not be relied on as the sole source of navigation or situational awareness. Always use your own judgment and follow real-world conditions, traffic rules, and accessibility cues.
+
+5. Maintenance and support
+The developer, and not Apple, is solely responsible for providing any maintenance and support for Navi Live, to the extent any maintenance or support is offered.
+
+6. Warranty disclaimer
+To the maximum extent permitted by law, Navi Live is provided "as is" and "as available", without warranties of any kind, express or implied, including warranties of merchantability, fitness for a particular purpose, accuracy, availability, quiet enjoyment, and non-infringement. If any warranty is imposed by law and cannot be disclaimed, it is limited to the minimum extent permitted by law.
+
+7. Product claims
+The developer, and not Apple, is responsible for addressing any claims by you or any third party relating to Navi Live or your possession or use of Navi Live, including product liability claims, claims that the application fails to conform to legal or regulatory requirements, and claims arising under consumer protection, privacy, or similar laws.
+
+8. Intellectual property claims
+If a third party claims that Navi Live or your possession and use of Navi Live infringes that third party's intellectual property rights, the developer, and not Apple, is solely responsible for the investigation, defense, settlement, and discharge of that claim.
+
+9. Legal compliance and export
+You represent and warrant that you are not located in a country subject to a U.S. Government embargo or designated by the U.S. Government as a "terrorist supporting" country, and that you are not listed on any U.S. Government list of prohibited or restricted parties. You also agree to comply with all applicable laws regarding use of Navi Live.
+
+10. Third-party services and terms
+Navi Live may rely on third-party data, geocoding, routing, or network services. Your use of those services may be subject to additional third-party terms. You are responsible for complying with applicable third-party terms when they apply to your use of the application.
+
+11. Privacy
+Use of Navi Live is also subject to the current privacy policy:
+https://kazek5p-git.github.io/navi-live/privacy/
+
+12. Limitation of liability
+To the maximum extent permitted by law, the developer is not liable for indirect, incidental, consequential, special, exemplary, or punitive damages, loss of profits, loss of data, loss of navigation continuity, service interruption, or personal inconvenience arising out of or relating to Navi Live, even if advised of the possibility of such damages.
+
+13. Termination
+This agreement is effective until terminated. It terminates automatically if you fail to comply with its terms. Upon termination, you must stop using Navi Live and delete all copies in your possession or control.
+
+14. Governing law
+This agreement is governed by the law applicable in the jurisdiction where the end user resides, except where mandatory law provides otherwise.
+
+15. Third-party beneficiary
+You and the developer acknowledge and agree that Apple and Apple's subsidiaries are third-party beneficiaries of this agreement and, upon your acceptance of its terms, Apple will have the right to enforce this agreement against you as a third-party beneficiary.
+
+16. Contact
+For support or legal contact regarding Navi Live, use the contact details configured for the application in App Store Connect.
+
+POLSKI
+
+Umowa licencyjna użytkownika końcowego Navi Live
+
+Ta aplikacja jest licencjonowana, a nie sprzedawana, przez dewelopera wyłącznie na warunkach niniejszej umowy licencyjnej użytkownika końcowego. Pobierając, instalując lub używając Navi Live, akceptujesz tę umowę.
+
+1. Zakres licencji
+Otrzymujesz ograniczoną, niewyłączną, niezbywalną i odwoływalną licencję na korzystanie z Navi Live na urządzeniach marki Apple, które posiadasz lub kontrolujesz, zgodnie z warunkami Apple Media Services oraz zasadami Family Sharing, jeżeli mają zastosowanie.
+
+2. Własność
+Navi Live jest licencjonowana, a nie sprzedawana. Deweloper i jego licencjodawcy zachowują wszelkie prawa, tytuły i interesy związane z aplikacją, w tym prawa własności intelektualnej.
+
+3. Ograniczenia
+Poza zakresem wyraźnie dozwolonym przez obowiązujące prawo nie wolno kopiować, rozpowszechniać, sublicencjonować, wynajmować, użyczać, sprzedawać, modyfikować, dekompilować, odtwarzać kodu źródłowego, deasemblować ani tworzyć utworów zależnych na podstawie Navi Live.
+
+4. Ograniczenia usługi i zastrzeżenie nawigacyjne
+Navi Live udostępnia pieszą nawigację, wskazówki tras, wyszukiwanie, komunikaty dostępnościowe i funkcje pokrewne. Lokalizacja, routing, geokodowanie, dostęp sieciowy i komunikaty głosowe mogą być opóźnione, niepełne, niedokładne lub niedostępne. Navi Live nie jest usługą alarmową, ratunkową, dyspozytorską ani systemem bezpieczeństwa życia i nie może być traktowana jako jedyne źródło nawigacji lub orientacji. Zawsze kieruj się własną oceną sytuacji oraz rzeczywistymi warunkami otoczenia, przepisami ruchu i wskazówkami dostępnościowymi.
+
+5. Utrzymanie i wsparcie
+Deweloper, a nie Apple, ponosi wyłączną odpowiedzialność za zapewnienie utrzymania i wsparcia dla Navi Live w zakresie, w jakim takie utrzymanie lub wsparcie jest oferowane.
+
+6. Wyłączenie gwarancji
+W maksymalnym zakresie dozwolonym przez prawo Navi Live jest dostarczana "w stanie takim, w jakim jest" oraz "w miarę dostępności", bez jakichkolwiek gwarancji wyraźnych lub dorozumianych, w tym gwarancji przydatności handlowej, przydatności do określonego celu, dokładności, dostępności, spokojnego korzystania oraz nienaruszania praw. Jeżeli jakakolwiek gwarancja wynika z prawa i nie może zostać wyłączona, podlega ograniczeniu do minimalnego zakresu dopuszczalnego przez prawo.
+
+7. Roszczenia dotyczące produktu
+Deweloper, a nie Apple, odpowiada za rozpatrywanie wszelkich roszczeń zgłaszanych przez Ciebie lub osoby trzecie w związku z Navi Live albo z Twoim posiadaniem lub używaniem Navi Live, w tym roszczeń z tytułu odpowiedzialności za produkt, niezgodności z wymogami prawa lub regulacji oraz roszczeń wynikających z przepisów konsumenckich, prywatności lub podobnych.
+
+8. Roszczenia dotyczące własności intelektualnej
+Jeżeli osoba trzecia zgłosi roszczenie, że Navi Live albo Twoje posiadanie lub używanie Navi Live narusza prawa własności intelektualnej tej osoby trzeciej, wyłączną odpowiedzialność za zbadanie, obronę, ugodę i zaspokojenie takiego roszczenia ponosi deweloper, a nie Apple.
+
+9. Zgodność z prawem i eksport
+Oświadczasz i zapewniasz, że nie przebywasz w kraju objętym embargiem rządu Stanów Zjednoczonych ani uznanym przez rząd Stanów Zjednoczonych za kraj wspierający terroryzm oraz że nie figurujesz na żadnej liście podmiotów zakazanych lub ograniczonych prowadzonej przez rząd Stanów Zjednoczonych. Zobowiązujesz się także przestrzegać wszystkich właściwych przepisów dotyczących korzystania z Navi Live.
+
+10. Usługi zewnętrzne i warunki stron trzecich
+Navi Live może korzystać z danych, geokodowania, routingu lub usług sieciowych stron trzecich. Korzystanie z tych usług może podlegać dodatkowym warunkom stron trzecich. Odpowiadasz za przestrzeganie właściwych warunków stron trzecich, gdy mają one zastosowanie do korzystania z aplikacji.
+
+11. Prywatność
+Korzystanie z Navi Live podlega również aktualnej polityce prywatności:
+https://kazek5p-git.github.io/navi-live/privacy/
+
+12. Ograniczenie odpowiedzialności
+W maksymalnym zakresie dozwolonym przez prawo deweloper nie odpowiada za szkody pośrednie, uboczne, następcze, szczególne, przykładowe ani represyjne, utratę zysków, utratę danych, utratę ciągłości nawigacji, przerwy w usłudze ani niedogodności osobiste wynikające z Navi Live lub z nią związane, nawet jeżeli poinformowano o możliwości wystąpienia takich szkód.
+
+13. Rozwiązanie umowy
+Niniejsza umowa obowiązuje do momentu jej rozwiązania. Ulega ona automatycznemu rozwiązaniu, jeżeli naruszysz jej warunki. Po rozwiązaniu umowy musisz zaprzestać korzystania z Navi Live i usunąć wszystkie kopie pozostające w Twoim posiadaniu lub pod Twoją kontrolą.
+
+14. Prawo właściwe
+Niniejsza umowa podlega prawu właściwemu dla jurysdykcji miejsca zamieszkania użytkownika końcowego, chyba że bezwzględnie obowiązujące przepisy stanowią inaczej.
+
+15. Beneficjent będący osobą trzecią
+Ty oraz deweloper potwierdzacie i zgadzacie się, że Apple oraz spółki zależne Apple są beneficjentami tej umowy jako osoby trzecie i po zaakceptowaniu przez Ciebie jej warunków Apple będzie uprawnione do dochodzenia wykonania tej umowy wobec Ciebie jako beneficjent będący osobą trzecią.
+
+16. Kontakt
+W sprawach wsparcia lub kontaktu prawnego dotyczącego Navi Live używaj danych kontaktowych skonfigurowanych dla aplikacji w App Store Connect.

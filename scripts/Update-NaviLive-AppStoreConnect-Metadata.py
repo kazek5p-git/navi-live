@@ -213,6 +213,62 @@ def patch_beta_license_agreement(client: AscClient, agreement_id: str, agreement
     client.request("PATCH", f"/v1/betaLicenseAgreements/{agreement_id}", payload)
 
 
+def get_end_user_license_agreement(client: AscClient, app_id: str) -> dict[str, Any] | None:
+    result = client.request("GET", f"/v1/apps/{app_id}/endUserLicenseAgreement")
+    data = result.get("data")
+    return data if data else None
+
+
+def get_territories(client: AscClient) -> list[dict[str, Any]]:
+    result = client.request("GET", "/v1/territories", query={"limit": "200"})
+    return result.get("data", [])
+
+
+def create_end_user_license_agreement(
+    client: AscClient,
+    app_id: str,
+    agreement_text: str,
+    territory_ids: list[str],
+) -> None:
+    payload = {
+        "data": {
+            "type": "endUserLicenseAgreements",
+            "attributes": {
+                "agreementText": agreement_text,
+            },
+            "relationships": {
+                "app": {
+                    "data": {
+                        "type": "apps",
+                        "id": app_id,
+                    }
+                },
+                "territories": {
+                    "data": [{"type": "territories", "id": territory_id} for territory_id in territory_ids]
+                },
+            },
+        }
+    }
+    client.request("POST", "/v1/endUserLicenseAgreements", payload)
+
+
+def patch_end_user_license_agreement(
+    client: AscClient,
+    agreement_id: str,
+    agreement_text: str,
+) -> None:
+    payload = {
+        "data": {
+            "type": "endUserLicenseAgreements",
+            "id": agreement_id,
+            "attributes": {
+                "agreementText": agreement_text,
+            },
+        }
+    }
+    client.request("PATCH", f"/v1/endUserLicenseAgreements/{agreement_id}", payload)
+
+
 def get_beta_app_localizations(client: AscClient, app_id: str) -> dict[str, dict[str, Any]]:
     result = client.request("GET", f"/v1/apps/{app_id}/betaAppLocalizations", query={"limit": "50"})
     return {item["attributes"]["locale"]: item for item in result.get("data", [])}
@@ -377,6 +433,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--contact-first-name", default=DEFAULT_CONTACT_FIRST_NAME)
     parser.add_argument("--contact-last-name", default=DEFAULT_CONTACT_LAST_NAME)
     parser.add_argument("--contact-phone", default=DEFAULT_CONTACT_PHONE)
+    parser.add_argument("--no-end-user-license", action="store_true")
     parser.add_argument("--no-beta-license", action="store_true")
     parser.add_argument("--no-build-localization", action="store_true")
     return parser
@@ -397,6 +454,7 @@ def main() -> int:
     review_notes = load_sectioned_text(asc_dir / "TestFlight-review-notes-strict.txt")
     what_to_test = load_sectioned_text(asc_dir / "TestFlight-what-to-test.txt")
     beta_license_agreement = load_plain_text(asc_dir / "Beta-License-Agreement.txt")
+    end_user_license_agreement = load_plain_text(asc_dir / "End-User-License-Agreement.txt")
 
     key_path = Path(load_env_required("EXPO_ASC_API_KEY_PATH"))
     key_id = load_env_required("EXPO_ASC_KEY_ID")
@@ -407,6 +465,28 @@ def main() -> int:
     app = get_app(client, args.bundle_id)
     app_id = app["id"]
     print(f"Resolved ASC app: {app_id} ({app['attributes']['name']})")
+
+    if not args.no_end_user_license:
+        end_user_license = get_end_user_license_agreement(client, app_id)
+        if end_user_license is None:
+            territories = get_territories(client)
+            territory_ids = [territory["id"] for territory in territories]
+            if not territory_ids:
+                raise RuntimeError("ASC returned no territories for end user license agreement.")
+            create_end_user_license_agreement(
+                client=client,
+                app_id=app_id,
+                agreement_text=end_user_license_agreement,
+                territory_ids=territory_ids,
+            )
+            print(f"Created end user license agreement for {len(territory_ids)} territories.")
+        else:
+            patch_end_user_license_agreement(
+                client=client,
+                agreement_id=end_user_license["id"],
+                agreement_text=end_user_license_agreement,
+            )
+            print("Updated end user license agreement.")
 
     if not args.no_beta_license:
         beta_license = get_beta_license_agreement(client, app_id)

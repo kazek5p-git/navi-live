@@ -120,9 +120,9 @@ Recommended only if true:
 
 Recommended current position:
 
-- keep the default Apple standard EULA for the App Store product page
-- do not switch to a custom production EULA unless you have a specific business or legal reason
-- use the TestFlight-specific beta license agreement separately
+- keep a filled custom `License Agreement` on the app record if the account owner expects this field to be explicitly populated
+- source text: [End-User-License-Agreement.txt](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/native-ios/AppStoreConnect/End-User-License-Agreement.txt)
+- keep the TestFlight-specific beta license agreement separately
 
 Reference note:
 
