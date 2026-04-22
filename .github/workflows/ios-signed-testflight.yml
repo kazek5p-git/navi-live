@@ -304,12 +304,27 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          upload_log="$(mktemp)"
+          set +e
           xcrun altool \
             --upload-app \
             --type ios \
             --file "${{ steps.ipa.outputs.path }}" \
             --apiKey "$ASC_KEY_ID" \
-            --apiIssuer "$ASC_ISSUER_ID"
+            --apiIssuer "$ASC_ISSUER_ID" 2>&1 | tee "$upload_log"
+          upload_status=${PIPESTATUS[0]}
+          set -e
+          if [ "$upload_status" -ne 0 ]; then
+            exit "$upload_status"
+          fi
+          if grep -Eqi "UPLOAD FAILED|Validation failed|Failed to upload package" "$upload_log"; then
+            echo "altool reported an upload failure despite a zero exit code."
+            exit 1
+          fi
+          if ! grep -Eqi "No errors uploading|Successfully uploaded file" "$upload_log"; then
+            echo "altool finished without an explicit upload success confirmation."
+            exit 1
+          fi
 
       - name: Cleanup keychain and private key
         if: always()
