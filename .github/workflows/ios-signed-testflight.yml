@@ -8,6 +8,11 @@ on:
         required: true
         default: true
         type: boolean
+      build_number_override:
+        description: "Optional explicit CFBundleVersion override for the exported build"
+        required: false
+        default: ""
+        type: string
 
 jobs:
   build-signed-ipa:
@@ -23,7 +28,6 @@ jobs:
       IOS_PROJECT: native-ios/NaviLive.xcodeproj
       ARCHIVE_PATH: native-ios/build/NaviLive.xcarchive
       EXPORT_PATH: native-ios/build/export
-      CI_BUILD_NUMBER: ${{ github.run_number }}
       ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
       ASC_API_KEY_BASE64: ${{ secrets.ASC_API_KEY_BASE64 }}
@@ -80,6 +84,16 @@ jobs:
         shell: bash
         run: |
           echo "KEYCHAIN_PATH=$RUNNER_TEMP/navi-live-signing.keychain-db" >> "$GITHUB_ENV"
+
+      - name: Resolve build number
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${{ github.event.inputs.build_number_override }}" ]; then
+            echo "CI_BUILD_NUMBER=${{ github.event.inputs.build_number_override }}" >> "$GITHUB_ENV"
+          else
+            echo "CI_BUILD_NUMBER=${{ github.run_number }}" >> "$GITHUB_ENV"
+          fi
 
       - name: Validate required secrets
         shell: bash

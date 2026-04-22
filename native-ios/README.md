@@ -126,6 +126,12 @@ Recommended publish command:
 .\scripts\Publish-NaviLive-iOS-TestFlight.ps1
 ```
 
+Optional explicit build number:
+
+```powershell
+.\scripts\Publish-NaviLive-iOS-TestFlight.ps1 -BuildNumber 1
+```
+
 ## Bundle and scheme
 
 - bundle id: `com.kazek.navilive`

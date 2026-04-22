@@ -1,6 +1,7 @@
 param(
   [string]$RepoSlug = "kazek5p-git/navi-live",
   [string]$Ref = "main",
+  [string]$BuildNumber,
   [switch]$NoUpload,
   [switch]$NoWait
 )
@@ -34,8 +35,15 @@ Write-Host "==> Dispatching Navi Live iOS signed workflow"
 Write-Host ("Repo: " + $RepoSlug)
 Write-Host ("Ref: " + $Ref)
 Write-Host ("Upload to TestFlight: " + $uploadValue)
+if (-not [string]::IsNullOrWhiteSpace($BuildNumber)) {
+  Write-Host ("Build number override: " + $BuildNumber)
+}
 
-Invoke-GitHub workflow run "ios-signed-testflight.yml" --repo $RepoSlug --ref $Ref -f "upload_to_testflight=$uploadValue"
+$workflowArgs = @("workflow", "run", "ios-signed-testflight.yml", "--repo", $RepoSlug, "--ref", $Ref, "-f", "upload_to_testflight=$uploadValue")
+if (-not [string]::IsNullOrWhiteSpace($BuildNumber)) {
+  $workflowArgs += @("-f", "build_number_override=$BuildNumber")
+}
+Invoke-GitHub @workflowArgs
 
 Start-Sleep -Seconds 8
 
