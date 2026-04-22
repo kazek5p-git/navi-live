@@ -64,6 +64,7 @@ Available GitHub Actions:
 Publishing helper:
 
 - [Publish-NaviLive-iOS-TestFlight.ps1](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/scripts/Publish-NaviLive-iOS-TestFlight.ps1)
+- [Update-NaviLive-AppStoreConnect-Metadata.py](/C:/Users/Kazek/Desktop/Tymczasowe/navilive/scripts/Update-NaviLive-AppStoreConnect-Metadata.py)
 
 ## Sideloadly install
 
@@ -130,6 +131,12 @@ Optional explicit build number:
 
 ```powershell
 .\scripts\Publish-NaviLive-iOS-TestFlight.ps1 -BuildNumber 1
+```
+
+Metadata sync after the upload:
+
+```powershell
+python .\scripts\Update-NaviLive-AppStoreConnect-Metadata.py --marketing-version 1.0 --build-number 1
 ```
 
 ## Bundle and scheme
