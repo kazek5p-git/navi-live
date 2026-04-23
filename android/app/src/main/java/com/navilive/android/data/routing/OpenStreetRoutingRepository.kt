@@ -219,7 +219,15 @@ class OpenStreetRoutingRepository(
                 .orEmpty()
         }
         return explicitName.ifBlank {
-            fallback.substringBefore(",").trim().ifBlank { fallback }
+            val firstPart = fallback.substringBefore(",").trim()
+            if (isLikelyHouseNumber(firstPart)) {
+                fallback.split(",")
+                    .map { it.trim() }
+                    .firstOrNull { it.isNotBlank() && !isLikelyHouseNumber(it) }
+                    ?: fallback
+            } else {
+                firstPart.ifBlank { fallback }
+            }
         }
     }
 
@@ -317,7 +325,7 @@ class OpenStreetRoutingRepository(
     }
 
     private fun formatAddress(address: JSONObject?, fallback: String): String {
-        if (address == null) return fallback
+        if (address == null) return normalizeFallbackAddress(fallback)
 
         val streetName = firstNonBlank(
             address.optString("road"),
@@ -327,40 +335,100 @@ class OpenStreetRoutingRepository(
             address.optString("cycleway"),
             address.optString("residential"),
         )
-        val streetLine = listOf(
-            streetName,
-            address.optString("house_number").takeIf { it.isNotBlank() },
-        ).filterNotNull().joinToString(" ").trim()
+        val houseNumber = cleanAddressValue(address.optString("house_number"))
+        val streetLine = when {
+            !streetName.isNullOrBlank() && !houseNumber.isNullOrBlank() -> "$streetName $houseNumber"
+            !streetName.isNullOrBlank() -> streetName
+            !houseNumber.isNullOrBlank() -> streetLineFromFallback(fallback, houseNumber) ?: houseNumber
+            else -> streetLineFromFallback(fallback, null)
+        }
 
         val locality = firstNonBlank(
+            address.optString("city"),
+            address.optString("town"),
+            address.optString("village"),
+            address.optString("hamlet"),
+            address.optString("municipality"),
             address.optString("suburb"),
             address.optString("neighbourhood"),
             address.optString("quarter"),
             address.optString("city_district"),
-            address.optString("village"),
-            address.optString("town"),
-            address.optString("city"),
-            address.optString("hamlet"),
-            address.optString("municipality"),
         )
         val region = firstNonBlank(
-            address.optString("county"),
             address.optString("state"),
             address.optString("region"),
+            address.optString("state_district"),
+            address.optString("county"),
         )
-        val country = address.optString("country").takeIf { it.isNotBlank() }
+        val country = cleanAddressValue(address.optString("country"))
 
         val parts = linkedSetOf<String>()
-        listOf(streetLine, locality, region, country)
+        listOf(streetLine, locality, region)
             .filterNotNull()
             .map { it.trim() }
             .filter { it.isNotBlank() }
             .forEach(parts::add)
-        return parts.joinToString(", ").ifBlank { fallback }
+        if (parts.size < 2 && !country.isNullOrBlank()) {
+            parts += country
+        }
+        return parts.joinToString(", ").ifBlank { normalizeFallbackAddress(fallback) }
     }
 
     private fun firstNonBlank(vararg values: String?): String? {
-        return values.firstOrNull { !it.isNullOrBlank() }?.trim()
+        return values.firstNotNullOfOrNull(::cleanAddressValue)
+    }
+
+    private fun cleanAddressValue(value: String?): String? {
+        val trimmed = value?.trim().orEmpty()
+        return trimmed.takeIf {
+            it.isNotBlank() && !it.equals("null", ignoreCase = true)
+        }
+    }
+
+    private fun streetLineFromFallback(fallback: String, houseNumber: String?): String? {
+        val parts = fallback.split(",")
+            .mapNotNull(::cleanAddressValue)
+        if (parts.isEmpty()) return null
+
+        val first = parts.getOrNull(0)
+        val second = parts.getOrNull(1)
+        if (!houseNumber.isNullOrBlank() && first == houseNumber && !second.isNullOrBlank()) {
+            return "$second $houseNumber"
+        }
+        if (!houseNumber.isNullOrBlank() && second == houseNumber && !first.isNullOrBlank()) {
+            return "$first $houseNumber"
+        }
+        return normalizeStreetLine(first)
+    }
+
+    private fun normalizeFallbackAddress(fallback: String): String {
+        val parts = fallback.split(",")
+            .mapNotNull(::cleanAddressValue)
+            .toMutableList()
+        if (parts.size >= 2 && isLikelyHouseNumber(parts[0])) {
+            parts[0] = "${parts[1]} ${parts[0]}"
+            parts.removeAt(1)
+        } else if (parts.isNotEmpty()) {
+            parts[0] = normalizeStreetLine(parts[0]) ?: parts[0]
+        }
+        return parts.distinct().joinToString(", ").ifBlank { fallback }
+    }
+
+    private fun normalizeStreetLine(value: String?): String? {
+        val trimmed = cleanAddressValue(value) ?: return null
+        val match = Regex("""^(\d+[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]?(?:[/-]\d+[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]?)?)\s+(.+)$""")
+            .matchEntire(trimmed)
+        return if (match != null) {
+            "${match.groupValues[2]} ${match.groupValues[1]}".trim()
+        } else {
+            trimmed
+        }
+    }
+
+    private fun isLikelyHouseNumber(value: String?): Boolean {
+        val trimmed = cleanAddressValue(value) ?: return false
+        return Regex("""^\d+[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]?(?:[/-]\d+[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]?)?$""")
+            .matches(trimmed)
     }
 
     private fun searchScore(place: Place, query: String, currentPoint: GeoPoint?): Int {
