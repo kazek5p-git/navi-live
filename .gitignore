@@ -7,4 +7,4 @@ local.properties
 *.log
 Thumbs.db
 .DS_Store
-
+release/

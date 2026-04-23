@@ -17,12 +17,13 @@
 3. Confirm `native-ios/project.yml` and `native-ios/NaviLive.xcodeproj/project.pbxproj` use the same `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION`.
 4. Run a clean iOS build on the Mac before any upload.
 5. Do not start the upload unless it was explicitly requested.
+6. When prep is complete and upload was requested, launch `C:\Users\Kazek\Desktop\skrypty_ios\NaviLive TestFlight GUI.lnk` as the final step.
 
 ## Workflow
 
-1. Run `.\scripts\Publish-NaviLive-iOS-TestFlight.ps1`.
-2. Wait for workflow `iOS Signed IPA + TestFlight`.
-3. If upload succeeds, confirm the run URL and artifact path.
+1. Prepare metadata, `What to Test`, and version/build consistency first.
+2. Launch `C:\Users\Kazek\Desktop\skrypty_ios\NaviLive TestFlight GUI.lnk`.
+3. If the upload succeeds, confirm the run URL and artifact path.
 
 ## After upload
 

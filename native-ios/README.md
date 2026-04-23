@@ -129,6 +129,19 @@ Recommended publish command:
 .\scripts\Publish-NaviLive-iOS-TestFlight.ps1
 ```
 
+For this workspace, the preferred final upload step is the GUI launcher:
+
+```text
+C:\Users\Kazek\Desktop\skrypty_ios\NaviLive TestFlight GUI.lnk
+```
+
+The expected flow is:
+
+1. prepare metadata and `What to Test`,
+2. confirm `project.yml` and `project.pbxproj` use the same version/build,
+3. run a clean iOS build check,
+4. only then launch the GUI shortcut as the final upload step.
+
 Optional explicit build number:
 
 ```powershell
