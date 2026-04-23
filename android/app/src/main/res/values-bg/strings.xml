@@ -238,6 +238,7 @@
     <string name="format_fallback_route_ready">Резервен маршрут, готов за %1$s.</string>
     <string name="format_route_ready">Маршрут, готов за %1$s.</string>
     <string name="format_continue_toward">Продължете към %1$s.</string>
+    <string name="format_navigation_upcoming_instruction">На %1$d метра, %2$s</string>
     <string name="format_current_position_announcement">%1$s Текуща позиция: %2$s</string>
     <string name="format_telemetry_exported">Телеметрия, експортирана към %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

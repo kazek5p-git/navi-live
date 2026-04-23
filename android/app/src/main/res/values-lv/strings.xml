@@ -238,6 +238,7 @@
     <string name="format_fallback_route_ready">Atkāpšanās maršruts gatavs %1$s.</string>
     <string name="format_route_ready">Maršruts gatavs %1$s.</string>
     <string name="format_continue_toward">Turpiniet braukt uz %1$s.</string>
+    <string name="format_navigation_upcoming_instruction">%1$d metros, %2$s</string>
     <string name="format_current_position_announcement">%1$s Pašreizējā pozīcija: %2$s</string>
     <string name="format_telemetry_exported">Telemetrija eksportēta uz %1$s.</string>
     <string name="format_coordinates_label">Lats %1$s, garums %2$s</string>

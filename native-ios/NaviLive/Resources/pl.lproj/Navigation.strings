@@ -79,6 +79,7 @@
 "active.status.auto_recalculated" = "Trasa została przeliczona po zejściu z trasy.";
 "active.status.off_route" = "Jesteś poza trasą.";
 "active.spoken.off_route" = "Jesteś poza trasą.";
+"active.spoken.upcoming" = "Za %1$d metrów: %2$@";
 "active.spoken.recalculated" = "Trasa została przeliczona.";
 "active.spoken.arrived" = "Dotarłeś do celu.";
 "arrival.title" = "Dotarcie";

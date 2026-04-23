@@ -238,6 +238,7 @@
     <string name="format_fallback_route_ready">Atsarginis maršrutas paruoštas %1$s.</string>
     <string name="format_route_ready">Maršrutas paruoštas %1$s.</string>
     <string name="format_continue_toward">Toliau važiuokite link %1$s.</string>
+    <string name="format_navigation_upcoming_instruction">Iš %1$d metrų, %2$s</string>
     <string name="format_current_position_announcement">%1$s Dabartinė padėtis: %2$s</string>
     <string name="format_telemetry_exported">Telemetrija eksportuota į %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, ilg. %2$s</string>

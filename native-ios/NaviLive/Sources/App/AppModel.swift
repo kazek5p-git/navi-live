@@ -37,6 +37,7 @@ final class AppModel: ObservableObject {
   private var knownPlaces: [String: Place] = [:]
   private var cancellables: Set<AnyCancellable> = []
   private var isNavigationLive = false
+  private var lastUpcomingAnnouncementStepIndex = -1
   private var headingIndex = 0
   private let headingSequence = [
     HeadingState(
@@ -228,6 +229,7 @@ final class AppModel: ObservableObject {
         fix: locationService.latestFix
       )
       isNavigationLive = false
+      lastUpcomingAnnouncementStepIndex = -1
       statusMessage = L10n.text("route.status.ready", table: .navigation)
       announceSuccess(message: L10n.text("route.status.ready", table: .navigation))
     } catch {
@@ -252,11 +254,16 @@ final class AppModel: ObservableObject {
 
   func beginActiveNavigation() {
     guard liveNavigationEngine.currentDestination != nil else { return }
+    locationService.prepareForActiveNavigation()
     isNavigationLive = true
+    lastUpcomingAnnouncementStepIndex = -1
     activeNavigationState.isPaused = false
     statusMessage = L10n.text("active.status.started", table: .navigation)
-    announcer.announce(activeNavigationState.currentInstruction, settings: settings)
-    hapticSuccessIfEnabled()
+    announceNavigationPrompt(
+      activeNavigationState.currentInstruction.isEmpty
+        ? L10n.text("route.follow_default", table: .navigation)
+        : activeNavigationState.currentInstruction
+    )
     if let latestFix = locationService.latestFix {
       syncActiveNavigationWithLocation(latestFix)
     }
@@ -267,17 +274,17 @@ final class AppModel: ObservableObject {
       ? L10n.text("route.follow_default", table: .navigation)
       : activeNavigationState.currentInstruction
     statusMessage = L10n.text("active.status.repeating", table: .navigation)
-    announcer.announce(message, settings: settings)
+    announceNavigationPrompt(message)
   }
 
   func togglePauseNavigation() {
     activeNavigationState.isPaused.toggle()
     if activeNavigationState.isPaused {
       statusMessage = L10n.text("active.status.paused", table: .navigation)
-      announceWarning(message: L10n.text("active.status.paused", table: .navigation))
+      announceNavigationPrompt(L10n.text("active.status.paused", table: .navigation), warning: true)
     } else {
       statusMessage = L10n.text("active.status.resumed", table: .navigation)
-      announceSuccess(message: L10n.text("active.status.resumed", table: .navigation))
+      announceNavigationPrompt(L10n.text("active.status.resumed", table: .navigation))
       if let latestFix = locationService.latestFix {
         syncActiveNavigationWithLocation(latestFix)
       }
@@ -292,6 +299,9 @@ final class AppModel: ObservableObject {
 
   func stopNavigation() {
     isNavigationLive = false
+    lastUpcomingAnnouncementStepIndex = -1
+    locationService.finishActiveNavigation()
+    announcer.stopSpeech()
     liveNavigationEngine.reset()
     headingIndex = 0
     headingState = headingSequence[headingIndex]
@@ -303,11 +313,13 @@ final class AppModel: ObservableObject {
   func markArrived() {
     guard let destination = liveNavigationEngine.currentDestination else { return }
     isNavigationLive = false
+    lastUpcomingAnnouncementStepIndex = -1
+    locationService.finishActiveNavigation()
     activeNavigationState.isPaused = false
     activeNavigationState.isOffRoute = false
     activeNavigationState.isRecalculating = false
     statusMessage = L10n.text("active.status.arrived", table: .navigation)
-    announceSuccess(message: L10n.text("active.spoken.arrived", table: .navigation))
+    announceNavigationPrompt(L10n.text("active.spoken.arrived", table: .navigation))
     if path.last != .arrival(placeID: destination.id) {
       path.append(.arrival(placeID: destination.id))
     }
@@ -423,12 +435,13 @@ final class AppModel: ObservableObject {
 
     activeNavigationState = update.state
     if update.stepChanged && settings.turnByTurnAnnouncements {
-      announcer.announce(update.state.currentInstruction, settings: settings)
-      hapticSuccessIfEnabled()
+      announceNavigationPrompt(update.state.currentInstruction)
+    } else if settings.turnByTurnAnnouncements {
+      maybeAnnounceUpcomingInstruction(update: update, fix: fix)
     }
     if update.offRouteTriggered {
       statusMessage = L10n.text("active.status.off_route", table: .navigation)
-      announceWarning(message: L10n.text("active.spoken.off_route", table: .navigation))
+      announceNavigationPrompt(L10n.text("active.spoken.off_route", table: .navigation), warning: true)
     } else if update.state.isOffRoute {
       statusMessage = L10n.text("active.status.off_route", table: .navigation)
     } else if update.state.isRecalculating {
@@ -467,18 +480,58 @@ final class AppModel: ObservableObject {
         summary: summary,
         fix: locationService.latestFix
       )
+      lastUpcomingAnnouncementStepIndex = -1
       activeNavigationState.isRecalculating = false
       if autoTriggered {
         statusMessage = L10n.text("active.status.auto_recalculated", table: .navigation)
       } else {
         statusMessage = L10n.text("active.status.recalculated", table: .navigation)
       }
-      announcer.announce(L10n.text("active.spoken.recalculated", table: .navigation), settings: settings)
-      hapticSuccessIfEnabled()
+      announceNavigationPrompt(L10n.text("active.spoken.recalculated", table: .navigation))
     } catch {
       activeNavigationState.isRecalculating = false
       statusMessage = L10n.text("route.status.error", table: .navigation)
       announceWarning(message: L10n.text("route.status.error", table: .navigation))
+    }
+  }
+
+  private func maybeAnnounceUpcomingInstruction(update: LiveNavigationUpdate, fix: LocationFix) {
+    guard !update.stepChanged else { return }
+    guard !update.state.isOffRoute, !update.state.isRecalculating, !update.hasArrived else { return }
+    let upcomingStepIndex = update.currentStepIndex + 1
+    guard upcomingStepIndex != lastUpcomingAnnouncementStepIndex else { return }
+    guard let upcomingInstruction = update.upcomingInstruction?.trimmingCharacters(in: .whitespacesAndNewlines),
+          !upcomingInstruction.isEmpty else {
+      return
+    }
+    let previewThreshold = navigationPreviewThresholdMeters(accuracyMeters: fix.accuracyMeters)
+    guard update.state.distanceToNextMeters > 0, update.state.distanceToNextMeters <= previewThreshold else {
+      return
+    }
+
+    lastUpcomingAnnouncementStepIndex = upcomingStepIndex
+    announceNavigationPrompt(
+      L10n.text(
+        "active.spoken.upcoming",
+        table: .navigation,
+        update.state.distanceToNextMeters,
+        upcomingInstruction
+      )
+    )
+  }
+
+  private func navigationPreviewThresholdMeters(accuracyMeters: Double) -> Int {
+    min(max(Int((min(max(accuracyMeters, 10), 18) * 3).rounded()), 25), 60)
+  }
+
+  private func announceNavigationPrompt(_ message: String, warning: Bool = false) {
+    announcer.announceNavigation(message, settings: settings)
+    if settings.vibrationEnabled {
+      if warning {
+        announcer.hapticWarning()
+      } else {
+        announcer.hapticSuccess()
+      }
     }
   }
 

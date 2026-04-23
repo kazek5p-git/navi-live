@@ -238,6 +238,7 @@
     <string name="format_fallback_route_ready">Varaleið tilbúin fyrir %1$s.</string>
     <string name="format_route_ready">Leið tilbúin fyrir %1$s.</string>
     <string name="format_continue_toward">Haltu áfram í átt að %1$s.</string>
+    <string name="format_navigation_upcoming_instruction">Í %1$d metrum, %2$s</string>
     <string name="format_current_position_announcement">%1$s Núverandi staða: %2$s</string>
     <string name="format_telemetry_exported">Fjarmælingar fluttar út í %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

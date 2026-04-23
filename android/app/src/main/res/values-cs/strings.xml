@@ -238,6 +238,7 @@
     <string name="format_fallback_route_ready">Záložní trasa připravena na %1$s.</string>
     <string name="format_route_ready">Trasa připravena na %1$s.</string>
     <string name="format_continue_toward">Pokračujte na %1$s.</string>
+    <string name="format_navigation_upcoming_instruction">V %1$d metrech, %2$s</string>
     <string name="format_current_position_announcement">%1$s Aktuální pozice: %2$s</string>
     <string name="format_telemetry_exported">Telemetrie exportována na %1$s.</string>
     <string name="format_coordinates_label">Šířka %1$s, Šířka %2$s</string>

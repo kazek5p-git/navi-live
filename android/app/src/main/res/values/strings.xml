@@ -258,6 +258,7 @@
     <string name="format_fallback_route_ready">Fallback route ready for %1$s.</string>
     <string name="format_route_ready">Route ready for %1$s.</string>
     <string name="format_continue_toward">Continue toward %1$s.</string>
+    <string name="format_navigation_upcoming_instruction">In %1$d meters, %2$s</string>
     <string name="format_current_position_announcement">%1$s Current position: %2$s</string>
     <string name="format_telemetry_exported">Telemetry exported to %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

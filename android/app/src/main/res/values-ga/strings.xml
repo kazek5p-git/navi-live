@@ -238,6 +238,7 @@
     <string name="format_fallback_route_ready">Bealach fallback réidh le haghaidh %1$s.</string>
     <string name="format_route_ready">Bealach réidh le haghaidh %1$s.</string>
     <string name="format_continue_toward">Lean ar aghaidh i dtreo %1$s.</string>
+    <string name="format_navigation_upcoming_instruction">I %1$d méadar, %2$s</string>
     <string name="format_current_position_announcement">%1$s Staid reatha: %2$s</string>
     <string name="format_telemetry_exported">Teiliméadracht arna onnmhairiú go dtí %1$s.</string>
     <string name="format_coordinates_label">Deireanach %1$s, Lon %2$s</string>

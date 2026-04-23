@@ -238,6 +238,7 @@
     <string name="format_fallback_route_ready">Tartalék útvonal készen áll a %1$s számra.</string>
     <string name="format_route_ready">Útvonal készen áll a %1$s számra.</string>
     <string name="format_continue_toward">Haladjon tovább a %1$s felé.</string>
+    <string name="format_navigation_upcoming_instruction">%1$d méterben, %2$s</string>
     <string name="format_current_position_announcement">%1$s Jelenlegi pozíció: %2$s</string>
     <string name="format_telemetry_exported">Telemetria exportálva a %1$s számra.</string>
     <string name="format_coordinates_label">%1$s hosszú, %2$s hosszú</string>

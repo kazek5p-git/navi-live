@@ -2,6 +2,7 @@ package com.navilive.android.guidance
 
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
+import android.media.AudioAttributes
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -97,6 +98,16 @@ class GuidanceFeedbackEngine(context: Context) {
         speakThroughSystemTts(text, flush)
     }
 
+    fun speakNavigation(text: String, flush: Boolean = true) {
+        if (text.isBlank()) return
+        if (speakThroughSystemTts(text, flush)) {
+            return
+        }
+        if (speechOutputMode == SpeechOutputMode.ScreenReader) {
+            announceThroughScreenReader(text)
+        }
+    }
+
     fun vibrateShort() {
         val vib = vibrator ?: return
         if (!vib.hasVibrator()) return
@@ -160,6 +171,14 @@ class GuidanceFeedbackEngine(context: Context) {
         if (!ttsReady) return
         tts.language = Locale.getDefault()
         tts.setSpeechRate(speechRate)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            tts.setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .build(),
+            )
+        }
     }
 
     private fun refreshEngineMetadata(requestedEnginePackage: String? = preferredSystemTtsEnginePackage) {
@@ -192,16 +211,16 @@ class GuidanceFeedbackEngine(context: Context) {
         return options.firstOrNull { it.packageName == packageName }?.displayName
     }
 
-    private fun speakThroughSystemTts(text: String, flush: Boolean) {
+    private fun speakThroughSystemTts(text: String, flush: Boolean): Boolean {
         ensureTextToSpeech()
-        val tts = textToSpeech ?: return
-        if (!ttsReady) return
+        val tts = textToSpeech ?: return false
+        if (!ttsReady) return false
         configureTextToSpeech()
         val queueMode = if (flush) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
         val params = Bundle().apply {
             putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, speechVolume)
         }
-        tts.speak(text, queueMode, params, UUID.randomUUID().toString())
+        return tts.speak(text, queueMode, params, UUID.randomUUID().toString()) != TextToSpeech.ERROR
     }
 
     @Suppress("DEPRECATION")

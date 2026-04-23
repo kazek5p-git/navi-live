@@ -98,6 +98,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     private var isRouteRecalculating = false
     private var lastAutoRecalculateMs = 0L
     private var lastAnnouncedStepIndex = -1
+    private var lastPreviewedStepIndex = -1
     private var lastTrackingState: Boolean? = null
     private var lastTelemetryFixPoint: GeoPoint? = null
     private var lastTelemetryFixTimestampMs: Long = 0L
@@ -563,12 +564,16 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             pathPoints = normalized.pathPoints,
         )
         isNavigationLive = keepNavigationLive
-        lastAnnouncedStepIndex = if (normalized.steps.isNotEmpty()) 0 else -1
+        resetNavigationAnnouncementState()
         isRouteRecalculating = false
         lastTelemetryFixPoint = null
         lastTelemetryFixTimestampMs = 0L
 
-        speakNow(spokenMessage)
+        if (keepNavigationLive) {
+            speakNavigationNow(spokenMessage)
+        } else {
+            speakNow(spokenMessage)
+        }
         vibrateShortIfEnabled()
         telemetryLogger.log(
             type = if (keepNavigationLive) "route_recalculated" else "route_loaded",
@@ -622,8 +627,9 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun beginActiveNavigation() {
-        if (activeRouteSession == null) return
+        val session = activeRouteSession ?: return
         isNavigationLive = true
+        resetNavigationAnnouncementState()
         telemetryLogger.log(
             type = "navigation_started",
             message = "Active navigation started.",
@@ -640,12 +646,13 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
                 ),
             )
         }
+        announceNavigationStartInstruction(session)
         syncActiveNavigationWithLocation(_uiState.value.locationState.latestFix)
     }
 
     fun repeatCurrentInstruction() {
         val instruction = _uiState.value.activeNavigationState.currentInstruction
-        speakNow(instruction)
+        speakNavigationNow(instruction)
         telemetryLogger.log(
             type = "instruction_repeated",
             message = "Current instruction repeated.",
@@ -663,9 +670,9 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             val paused = !current.activeNavigationState.isPaused
             pausedNow = paused
             if (paused) {
-                speakNow(string(R.string.spoken_navigation_paused))
+                speakNavigationNow(string(R.string.spoken_navigation_paused))
             } else {
-                speakNow(string(R.string.spoken_navigation_resumed))
+                speakNavigationNow(string(R.string.spoken_navigation_resumed))
             }
             current.copy(
                 activeNavigationState = current.activeNavigationState.copy(isPaused = paused),
@@ -696,7 +703,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         activeRouteSession = null
         isNavigationLive = false
         isRouteRecalculating = false
-        lastAnnouncedStepIndex = -1
+        resetNavigationAnnouncementState()
         lastTelemetryFixPoint = null
         lastTelemetryFixTimestampMs = 0L
         _uiState.update { current ->
@@ -713,10 +720,10 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         activeRouteSession = null
         isNavigationLive = false
         isRouteRecalculating = false
-        lastAnnouncedStepIndex = -1
+        resetNavigationAnnouncementState()
         lastTelemetryFixPoint = null
         lastTelemetryFixTimestampMs = 0L
-        speakNow(string(R.string.spoken_arrived))
+        speakNavigationNow(string(R.string.spoken_arrived))
         vibrateDoubleIfEnabled()
         _uiState.update { current ->
             current.copy(
@@ -1365,23 +1372,28 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         }
         activeRouteSession = updatedSession
         val wasOffRoute = currentState.isOffRoute
+        var updatedState: ActiveNavigationState? = null
         _uiState.update { current ->
+            updatedState = buildActiveNavigationState(
+                session = updatedSession,
+                fix = fix,
+                previous = current.activeNavigationState,
+                isOffRoute = false,
+                isRecalculating = false,
+                offRouteDistanceMeters = null,
+            )
             current.copy(
                 statusMessage = if (wasOffRoute) string(R.string.status_back_on_route) else current.statusMessage,
-                activeNavigationState = buildActiveNavigationState(
-                    session = updatedSession,
-                    fix = fix,
-                    previous = current.activeNavigationState,
-                    isOffRoute = false,
-                    isRecalculating = false,
-                    offRouteDistanceMeters = null,
-                ),
+                activeNavigationState = updatedState!!,
             )
         }
+        val freshState = updatedState ?: return
         logNavigationFixIfNeeded(updatedSession, fix, deviationMeters)
 
         if (nextStepIndex != session.currentStepIndex) {
             announceStepChange(updatedSession)
+        } else {
+            maybeAnnounceUpcomingInstruction(updatedSession, freshState, fix)
         }
     }
 
@@ -1406,7 +1418,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         }
         if (!alreadyOffRoute) {
             vibrateDoubleIfEnabled()
-            speakNow(string(R.string.navigation_status_off_route_title))
+            speakNavigationNow(string(R.string.navigation_status_off_route_title))
             telemetryLogger.log(
                 type = "off_route_detected",
                 message = "Off-route detected.",
@@ -1447,6 +1459,10 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
 
     private fun offRouteThresholdMeters(fix: LocationFix): Int {
         return (fix.accuracyMeters.coerceIn(15f, 32f) * 1.8f).roundToInt().coerceAtLeast(30)
+    }
+
+    private fun upcomingAnnouncementThresholdMeters(fix: LocationFix): Int {
+        return (fix.accuracyMeters.coerceIn(10f, 18f) * 3f).roundToInt().coerceIn(25, 60)
     }
 
     private fun buildActiveNavigationState(
@@ -1492,7 +1508,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         if (session.currentStepIndex <= lastAnnouncedStepIndex) return
         lastAnnouncedStepIndex = session.currentStepIndex
         if (_uiState.value.settingsState.turnByTurnAnnouncements) {
-            speakNow(session.steps[session.currentStepIndex].instruction)
+            speakNavigationNow(session.steps[session.currentStepIndex].instruction)
         }
         vibrateShortIfEnabled()
         telemetryLogger.log(
@@ -1502,6 +1518,39 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
                 "step_index" to session.currentStepIndex,
                 "step_count" to session.steps.size,
                 "instruction" to session.steps[session.currentStepIndex].instruction,
+            ),
+        )
+        refreshDiagnosticsState()
+    }
+
+    private fun maybeAnnounceUpcomingInstruction(
+        session: RouteSession,
+        state: ActiveNavigationState,
+        fix: LocationFix,
+    ) {
+        if (!_uiState.value.settingsState.turnByTurnAnnouncements) return
+        val upcomingStepIndex = session.currentStepIndex + 1
+        val upcomingStep = session.steps.getOrNull(upcomingStepIndex) ?: return
+        if (upcomingStepIndex == lastPreviewedStepIndex) return
+        val distanceToNext = state.distanceToNextMeters
+        if (distanceToNext <= 0 || distanceToNext > upcomingAnnouncementThresholdMeters(fix)) return
+
+        lastPreviewedStepIndex = upcomingStepIndex
+        speakNavigationNow(
+            string(
+                R.string.format_navigation_upcoming_instruction,
+                distanceToNext,
+                upcomingStep.instruction,
+            ),
+        )
+        vibrateShortIfEnabled()
+        telemetryLogger.log(
+            type = "upcoming_instruction_announced",
+            message = "Upcoming instruction announced.",
+            attributes = linkedMapOf(
+                "step_index" to upcomingStepIndex,
+                "distance_to_next_m" to distanceToNext,
+                "instruction" to upcomingStep.instruction,
             ),
         )
         refreshDiagnosticsState()
@@ -1560,6 +1609,32 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         downloadedPath: String?,
     ): String? {
         return if (downloadedPath != null && File(downloadedPath).exists()) versionLabel else null
+    }
+
+    private fun resetNavigationAnnouncementState() {
+        lastAnnouncedStepIndex = -1
+        lastPreviewedStepIndex = -1
+    }
+
+    private fun announceNavigationStartInstruction(session: RouteSession) {
+        if (!_uiState.value.settingsState.turnByTurnAnnouncements) return
+        val instruction = session.steps
+            .getOrNull(session.currentStepIndex)
+            ?.instruction
+            ?.takeIf { it.isNotBlank() }
+            ?: string(R.string.generic_follow_route_guidance)
+        lastAnnouncedStepIndex = session.currentStepIndex
+        speakNavigationNow(instruction)
+        vibrateShortIfEnabled()
+        telemetryLogger.log(
+            type = "navigation_instruction_announced",
+            message = "Initial navigation instruction announced.",
+            attributes = linkedMapOf(
+                "step_index" to session.currentStepIndex,
+                "instruction" to instruction,
+            ),
+        )
+        refreshDiagnosticsState()
     }
 
     private fun synchronizeSpeechSettings(settings: SettingsState): SettingsState {
@@ -1626,6 +1701,10 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
 
     private fun speakNow(text: String) {
         feedbackEngine.speak(text)
+    }
+
+    private fun speakNavigationNow(text: String) {
+        feedbackEngine.speakNavigation(text)
     }
 
     private fun vibrateShortIfEnabled() {

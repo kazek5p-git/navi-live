@@ -10,6 +10,7 @@ final class LocationService: NSObject, ObservableObject {
   @Published private(set) var isUpdating = false
 
   private let manager: CLLocationManager
+  private var allowsBackgroundGuidance = false
 
   override init() {
     let manager = CLLocationManager()
@@ -22,6 +23,7 @@ final class LocationService: NSObject, ObservableObject {
     manager.activityType = .fitness
     manager.pausesLocationUpdatesAutomatically = false
     manager.headingFilter = 5
+    manager.allowsBackgroundLocationUpdates = false
   }
 
   var hasPermission: Bool {
@@ -35,6 +37,7 @@ final class LocationService: NSObject, ObservableObject {
   func startUpdates() {
     guard hasPermission else { return }
     isUpdating = true
+    updateBackgroundLocationAccess()
     manager.startUpdatingLocation()
     if CLLocationManager.headingAvailable() {
       manager.startUpdatingHeading()
@@ -44,7 +47,27 @@ final class LocationService: NSObject, ObservableObject {
   func stopUpdates() {
     manager.stopUpdatingLocation()
     manager.stopUpdatingHeading()
+    allowsBackgroundGuidance = false
+    updateBackgroundLocationAccess()
     isUpdating = false
+  }
+
+  func prepareForActiveNavigation() {
+    allowsBackgroundGuidance = true
+    if authorizationStatus == .authorizedWhenInUse {
+      manager.requestAlwaysAuthorization()
+    }
+    updateBackgroundLocationAccess()
+  }
+
+  func finishActiveNavigation() {
+    allowsBackgroundGuidance = false
+    updateBackgroundLocationAccess()
+  }
+
+  private func updateBackgroundLocationAccess() {
+    manager.allowsBackgroundLocationUpdates =
+      allowsBackgroundGuidance && authorizationStatus == .authorizedAlways
   }
 }
 
@@ -52,6 +75,7 @@ extension LocationService: CLLocationManagerDelegate {
   nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
     Task { @MainActor in
       authorizationStatus = manager.authorizationStatus
+      updateBackgroundLocationAccess()
       if hasPermission && isUpdating {
         startUpdates()
       }

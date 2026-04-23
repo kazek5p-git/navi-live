@@ -2,6 +2,8 @@ import Foundation
 
 struct LiveNavigationUpdate {
   let state: ActiveNavigationState
+  let currentStepIndex: Int
+  let upcomingInstruction: String?
   let stepChanged: Bool
   let offRouteTriggered: Bool
   let shouldAutoRecalculate: Bool
@@ -88,6 +90,8 @@ final class LiveNavigationEngine {
       )
       return LiveNavigationUpdate(
         state: state,
+        currentStepIndex: session.currentStepIndex,
+        upcomingInstruction: session.steps[safe: session.currentStepIndex + 1]?.instruction,
         stepChanged: false,
         offRouteTriggered: false,
         shouldAutoRecalculate: false,
@@ -110,6 +114,8 @@ final class LiveNavigationEngine {
       }
       return LiveNavigationUpdate(
         state: state,
+        currentStepIndex: session.currentStepIndex,
+        upcomingInstruction: session.steps[safe: session.currentStepIndex + 1]?.instruction,
         stepChanged: false,
         offRouteTriggered: !previous.isOffRoute,
         shouldAutoRecalculate: autoRecalculate,
@@ -133,6 +139,8 @@ final class LiveNavigationEngine {
 
     return LiveNavigationUpdate(
       state: state,
+      currentStepIndex: nextStepIndex,
+      upcomingInstruction: session.steps[safe: nextStepIndex + 1]?.instruction,
       stepChanged: stepChanged,
       offRouteTriggered: false,
       shouldAutoRecalculate: false,
@@ -260,5 +268,11 @@ final class LiveNavigationEngine {
     let nearestX = startProjection.x + (clamped * dx)
     let nearestY = startProjection.y + (clamped * dy)
     return hypot(pointProjection.x - nearestX, pointProjection.y - nearestY)
+  }
+}
+
+private extension Array {
+  subscript(safe index: Int) -> Element? {
+    indices.contains(index) ? self[index] : nil
   }
 }

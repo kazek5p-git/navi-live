@@ -238,6 +238,7 @@
     <string name="format_fallback_route_ready">Itinéraire de secours prêt pour %1$s.</string>
     <string name="format_route_ready">Itinéraire prêt pour %1$s.</string>
     <string name="format_continue_toward">Continuer vers %1$s.</string>
+    <string name="format_navigation_upcoming_instruction">Dans %1$d mètres, %2$s</string>
     <string name="format_current_position_announcement">%1$s Position actuelle : %2$s</string>
     <string name="format_telemetry_exported">Télémétrie exportée vers %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

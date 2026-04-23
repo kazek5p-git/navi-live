@@ -238,6 +238,7 @@
     <string name="format_fallback_route_ready">Reserverute klar til %1$s.</string>
     <string name="format_route_ready">Rute klar til %1$s.</string>
     <string name="format_continue_toward">Fortsæt mod %1$s.</string>
+    <string name="format_navigation_upcoming_instruction">I %1$d meter, %2$s</string>
     <string name="format_current_position_announcement">%1$s Nuværende stilling: %2$s</string>
     <string name="format_telemetry_exported">Telemetri eksporteret til %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

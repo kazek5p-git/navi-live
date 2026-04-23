@@ -238,6 +238,7 @@
     <string name="format_fallback_route_ready">Llwybr wrth gefn yn barod ar gyfer %1$s.</string>
     <string name="format_route_ready">Llwybr yn barod ar gyfer %1$s.</string>
     <string name="format_continue_toward">Ewch ymlaen tuag at %1$s.</string>
+    <string name="format_navigation_upcoming_instruction">Yn %1$d metr, %2$s</string>
     <string name="format_current_position_announcement">%1$s Sefyllfa bresennol: %2$s</string>
     <string name="format_telemetry_exported">Telemetreg wedi\'i allforio i %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

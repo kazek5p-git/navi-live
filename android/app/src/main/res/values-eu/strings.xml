@@ -238,6 +238,7 @@
     <string name="format_fallback_route_ready">Ibilbidea %1$srako prest.</string>
     <string name="format_route_ready">Ibilbidea prest %1$srako.</string>
     <string name="format_continue_toward">Jarraitu %1$s aldera.</string>
+    <string name="format_navigation_upcoming_instruction">%1$d metrotan, %2$s</string>
     <string name="format_current_position_announcement">%1$s Egungo postua: %2$s</string>
     <string name="format_telemetry_exported">Telemetria %1$s zenbakira esportatu da.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

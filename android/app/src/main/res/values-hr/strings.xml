@@ -238,6 +238,7 @@
     <string name="format_fallback_route_ready">Rezervna ruta spremna za %1$s.</string>
     <string name="format_route_ready">Ruta spremna za %1$s.</string>
     <string name="format_continue_toward">Nastavite prema %1$s.</string>
+    <string name="format_navigation_upcoming_instruction">U %1$d metara, %2$s</string>
     <string name="format_current_position_announcement">%1$s Trenutačna pozicija: %2$s</string>
     <string name="format_telemetry_exported">Telemetrija izvezena na %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

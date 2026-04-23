@@ -79,6 +79,7 @@
 "active.status.auto_recalculated" = "Route recalculated after route deviation.";
 "active.status.off_route" = "You are off the route.";
 "active.spoken.off_route" = "You are off the route.";
+"active.spoken.upcoming" = "In %1$d meters, %2$@";
 "active.spoken.recalculated" = "Route recalculated.";
 "active.spoken.arrived" = "You have arrived.";
 "arrival.title" = "Arrival";
