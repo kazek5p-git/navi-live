@@ -98,7 +98,9 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     private var isRouteRecalculating = false
     private var lastAutoRecalculateMs = 0L
     private var lastAnnouncedStepIndex = -1
-    private var lastPreviewedStepIndex = -1
+    private var lastCountdownStepIndex = -1
+    private var lastCountdownMilestoneMeters: Int? = null
+    private var lastImmediateAnnouncedStepIndex = -1
     private var lastTrackingState: Boolean? = null
     private var lastTelemetryFixPoint: GeoPoint? = null
     private var lastTelemetryFixTimestampMs: Long = 0L
@@ -1393,7 +1395,10 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         if (nextStepIndex != session.currentStepIndex) {
             announceStepChange(updatedSession)
         } else {
-            maybeAnnounceUpcomingInstruction(updatedSession, freshState, fix)
+            val announcedCountdown = maybeAnnounceCountdownInstruction(updatedSession, freshState)
+            if (!announcedCountdown) {
+                maybeAnnounceImmediateInstruction(updatedSession, freshState, fix)
+            }
         }
     }
 
@@ -1461,8 +1466,8 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         return (fix.accuracyMeters.coerceIn(15f, 32f) * 1.8f).roundToInt().coerceAtLeast(30)
     }
 
-    private fun upcomingAnnouncementThresholdMeters(fix: LocationFix): Int {
-        return (fix.accuracyMeters.coerceIn(10f, 18f) * 3f).roundToInt().coerceIn(25, 60)
+    private fun immediateAnnouncementThresholdMeters(fix: LocationFix): Int {
+        return fix.accuracyMeters.coerceIn(5f, 8f).roundToInt().coerceIn(5, 8)
     }
 
     private fun buildActiveNavigationState(
@@ -1508,7 +1513,15 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         if (session.currentStepIndex <= lastAnnouncedStepIndex) return
         lastAnnouncedStepIndex = session.currentStepIndex
         if (_uiState.value.settingsState.turnByTurnAnnouncements) {
-            speakNavigationNow(session.steps[session.currentStepIndex].instruction)
+            if (session.currentStepIndex != lastImmediateAnnouncedStepIndex) {
+                speakNavigationNow(
+                    string(
+                        R.string.format_navigation_immediate_instruction,
+                        session.steps[session.currentStepIndex].instruction,
+                    ),
+                )
+                lastImmediateAnnouncedStepIndex = session.currentStepIndex
+            }
         }
         vibrateShortIfEnabled()
         telemetryLogger.log(
@@ -1523,30 +1536,68 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         refreshDiagnosticsState()
     }
 
-    private fun maybeAnnounceUpcomingInstruction(
+    private fun maybeAnnounceCountdownInstruction(
         session: RouteSession,
         state: ActiveNavigationState,
-        fix: LocationFix,
-    ) {
-        if (!_uiState.value.settingsState.turnByTurnAnnouncements) return
+    ): Boolean {
+        if (!_uiState.value.settingsState.turnByTurnAnnouncements) return false
         val upcomingStepIndex = session.currentStepIndex + 1
-        val upcomingStep = session.steps.getOrNull(upcomingStepIndex) ?: return
-        if (upcomingStepIndex == lastPreviewedStepIndex) return
+        val upcomingStep = session.steps.getOrNull(upcomingStepIndex) ?: return false
         val distanceToNext = state.distanceToNextMeters
-        if (distanceToNext <= 0 || distanceToNext > upcomingAnnouncementThresholdMeters(fix)) return
+        val milestoneMeters = countdownMilestoneMeters(distanceToNext) ?: return false
 
-        lastPreviewedStepIndex = upcomingStepIndex
+        if (upcomingStepIndex != lastCountdownStepIndex) {
+            lastCountdownStepIndex = upcomingStepIndex
+            lastCountdownMilestoneMeters = null
+        }
+        val lastMilestone = lastCountdownMilestoneMeters
+        if (lastMilestone != null && milestoneMeters >= lastMilestone) return false
+
+        lastCountdownMilestoneMeters = milestoneMeters
         speakNavigationNow(
             string(
                 R.string.format_navigation_upcoming_instruction,
-                distanceToNext,
+                milestoneMeters,
                 upcomingStep.instruction,
             ),
         )
         vibrateShortIfEnabled()
         telemetryLogger.log(
-            type = "upcoming_instruction_announced",
-            message = "Upcoming instruction announced.",
+            type = "countdown_instruction_announced",
+            message = "Countdown instruction announced.",
+            attributes = linkedMapOf(
+                "step_index" to upcomingStepIndex,
+                "countdown_m" to milestoneMeters,
+                "instruction" to upcomingStep.instruction,
+            ),
+        )
+        refreshDiagnosticsState()
+        return true
+    }
+
+    private fun maybeAnnounceImmediateInstruction(
+        session: RouteSession,
+        state: ActiveNavigationState,
+        fix: LocationFix,
+    ): Boolean {
+        if (!_uiState.value.settingsState.turnByTurnAnnouncements) return false
+        val upcomingStepIndex = session.currentStepIndex + 1
+        val upcomingStep = session.steps.getOrNull(upcomingStepIndex) ?: return false
+        if (upcomingStepIndex == lastImmediateAnnouncedStepIndex) return false
+        val distanceToNext = state.distanceToNextMeters
+        if (distanceToNext <= 0 || distanceToNext > immediateAnnouncementThresholdMeters(fix)) return false
+
+        lastImmediateAnnouncedStepIndex = upcomingStepIndex
+        speakNavigationNow(
+            string(
+                R.string.format_navigation_immediate_instruction,
+                upcomingStep.instruction,
+            ),
+        )
+        vibrateShortIfEnabled()
+        telemetryLogger.log(
+            type = "immediate_instruction_announced",
+            message = "Immediate instruction announced.",
             attributes = linkedMapOf(
                 "step_index" to upcomingStepIndex,
                 "distance_to_next_m" to distanceToNext,
@@ -1554,6 +1605,12 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             ),
         )
         refreshDiagnosticsState()
+        return true
+    }
+
+    private fun countdownMilestoneMeters(distanceToNext: Int): Int? {
+        val thresholds = listOf(10, 20, 30, 40, 50, 100, 200, 300, 400)
+        return thresholds.firstOrNull { distanceToNext <= it }
     }
 
     private fun logTrackingStateChangeIfNeeded(isTracking: Boolean) {
@@ -1613,7 +1670,9 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
 
     private fun resetNavigationAnnouncementState() {
         lastAnnouncedStepIndex = -1
-        lastPreviewedStepIndex = -1
+        lastCountdownStepIndex = -1
+        lastCountdownMilestoneMeters = null
+        lastImmediateAnnouncedStepIndex = -1
     }
 
     private fun announceNavigationStartInstruction(session: RouteSession) {

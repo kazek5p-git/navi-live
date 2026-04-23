@@ -239,6 +239,7 @@
     <string name="format_route_ready">Trasa do %1$s jest gotowa.</string>
     <string name="format_continue_toward">Kieruj się w stronę %1$s.</string>
     <string name="format_navigation_upcoming_instruction">Za %1$d metrów: %2$s</string>
+    <string name="format_navigation_immediate_instruction">Teraz %1$s</string>
     <string name="format_current_position_announcement">%1$s Bieżąca pozycja: %2$s</string>
     <string name="format_telemetry_exported">Telemetria została wyeksportowana do %1$s.</string>
     <string name="format_coordinates_label">Szer. %1$s, dł. %2$s</string>
@@ -348,8 +349,8 @@
     <string name="generic_arriving_destination">Zbliżasz się do celu.</string>
     <string name="generic_next_segment">kolejny odcinek</string>
     <string name="route_step_depart">Ruszaj i kontynuuj %1$s.</string>
-    <string name="route_step_turn_generic">Skręć i kontynuuj %1$s.</string>
-    <string name="route_step_turn_with_modifier">Skręć %1$s i kontynuuj %2$s.</string>
+    <string name="route_step_turn_generic">Skręć w %1$s.</string>
+    <string name="route_step_turn_with_modifier">Skręć w %2$s w %1$s.</string>
     <string name="route_step_continue">Kontynuuj %1$s.</string>
     <string name="route_step_proceed_toward">Kieruj się w stronę %1$s.</string>
     <string name="route_modifier_left">w lewo</string>

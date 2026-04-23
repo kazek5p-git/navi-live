@@ -8,8 +8,18 @@
 "navigation.step.turn.sharp right" = "Skręć ostro w prawo";
 "navigation.step.turn.straight" = "Idź prosto";
 "navigation.step.turn.default" = "Kontynuuj trasę";
+"navigation.step.turn.named" = "Skręć w %1$@ %2$@";
+"navigation.step.turn.generic.named" = "Skręć w %1$@";
 "navigation.step.roundabout" = "Wejdź na rondo";
 "navigation.step.continue" = "Kontynuuj";
+"navigation.step.continue.named" = "Kontynuuj %1$@";
+"navigation.modifier.left" = "w lewo";
+"navigation.modifier.right" = "w prawo";
+"navigation.modifier.slight left" = "lekko w lewo";
+"navigation.modifier.slight right" = "lekko w prawo";
+"navigation.modifier.sharp left" = "ostro w lewo";
+"navigation.modifier.sharp right" = "ostro w prawo";
+"navigation.modifier.straight" = "prosto";
 "route.title" = "Podsumowanie trasy";
 "route.section.destination" = "Cel";
 "route.section.summary" = "Podsumowanie";
@@ -79,6 +89,7 @@
 "active.status.auto_recalculated" = "Trasa została przeliczona po zejściu z trasy.";
 "active.status.off_route" = "Jesteś poza trasą.";
 "active.spoken.off_route" = "Jesteś poza trasą.";
+"active.spoken.now" = "Teraz %1$@";
 "active.spoken.upcoming" = "Za %1$d metrów: %2$@";
 "active.spoken.recalculated" = "Trasa została przeliczona.";
 "active.spoken.arrived" = "Dotarłeś do celu.";

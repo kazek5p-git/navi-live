@@ -10,6 +10,14 @@
 6. Review `TestFlight-review-notes.txt` and `TestFlight-review-notes-strict.txt`.
 7. Re-check `App-Privacy-draft.md` against the current app behavior.
 
+## Standard prep
+
+1. Update `C:\Users\Kazek\Desktop\iOS\NaviLive\Scripts\TestFlight\what-to-test.pl.txt` and `what-to-test.en-US.txt`.
+2. Sync the same text into `native-ios/AppStoreConnect/TestFlight-what-to-test.txt`.
+3. Confirm `native-ios/project.yml` and `native-ios/NaviLive.xcodeproj/project.pbxproj` use the same `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION`.
+4. Run a clean iOS build on the Mac before any upload.
+5. Do not start the upload unless it was explicitly requested.
+
 ## Workflow
 
 1. Run `.\scripts\Publish-NaviLive-iOS-TestFlight.ps1`.

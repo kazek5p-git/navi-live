@@ -1,19 +1,39 @@
 POLSKI
 
-Najważniejsze rzeczy do sprawdzenia w tej becie:
-1. Wyszukaj realny cel i uruchom trasę pieszą.
-2. Przejdź przez ekran ustawienia kierunku i rozpocznij aktywną nawigację.
-3. Sprawdź, czy VoiceOver czyta sensownie główne informacje i akcje.
-4. Oceń, czy instrukcje głosowe i haptyka pojawiają się we właściwym momencie.
-5. Zejdź na chwilę z trasy i sprawdź reakcję aplikacji.
-6. Sprawdź ustawienia mowy, samouczka, pomocy i prywatności.
+Sprawdź aktywną nawigację pieszą.
+Najważniejsze są: komunikaty głosowe przy zbliżaniu do skrętu, odliczanie do manewru 400, 300, 200, 100, 50, 40, 30, 20, 10 metrów oraz końcowy komunikat „Teraz...”.
+
+Sprawdź treść komunikatów skrętu.
+Najważniejsze są: poprawny kierunek, poprawna nazwa ulicy w komunikacie, np. „Teraz skręć w Kalwaryjską w lewo”, oraz brak spóźnionych albo podwójnych odczytów.
+
+Sprawdź prowadzenie przy zablokowanym lub wygaszonym ekranie.
+Najważniejsze są: ciągłość komunikatów głosowych podczas marszu, stabilność działania oraz brak konieczności ręcznego sprawdzania wskazówek.
+
+Sprawdź wyszukiwanie i prezentację adresów.
+Najważniejsze są: poprawna kolejność adresu w stylu „Kalwaryjska 123”, sensowna nazwa miejsca i lepszy priorytet pobliskich wyników.
+
+Sprawdź dostępność VoiceOver.
+Najważniejsze są: poprawny fokus w onboarding, wyszukiwarce, podsumowaniu trasy i aktywnej nawigacji, brak podwójnego odczytu samouczka, czytelne etykiety i logiczna kolejność elementów.
+
+Sprawdź zejście z trasy i przeliczenie.
+Najważniejsze są: wykrycie off-route, komunikat ostrzegawczy, ręczne i automatyczne przeliczenie oraz powrót do prowadzenia bez zawieszenia.
 
 ENGLISH
 
-Main things to test in this beta:
-1. Search for a real destination and start a walking route.
-2. Go through heading alignment and begin active navigation.
-3. Check whether VoiceOver reads the main information and actions clearly.
-4. Verify whether spoken guidance and haptics happen at appropriate moments.
-5. Step away from the route briefly and observe the app response.
-6. Review speech, tutorial, help, and privacy settings.
+Please test active walking navigation.
+Focus on spoken guidance as you approach a turn, countdown prompts at 400, 300, 200, 100, 50, 40, 30, 20, and 10 meters, and the final “Now...” instruction.
+
+Please test the turn instruction wording.
+Focus on correct direction, correct street name in the spoken prompt, for example “Now turn onto Kalwaryjska to the left”, and no late or duplicated announcements.
+
+Please test guidance with the screen locked or dimmed.
+Focus on continuous spoken guidance while walking, stability, and not needing to manually read the next instruction.
+
+Please test search and address presentation.
+Focus on natural address ordering such as “Kalwaryjska 123”, sensible place labels, and better prioritization of nearby results.
+
+Please test VoiceOver accessibility.
+Focus on onboarding, search, route summary, and active navigation focus behavior, no duplicated tutorial reading, clear labels, and logical reading order.
+
+Please test off-route handling and recalculation.
+Focus on detecting route deviation, the warning state, manual and automatic recalculation, and returning to guidance without freezing.

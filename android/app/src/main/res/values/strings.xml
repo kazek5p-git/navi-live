@@ -259,6 +259,7 @@
     <string name="format_route_ready">Route ready for %1$s.</string>
     <string name="format_continue_toward">Continue toward %1$s.</string>
     <string name="format_navigation_upcoming_instruction">In %1$d meters, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Now %1$s</string>
     <string name="format_current_position_announcement">%1$s Current position: %2$s</string>
     <string name="format_telemetry_exported">Telemetry exported to %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>
@@ -372,8 +373,8 @@
     <string name="generic_next_segment">the next segment</string>
 
     <string name="route_step_depart">Start and continue on %1$s.</string>
-    <string name="route_step_turn_generic">Turn and continue on %1$s.</string>
-    <string name="route_step_turn_with_modifier">Turn %1$s and continue on %2$s.</string>
+    <string name="route_step_turn_generic">Turn onto %1$s.</string>
+    <string name="route_step_turn_with_modifier">Turn %1$s onto %2$s.</string>
     <string name="route_step_continue">Continue on %1$s.</string>
     <string name="route_step_proceed_toward">Proceed toward %1$s.</string>
     <string name="route_modifier_left">left</string>

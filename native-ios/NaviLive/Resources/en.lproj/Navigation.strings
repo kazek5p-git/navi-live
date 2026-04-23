@@ -8,8 +8,18 @@
 "navigation.step.turn.sharp right" = "Turn sharply right";
 "navigation.step.turn.straight" = "Continue straight";
 "navigation.step.turn.default" = "Continue on the route";
+"navigation.step.turn.named" = "Turn %2$@ onto %1$@";
+"navigation.step.turn.generic.named" = "Turn onto %1$@";
 "navigation.step.roundabout" = "Enter the roundabout";
 "navigation.step.continue" = "Continue";
+"navigation.step.continue.named" = "Continue on %1$@";
+"navigation.modifier.left" = "left";
+"navigation.modifier.right" = "right";
+"navigation.modifier.slight left" = "slightly left";
+"navigation.modifier.slight right" = "slightly right";
+"navigation.modifier.sharp left" = "sharply left";
+"navigation.modifier.sharp right" = "sharply right";
+"navigation.modifier.straight" = "straight";
 "route.title" = "Route Summary";
 "route.section.destination" = "Destination";
 "route.section.summary" = "Summary";
@@ -79,6 +89,7 @@
 "active.status.auto_recalculated" = "Route recalculated after route deviation.";
 "active.status.off_route" = "You are off the route.";
 "active.spoken.off_route" = "You are off the route.";
+"active.spoken.now" = "Now %1$@";
 "active.spoken.upcoming" = "In %1$d meters, %2$@";
 "active.spoken.recalculated" = "Route recalculated.";
 "active.spoken.arrived" = "You have arrived.";

@@ -37,7 +37,9 @@ final class AppModel: ObservableObject {
   private var knownPlaces: [String: Place] = [:]
   private var cancellables: Set<AnyCancellable> = []
   private var isNavigationLive = false
-  private var lastUpcomingAnnouncementStepIndex = -1
+  private var lastCountdownAnnouncementStepIndex = -1
+  private var lastCountdownMilestoneMeters: Int?
+  private var lastImmediateAnnouncementStepIndex = -1
   private var headingIndex = 0
   private let headingSequence = [
     HeadingState(
@@ -229,7 +231,9 @@ final class AppModel: ObservableObject {
         fix: locationService.latestFix
       )
       isNavigationLive = false
-      lastUpcomingAnnouncementStepIndex = -1
+      lastCountdownAnnouncementStepIndex = -1
+      lastCountdownMilestoneMeters = nil
+      lastImmediateAnnouncementStepIndex = -1
       statusMessage = L10n.text("route.status.ready", table: .navigation)
       announceSuccess(message: L10n.text("route.status.ready", table: .navigation))
     } catch {
@@ -256,7 +260,9 @@ final class AppModel: ObservableObject {
     guard liveNavigationEngine.currentDestination != nil else { return }
     locationService.prepareForActiveNavigation()
     isNavigationLive = true
-    lastUpcomingAnnouncementStepIndex = -1
+    lastCountdownAnnouncementStepIndex = -1
+    lastCountdownMilestoneMeters = nil
+    lastImmediateAnnouncementStepIndex = -1
     activeNavigationState.isPaused = false
     statusMessage = L10n.text("active.status.started", table: .navigation)
     announceNavigationPrompt(
@@ -299,7 +305,9 @@ final class AppModel: ObservableObject {
 
   func stopNavigation() {
     isNavigationLive = false
-    lastUpcomingAnnouncementStepIndex = -1
+    lastCountdownAnnouncementStepIndex = -1
+    lastCountdownMilestoneMeters = nil
+    lastImmediateAnnouncementStepIndex = -1
     locationService.finishActiveNavigation()
     announcer.stopSpeech()
     liveNavigationEngine.reset()
@@ -313,7 +321,9 @@ final class AppModel: ObservableObject {
   func markArrived() {
     guard let destination = liveNavigationEngine.currentDestination else { return }
     isNavigationLive = false
-    lastUpcomingAnnouncementStepIndex = -1
+    lastCountdownAnnouncementStepIndex = -1
+    lastCountdownMilestoneMeters = nil
+    lastImmediateAnnouncementStepIndex = -1
     locationService.finishActiveNavigation()
     activeNavigationState.isPaused = false
     activeNavigationState.isOffRoute = false
@@ -435,9 +445,17 @@ final class AppModel: ObservableObject {
 
     activeNavigationState = update.state
     if update.stepChanged && settings.turnByTurnAnnouncements {
-      announceNavigationPrompt(update.state.currentInstruction)
+      if update.currentStepIndex != lastImmediateAnnouncementStepIndex {
+        announceNavigationPrompt(
+          L10n.text("active.spoken.now", table: .navigation, update.state.currentInstruction)
+        )
+        lastImmediateAnnouncementStepIndex = update.currentStepIndex
+      }
     } else if settings.turnByTurnAnnouncements {
-      maybeAnnounceUpcomingInstruction(update: update, fix: fix)
+      let announcedCountdown = maybeAnnounceCountdownInstruction(update: update)
+      if !announcedCountdown {
+        _ = maybeAnnounceImmediateInstruction(update: update, fix: fix)
+      }
     }
     if update.offRouteTriggered {
       statusMessage = L10n.text("active.status.off_route", table: .navigation)
@@ -480,7 +498,9 @@ final class AppModel: ObservableObject {
         summary: summary,
         fix: locationService.latestFix
       )
-      lastUpcomingAnnouncementStepIndex = -1
+      lastCountdownAnnouncementStepIndex = -1
+      lastCountdownMilestoneMeters = nil
+      lastImmediateAnnouncementStepIndex = -1
       activeNavigationState.isRecalculating = false
       if autoTriggered {
         statusMessage = L10n.text("active.status.auto_recalculated", table: .navigation)
@@ -495,33 +515,65 @@ final class AppModel: ObservableObject {
     }
   }
 
-  private func maybeAnnounceUpcomingInstruction(update: LiveNavigationUpdate, fix: LocationFix) {
-    guard !update.stepChanged else { return }
-    guard !update.state.isOffRoute, !update.state.isRecalculating, !update.hasArrived else { return }
+  private func maybeAnnounceCountdownInstruction(update: LiveNavigationUpdate) -> Bool {
+    guard !update.stepChanged else { return false }
+    guard !update.state.isOffRoute, !update.state.isRecalculating, !update.hasArrived else { return false }
     let upcomingStepIndex = update.currentStepIndex + 1
-    guard upcomingStepIndex != lastUpcomingAnnouncementStepIndex else { return }
     guard let upcomingInstruction = update.upcomingInstruction?.trimmingCharacters(in: .whitespacesAndNewlines),
           !upcomingInstruction.isEmpty else {
-      return
+      return false
     }
-    let previewThreshold = navigationPreviewThresholdMeters(accuracyMeters: fix.accuracyMeters)
-    guard update.state.distanceToNextMeters > 0, update.state.distanceToNextMeters <= previewThreshold else {
-      return
+    guard let milestoneMeters = countdownMilestoneMeters(distanceToNext: update.state.distanceToNextMeters) else {
+      return false
     }
 
-    lastUpcomingAnnouncementStepIndex = upcomingStepIndex
+    if upcomingStepIndex != lastCountdownAnnouncementStepIndex {
+      lastCountdownAnnouncementStepIndex = upcomingStepIndex
+      lastCountdownMilestoneMeters = nil
+    }
+    if let lastMilestone = lastCountdownMilestoneMeters, milestoneMeters >= lastMilestone {
+      return false
+    }
+
+    lastCountdownMilestoneMeters = milestoneMeters
     announceNavigationPrompt(
       L10n.text(
         "active.spoken.upcoming",
         table: .navigation,
-        update.state.distanceToNextMeters,
+        milestoneMeters,
         upcomingInstruction
       )
     )
+    return true
   }
 
-  private func navigationPreviewThresholdMeters(accuracyMeters: Double) -> Int {
-    min(max(Int((min(max(accuracyMeters, 10), 18) * 3).rounded()), 25), 60)
+  private func maybeAnnounceImmediateInstruction(update: LiveNavigationUpdate, fix: LocationFix) -> Bool {
+    guard !update.stepChanged else { return false }
+    guard !update.state.isOffRoute, !update.state.isRecalculating, !update.hasArrived else { return false }
+    let upcomingStepIndex = update.currentStepIndex + 1
+    guard upcomingStepIndex != lastImmediateAnnouncementStepIndex else { return false }
+    guard let upcomingInstruction = update.upcomingInstruction?.trimmingCharacters(in: .whitespacesAndNewlines),
+          !upcomingInstruction.isEmpty else {
+      return false
+    }
+    let threshold = immediateNavigationThresholdMeters(accuracyMeters: fix.accuracyMeters)
+    guard update.state.distanceToNextMeters > 0, update.state.distanceToNextMeters <= threshold else {
+      return false
+    }
+
+    lastImmediateAnnouncementStepIndex = upcomingStepIndex
+    announceNavigationPrompt(
+      L10n.text("active.spoken.now", table: .navigation, upcomingInstruction)
+    )
+    return true
+  }
+
+  private func countdownMilestoneMeters(distanceToNext: Int) -> Int? {
+    [10, 20, 30, 40, 50, 100, 200, 300, 400].first { distanceToNext <= $0 }
+  }
+
+  private func immediateNavigationThresholdMeters(accuracyMeters: Double) -> Int {
+    min(max(Int(min(max(accuracyMeters, 5), 8).rounded()), 5), 8)
   }
 
   private func announceNavigationPrompt(_ message: String, warning: Bool = false) {

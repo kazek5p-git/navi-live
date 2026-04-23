@@ -210,21 +210,41 @@ actor NavigationAPIClient {
       return instruction
     }
 
+    let roadName = step.name.trimmingCharacters(in: .whitespacesAndNewlines)
+
     switch step.maneuver.type {
     case "depart":
       return L10n.text("navigation.step.depart", table: .navigation)
     case "arrive":
       return L10n.text("navigation.step.arrive", table: .navigation)
     case "turn":
+      if let modifier = step.maneuver.modifier, !roadName.isEmpty {
+        return L10n.text(
+          "navigation.step.turn.named",
+          table: .navigation,
+          roadName,
+          modifierText(for: modifier)
+        )
+      }
       if let modifier = step.maneuver.modifier {
         return L10n.text("navigation.step.turn.\(modifier)", table: .navigation)
       }
-      return L10n.text("navigation.step.turn.default", table: .navigation)
+      return roadName.isEmpty
+        ? L10n.text("navigation.step.turn.default", table: .navigation)
+        : L10n.text("navigation.step.turn.generic.named", table: .navigation, roadName)
     case "roundabout":
       return L10n.text("navigation.step.roundabout", table: .navigation)
     default:
-      return step.name.isEmpty ? L10n.text("navigation.step.continue", table: .navigation) : step.name
+      return roadName.isEmpty
+        ? L10n.text("navigation.step.continue", table: .navigation)
+        : L10n.text("navigation.step.continue.named", table: .navigation, roadName)
     }
+  }
+
+  private func modifierText(for modifier: String) -> String {
+    let key = "navigation.modifier.\(modifier)"
+    let localized = L10n.text(key, table: .navigation)
+    return localized == key ? modifier : localized
   }
 
   private func fetchSearchCandidates(
