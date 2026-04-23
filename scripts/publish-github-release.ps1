@@ -7,7 +7,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Host '[etap] Sprawdzam środowisko Android i GitHub.'
+Write-Host '[etap] Sprawdzam srodowisko Android i GitHub.'
 
 function Get-RequiredValue {
     param(
@@ -78,7 +78,8 @@ function Get-ReleaseNotes {
     )
 
     if (-not [string]::IsNullOrWhiteSpace($Path)) {
-        return Get-Content -Path $Path -Raw -Encoding UTF8
+        $resolvedPath = (Resolve-Path -Path $Path).Path
+        return [System.IO.File]::ReadAllText($resolvedPath, [System.Text.Encoding]::UTF8)
     }
 
     if ($ReleaseExists -and -not [string]::IsNullOrWhiteSpace($ExistingNotes)) {
@@ -113,7 +114,7 @@ $repoSlug = Get-RequiredValue -Value $repoMatch.Groups[1].Value -Label "GitHub r
 $targetBranch = Invoke-Capture -Command @("git", "-C", $repoRoot, "branch", "--show-current")
 
 if (-not $SkipBuild) {
-    Write-Host '[etap] Buduję Android release lokalnie.'
+    Write-Host '[etap] Buduje Android release lokalnie.'
     Invoke-Tool -Command @(".\gradlew.bat", ":app:stageDebugReleaseAsset") -WorkingDirectory $androidDir
 }
 
@@ -160,7 +161,7 @@ $payload = $(
 )
 
 try {
-    Write-Host '[etap] Publikuję Android release na GitHub.'
+    Write-Host '[etap] Publikuje Android release na GitHub.'
     if ($releaseExists) {
         Invoke-Tool -Command @("gh", "api", "repos/$repoSlug/releases/$($release.id)", "--method", "PATCH", "--input", $tempPayloadPath)
     } else {
@@ -194,7 +195,7 @@ try {
     $release = $releaseJson | ConvertFrom-Json
     $downloadUrl = ($release.assets | Where-Object { $_.name -eq "navi-live.apk" } | Select-Object -First 1).browser_download_url
 
-    Write-Host '[etap] Android GitHub release zakończony.'
+    Write-Host '[etap] Android GitHub release zakonczony.'
     Write-Host "Release ready: $($release.html_url)"
     Write-Host "APK: $downloadUrl"
     Write-Host "Latest link: https://github.com/$repoSlug/releases/latest/download/navi-live.apk"
