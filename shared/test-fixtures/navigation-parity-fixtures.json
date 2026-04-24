@@ -1,0 +1,108 @@
+{
+  "addressCases": [
+    {
+      "name": "street_and_house_number_from_address_fields",
+      "address": {
+        "road": "Kalwaryjska",
+        "house_number": "123",
+        "city": "Kraków",
+        "state": "Małopolskie",
+        "country": "Polska"
+      },
+      "fallback": "123 Kalwaryjska, Kraków, Małopolskie, Polska",
+      "expected": "Kalwaryjska 123, Kraków, Małopolskie"
+    },
+    {
+      "name": "fallback_reorders_leading_house_number",
+      "address": null,
+      "fallback": "123 Dupowa, Dupniki, Małopolskie, Polska",
+      "expected": "Dupowa 123, Dupniki, Małopolskie, Polska"
+    },
+    {
+      "name": "short_address_appends_country",
+      "address": {
+        "road": "Stara",
+        "house_number": "7",
+        "country": "Polska"
+      },
+      "fallback": "7 Stara, Polska",
+      "expected": "Stara 7, Polska"
+    },
+    {
+      "name": "house_number_uses_fallback_street_context",
+      "address": {
+        "house_number": "45",
+        "city": "Kraków",
+        "state": "Małopolskie",
+        "country": "Polska"
+      },
+      "fallback": "45 Szewska, Kraków, Małopolskie, Polska",
+      "expected": "Szewska 45, Kraków, Małopolskie"
+    }
+  ],
+  "instructionCases": [
+    {
+      "name": "depart_named",
+      "maneuverType": "depart",
+      "modifier": null,
+      "roadName": "Kalwaryjska",
+      "expectedParity": "DepartNamed|Kalwaryjska|-"
+    },
+    {
+      "name": "turn_named_left",
+      "maneuverType": "turn",
+      "modifier": "left",
+      "roadName": "Kalwaryjska",
+      "expectedParity": "TurnNamed|Kalwaryjska|left"
+    },
+    {
+      "name": "turn_bare_modifier",
+      "maneuverType": "turn",
+      "modifier": "right",
+      "roadName": "",
+      "expectedParity": "TurnBareModifier|-|right"
+    },
+    {
+      "name": "turn_generic_named",
+      "maneuverType": "turn",
+      "modifier": null,
+      "roadName": "Kalwaryjska",
+      "expectedParity": "TurnGenericNamed|Kalwaryjska|-"
+    },
+    {
+      "name": "turn_with_unsupported_modifier_falls_back_to_named",
+      "maneuverType": "turn",
+      "modifier": "merge",
+      "roadName": "Dietla",
+      "expectedParity": "TurnGenericNamed|Dietla|-"
+    },
+    {
+      "name": "arrive",
+      "maneuverType": "arrive",
+      "modifier": null,
+      "roadName": "",
+      "expectedParity": "Arrive|-|-"
+    },
+    {
+      "name": "continue_named",
+      "maneuverType": "continue",
+      "modifier": null,
+      "roadName": "Dietla",
+      "expectedParity": "ContinueNamed|Dietla|-"
+    },
+    {
+      "name": "new_name_named",
+      "maneuverType": "new name",
+      "modifier": null,
+      "roadName": "Grodzka",
+      "expectedParity": "ContinueNamed|Grodzka|-"
+    },
+    {
+      "name": "fallback_proceed_toward_named",
+      "maneuverType": "fork",
+      "modifier": "slight left",
+      "roadName": "Mostowa",
+      "expectedParity": "ProceedTowardNamed|Mostowa|-"
+    }
+  ]
+}

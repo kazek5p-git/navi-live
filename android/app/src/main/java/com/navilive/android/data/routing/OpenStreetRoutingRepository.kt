@@ -182,28 +182,49 @@ class OpenStreetRoutingRepository(
     private fun instructionForStep(step: JSONObject): String {
         val maneuver = step.optJSONObject("maneuver")
         val maneuverType = maneuver?.optString("type").orEmpty()
-        val modifier = maneuver?.optString("modifier").orEmpty()
-        val roadName = step.optString("name").ifBlank { string(R.string.generic_next_segment) }
-        return when (maneuverType) {
-            "depart" -> string(R.string.route_step_depart, roadName)
-            "turn" -> {
-                val localizedModifier = routeModifier(modifier)
+        val roadName = step.optString("name").trim().ifBlank { null }
+        val fallbackRoad = roadName ?: string(R.string.generic_next_segment)
+        val descriptor = NavigationInstructionCore.describe(
+            maneuverType = maneuverType,
+            modifier = maneuver?.optString("modifier"),
+            roadName = roadName,
+        )
+        return when (descriptor.strategy) {
+            NavigationInstructionDescriptor.Strategy.DepartNamed ->
+                string(R.string.route_step_depart, descriptor.roadName ?: fallbackRoad)
+            NavigationInstructionDescriptor.Strategy.Arrive ->
+                string(R.string.generic_arriving_destination)
+            NavigationInstructionDescriptor.Strategy.TurnNamed -> {
+                val localizedModifier = routeModifier(descriptor.normalizedModifier)
+                string(
+                    R.string.route_step_turn_with_modifier,
+                    localizedModifier.ifBlank { descriptor.normalizedModifier ?: "" },
+                    descriptor.roadName ?: fallbackRoad,
+                )
+            }
+            NavigationInstructionDescriptor.Strategy.TurnGenericNamed ->
+                string(R.string.route_step_turn_generic, descriptor.roadName ?: fallbackRoad)
+            NavigationInstructionDescriptor.Strategy.TurnBareModifier -> {
+                val localizedModifier = routeModifier(descriptor.normalizedModifier)
                 if (localizedModifier.isBlank()) {
-                    string(R.string.route_step_turn_generic, roadName)
+                    string(R.string.route_step_turn_generic, fallbackRoad)
                 } else {
-                    string(R.string.route_step_turn_with_modifier, localizedModifier, roadName)
+                    string(R.string.route_step_turn_with_modifier, localizedModifier, fallbackRoad)
                 }
             }
-            "arrive" -> string(R.string.generic_arriving_destination)
-            "new name", "continue" -> string(R.string.route_step_continue, roadName)
-            else -> string(R.string.route_step_proceed_toward, roadName)
+            NavigationInstructionDescriptor.Strategy.ContinueNamed ->
+                string(R.string.route_step_continue, descriptor.roadName ?: fallbackRoad)
+            NavigationInstructionDescriptor.Strategy.ProceedTowardNamed ->
+                string(R.string.route_step_proceed_toward, descriptor.roadName ?: fallbackRoad)
         }
     }
 
-    private fun routeModifier(modifier: String): String {
-        val normalized = SharedProductRules.Instructions.normalizeModifier(modifier)
+    private fun routeModifier(modifier: String?): String {
+        val normalized = modifier
+            ?.let(SharedProductRules.Instructions::normalizeModifier)
+            .orEmpty()
         if (normalized !in SharedProductRules.Instructions.supportedModifiers) {
-            return modifier
+            return modifier.orEmpty()
         }
         return when (normalized) {
             "left" -> string(R.string.route_modifier_left)
@@ -214,7 +235,7 @@ class OpenStreetRoutingRepository(
             "sharp right" -> string(R.string.route_modifier_sharp_right)
             "straight" -> string(R.string.route_modifier_straight)
             "uturn" -> string(R.string.route_modifier_uturn)
-            else -> modifier
+            else -> modifier.orEmpty()
         }
     }
 
@@ -226,10 +247,10 @@ class OpenStreetRoutingRepository(
         }
         return explicitName.ifBlank {
             val firstPart = fallback.substringBefore(",").trim()
-            if (isLikelyHouseNumber(firstPart)) {
+            if (AddressFormattingCore.isLikelyHouseNumber(firstPart)) {
                 fallback.split(",")
                     .map { it.trim() }
-                    .firstOrNull { it.isNotBlank() && !isLikelyHouseNumber(it) }
+                    .firstOrNull { it.isNotBlank() && !AddressFormattingCore.isLikelyHouseNumber(it) }
                     ?: fallback
             } else {
                 firstPart.ifBlank { fallback }
@@ -354,95 +375,17 @@ class OpenStreetRoutingRepository(
     }
 
     private fun formatAddress(address: JSONObject?, fallback: String): String {
-        if (address == null) return normalizeFallbackAddress(fallback)
-
-        val streetName = firstNonBlankFromKeys(address, SharedProductRules.Address.streetPriorityKeys)
-        val houseNumber = cleanAddressValue(address.optString("house_number"))
-        val streetLine = when {
-            !streetName.isNullOrBlank() && !houseNumber.isNullOrBlank() -> "$streetName $houseNumber"
-            !streetName.isNullOrBlank() -> streetName
-            !houseNumber.isNullOrBlank() -> streetLineFromFallback(fallback, houseNumber) ?: houseNumber
-            else -> streetLineFromFallback(fallback, null)
-        }
-
-        val locality = firstNonBlankFromKeys(address, SharedProductRules.Address.localityPriorityKeys)
-        val region = firstNonBlankFromKeys(address, SharedProductRules.Address.regionPriorityKeys)
-        val country = cleanAddressValue(address.optString("country"))
-
-        val parts = linkedSetOf<String>()
-        listOf(streetLine, locality, region)
-            .filterNotNull()
-            .map { it.trim() }
-            .filter { it.isNotBlank() }
-            .forEach(parts::add)
-        if (
-            parts.size < SharedProductRules.Address.appendCountryIfFewerThanParts &&
-            !country.isNullOrBlank()
-        ) {
-            parts += country
-        }
-        return parts.joinToString(", ").ifBlank { normalizeFallbackAddress(fallback) }
+        return AddressFormattingCore.formatAddress(address?.toStringMap(), fallback)
     }
 
-    private fun firstNonBlankFromKeys(address: JSONObject, keys: List<String>): String? {
-        return keys.firstNotNullOfOrNull { key ->
-            cleanAddressValue(address.optString(key))
+    private fun JSONObject.toStringMap(): Map<String, String> {
+        val mapped = linkedMapOf<String, String>()
+        val iterator = keys()
+        while (iterator.hasNext()) {
+            val key = iterator.next()
+            mapped[key] = optString(key)
         }
-    }
-
-    private fun firstNonBlank(vararg values: String?): String? {
-        return values.firstNotNullOfOrNull(::cleanAddressValue)
-    }
-
-    private fun cleanAddressValue(value: String?): String? {
-        val trimmed = value?.trim().orEmpty()
-        return trimmed.takeIf {
-            it.isNotBlank() && !it.equals("null", ignoreCase = true)
-        }
-    }
-
-    private fun streetLineFromFallback(fallback: String, houseNumber: String?): String? {
-        val parts = fallback.split(",")
-            .mapNotNull(::cleanAddressValue)
-        if (parts.isEmpty()) return null
-
-        val first = parts.getOrNull(0)
-        val second = parts.getOrNull(1)
-        if (!houseNumber.isNullOrBlank() && first == houseNumber && !second.isNullOrBlank()) {
-            return "$second $houseNumber"
-        }
-        if (!houseNumber.isNullOrBlank() && second == houseNumber && !first.isNullOrBlank()) {
-            return "$first $houseNumber"
-        }
-        return normalizeStreetLine(first)
-    }
-
-    private fun normalizeFallbackAddress(fallback: String): String {
-        val parts = fallback.split(",")
-            .mapNotNull(::cleanAddressValue)
-            .toMutableList()
-        if (parts.size >= 2 && isLikelyHouseNumber(parts[0])) {
-            parts[0] = "${parts[1]} ${parts[0]}"
-            parts.removeAt(1)
-        } else if (parts.isNotEmpty()) {
-            parts[0] = normalizeStreetLine(parts[0]) ?: parts[0]
-        }
-        return parts.distinct().joinToString(", ").ifBlank { fallback }
-    }
-
-    private fun normalizeStreetLine(value: String?): String? {
-        val trimmed = cleanAddressValue(value) ?: return null
-        val match = SharedProductRules.Address.leadingHouseNumberStreetPattern.matchEntire(trimmed)
-        return if (match != null) {
-            "${match.groupValues[2]} ${match.groupValues[1]}".trim()
-        } else {
-            trimmed
-        }
-    }
-
-    private fun isLikelyHouseNumber(value: String?): Boolean {
-        val trimmed = cleanAddressValue(value) ?: return false
-        return SharedProductRules.Address.houseNumberPattern.matches(trimmed)
+        return mapped
     }
 
     private fun searchScore(place: Place, query: String, currentPoint: GeoPoint?): Int {
