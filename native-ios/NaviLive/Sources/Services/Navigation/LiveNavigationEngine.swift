@@ -75,7 +75,10 @@ final class LiveNavigationEngine {
     guard var session else { return nil }
 
     let deviation = routeDeviationMeters(pathPoints: session.pathPoints, point: fix.point)
-    let isOffRoute = deviation != nil && deviation! > offRouteThresholdMeters(accuracyMeters: fix.accuracyMeters)
+    let isOffRoute = NavigationScenarioCore.shouldTriggerOffRoute(
+      deviationMeters: deviation,
+      accuracyMeters: fix.accuracyMeters
+    )
     let distanceToDestination = session.destination.point.map { Int(fix.point.distance(to: $0).rounded()) } ?? 0
     let arrivedThreshold = max(12, Int(fix.accuracyMeters.rounded()))
 
@@ -154,43 +157,26 @@ final class LiveNavigationEngine {
   }
 
   private func shouldAutoRecalculate(now: Date) -> Bool {
-    now.timeIntervalSince(lastAutoRecalculateAt) >=
-      Double(SharedProductRules.Navigation.autoRecalculateCooldownMs) / 1000.0
+    NavigationScenarioCore.shouldAllowAutoRecalculate(
+      isRouteRecalculating: false,
+      elapsedSinceLastRecalculateMs: Int((now.timeIntervalSince(lastAutoRecalculateAt) * 1000.0).rounded())
+    )
   }
 
   private func resolveStepIndex(session: RouteSession, fix: LocationFix) -> Int {
     var index = session.currentStepIndex
-    let threshold = maneuverAdvanceThresholdMeters(accuracyMeters: fix.accuracyMeters)
     while index < session.steps.count - 1 {
       guard let nextManeuver = session.steps[index + 1].maneuverPoint else { break }
-      if fix.point.distance(to: nextManeuver) <= threshold {
+      if NavigationScenarioCore.shouldAdvanceStep(
+        distanceToManeuverMeters: fix.point.distance(to: nextManeuver),
+        accuracyMeters: fix.accuracyMeters
+      ) {
         index += 1
       } else {
         break
       }
     }
     return index
-  }
-
-  private func maneuverAdvanceThresholdMeters(accuracyMeters: Double) -> Double {
-    min(
-      max(accuracyMeters, SharedProductRules.Navigation.maneuverAdvanceAccuracyMinMeters),
-      SharedProductRules.Navigation.maneuverAdvanceAccuracyMaxMeters
-    ) * SharedProductRules.Navigation.maneuverAdvanceMultiplier
-  }
-
-  private func offRouteThresholdMeters(accuracyMeters: Double) -> Int {
-    max(
-      Int(
-        (
-          min(
-            max(accuracyMeters, SharedProductRules.Navigation.offRouteAccuracyMinMeters),
-            SharedProductRules.Navigation.offRouteAccuracyMaxMeters
-          ) * SharedProductRules.Navigation.offRouteMultiplier
-        ).rounded()
-      ),
-      SharedProductRules.Navigation.offRouteMinimumThresholdMeters
-    )
   }
 
   private func buildState(

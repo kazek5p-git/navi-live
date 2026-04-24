@@ -104,5 +104,101 @@
       "roadName": "Mostowa",
       "expectedParity": "ProceedTowardNamed|Mostowa|-"
     }
-  ]
+  ],
+  "scenarioCases": {
+    "thresholds": [
+      {
+        "name": "minimum_accuracy_clamps_thresholds",
+        "accuracyMeters": 3.0,
+        "expectedManeuverAdvance": 15.0,
+        "expectedOffRoute": 30,
+        "expectedImmediate": 5
+      },
+      {
+        "name": "mid_accuracy_uses_live_values",
+        "accuracyMeters": 12.0,
+        "expectedManeuverAdvance": 18.0,
+        "expectedOffRoute": 30,
+        "expectedImmediate": 8
+      },
+      {
+        "name": "high_accuracy_clamps_maximums",
+        "accuracyMeters": 40.0,
+        "expectedManeuverAdvance": 30.0,
+        "expectedOffRoute": 58,
+        "expectedImmediate": 8
+      }
+    ],
+    "countdowns": [
+      {
+        "name": "distance_above_largest_milestone_has_no_announcement",
+        "distanceToNextMeters": 401,
+        "expectedMilestone": null
+      },
+      {
+        "name": "distance_chooses_next_highest_bucket",
+        "distanceToNextMeters": 250,
+        "expectedMilestone": 300
+      },
+      {
+        "name": "distance_inside_close_bucket_uses_ten",
+        "distanceToNextMeters": 8,
+        "expectedMilestone": 10
+      }
+    ],
+    "advanceDecisions": [
+      {
+        "name": "advance_when_within_threshold",
+        "distanceToManeuverMeters": 14.0,
+        "accuracyMeters": 10.0,
+        "expectedAdvance": true
+      },
+      {
+        "name": "do_not_advance_when_outside_threshold",
+        "distanceToManeuverMeters": 16.0,
+        "accuracyMeters": 10.0,
+        "expectedAdvance": false
+      }
+    ],
+    "offRouteDecisions": [
+      {
+        "name": "null_deviation_never_triggers",
+        "deviationMeters": null,
+        "accuracyMeters": 10.0,
+        "expectedOffRoute": false
+      },
+      {
+        "name": "deviation_below_threshold_does_not_trigger",
+        "deviationMeters": 29,
+        "accuracyMeters": 5.0,
+        "expectedOffRoute": false
+      },
+      {
+        "name": "deviation_above_threshold_triggers",
+        "deviationMeters": 31,
+        "accuracyMeters": 5.0,
+        "expectedOffRoute": true
+      }
+    ],
+    "autoRecalculate": [
+      {
+        "name": "cooldown_blocks_when_route_is_already_recalculating",
+        "elapsedMs": 20000,
+        "isRouteRecalculating": true,
+        "expectedAllowed": false
+      },
+      {
+        "name": "cooldown_blocks_before_threshold",
+        "elapsedMs": 14999,
+        "isRouteRecalculating": false,
+        "expectedAllowed": false
+      },
+      {
+        "name": "cooldown_allows_at_threshold",
+        "elapsedMs": 15000,
+        "isRouteRecalculating": false,
+        "expectedAllowed": true
+      }
+    ]
+  }
 }

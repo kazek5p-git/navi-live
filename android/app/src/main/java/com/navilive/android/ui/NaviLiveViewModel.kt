@@ -1362,8 +1362,8 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         if (currentState.isPaused) return
 
         val deviationMeters = routeDeviationMeters(session.pathPoints, fix.point)
-        if (deviationMeters != null && deviationMeters > offRouteThresholdMeters(fix)) {
-            handleOffRoute(session, fix, deviationMeters)
+        if (NavigationScenarioCore.shouldTriggerOffRoute(deviationMeters, fix.accuracyMeters)) {
+            handleOffRoute(session, fix, requireNotNull(deviationMeters))
             return
         }
 
@@ -1442,56 +1442,28 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun shouldAutoRecalculate(): Boolean {
-        return !isRouteRecalculating &&
-            System.currentTimeMillis() - lastAutoRecalculateMs >=
-            SharedProductRules.Navigation.autoRecalculateCooldownMs
+        return NavigationScenarioCore.shouldAllowAutoRecalculate(
+            isRouteRecalculating = isRouteRecalculating,
+            elapsedSinceLastRecalculateMs = System.currentTimeMillis() - lastAutoRecalculateMs,
+        )
     }
 
     private fun resolveStepIndex(session: RouteSession, fix: LocationFix): Int {
         var index = session.currentStepIndex
-        val advanceThresholdMeters = maneuverAdvanceThresholdMeters(fix)
         while (index < session.steps.lastIndex) {
             val nextManeuver = session.steps[index + 1].maneuverPoint ?: break
-            if (distanceMeters(fix.point, nextManeuver) <= advanceThresholdMeters) {
+            if (
+                NavigationScenarioCore.shouldAdvanceStep(
+                    distanceToManeuverMeters = distanceMeters(fix.point, nextManeuver),
+                    accuracyMeters = fix.accuracyMeters,
+                )
+            ) {
                 index += 1
             } else {
                 break
             }
         }
         return index
-    }
-
-    private fun maneuverAdvanceThresholdMeters(fix: LocationFix): Double {
-        return fix.accuracyMeters
-            .coerceIn(
-                SharedProductRules.Navigation.maneuverAdvanceAccuracyMinMeters,
-                SharedProductRules.Navigation.maneuverAdvanceAccuracyMaxMeters,
-            )
-            .toDouble() * SharedProductRules.Navigation.maneuverAdvanceMultiplier
-    }
-
-    private fun offRouteThresholdMeters(fix: LocationFix): Int {
-        return (
-            fix.accuracyMeters.coerceIn(
-                SharedProductRules.Navigation.offRouteAccuracyMinMeters,
-                SharedProductRules.Navigation.offRouteAccuracyMaxMeters,
-            ) * SharedProductRules.Navigation.offRouteMultiplier
-            )
-            .roundToInt()
-            .coerceAtLeast(SharedProductRules.Navigation.offRouteMinimumThresholdMeters)
-    }
-
-    private fun immediateAnnouncementThresholdMeters(fix: LocationFix): Int {
-        return fix.accuracyMeters
-            .coerceIn(
-                SharedProductRules.Navigation.immediateInstructionAccuracyMinMeters,
-                SharedProductRules.Navigation.immediateInstructionAccuracyMaxMeters,
-            )
-            .roundToInt()
-            .coerceIn(
-                SharedProductRules.Navigation.immediateInstructionThresholdMinMeters,
-                SharedProductRules.Navigation.immediateInstructionThresholdMaxMeters,
-            )
     }
 
     private fun buildActiveNavigationState(
@@ -1568,7 +1540,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         val upcomingStepIndex = session.currentStepIndex + 1
         val upcomingStep = session.steps.getOrNull(upcomingStepIndex) ?: return false
         val distanceToNext = state.distanceToNextMeters
-        val milestoneMeters = countdownMilestoneMeters(distanceToNext) ?: return false
+        val milestoneMeters = NavigationScenarioCore.countdownMilestoneMeters(distanceToNext) ?: return false
 
         if (upcomingStepIndex != lastCountdownStepIndex) {
             lastCountdownStepIndex = upcomingStepIndex
@@ -1609,7 +1581,12 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         val upcomingStep = session.steps.getOrNull(upcomingStepIndex) ?: return false
         if (upcomingStepIndex == lastImmediateAnnouncedStepIndex) return false
         val distanceToNext = state.distanceToNextMeters
-        if (distanceToNext <= 0 || distanceToNext > immediateAnnouncementThresholdMeters(fix)) return false
+        if (
+            distanceToNext <= 0 ||
+            distanceToNext > NavigationScenarioCore.immediateAnnouncementThresholdMeters(fix.accuracyMeters)
+        ) {
+            return false
+        }
 
         lastImmediateAnnouncedStepIndex = upcomingStepIndex
         speakNavigationNow(
@@ -1630,12 +1607,6 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         )
         refreshDiagnosticsState()
         return true
-    }
-
-    private fun countdownMilestoneMeters(distanceToNext: Int): Int? {
-        return SharedProductRules.Navigation.countdownMilestonesMeters.firstOrNull {
-            distanceToNext <= it
-        }
     }
 
     private fun logTrackingStateChangeIfNeeded(isTracking: Boolean) {

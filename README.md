@@ -46,3 +46,4 @@ Technical note:
 - `applicationId` intentionally remains `com.navilive.app` so existing installs continue to receive in-place updates.
 - Shared product tuning now starts in `shared/product-rules.json` and is generated into native Android/iOS code.
 - Shared parity fixtures now live in `shared/test-fixtures/navigation-parity-fixtures.json` and are exercised by both Android and iOS unit tests.
+- Shared cross-platform parity now also covers navigation scenario decisions such as countdown milestones, immediate turn timing, step advance, off-route detection, and auto-recalculation cooldown behavior.

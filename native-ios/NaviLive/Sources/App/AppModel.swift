@@ -523,7 +523,9 @@ final class AppModel: ObservableObject {
           !upcomingInstruction.isEmpty else {
       return false
     }
-    guard let milestoneMeters = countdownMilestoneMeters(distanceToNext: update.state.distanceToNextMeters) else {
+    guard let milestoneMeters = NavigationScenarioCore.countdownMilestoneMeters(
+      distanceToNext: update.state.distanceToNextMeters
+    ) else {
       return false
     }
 
@@ -556,7 +558,9 @@ final class AppModel: ObservableObject {
           !upcomingInstruction.isEmpty else {
       return false
     }
-    let threshold = immediateNavigationThresholdMeters(accuracyMeters: fix.accuracyMeters)
+    let threshold = NavigationScenarioCore.immediateAnnouncementThresholdMeters(
+      accuracyMeters: fix.accuracyMeters
+    )
     guard update.state.distanceToNextMeters > 0, update.state.distanceToNextMeters <= threshold else {
       return false
     }
@@ -566,21 +570,6 @@ final class AppModel: ObservableObject {
       L10n.text("active.spoken.now", table: .navigation, upcomingInstruction)
     )
     return true
-  }
-
-  private func countdownMilestoneMeters(distanceToNext: Int) -> Int? {
-    SharedProductRules.Navigation.countdownMilestonesMeters.first { distanceToNext <= $0 }
-  }
-
-  private func immediateNavigationThresholdMeters(accuracyMeters: Double) -> Int {
-    let clampedAccuracy = min(
-      max(accuracyMeters, SharedProductRules.Navigation.immediateInstructionAccuracyMinMeters),
-      SharedProductRules.Navigation.immediateInstructionAccuracyMaxMeters
-    )
-    return min(
-      max(Int(clampedAccuracy.rounded()), SharedProductRules.Navigation.immediateInstructionThresholdMinMeters),
-      SharedProductRules.Navigation.immediateInstructionThresholdMaxMeters
-    )
   }
 
   private func announceNavigationPrompt(_ message: String, warning: Bool = false) {

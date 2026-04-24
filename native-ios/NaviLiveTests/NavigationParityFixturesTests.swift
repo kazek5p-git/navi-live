@@ -22,12 +22,88 @@ final class NavigationParityFixturesTests: XCTestCase {
       XCTAssertEqual(descriptor.paritySignature(), entry.expectedParity, entry.name)
     }
   }
+
+  func testNavigationThresholdsMatchSharedFixtures() throws {
+    let fixtures = try SharedParityFixtureLoader.load()
+    for entry in fixtures.scenarioCases.thresholds {
+      XCTAssertEqual(
+        NavigationScenarioCore.maneuverAdvanceThresholdMeters(accuracyMeters: entry.accuracyMeters),
+        entry.expectedManeuverAdvance,
+        accuracy: 0.0001,
+        entry.name
+      )
+      XCTAssertEqual(
+        NavigationScenarioCore.offRouteThresholdMeters(accuracyMeters: entry.accuracyMeters),
+        entry.expectedOffRoute,
+        entry.name
+      )
+      XCTAssertEqual(
+        NavigationScenarioCore.immediateAnnouncementThresholdMeters(accuracyMeters: entry.accuracyMeters),
+        entry.expectedImmediate,
+        entry.name
+      )
+    }
+  }
+
+  func testNavigationCountdownMilestonesMatchSharedFixtures() throws {
+    let fixtures = try SharedParityFixtureLoader.load()
+    for entry in fixtures.scenarioCases.countdowns {
+      XCTAssertEqual(
+        NavigationScenarioCore.countdownMilestoneMeters(distanceToNext: entry.distanceToNextMeters),
+        entry.expectedMilestone,
+        entry.name
+      )
+    }
+  }
+
+  func testNavigationAdvanceDecisionsMatchSharedFixtures() throws {
+    let fixtures = try SharedParityFixtureLoader.load()
+    for entry in fixtures.scenarioCases.advanceDecisions {
+      XCTAssertEqual(
+        NavigationScenarioCore.shouldAdvanceStep(
+          distanceToManeuverMeters: entry.distanceToManeuverMeters,
+          accuracyMeters: entry.accuracyMeters
+        ),
+        entry.expectedAdvance,
+        entry.name
+      )
+    }
+  }
+
+  func testNavigationOffRouteDecisionsMatchSharedFixtures() throws {
+    let fixtures = try SharedParityFixtureLoader.load()
+    for entry in fixtures.scenarioCases.offRouteDecisions {
+      XCTAssertEqual(
+        NavigationScenarioCore.shouldTriggerOffRoute(
+          deviationMeters: entry.deviationMeters,
+          accuracyMeters: entry.accuracyMeters
+        ),
+        entry.expectedOffRoute,
+        entry.name
+      )
+    }
+  }
+
+  func testNavigationAutoRecalculateDecisionsMatchSharedFixtures() throws {
+    let fixtures = try SharedParityFixtureLoader.load()
+    for entry in fixtures.scenarioCases.autoRecalculate {
+      XCTAssertEqual(
+        NavigationScenarioCore.shouldAllowAutoRecalculate(
+          isRouteRecalculating: entry.isRouteRecalculating,
+          elapsedSinceLastRecalculateMs: entry.elapsedMs
+        ),
+        entry.expectedAllowed,
+        entry.name
+      )
+    }
+  }
 }
 
 private enum SharedParityFixtureLoader {
   struct Fixtures: Decodable {
     let addressCases: [AddressCase]
     let instructionCases: [InstructionCase]
+    let scenarioCases: ScenarioCases
   }
 
   struct AddressCase: Decodable {
@@ -43,6 +119,49 @@ private enum SharedParityFixtureLoader {
     let modifier: String?
     let roadName: String?
     let expectedParity: String
+  }
+
+  struct ScenarioCases: Decodable {
+    let thresholds: [ThresholdCase]
+    let countdowns: [CountdownCase]
+    let advanceDecisions: [AdvanceDecisionCase]
+    let offRouteDecisions: [OffRouteDecisionCase]
+    let autoRecalculate: [AutoRecalculateCase]
+  }
+
+  struct ThresholdCase: Decodable {
+    let name: String
+    let accuracyMeters: Double
+    let expectedManeuverAdvance: Double
+    let expectedOffRoute: Int
+    let expectedImmediate: Int
+  }
+
+  struct CountdownCase: Decodable {
+    let name: String
+    let distanceToNextMeters: Int
+    let expectedMilestone: Int?
+  }
+
+  struct AdvanceDecisionCase: Decodable {
+    let name: String
+    let distanceToManeuverMeters: Double
+    let accuracyMeters: Double
+    let expectedAdvance: Bool
+  }
+
+  struct OffRouteDecisionCase: Decodable {
+    let name: String
+    let deviationMeters: Int?
+    let accuracyMeters: Double
+    let expectedOffRoute: Bool
+  }
+
+  struct AutoRecalculateCase: Decodable {
+    let name: String
+    let elapsedMs: Int
+    let isRouteRecalculating: Bool
+    let expectedAllowed: Bool
   }
 
   static func load() throws -> Fixtures {
