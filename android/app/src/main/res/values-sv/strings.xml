@@ -122,6 +122,17 @@
     <string name="settings_title">Inställningar</string>
     <string name="settings_status_title">Vägledningsinställningar</string>
     <string name="settings_status_message">Behåll endast de kontroller som väsentligt påverkar röst, vibration och omdirigering.</string>
+    <string name="settings_root_message">Inställningarna är grupperade i några större sektioner så att skärmen förblir kortare och lättare att navigera med en skärmläsare.</string>
+    <string name="settings_group_guidance_title">Vägledning och rutt</string>
+    <string name="settings_group_guidance_summary">Röstmeddelanden, vibrationer, omdirigering och nedräkningsläge.</string>
+    <string name="settings_group_speech_title">Tal och röst</string>
+    <string name="settings_group_speech_summary">Talkälla, Android TTS-motor och röstförhandsvisning.</string>
+    <string name="settings_group_app_title">App och uppdateringar</string>
+    <string name="settings_group_app_summary">Språk, uppdateringskanal, version och bygginformation.</string>
+    <string name="settings_group_diagnostics_title">Diagnostik</string>
+    <string name="settings_group_diagnostics_summary">Telemetribuffert, export och aktuella felsökningssessionsdetaljer.</string>
+    <string name="settings_group_help_title">Hjälp och sekretess</string>
+    <string name="settings_group_help_summary">Handledning, support och sekretessinformation.</string>
     <string name="settings_help_privacy_title">Hjälp och sekretess</string>
     <string name="settings_help_privacy_summary">Handledning, support och sekretess</string>
     <string name="settings_help_privacy_status_message">Öppna handledningen, supportutveckling och granska hur Navi Live hanterar lokal data, onlinetjänster och telemetri.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Installerad version</string>
     <string name="settings_updates_current_build">Installerad build</string>
     <string name="settings_updates_latest_version">Senaste utgåvan</string>
+    <string name="settings_about_title">Om</string>
     <string name="settings_updates_release_name">Utgivningstitel</string>
     <string name="settings_updates_asset">APK-tillgång</string>
     <string name="settings_updates_release_notes">Release notes</string>

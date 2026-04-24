@@ -122,6 +122,17 @@
     <string name="settings_title">настройки</string>
     <string name="settings_status_title">Настройки за насочване</string>
     <string name="settings_status_message">Запазете само контролите, които съществено засягат гласа, вибрациите и пренасочването.</string>
+    <string name="settings_root_message">Настройките са групирани в няколко по-големи секции, така че екранът да остане по-кратък и по-лесен за навигация с екранен четец.</string>
+    <string name="settings_group_guidance_title">Насоки и маршрут</string>
+    <string name="settings_group_guidance_summary">Гласови съобщения, вибрация, пренасочване и режим на обратно броене.</string>
+    <string name="settings_group_speech_title">Реч и глас</string>
+    <string name="settings_group_speech_summary">Източник на говор, Android TTS двигател и гласова визуализация.</string>
+    <string name="settings_group_app_title">Приложение и актуализации</string>
+    <string name="settings_group_app_summary">Информация за език, канал за актуализиране, версия и компилация.</string>
+    <string name="settings_group_diagnostics_title">Диагностика</string>
+    <string name="settings_group_diagnostics_summary">Буфер за телеметрия, експорт и подробности за текущата сесия за отстраняване на грешки.</string>
+    <string name="settings_group_help_title">Помощ и поверителност</string>
+    <string name="settings_group_help_summary">Урок, поддръжка и подробности за поверителност.</string>
     <string name="settings_help_privacy_title">Помощ и поверителност</string>
     <string name="settings_help_privacy_summary">Урок, поддръжка и поверителност</string>
     <string name="settings_help_privacy_status_message">Отворете урока, подкрепете разработката и прегледайте как Navi Live обработва локални данни, онлайн услуги и телеметрия.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Инсталирана версия</string>
     <string name="settings_updates_current_build">Инсталирана компилация</string>
     <string name="settings_updates_latest_version">Последна версия</string>
+    <string name="settings_about_title">Относно</string>
     <string name="settings_updates_release_name">Заглавие на изданието</string>
     <string name="settings_updates_asset">APK актив</string>
     <string name="settings_updates_release_notes">Бележки по изданието</string>

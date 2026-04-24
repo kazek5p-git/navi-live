@@ -122,6 +122,17 @@
     <string name="settings_title">Asetukset</string>
     <string name="settings_status_title">Opastusasetukset</string>
     <string name="settings_status_message">Säilytä vain ne säätimet, jotka vaikuttavat olennaisesti ääneen, tärinään ja uudelleenreitittämiseen.</string>
+    <string name="settings_root_message">Asetukset on ryhmitelty muutamaan suurempaan osioon, joten näyttö pysyy lyhyempänä ja siinä on helpompi navigoida näytönlukuohjelman avulla.</string>
+    <string name="settings_group_guidance_title">Opastus ja reitti</string>
+    <string name="settings_group_guidance_summary">Äänitiedotukset, värinä, uudelleenreititys ja lähtölaskentatila.</string>
+    <string name="settings_group_speech_title">Puhe ja ääni</string>
+    <string name="settings_group_speech_summary">Puhelähde, Android TTS -moottori ja puheen esikatselu.</string>
+    <string name="settings_group_app_title">Sovellus ja päivitykset</string>
+    <string name="settings_group_app_summary">Kieli, päivityskanava, versio ja koontitiedot.</string>
+    <string name="settings_group_diagnostics_title">Diagnostiikka</string>
+    <string name="settings_group_diagnostics_summary">Telemetriapuskuri, vienti ja nykyisen virheenkorjausistunnon tiedot.</string>
+    <string name="settings_group_help_title">Ohje ja tietosuoja</string>
+    <string name="settings_group_help_summary">Opetusohjelma, tuki ja tietosuojatiedot.</string>
     <string name="settings_help_privacy_title">Ohje ja tietosuoja</string>
     <string name="settings_help_privacy_summary">Opetusohjelma, tuki ja tietosuoja</string>
     <string name="settings_help_privacy_status_message">Avaa opetusohjelma, tue kehitystä ja tarkista, kuinka Navi Live käsittelee paikallisia tietoja, verkkopalveluita ja telemetriaa.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Asennettu versio</string>
     <string name="settings_updates_current_build">Asennettu versio</string>
     <string name="settings_updates_latest_version">Viimeisin julkaisu</string>
+    <string name="settings_about_title">Tietoja</string>
     <string name="settings_updates_release_name">Julkaisun nimi</string>
     <string name="settings_updates_asset">APK-sisältö</string>
     <string name="settings_updates_release_notes">APK-sisältö</string>

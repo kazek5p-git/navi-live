@@ -122,6 +122,17 @@
     <string name="settings_title"></string>
     <string name="settings_status_title">Configurações de orientação</string>
     <string name="settings_status_message">Mantenha apenas os controles que afetem materialmente voz, vibração e redirecionamento.</string>
+    <string name="settings_root_message">As configurações são agrupadas em algumas seções maiores para que a tela fique mais curta e mais fácil de navegar com um leitor de tela.</string>
+    <string name="settings_group_guidance_title">Orientação e rota</string>
+    <string name="settings_group_guidance_summary">Anúncios de voz, vibração, reencaminhamento e modo de contagem regressiva.</string>
+    <string name="settings_group_speech_title">Fala e voz</string>
+    <string name="settings_group_speech_summary">Fonte de fala, mecanismo Android TTS e visualização de voz.</string>
+    <string name="settings_group_app_title">Aplicativo e atualizações</string>
+    <string name="settings_group_app_summary">Idioma, canal de atualização, versão e informações de compilação.</string>
+    <string name="settings_group_diagnostics_title">Diagnósticos</string>
+    <string name="settings_group_diagnostics_summary">Buffer de telemetria, exportação e detalhes da sessão de depuração atual.</string>
+    <string name="settings_group_help_title">Ajuda e privacidade</string>
+    <string name="settings_group_help_summary">Tutorial, suporte e detalhes de privacidade.</string>
     <string name="settings_help_privacy_title">Ajuda e privacidade</string>
     <string name="settings_help_privacy_summary">Tutorial, suporte e privacidade</string>
     <string name="settings_help_privacy_status_message">Abra o tutorial, apoie o desenvolvimento e revise como Navi Live lida com dados locais, serviços online e telemetria.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Versão instalada</string>
     <string name="settings_updates_current_build">Compilação instalada</string>
     <string name="settings_updates_latest_version">Versão mais recente</string>
+    <string name="settings_about_title">Sobre</string>
     <string name="settings_updates_release_name">Título da versão</string>
     <string name="settings_updates_asset">Ativo do APK</string>
     <string name="settings_updates_release_notes">Notas de versão</string>

@@ -122,6 +122,17 @@
     <string name="settings_title">Nustatymai</string>
     <string name="settings_status_title">Nuorodų nustatymai</string>
     <string name="settings_status_message">Laikykite tik tuos valdiklius, kurie turi reikšmingos įtakos balsui, vibracijai ir maršruto keitimui.</string>
+    <string name="settings_root_message">Nustatymai sugrupuoti į kelias didesnes dalis, todėl ekranas lieka trumpesnis ir lengviau naršomas naudojant ekrano skaitytuvą.</string>
+    <string name="settings_group_guidance_title">Nurodymai ir maršrutas</string>
+    <string name="settings_group_guidance_summary">Balso pranešimai, vibracija, maršruto keitimas ir atgalinės atskaitos režimas.</string>
+    <string name="settings_group_speech_title">Kalba ir balsas</string>
+    <string name="settings_group_speech_summary">Kalbos šaltinis, Android TTS variklis ir balso peržiūra.</string>
+    <string name="settings_group_app_title">Programa ir naujiniai</string>
+    <string name="settings_group_app_summary">Kalba, naujinimo kanalas, versija ir versijos informacija.</string>
+    <string name="settings_group_diagnostics_title">Diagnostika</string>
+    <string name="settings_group_diagnostics_summary">Telemetrijos buferis, eksporto ir dabartinės derinimo sesijos informacija.</string>
+    <string name="settings_group_help_title">Pagalba ir privatumas</string>
+    <string name="settings_group_help_summary">Mokymo programa, palaikymas ir privatumo informacija.</string>
     <string name="settings_help_privacy_title">Pagalba ir privatumas</string>
     <string name="settings_help_privacy_summary">Mokymo programa, palaikymas ir privatumas</string>
     <string name="settings_help_privacy_status_message">Atidarykite mokymo programą, palaikykite plėtrą ir peržiūrėkite, kaip Navi Live tvarko vietinius duomenis, internetines paslaugas ir telemetriją.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Įdiegta versija</string>
     <string name="settings_updates_current_build">Sumontuota konstrukcija</string>
     <string name="settings_updates_latest_version">Naujausias leidimas</string>
+    <string name="settings_about_title">Apie</string>
     <string name="settings_updates_release_name">Išleidimo pavadinimas</string>
     <string name="settings_updates_asset">APK išteklius</string>
     <string name="settings_updates_release_notes">Išleidimo pastabos</string>

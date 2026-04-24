@@ -122,6 +122,17 @@
     <string name="settings_title">Astellungen</string>
     <string name="settings_status_title">Guidance Astellunge</string>
     <string name="settings_status_message">Haalt nëmmen d\'Kontrollen déi materiell Stëmm, Schwéngung a Rerouting beaflossen.</string>
+    <string name="settings_root_message">Astellunge ginn an e puer méi grouss Sektiounen gruppéiert sou datt den Ecran méi kuerz bleift a méi einfach mat engem Bildschirm Lieser ze navigéieren.</string>
+    <string name="settings_group_guidance_title">Leedung a Streck</string>
+    <string name="settings_group_guidance_summary">Stëmm Ukënnegung, Schwéngung, Rerouting a Countdown Modus.</string>
+    <string name="settings_group_speech_title">Ried a Stëmm</string>
+    <string name="settings_group_speech_summary">Ried Quell, Android TTS Motor a Stëmm Virschau.</string>
+    <string name="settings_group_app_title">App an Aktualiséierungen</string>
+    <string name="settings_group_app_summary">Sprooch, Update Kanal, Versioun a bauen Informatiounen.</string>
+    <string name="settings_group_diagnostics_title">Diagnostik</string>
+    <string name="settings_group_diagnostics_summary">Telemetriebuffer, Export an aktuell Debugsession Detailer.</string>
+    <string name="settings_group_help_title">Hëllef a Privatsphär</string>
+    <string name="settings_group_help_summary">Tutorial, Ënnerstëtzung a Privatsphär Detailer.</string>
     <string name="settings_help_privacy_title">Hëllef a Privatsphär</string>
     <string name="settings_help_privacy_summary">Tutorial, Ënnerstëtzung a Privatsphär</string>
     <string name="settings_help_privacy_status_message">Öffnen den Tutorial, ënnerstëtzen d\'Entwécklung an iwwerpréift wéi Navi Live lokal Daten, Online Servicer an Telemetrie behandelt.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Installéiert Versioun</string>
     <string name="settings_updates_current_build">Installéiert bauen</string>
     <string name="settings_updates_latest_version">Läscht Verëffentlechung</string>
+    <string name="settings_about_title">Iwwer</string>
     <string name="settings_updates_release_name">Verëffentlechungstitel</string>
     <string name="settings_updates_asset">APK Asset</string>
     <string name="settings_updates_release_notes">Verëffentlechungsnotizen</string>

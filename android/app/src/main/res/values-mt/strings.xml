@@ -122,6 +122,17 @@
     <string name="settings_title">Settings</string>
     <string name="settings_status_title">Settings ta\' gwida</string>
     <string name="settings_status_message">Żomm biss il-kontrolli li materjalment jaffettwaw il-vuċi, il-vibrazzjoni u t-tibdil tar-rotta.</string>
+    <string name="settings_root_message">Is-settings huma miġbura fi ftit sezzjonijiet akbar sabiex l-iskrin jibqa\' iqsar u aktar faċli biex jinnaviga bi screen reader.</string>
+    <string name="settings_group_guidance_title">Gwida u rotta</string>
+    <string name="settings_group_guidance_summary">Avviżi bil-vuċi, vibrazzjoni, rerouting u mod countdown.</string>
+    <string name="settings_group_speech_title">Diskors u vuċi</string>
+    <string name="settings_group_speech_summary">Sors tad-diskors, magna Android TTS u preview tal-vuċi.</string>
+    <string name="settings_group_app_title">App u aġġornamenti</string>
+    <string name="settings_group_app_summary">Lingwa, aġġornament tal-kanal, verżjoni u informazzjoni tal-bini.</string>
+    <string name="settings_group_diagnostics_title">Dijanjostiċi</string>
+    <string name="settings_group_diagnostics_summary">Buffer tat-telemetrija, esportazzjoni u dettalji tas-sessjoni attwali tad-debug.</string>
+    <string name="settings_group_help_title">Għajnuna u privatezza</string>
+    <string name="settings_group_help_summary">Tutorial, appoġġ u dettalji dwar il-privatezza.</string>
     <string name="settings_help_privacy_title">Għajnuna u privatezza</string>
     <string name="settings_help_privacy_summary">Tutorial, appoġġ u privatezza</string>
     <string name="settings_help_privacy_status_message">Iftaħ it-tutorja, appoġġ għall-iżvilupp u reviżjoni kif Navi Live jittratta data lokali, servizzi online u telemetrija.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Verżjoni installata</string>
     <string name="settings_updates_current_build">Bini installat</string>
     <string name="settings_updates_latest_version">L-aħħar rilaxx</string>
+    <string name="settings_about_title">Dwar</string>
     <string name="settings_updates_release_name">Titolu ta\' rilaxx</string>
     <string name="settings_updates_asset">APK assi</string>
     <string name="settings_updates_release_notes">Noti tar-rilaxx</string>

@@ -122,6 +122,17 @@
     <string name="settings_title">Instellingen</string>
     <string name="settings_status_title">Begeleidingsinstellingen</string>
     <string name="settings_status_message">Bewaar alleen de bedieningselementen die een materiële invloed hebben op stem, trillingen en routewijziging.</string>
+    <string name="settings_root_message">Instellingen zijn gegroepeerd in een paar grotere secties, zodat het scherm korter blijft en gemakkelijker te navigeren is met een schermlezer.</string>
+    <string name="settings_group_guidance_title">Begeleiding en route</string>
+    <string name="settings_group_guidance_summary">Gesproken mededelingen, trillen, herroutering en aftelmodus.</string>
+    <string name="settings_group_speech_title">Spraak en stem</string>
+    <string name="settings_group_speech_summary">Spraakbron, Android TTS-engine en stemvoorbeeld.</string>
+    <string name="settings_group_app_title">App en updates</string>
+    <string name="settings_group_app_summary">Taal, updatekanaal, versie en build-informatie.</string>
+    <string name="settings_group_diagnostics_title">Diagnostiek</string>
+    <string name="settings_group_diagnostics_summary">Telemetriebuffer, export en huidige foutopsporingssessiedetails.</string>
+    <string name="settings_group_help_title">Hulp en privacy</string>
+    <string name="settings_group_help_summary">Handleiding, ondersteuning en privacydetails.</string>
     <string name="settings_help_privacy_title">Hulp en privacy</string>
     <string name="settings_help_privacy_summary">Tutorial, ondersteuning en privacy</string>
     <string name="settings_help_privacy_status_message">Open de tutorial, ondersteun ontwikkeling en bekijk hoe Navi Live omgaat met lokale gegevens, online services en telemetrie.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Geïnstalleerde versie</string>
     <string name="settings_updates_current_build">Geïnstalleerde build</string>
     <string name="settings_updates_latest_version">Nieuwste release</string>
+    <string name="settings_about_title">Over</string>
     <string name="settings_updates_release_name">Releasetitel</string>
     <string name="settings_updates_asset">APK-item</string>
     <string name="settings_updates_release_notes">Release-opmerkingen</string>

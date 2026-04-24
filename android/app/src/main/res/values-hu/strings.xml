@@ -122,6 +122,17 @@
     <string name="settings_title">Beállítások elemre</string>
     <string name="settings_status_title">Útmutató beállítások</string>
     <string name="settings_status_message">Csak azokat a vezérlőket tartsa meg, amelyek lényegesen befolyásolják a hangot, a rezgést és az átirányítást.</string>
+    <string name="settings_root_message">A beállítások néhány nagyobb részbe vannak csoportosítva, így a képernyő rövidebb marad, és könnyebben navigálhat képernyőolvasóval.</string>
+    <string name="settings_group_guidance_title">Útmutatás és útvonal</string>
+    <string name="settings_group_guidance_summary">Hangos bejelentések, rezgés, átirányítás és visszaszámlálás mód.</string>
+    <string name="settings_group_speech_title">Beszéd és hang</string>
+    <string name="settings_group_speech_summary">Beszédforrás, Android TTS motor és hang előnézet.</string>
+    <string name="settings_group_app_title">Alkalmazások és frissítések</string>
+    <string name="settings_group_app_summary">Nyelv, frissítési csatorna, verzió és build információk.</string>
+    <string name="settings_group_diagnostics_title">Diagnosztika</string>
+    <string name="settings_group_diagnostics_summary">Telemetriai puffer, export és aktuális hibakeresési munkamenet részletei.</string>
+    <string name="settings_group_help_title">Súgó és adatvédelem</string>
+    <string name="settings_group_help_summary">Oktatóanyag, támogatás és adatvédelmi részletek.</string>
     <string name="settings_help_privacy_title">Súgó és adatvédelem</string>
     <string name="settings_help_privacy_summary">Oktatóanyag, támogatás és adatvédelem</string>
     <string name="settings_help_privacy_status_message">Nyissa meg az oktatóanyagot, támogassa a fejlesztést, és tekintse át, hogyan kezeli a Navi Live a helyi adatokat, az online szolgáltatásokat és a telemetriát.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Telepített verzió</string>
     <string name="settings_updates_current_build">Telepített build</string>
     <string name="settings_updates_latest_version">Legújabb kiadás</string>
+    <string name="settings_about_title">Kb</string>
     <string name="settings_updates_release_name">Kiadás címe</string>
     <string name="settings_updates_asset">APK-elem</string>
     <string name="settings_updates_release_notes">Kiadási megjegyzések</string>

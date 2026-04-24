@@ -122,6 +122,17 @@
     <string name="settings_title">Налаштування</string>
     <string name="settings_status_title">Налаштування вказівок</string>
     <string name="settings_status_message">Зберігайте лише елементи керування, які суттєво впливають на голос, вібрацію та зміну маршруту.</string>
+    <string name="settings_root_message">Налаштування згруповано в кілька більших розділів, тому екран залишається коротшим і легшим для навігації за допомогою програми зчитування з екрана.</string>
+    <string name="settings_group_guidance_title">Наведення та маршрут</string>
+    <string name="settings_group_guidance_summary">Голосові повідомлення, вібрація, зміна маршруту та режим зворотного відліку.</string>
+    <string name="settings_group_speech_title">Мовлення та голос</string>
+    <string name="settings_group_speech_summary">Джерело мовлення, система Android TTS і попередній перегляд голосу.</string>
+    <string name="settings_group_app_title">Програма та оновлення</string>
+    <string name="settings_group_app_summary">Інформація про мову, канал оновлення, версію та збірку.</string>
+    <string name="settings_group_diagnostics_title">Діагностика</string>
+    <string name="settings_group_diagnostics_summary">Деталі буфера телеметрії, експорту та поточного сеансу налагодження.</string>
+    <string name="settings_group_help_title">Довідка та конфіденційність</string>
+    <string name="settings_group_help_summary">Підручник, підтримка та відомості про конфіденційність.</string>
     <string name="settings_help_privacy_title">Довідка та конфіденційність</string>
     <string name="settings_help_privacy_summary">Підручник, підтримка та конфіденційність</string>
     <string name="settings_help_privacy_status_message">Відкрийте підручник, розробку підтримки та подивіться, як Navi Live обробляє локальні дані, онлайн-послуги та телеметрію.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Установлена версія</string>
     <string name="settings_updates_current_build">Установлена збірка</string>
     <string name="settings_updates_latest_version">Останній випуск</string>
+    <string name="settings_about_title">Про</string>
     <string name="settings_updates_release_name">Назва випуску</string>
     <string name="settings_updates_asset">Ресурс APK</string>
     <string name="settings_updates_release_notes">Примітки до випуску</string>

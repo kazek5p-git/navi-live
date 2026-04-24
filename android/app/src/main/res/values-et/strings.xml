@@ -122,6 +122,17 @@
     <string name="settings_title">Seaded</string>
     <string name="settings_status_title">Juhiste seaded</string>
     <string name="settings_status_message">Hoidke alles ainult need juhtnupud, mis mõjutavad oluliselt häält, vibratsiooni ja marsruutimist.</string>
+    <string name="settings_root_message">Seaded on rühmitatud mõneks suuremaks osaks, nii et ekraan jääb lühemaks ja ekraanilugejaga hõlpsamini navigeeritavaks.</string>
+    <string name="settings_group_guidance_title">Juhend ja marsruut</string>
+    <string name="settings_group_guidance_summary">Häälteated, vibratsioon, marsruudi muutmine ja pöördloenduse režiim.</string>
+    <string name="settings_group_speech_title">Kõne ja hääl</string>
+    <string name="settings_group_speech_summary">Kõneallikas, Androidi TTS-i mootor ja hääle eelvaade.</string>
+    <string name="settings_group_app_title">Rakendus ja värskendused</string>
+    <string name="settings_group_app_summary">Keel, värskenduskanal, versioon ja järgu teave.</string>
+    <string name="settings_group_diagnostics_title">Diagnostika</string>
+    <string name="settings_group_diagnostics_summary">Telemeetria puhver, eksport ja praeguse silumiseansi üksikasjad.</string>
+    <string name="settings_group_help_title">Abi ja privaatsus</string>
+    <string name="settings_group_help_summary">Õpetus, tugi ja privaatsuse üksikasjad.</string>
     <string name="settings_help_privacy_title">Abi ja privaatsus</string>
     <string name="settings_help_privacy_summary">Õpetus, tugi ja privaatsus</string>
     <string name="settings_help_privacy_status_message">Avage õpetus, toetage arendust ja vaadake, kuidas Navi Live käsitleb kohalikke andmeid, võrguteenuseid ja telemeetriat.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Installitud versioon</string>
     <string name="settings_updates_current_build">Installitud järg</string>
     <string name="settings_updates_latest_version">Uusim väljalase</string>
+    <string name="settings_about_title">Umbes</string>
     <string name="settings_updates_release_name">Väljalase pealkiri</string>
     <string name="settings_updates_asset">APK vara</string>
     <string name="settings_updates_release_notes">APK vara</string>

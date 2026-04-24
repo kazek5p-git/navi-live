@@ -122,6 +122,17 @@
     <string name="settings_title"></string>
     <string name="settings_status_title">Paramètres de guidage</string>
     <string name="settings_status_message">Conservez uniquement les commandes qui affectent matériellement la voix, les vibrations et le reroutage.</string>
+    <string name="settings_root_message">Les paramètres sont regroupés en quelques sections plus grandes afin que l\'écran reste plus court et plus facile à naviguer avec un lecteur d\'écran.</string>
+    <string name="settings_group_guidance_title">Guidage et itinéraire</string>
+    <string name="settings_group_guidance_summary">Annonces vocales, vibrations, reroutage et mode compte à rebours.</string>
+    <string name="settings_group_speech_title">Parole et voix</string>
+    <string name="settings_group_speech_summary">Source vocale, moteur Android TTS et aperçu vocal.</string>
+    <string name="settings_group_app_title">Application et mises à jour</string>
+    <string name="settings_group_app_summary">Langue, canal de mise à jour, version et informations de build.</string>
+    <string name="settings_group_diagnostics_title">Diagnostics</string>
+    <string name="settings_group_diagnostics_summary">Tampon de télémétrie, détails de l\'exportation et de la session de débogage en cours.</string>
+    <string name="settings_group_help_title">Aide et confidentialité</string>
+    <string name="settings_group_help_summary">Tutoriel, assistance et détails sur la confidentialité.</string>
     <string name="settings_help_privacy_title">Aide et confidentialité</string>
     <string name="settings_help_privacy_summary">Tutoriel, support et confidentialité</string>
     <string name="settings_help_privacy_status_message">Ouvrez le didacticiel, prenez en charge le développement et découvrez comment Navi Live gère les données locales, les services en ligne et la télémétrie.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Version installée</string>
     <string name="settings_updates_current_build">Version installée</string>
     <string name="settings_updates_latest_version">Dernière version</string>
+    <string name="settings_about_title">À propos</string>
     <string name="settings_updates_release_name">Titre de la version</string>
     <string name="settings_updates_asset">Actif APK</string>
     <string name="settings_updates_release_notes">Notes de version</string>

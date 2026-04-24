@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationSearching
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Navigation
@@ -107,6 +108,14 @@ private enum class BannerTone {
     Success,
     Warning,
     Critical,
+}
+
+private enum class SettingsDestination {
+    Root,
+    Guidance,
+    Speech,
+    App,
+    Diagnostics,
 }
 
 private data class StatusPresentation(
@@ -1095,166 +1104,310 @@ fun SettingsScreen(
     onShareDiagnostics: (() -> Unit)?,
     onBack: () -> Unit,
 ) {
-    ScreenScaffold(title = stringResource(R.string.settings_title), showBack = true, onBack = onBack) { modifier ->
+    var destination by remember { mutableStateOf(SettingsDestination.Root) }
+    BackHandler(enabled = destination != SettingsDestination.Root) {
+        destination = SettingsDestination.Root
+    }
+
+    val title = when (destination) {
+        SettingsDestination.Root -> stringResource(R.string.settings_title)
+        SettingsDestination.Guidance -> stringResource(R.string.settings_group_guidance_title)
+        SettingsDestination.Speech -> stringResource(R.string.settings_group_speech_title)
+        SettingsDestination.App -> stringResource(R.string.settings_group_app_title)
+        SettingsDestination.Diagnostics -> stringResource(R.string.settings_group_diagnostics_title)
+    }
+
+    ScreenScaffold(
+        title = title,
+        showBack = true,
+        onBack = {
+            if (destination == SettingsDestination.Root) {
+                onBack()
+            } else {
+                destination = SettingsDestination.Root
+            }
+        },
+    ) { modifier ->
         Column(
             modifier = modifier.verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            StatusCard(
-                title = stringResource(R.string.settings_status_title),
-                message = stringResource(R.string.settings_status_message),
-                tone = BannerTone.Info,
-            )
-
-            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    SectionHeading(stringResource(R.string.settings_help_privacy_title))
-                    Text(
-                        text = stringResource(R.string.settings_help_privacy_summary),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+            when (destination) {
+                SettingsDestination.Root -> {
+                    SettingsRootIntroCard()
+                    SettingsNavigationCard(
+                        title = stringResource(R.string.settings_group_guidance_title),
+                        summary = stringResource(R.string.settings_group_guidance_summary),
+                        icon = Icons.AutoMirrored.Filled.AssistantDirection,
+                        onClick = { destination = SettingsDestination.Guidance },
                     )
-                    FilledTonalButton(
+                    SettingsNavigationCard(
+                        title = stringResource(R.string.settings_group_speech_title),
+                        summary = stringResource(R.string.settings_group_speech_summary),
+                        icon = Icons.AutoMirrored.Filled.VolumeUp,
+                        onClick = { destination = SettingsDestination.Speech },
+                    )
+                    SettingsNavigationCard(
+                        title = stringResource(R.string.settings_group_app_title),
+                        summary = stringResource(R.string.settings_group_app_summary),
+                        icon = Icons.Filled.Settings,
+                        onClick = { destination = SettingsDestination.App },
+                    )
+                    SettingsNavigationCard(
+                        title = stringResource(R.string.settings_group_diagnostics_title),
+                        summary = stringResource(R.string.settings_group_diagnostics_summary),
+                        icon = Icons.Filled.Share,
+                        onClick = { destination = SettingsDestination.Diagnostics },
+                    )
+                    SettingsNavigationCard(
+                        title = stringResource(R.string.settings_group_help_title),
+                        summary = stringResource(R.string.settings_group_help_summary),
+                        icon = Icons.Filled.Info,
                         onClick = onOpenHelpPrivacy,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(stringResource(R.string.settings_help_privacy_open_button))
-                    }
-                }
-            }
-
-            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    SectionHeading(stringResource(R.string.settings_language_title))
-                    LabelValue(
-                        stringResource(R.string.settings_language_detected_label),
-                        value = state.language,
-                    )
-                    Text(
-                        text = stringResource(R.string.settings_language_detected_message),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-            }
-
-            VoiceOutputSettingsCard(
-                state = state,
-                onSpeechOutputModeChange = onSpeechOutputModeChange,
-                onSystemTtsEngineChange = onSystemTtsEngineChange,
-                onOpenSystemTtsSettings = onOpenSystemTtsSettings,
-                onPreviewSpeech = onPreviewSpeech,
-            )
-
-            VoiceSliderCard(
-                title = stringResource(R.string.settings_speech_rate_title),
-                description = stringResource(R.string.settings_speech_rate_message),
-                value = state.speechRatePercent,
-                valueRange = 50f..200f,
-                steps = 29,
-                enabled = state.speechOutputMode == SpeechOutputMode.System,
-                disabledMessage = stringResource(R.string.settings_speech_controls_disabled_message),
-                onCommit = onSpeechRateChange,
-            )
-
-            VoiceSliderCard(
-                title = stringResource(R.string.settings_speech_volume_title),
-                description = stringResource(R.string.settings_speech_volume_message),
-                value = state.speechVolumePercent,
-                valueRange = 0f..100f,
-                steps = 19,
-                enabled = state.speechOutputMode == SpeechOutputMode.System,
-                disabledMessage = stringResource(R.string.settings_speech_controls_disabled_message),
-                onCommit = onSpeechVolumeChange,
-            )
-
-            SettingsToggleCard(
-                title = stringResource(R.string.settings_voice_title),
-                description = stringResource(R.string.settings_voice_message),
-                checked = state.turnByTurnAnnouncements,
-                onCheckedChange = onTurnByTurnChange,
-            )
-
-            AnnouncementCadenceCard(
-                selectedMode = state.announcementCadenceMode,
-                enabled = state.turnByTurnAnnouncements,
-                onModeChange = onAnnouncementCadenceModeChange,
-            )
-
-            SettingsToggleCard(
-                title = stringResource(R.string.settings_vibration_title),
-                description = stringResource(R.string.settings_vibration_message),
-                checked = state.vibrationEnabled,
-                onCheckedChange = onVibrationChange,
-            )
-
-            SettingsToggleCard(
-                title = stringResource(R.string.settings_auto_recalculate_title),
-                description = stringResource(R.string.settings_auto_recalculate_message),
-                checked = state.autoRecalculate,
-                onCheckedChange = onAutoRecalculateChange,
-            )
-
-            SettingsToggleCard(
-                title = stringResource(R.string.settings_junction_alerts_title),
-                description = stringResource(R.string.settings_junction_alerts_message),
-                checked = state.junctionAlerts,
-                onCheckedChange = onJunctionAlertChange,
-            )
-
-            AppUpdateCard(
-                settingsState = state,
-                updateState = updateState,
-                onUpdateChannelChange = onUpdateChannelChange,
-                onPrimaryUpdateAction = onPrimaryUpdateAction,
-                onOpenReleasePage = onOpenReleasePage,
-            )
-
-            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    SectionHeading(stringResource(R.string.settings_debug_telemetry_title))
-                    LabelValue(stringResource(R.string.settings_buffered_events), diagnosticsState.eventCount.toString())
-                    LabelValue(stringResource(R.string.settings_active_session), diagnosticsState.activeSessionLabel)
-                    LabelValue(stringResource(R.string.settings_last_event), diagnosticsState.lastEventLabel)
-                    diagnosticsState.lastExportPath?.let { exportPath ->
-                        LabelValue(stringResource(R.string.settings_last_export), exportPath)
-                    }
-                    FilledTonalButton(
-                        onClick = onExportDiagnostics,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Icon(Icons.Filled.FileDownload, contentDescription = null)
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.settings_export_telemetry))
-                    }
-                    if (diagnosticsState.lastExportPath != null && onShareDiagnostics != null) {
-                        OutlinedButton(
-                            onClick = onShareDiagnostics,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Icon(Icons.Filled.Share, contentDescription = null)
-                            Spacer(Modifier.width(8.dp))
-                            Text(stringResource(R.string.settings_share_last_export))
-                        }
-                    }
-                    OutlinedButton(
-                        onClick = onClearDiagnostics,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Icon(Icons.Filled.Delete, contentDescription = null)
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.settings_clear_telemetry))
-                    }
+                SettingsDestination.Guidance -> {
+                    SettingsToggleCard(
+                        title = stringResource(R.string.settings_voice_title),
+                        description = stringResource(R.string.settings_voice_message),
+                        checked = state.turnByTurnAnnouncements,
+                        onCheckedChange = onTurnByTurnChange,
+                    )
+                    AnnouncementCadenceCard(
+                        selectedMode = state.announcementCadenceMode,
+                        enabled = state.turnByTurnAnnouncements,
+                        onModeChange = onAnnouncementCadenceModeChange,
+                    )
+                    SettingsToggleCard(
+                        title = stringResource(R.string.settings_vibration_title),
+                        description = stringResource(R.string.settings_vibration_message),
+                        checked = state.vibrationEnabled,
+                        onCheckedChange = onVibrationChange,
+                    )
+                    SettingsToggleCard(
+                        title = stringResource(R.string.settings_auto_recalculate_title),
+                        description = stringResource(R.string.settings_auto_recalculate_message),
+                        checked = state.autoRecalculate,
+                        onCheckedChange = onAutoRecalculateChange,
+                    )
+                    SettingsToggleCard(
+                        title = stringResource(R.string.settings_junction_alerts_title),
+                        description = stringResource(R.string.settings_junction_alerts_message),
+                        checked = state.junctionAlerts,
+                        onCheckedChange = onJunctionAlertChange,
+                    )
                 }
+                SettingsDestination.Speech -> {
+                    VoiceOutputSettingsCard(
+                        state = state,
+                        onSpeechOutputModeChange = onSpeechOutputModeChange,
+                        onSystemTtsEngineChange = onSystemTtsEngineChange,
+                        onOpenSystemTtsSettings = onOpenSystemTtsSettings,
+                        onPreviewSpeech = onPreviewSpeech,
+                    )
+                    VoiceSliderCard(
+                        title = stringResource(R.string.settings_speech_rate_title),
+                        description = stringResource(R.string.settings_speech_rate_message),
+                        value = state.speechRatePercent,
+                        valueRange = 50f..200f,
+                        steps = 29,
+                        enabled = state.speechOutputMode == SpeechOutputMode.System,
+                        disabledMessage = stringResource(R.string.settings_speech_controls_disabled_message),
+                        onCommit = onSpeechRateChange,
+                    )
+                    VoiceSliderCard(
+                        title = stringResource(R.string.settings_speech_volume_title),
+                        description = stringResource(R.string.settings_speech_volume_message),
+                        value = state.speechVolumePercent,
+                        valueRange = 0f..100f,
+                        steps = 19,
+                        enabled = state.speechOutputMode == SpeechOutputMode.System,
+                        disabledMessage = stringResource(R.string.settings_speech_controls_disabled_message),
+                        onCommit = onSpeechVolumeChange,
+                    )
+                }
+                SettingsDestination.App -> {
+                    LanguageSettingsCard(language = state.language)
+                    AppUpdateCard(
+                        settingsState = state,
+                        updateState = updateState,
+                        onUpdateChannelChange = onUpdateChannelChange,
+                        onPrimaryUpdateAction = onPrimaryUpdateAction,
+                        onOpenReleasePage = onOpenReleasePage,
+                    )
+                    AppInfoCard(
+                        versionLabel = updateState.currentVersionLabel,
+                        buildLabel = updateState.currentBuildLabel,
+                    )
+                }
+                SettingsDestination.Diagnostics -> {
+                    DiagnosticsSettingsCard(
+                        diagnosticsState = diagnosticsState,
+                        onExportDiagnostics = onExportDiagnostics,
+                        onClearDiagnostics = onClearDiagnostics,
+                        onShareDiagnostics = onShareDiagnostics,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SettingsRootIntroCard() {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(R.string.settings_root_message),
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun SettingsNavigationCard(
+    title: String,
+    summary: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+) {
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Surface(
+                modifier = Modifier.size(44.dp),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primaryContainer,
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+                }
+            }
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text = summary,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = null,
+                modifier = Modifier.rotate(180f),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun LanguageSettingsCard(language: String) {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            CardTitle(stringResource(R.string.settings_language_title))
+            LabelValue(
+                stringResource(R.string.settings_language_detected_label),
+                value = language,
+            )
+            Text(
+                text = stringResource(R.string.settings_language_detected_message),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun AppInfoCard(
+    versionLabel: String,
+    buildLabel: String,
+) {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            CardTitle(stringResource(R.string.settings_about_title))
+            LabelValue(
+                label = stringResource(R.string.settings_updates_current_version),
+                value = versionLabel,
+            )
+            LabelValue(
+                label = stringResource(R.string.settings_updates_current_build),
+                value = buildLabel,
+            )
+        }
+    }
+}
+
+@Composable
+private fun DiagnosticsSettingsCard(
+    diagnosticsState: DiagnosticsState,
+    onExportDiagnostics: () -> Unit,
+    onClearDiagnostics: () -> Unit,
+    onShareDiagnostics: (() -> Unit)?,
+) {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            CardTitle(stringResource(R.string.settings_debug_telemetry_title))
+            LabelValue(stringResource(R.string.settings_buffered_events), diagnosticsState.eventCount.toString())
+            LabelValue(stringResource(R.string.settings_active_session), diagnosticsState.activeSessionLabel)
+            LabelValue(stringResource(R.string.settings_last_event), diagnosticsState.lastEventLabel)
+            diagnosticsState.lastExportPath?.let { exportPath ->
+                LabelValue(stringResource(R.string.settings_last_export), exportPath)
+            }
+            FilledTonalButton(
+                onClick = onExportDiagnostics,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(Icons.Filled.FileDownload, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.settings_export_telemetry))
+            }
+            if (diagnosticsState.lastExportPath != null && onShareDiagnostics != null) {
+                OutlinedButton(
+                    onClick = onShareDiagnostics,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Icon(Icons.Filled.Share, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.settings_share_last_export))
+                }
+            }
+            OutlinedButton(
+                onClick = onClearDiagnostics,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(Icons.Filled.Delete, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.settings_clear_telemetry))
             }
         }
     }
@@ -1271,7 +1424,7 @@ private fun AnnouncementCadenceCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            SectionHeading(stringResource(R.string.settings_announcement_cadence_title))
+            CardTitle(stringResource(R.string.settings_announcement_cadence_title))
             Text(
                 text = stringResource(R.string.settings_announcement_cadence_message),
                 style = MaterialTheme.typography.bodyMedium,
@@ -1319,7 +1472,7 @@ private fun TutorialOverviewCards() {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            SectionHeading(stringResource(R.string.onboarding_how_it_works_title))
+            CardTitle(stringResource(R.string.onboarding_how_it_works_title))
             LabelValue(stringResource(R.string.onboarding_search_label), stringResource(R.string.onboarding_search_message))
             LabelValue(stringResource(R.string.onboarding_align_label), stringResource(R.string.onboarding_align_message))
             LabelValue(stringResource(R.string.onboarding_navigate_label), stringResource(R.string.onboarding_navigate_message))
@@ -1335,7 +1488,7 @@ private fun TutorialOverviewCards() {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            SectionHeading(stringResource(R.string.onboarding_expect_title))
+            CardTitle(stringResource(R.string.onboarding_expect_title))
             Text(
                 text = stringResource(R.string.onboarding_expect_message),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -1358,7 +1511,7 @@ private fun TutorialStartupCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            SectionHeading(stringResource(R.string.tutorial_startup_section_title))
+            CardTitle(stringResource(R.string.tutorial_startup_section_title))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -1399,7 +1552,7 @@ private fun TutorialSettingsCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            SectionHeading(stringResource(R.string.tutorial_navigation_title))
+            CardTitle(stringResource(R.string.tutorial_navigation_title))
             Text(
                 text = stringResource(R.string.settings_help_privacy_tutorial_message),
                 style = MaterialTheme.typography.bodyMedium,
@@ -1452,7 +1605,7 @@ private fun SupportDevelopmentCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            SectionHeading(stringResource(R.string.settings_support_section_title))
+            CardTitle(stringResource(R.string.settings_support_section_title))
             Text(
                 text = stringResource(R.string.settings_support_body),
                 style = MaterialTheme.typography.bodyMedium,
@@ -1549,7 +1702,7 @@ private fun PrivacyInfoCard() {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            SectionHeading(stringResource(R.string.settings_privacy_section_title))
+            CardTitle(stringResource(R.string.settings_privacy_section_title))
             PrivacyInfoBlock(
                 title = stringResource(R.string.settings_privacy_local_title),
                 body = stringResource(R.string.settings_privacy_local_body),
@@ -1754,6 +1907,15 @@ private fun SectionHeading(text: String) {
 }
 
 @Composable
+private fun CardTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+    )
+}
+
+@Composable
 private fun LabelValue(label: String, value: String) {
     Column(
         verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -1842,7 +2004,7 @@ private fun VoiceOutputSettingsCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            SectionHeading(stringResource(R.string.settings_speech_source_title))
+            CardTitle(stringResource(R.string.settings_speech_source_title))
             Text(
                 text = stringResource(R.string.settings_speech_source_message),
                 style = MaterialTheme.typography.bodyMedium,
@@ -1923,7 +2085,7 @@ private fun SystemTtsEnginePicker(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            SectionHeading(stringResource(R.string.settings_system_tts_title))
+            CardTitle(stringResource(R.string.settings_system_tts_title))
             Text(
                 text = stringResource(R.string.settings_system_tts_message),
                 style = MaterialTheme.typography.bodyMedium,
@@ -2116,7 +2278,7 @@ private fun AppUpdateCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            SectionHeading(stringResource(R.string.settings_updates_title))
+            CardTitle(stringResource(R.string.settings_updates_title))
             Text(
                 text = stringResource(R.string.settings_updates_message),
                 style = MaterialTheme.typography.bodyMedium,
@@ -2219,7 +2381,7 @@ private fun UpdateChannelCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            SectionHeading(stringResource(R.string.settings_updates_channel_title))
+            CardTitle(stringResource(R.string.settings_updates_channel_title))
             Text(
                 text = stringResource(R.string.settings_updates_channel_description),
                 style = MaterialTheme.typography.bodyMedium,

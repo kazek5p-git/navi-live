@@ -122,6 +122,17 @@
     <string name="settings_title">Ρυθμίσεις</string>
     <string name="settings_status_title">Ρυθμίσεις καθοδήγησης</string>
     <string name="settings_status_message">Διατηρήστε μόνο τα στοιχεία ελέγχου που επηρεάζουν ουσιαστικά τη φωνή, τη δόνηση και την αλλαγή δρομολόγησης.</string>
+    <string name="settings_root_message">Οι ρυθμίσεις ομαδοποιούνται σε μερικές μεγαλύτερες ενότητες, ώστε η οθόνη να παραμένει μικρότερη και να είναι πιο εύκολη η πλοήγηση με πρόγραμμα ανάγνωσης οθόνης.</string>
+    <string name="settings_group_guidance_title">Καθοδήγηση και διαδρομή</string>
+    <string name="settings_group_guidance_summary">Φωνητικές ανακοινώσεις, δόνηση, αλλαγή δρομολόγησης και λειτουργία αντίστροφης μέτρησης.</string>
+    <string name="settings_group_speech_title">Ομιλία και φωνή</string>
+    <string name="settings_group_speech_summary">Πηγή ομιλίας, μηχανή Android TTS και προεπισκόπηση φωνής.</string>
+    <string name="settings_group_app_title">Εφαρμογή και ενημερώσεις</string>
+    <string name="settings_group_app_summary">Γλώσσα, ενημέρωση καναλιού, έκδοση και πληροφορίες κατασκευής.</string>
+    <string name="settings_group_diagnostics_title">Diagnostics</string>
+    <string name="settings_group_diagnostics_summary">Τηλεμετρία buffer, εξαγωγή και τρέχουσες λεπτομέρειες περιόδου λειτουργίας εντοπισμού σφαλμάτων.</string>
+    <string name="settings_group_help_title">Βοήθεια και απόρρητο</string>
+    <string name="settings_group_help_summary">Εκμάθηση, υποστήριξη και λεπτομέρειες απορρήτου.</string>
     <string name="settings_help_privacy_title">Βοήθεια και απόρρητο</string>
     <string name="settings_help_privacy_summary">Εκμάθηση, υποστήριξη και απόρρητο</string>
     <string name="settings_help_privacy_status_message">Ανοίξτε το σεμινάριο, υποστηρίξτε την ανάπτυξη και ελέγξτε τον τρόπο με τον οποίο το Navi Live χειρίζεται τοπικά δεδομένα, διαδικτυακές υπηρεσίες και τηλεμετρία.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Εγκατεστημένη έκδοση</string>
     <string name="settings_updates_current_build">Εγκατεστημένη κατασκευή</string>
     <string name="settings_updates_latest_version">Τελευταία έκδοση</string>
+    <string name="settings_about_title">Περίπου</string>
     <string name="settings_updates_release_name">Τίτλος έκδοσης</string>
     <string name="settings_updates_asset">Στοιχείο APK</string>
     <string name="settings_updates_release_notes">Σημειώσεις έκδοσης</string>

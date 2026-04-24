@@ -136,6 +136,17 @@
     <string name="settings_title">Settings</string>
     <string name="settings_status_title">Guidance settings</string>
     <string name="settings_status_message">Keep only the controls that materially affect voice, vibration and rerouting.</string>
+    <string name="settings_root_message">Settings are grouped into a few larger sections so the screen stays shorter and easier to navigate with a screen reader.</string>
+    <string name="settings_group_guidance_title">Guidance and route</string>
+    <string name="settings_group_guidance_summary">Voice announcements, vibration, rerouting and countdown mode.</string>
+    <string name="settings_group_speech_title">Speech and voice</string>
+    <string name="settings_group_speech_summary">Speech source, Android TTS engine and voice preview.</string>
+    <string name="settings_group_app_title">App and updates</string>
+    <string name="settings_group_app_summary">Language, update channel, version and build information.</string>
+    <string name="settings_group_diagnostics_title">Diagnostics</string>
+    <string name="settings_group_diagnostics_summary">Telemetry buffer, export and current debug session details.</string>
+    <string name="settings_group_help_title">Help and privacy</string>
+    <string name="settings_group_help_summary">Tutorial, support and privacy details.</string>
     <string name="settings_help_privacy_title">Help and privacy</string>
     <string name="settings_help_privacy_summary">Tutorial, support and privacy</string>
     <string name="settings_help_privacy_status_message">Open the tutorial, support development and review how Navi Live handles local data, online services and telemetry.</string>
@@ -278,6 +289,7 @@
     <string name="settings_updates_current_version">Installed version</string>
     <string name="settings_updates_current_build">Installed build</string>
     <string name="settings_updates_latest_version">Latest release</string>
+    <string name="settings_about_title">About</string>
     <string name="settings_updates_release_name">Release title</string>
     <string name="settings_updates_asset">APK asset</string>
     <string name="settings_updates_release_notes">Release notes</string>

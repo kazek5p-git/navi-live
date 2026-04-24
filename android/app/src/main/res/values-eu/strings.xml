@@ -122,6 +122,17 @@
     <string name="settings_title">Ezarpenak</string>
     <string name="settings_status_title">Gida-ezarpenak</string>
     <string name="settings_status_message">Ahotsari, bibrazioari eta bideratzeei modu materialan eragiten dieten kontrolak soilik gorde.</string>
+    <string name="settings_root_message">Ezarpenak atal handiago batzuetan biltzen dira, pantaila laburragoa eta errazago nabigatzeko pantaila-irakurgailu batekin.</string>
+    <string name="settings_group_guidance_title">Gidabidea eta ibilbidea</string>
+    <string name="settings_group_guidance_summary">Ahots-iragarkiak, bibrazioa, birbideratzea eta atzerako kontaketa modua.</string>
+    <string name="settings_group_speech_title">Hizketa eta ahotsa</string>
+    <string name="settings_group_speech_summary">Hizketa-iturria, Android TTS motorra eta ahotsaren aurrebista.</string>
+    <string name="settings_group_app_title">Aplikazioa eta eguneraketak</string>
+    <string name="settings_group_app_summary">Hizkuntza, eguneratu kanala, bertsioa eta eraikitze informazioa.</string>
+    <string name="settings_group_diagnostics_title">Diagnostikoak</string>
+    <string name="settings_group_diagnostics_summary">Telemetria-buffer, esportazio eta uneko arazketa-saioaren xehetasunak.</string>
+    <string name="settings_group_help_title">Laguntza eta pribatutasuna</string>
+    <string name="settings_group_help_summary">Tutoriala, laguntza eta pribatutasun xehetasunak.</string>
     <string name="settings_help_privacy_title">Laguntza eta pribatutasuna</string>
     <string name="settings_help_privacy_summary">Tutoriala, laguntza eta pribatutasuna</string>
     <string name="settings_help_privacy_status_message">Ireki tutoriala, lagundu garapena eta berrikusi Navi Live-k tokiko datuak, lineako zerbitzuak eta telemetria nola kudeatzen dituen.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Instalatutako bertsioa</string>
     <string name="settings_updates_current_build">Instalatutako eraikuntza</string>
     <string name="settings_updates_latest_version">Azken bertsioa</string>
+    <string name="settings_about_title">buruz</string>
     <string name="settings_updates_release_name">Argitalpenaren izenburua</string>
     <string name="settings_updates_asset">APK aktiboa</string>
     <string name="settings_updates_release_notes">Argitalpen oharrak</string>

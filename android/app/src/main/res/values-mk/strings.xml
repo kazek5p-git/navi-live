@@ -122,6 +122,17 @@
     <string name="settings_title">Поставки</string>
     <string name="settings_status_title">Поставки за насоки</string>
     <string name="settings_status_message">Чувајте ги само контролите што материјално влијаат на гласот, вибрациите и пренасочувањето.</string>
+    <string name="settings_root_message">Поставките се групирани во неколку поголеми делови, така што екранот останува пократок и полесен за навигација со читач на екран.</string>
+    <string name="settings_group_guidance_title">Водење и маршрута</string>
+    <string name="settings_group_guidance_summary">Гласовни соопштенија, вибрации, пренасочување и режим на одбројување.</string>
+    <string name="settings_group_speech_title">Говор и глас</string>
+    <string name="settings_group_speech_summary">Извор на говор, Android TTS мотор и гласовен преглед.</string>
+    <string name="settings_group_app_title">Апликација и ажурирања</string>
+    <string name="settings_group_app_summary">Јазик, ажурирање канал, верзија и информации за изградбата.</string>
+    <string name="settings_group_diagnostics_title">Дијагностика</string>
+    <string name="settings_group_diagnostics_summary">Бафер за телеметрија, детали за извоз и моментална сесија за отстранување грешки.</string>
+    <string name="settings_group_help_title">Помош и приватност</string>
+    <string name="settings_group_help_summary">Упатство, поддршка и детали за приватност.</string>
     <string name="settings_help_privacy_title">Помош и приватност</string>
     <string name="settings_help_privacy_summary">Упатство, поддршка и приватност</string>
     <string name="settings_help_privacy_status_message">Отворете го упатството, поддржете го развојот и прегледајте како Navi Live се справува со локални податоци, онлајн услуги и телеметрија.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Инсталирана верзија</string>
     <string name="settings_updates_current_build">Инсталирана градба</string>
     <string name="settings_updates_latest_version">Најновото издание</string>
+    <string name="settings_about_title">За</string>
     <string name="settings_updates_release_name">Наслов на изданието</string>
     <string name="settings_updates_asset">АПК средство</string>
     <string name="settings_updates_release_notes">Белешки за ослободување</string>

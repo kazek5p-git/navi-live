@@ -122,6 +122,17 @@
     <string name="settings_title">Cilësimet</string>
     <string name="settings_status_title">Cilësimet udhëzuese</string>
     <string name="settings_status_message">Mbani vetëm kontrollet që ndikojnë materialisht në zërin, dridhjet dhe riorientimin.</string>
+    <string name="settings_root_message">Cilësimet janë grupuar në disa seksione më të mëdha në mënyrë që ekrani të qëndrojë më i shkurtër dhe më i lehtë për t\'u naviguar me një lexues ekrani.</string>
+    <string name="settings_group_guidance_title">Udhëzues dhe itinerar</string>
+    <string name="settings_group_guidance_summary">Njoftimet zanore, dridhje, ridrejtim dhe modaliteti i numërimit mbrapsht.</string>
+    <string name="settings_group_speech_title">Fjalimi dhe zëri</string>
+    <string name="settings_group_speech_summary">Burimi i të folurit, motori Android TTS dhe shikimi paraprak i zërit.</string>
+    <string name="settings_group_app_title">Aplikacioni dhe përditësimet</string>
+    <string name="settings_group_app_summary">Gjuha, përditësimi i kanalit, versioni dhe informacioni i ndërtimit.</string>
+    <string name="settings_group_diagnostics_title">Diagnostics</string>
+    <string name="settings_group_diagnostics_summary">Buferi i telemetrisë, eksporti dhe detajet aktuale të sesionit të korrigjimit.</string>
+    <string name="settings_group_help_title">Ndihmë dhe privatësi</string>
+    <string name="settings_group_help_summary">Tutorial, mbështetje dhe detaje të privatësisë.</string>
     <string name="settings_help_privacy_title">Ndihmë dhe privatësi</string>
     <string name="settings_help_privacy_summary">Tutorial, mbështetje dhe privatësi</string>
     <string name="settings_help_privacy_status_message">Hapni tutorialin, mbështesni zhvillimin dhe rishikoni se si Navi Live trajton të dhënat lokale, shërbimet online dhe telemetrinë.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Versioni i instaluar</string>
     <string name="settings_updates_current_build">Ndërtimi i instaluar</string>
     <string name="settings_updates_latest_version">Publikimi i fundit</string>
+    <string name="settings_about_title">Rreth</string>
     <string name="settings_updates_release_name">Titulli i publikimit</string>
     <string name="settings_updates_asset">Puna APK</string>
     <string name="settings_updates_release_notes">Shënimet e publikimit</string>

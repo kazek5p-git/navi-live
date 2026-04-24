@@ -122,6 +122,17 @@
     <string name="settings_title">Postavke</string>
     <string name="settings_status_title">Postavke navođenja</string>
     <string name="settings_status_message">Zadržite samo kontrole koje materijalno utiču na glas, vibraciju i preusmjeravanje.</string>
+    <string name="settings_root_message">Postavke su grupisane u nekoliko većih sekcija tako da ekran ostaje kraći i lakši za navigaciju pomoću čitača ekrana.</string>
+    <string name="settings_group_guidance_title">Navođenje i ruta</string>
+    <string name="settings_group_guidance_summary">Glasovne najave, vibracija, preusmjeravanje i način odbrojavanja.</string>
+    <string name="settings_group_speech_title">Govor i glas</string>
+    <string name="settings_group_speech_summary">Izvor govora, Android TTS motor i glasovni pregled.</string>
+    <string name="settings_group_app_title">Aplikacija i ažuriranja</string>
+    <string name="settings_group_app_summary">Jezik, kanal ažuriranja, verzija i informacije o izradi.</string>
+    <string name="settings_group_diagnostics_title">Dijagnostika</string>
+    <string name="settings_group_diagnostics_summary">Međuspremnik telemetrije, detalji o izvozu i trenutnoj sesiji otklanjanja grešaka.</string>
+    <string name="settings_group_help_title">Pomoć i privatnost</string>
+    <string name="settings_group_help_summary">Tutorial, podrška i detalji o privatnosti.</string>
     <string name="settings_help_privacy_title">Pomoć i privatnost</string>
     <string name="settings_help_privacy_summary">Vodič, podrška i privatnost</string>
     <string name="settings_help_privacy_status_message">Otvorite vodič, razvoj podrške i pregledajte kako Navi Live rukuje lokalnim podacima, uslugama na mreži i telemetrijom.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Instalirana verzija</string>
     <string name="settings_updates_current_build">Instalirana gradnja</string>
     <string name="settings_updates_latest_version">Najnovije izdanje</string>
+    <string name="settings_about_title">O</string>
     <string name="settings_updates_release_name">Naslov izdanja</string>
     <string name="settings_updates_asset">APK sredstvo</string>
     <string name="settings_updates_release_notes">Bilješke o izdanju</string>

@@ -122,6 +122,17 @@
     <string name="settings_title">პარამეტრები</string>
     <string name="settings_status_title">სახელმძღვანელო პარამეტრები</string>
     <string name="settings_status_message">შეინახეთ მხოლოდ მართვის საშუალებები, რომლებიც არსებითად მოქმედებს ხმაზე, ვიბრაციაზე და მარშრუტიზაციაზე.</string>
+    <string name="settings_root_message">პარამეტრები დაჯგუფებულია რამდენიმე დიდ განყოფილებად, ასე რომ ეკრანი უფრო მოკლეა და ეკრანის წამკითხველის საშუალებით ნავიგაცია ადვილია.</string>
+    <string name="settings_group_guidance_title">მეგზური და მარშრუტი</string>
+    <string name="settings_group_guidance_summary">ხმოვანი განცხადებები, ვიბრაცია, გადამისამართება და უკუთვლა რეჟიმი.</string>
+    <string name="settings_group_speech_title">მეტყველება და ხმა</string>
+    <string name="settings_group_speech_summary">მეტყველების წყარო, Android TTS ძრავა და ხმის გადახედვა.</string>
+    <string name="settings_group_app_title">აპლიკაცია და განახლებები</string>
+    <string name="settings_group_app_summary">ენა, განაახლეთ არხი, ვერსია და ინფორმაცია.</string>
+    <string name="settings_group_diagnostics_title">დიაგნოსტიკა</string>
+    <string name="settings_group_diagnostics_summary">ტელემეტრიის ბუფერი, ექსპორტი და მიმდინარე გამართვის სესიის დეტალები.</string>
+    <string name="settings_group_help_title">დახმარება და კონფიდენციალურობა</string>
+    <string name="settings_group_help_summary">სახელმძღვანელო, მხარდაჭერა და კონფიდენციალურობის დეტალები.</string>
     <string name="settings_help_privacy_title">დახმარება და კონფიდენციალურობა</string>
     <string name="settings_help_privacy_summary">სახელმძღვანელო, მხარდაჭერა და კონფიდენციალურობა</string>
     <string name="settings_help_privacy_status_message">გახსენით სახელმძღვანელო, მხარი დაუჭირეთ განვითარებას და გადახედეთ, თუ როგორ ამუშავებს Navi Live ადგილობრივ მონაცემებს, ონლაინ სერვისებს და ტელემეტრიას.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">დაინსტალირებული ვერსია</string>
     <string name="settings_updates_current_build">დაყენებული კონსტრუქცია</string>
     <string name="settings_updates_latest_version">უახლესი გამოშვება</string>
+    <string name="settings_about_title">შესახებ</string>
     <string name="settings_updates_release_name">გამოშვების სათაური</string>
     <string name="settings_updates_asset">APK აქტივი</string>
     <string name="settings_updates_release_notes">გამოშვების შენიშვნები</string>

@@ -122,6 +122,17 @@
     <string name="settings_title">Կարգավորումներ</string>
     <string name="settings_status_title">Ուղղորդող կարգավորումներ</string>
     <string name="settings_status_message">Պահպանեք միայն այն կառավարները, որոնք էապես ազդում են ձայնի, թրթռման և երթուղիների փոփոխման վրա:</string>
+    <string name="settings_root_message">Կարգավորումները խմբավորված են մի քանի ավելի մեծ բաժինների, որպեսզի էկրանը մնա ավելի կարճ և հեշտ նավարկելու համար էկրանի ընթերցիչով:</string>
+    <string name="settings_group_guidance_title">Ուղեցույց և երթուղի</string>
+    <string name="settings_group_guidance_summary">Ձայնային հայտարարություններ, թրթռում, երթուղի վերափոխում և հետհաշվարկի ռեժիմ:</string>
+    <string name="settings_group_speech_title">Խոսք և ձայն</string>
+    <string name="settings_group_speech_summary">Խոսքի աղբյուր, Android TTS շարժիչ և ձայնային նախադիտում:</string>
+    <string name="settings_group_app_title">Հավելված և թարմացումներ</string>
+    <string name="settings_group_app_summary">Լեզուն, թարմացնել ալիքը, տարբերակի և կառուցման տեղեկատվությունը:</string>
+    <string name="settings_group_diagnostics_title">Ախտորոշում</string>
+    <string name="settings_group_diagnostics_summary">Հեռաչափության բուֆեր, արտահանում և ընթացիկ վրիպազերծման աշխատաշրջանի մանրամասներ:</string>
+    <string name="settings_group_help_title">Օգնություն և գաղտնիություն</string>
+    <string name="settings_group_help_summary">Ձեռնարկ, աջակցություն և գաղտնիության մանրամասներ:</string>
     <string name="settings_help_privacy_title">Օգնություն և գաղտնիություն</string>
     <string name="settings_help_privacy_summary">Ձեռնարկ, աջակցություն և գաղտնիություն</string>
     <string name="settings_help_privacy_status_message">Բացեք ձեռնարկը, աջակցեք մշակմանը և վերանայեք, թե ինչպես է Navi Live-ը մշակում տեղական տվյալները, առցանց ծառայությունները և հեռաչափությունը:</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Տեղադրված տարբերակը</string>
     <string name="settings_updates_current_build">Տեղադրված շինարարություն</string>
     <string name="settings_updates_latest_version">Վերջին թողարկումը</string>
+    <string name="settings_about_title">Մոտ</string>
     <string name="settings_updates_release_name">Թողարկման վերնագիր</string>
     <string name="settings_updates_asset">APK օբյեկտ</string>
     <string name="settings_updates_release_notes">Թողարկման նշումներ</string>

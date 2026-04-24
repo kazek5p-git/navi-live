@@ -122,6 +122,17 @@
     <string name="settings_title">Setări</string>
     <string name="settings_status_title">Setări de ghidare</string>
     <string name="settings_status_message">Păstrați numai comenzile care afectează în mod semnificativ vocea, vibrațiile și redirecționarea.</string>
+    <string name="settings_root_message">Setările sunt grupate în câteva secțiuni mai mari, astfel încât ecranul să rămână mai scurt și mai ușor de navigat cu un cititor de ecran.</string>
+    <string name="settings_group_guidance_title">Îndrumare și traseu</string>
+    <string name="settings_group_guidance_summary">Anunțuri vocale, vibrații, redirecționare și mod numărătoare inversă.</string>
+    <string name="settings_group_speech_title">Vorbire și voce</string>
+    <string name="settings_group_speech_summary">Sursă de vorbire, motor Android TTS și previzualizare vocală.</string>
+    <string name="settings_group_app_title">Aplicație și actualizări</string>
+    <string name="settings_group_app_summary">Limbă, canal de actualizare, informații despre versiune și versiune.</string>
+    <string name="settings_group_diagnostics_title">Diagnosticare</string>
+    <string name="settings_group_diagnostics_summary">Buffer de telemetrie, export și detalii despre sesiunea de depanare curentă.</string>
+    <string name="settings_group_help_title">Ajutor și confidențialitate</string>
+    <string name="settings_group_help_summary">Tutorial, asistență și detalii de confidențialitate.</string>
     <string name="settings_help_privacy_title">Ajutor și confidențialitate</string>
     <string name="settings_help_privacy_summary">Tutorial, asistență și confidențialitate</string>
     <string name="settings_help_privacy_status_message">Deschide tutorialul, sprijină dezvoltarea și analizează modul în care Navi Live gestionează datele locale, serviciile online și telemetria.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Versiune instalată</string>
     <string name="settings_updates_current_build">Construcție instalată</string>
     <string name="settings_updates_latest_version">Ultima lansare</string>
+    <string name="settings_about_title">Despre</string>
     <string name="settings_updates_release_name">Titlul lansării</string>
     <string name="settings_updates_asset">material APK</string>
     <string name="settings_updates_release_notes">Note de lansare</string>

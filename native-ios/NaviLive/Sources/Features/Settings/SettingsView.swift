@@ -6,18 +6,110 @@ struct SettingsView: View {
   var body: some View {
     Form {
       Section {
-        Toggle(
-          L10n.text("settings.toggle.show_tutorial", table: .settings),
-          isOn: Binding(
-            get: { model.settings.showTutorialOnLaunch },
-            set: model.updateShowTutorialOnLaunch
-          )
-        )
-      } header: {
-        Text(L10n.text("settings.section.tutorial", table: .settings))
+        Text(L10n.text("settings.root.message", table: .settings))
+          .font(.footnote)
+          .foregroundStyle(.secondary)
       }
 
       Section {
+        NavigationLink {
+          GuidanceSettingsDetailView(model: model)
+        } label: {
+          SettingsGroupRow(
+            title: L10n.text("settings.section.guidance", table: .settings),
+            summary: L10n.text("settings.group.guidance.summary", table: .settings),
+            systemImage: "figure.walk"
+          )
+        }
+
+        NavigationLink {
+          SpeechSettingsDetailView(model: model)
+        } label: {
+          SettingsGroupRow(
+            title: L10n.text("settings.section.speech", table: .settings),
+            summary: L10n.text("settings.group.speech.summary", table: .settings),
+            systemImage: "speaker.wave.2"
+          )
+        }
+
+        NavigationLink {
+          AppSettingsDetailView(model: model)
+        } label: {
+          SettingsGroupRow(
+            title: L10n.text("settings.group.app_updates", table: .settings),
+            summary: L10n.text("settings.group.app_updates.summary", table: .settings),
+            systemImage: "gearshape"
+          )
+        }
+
+        NavigationLink {
+          HelpPrivacyView()
+        } label: {
+          SettingsGroupRow(
+            title: L10n.text("help.title", table: .settings),
+            summary: L10n.text("settings.group.help_privacy.summary", table: .settings),
+            systemImage: "questionmark.circle"
+          )
+        }
+      }
+    }
+    .navigationTitle(L10n.text("settings.title", table: .settings))
+    .navigationBarTitleDisplayMode(.inline)
+  }
+}
+
+private struct SettingsGroupRow: View {
+  let title: String
+  let summary: String
+  let systemImage: String
+
+  var body: some View {
+    HStack(alignment: .top, spacing: 12) {
+      Image(systemName: systemImage)
+        .font(.title3)
+        .foregroundStyle(Color.accentColor)
+        .frame(width: 28)
+
+      VStack(alignment: .leading, spacing: 4) {
+        Text(title)
+        Text(summary)
+          .font(.footnote)
+          .foregroundStyle(.secondary)
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    .padding(.vertical, 2)
+    .accessibilityElement(children: .combine)
+  }
+}
+
+private struct GuidanceSettingsDetailView: View {
+  @ObservedObject var model: AppModel
+
+  var body: some View {
+    Form {
+      Section {
+        Toggle(
+          L10n.text("settings.toggle.turn_announcements", table: .settings),
+          isOn: Binding(
+            get: { model.settings.turnByTurnAnnouncements },
+            set: model.updateTurnByTurnAnnouncements
+          )
+        )
+
+        Picker(
+          L10n.text("settings.guidance.cadence", table: .settings),
+          selection: Binding(
+            get: { model.settings.announcementCadenceMode },
+            set: model.updateAnnouncementCadenceMode
+          )
+        ) {
+          ForEach(AnnouncementCadenceMode.allCases, id: \.self) { mode in
+            Text(announcementCadenceLabel(mode)).tag(mode)
+          }
+        }
+        .disabled(!model.settings.turnByTurnAnnouncements)
+
         Toggle(
           L10n.text("settings.toggle.vibration", table: .settings),
           isOn: Binding(
@@ -41,33 +133,29 @@ struct SettingsView: View {
             set: model.updateJunctionAlerts
           )
         )
-
-        Toggle(
-          L10n.text("settings.toggle.turn_announcements", table: .settings),
-          isOn: Binding(
-            get: { model.settings.turnByTurnAnnouncements },
-            set: model.updateTurnByTurnAnnouncements
-          )
-        )
-
-        Picker(
-          L10n.text("settings.guidance.cadence", table: .settings),
-          selection: Binding(
-            get: { model.settings.announcementCadenceMode },
-            set: model.updateAnnouncementCadenceMode
-          )
-        ) {
-          ForEach(AnnouncementCadenceMode.allCases, id: \.self) { mode in
-            Text(announcementCadenceLabel(mode)).tag(mode)
-          }
-        }
-        .disabled(!model.settings.turnByTurnAnnouncements)
-      } header: {
-        Text(L10n.text("settings.section.guidance", table: .settings))
       } footer: {
         Text(L10n.text("settings.guidance.cadence.footer", table: .settings))
       }
+    }
+    .navigationTitle(L10n.text("settings.section.guidance", table: .settings))
+    .navigationBarTitleDisplayMode(.inline)
+  }
 
+  private func announcementCadenceLabel(_ mode: AnnouncementCadenceMode) -> String {
+    switch mode {
+    case .distance:
+      return L10n.text("settings.guidance.cadence.distance", table: .settings)
+    case .time:
+      return L10n.text("settings.guidance.cadence.time", table: .settings)
+    }
+  }
+}
+
+private struct SpeechSettingsDetailView: View {
+  @ObservedObject var model: AppModel
+
+  var body: some View {
+    Form {
       Section {
         Picker(
           L10n.text("settings.speech.mode", table: .settings),
@@ -80,7 +168,11 @@ struct SettingsView: View {
             Text(speechModeLabel(mode)).tag(mode)
           }
         }
+      } footer: {
+        Text(L10n.text("settings.speech.footer", table: .settings))
+      }
 
+      Section {
         VStack(alignment: .leading, spacing: 8) {
           Text(L10n.text("settings.speech.rate", table: .settings))
           Slider(
@@ -110,39 +202,9 @@ struct SettingsView: View {
             .font(.footnote)
             .foregroundStyle(.secondary)
         }
-      } header: {
-        Text(L10n.text("settings.section.speech", table: .settings))
-      } footer: {
-        Text(L10n.text("settings.speech.footer", table: .settings))
-      }
-
-      Section {
-        Button {
-          model.openHelpPrivacy()
-        } label: {
-          Label(L10n.text("settings.action.help_privacy", table: .settings), systemImage: "questionmark.circle")
-        }
-
-        VStack(alignment: .leading, spacing: 4) {
-          Text(L10n.text("settings.updates.title", table: .settings))
-            .font(.headline)
-          Text(L10n.text("settings.updates.message", table: .settings))
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-        }
-        .accessibilityElement(children: .combine)
-      } header: {
-        Text(L10n.text("settings.section.support", table: .settings))
-      }
-
-      Section {
-        LabeledContent(L10n.text("settings.about.version", table: .settings), value: model.appVersionLabel)
-        LabeledContent(L10n.text("settings.about.build", table: .settings), value: model.appBuildLabel)
-      } header: {
-        Text(L10n.text("settings.section.about", table: .settings))
       }
     }
-    .navigationTitle(L10n.text("settings.title", table: .settings))
+    .navigationTitle(L10n.text("settings.section.speech", table: .settings))
     .navigationBarTitleDisplayMode(.inline)
   }
 
@@ -156,14 +218,46 @@ struct SettingsView: View {
       return L10n.text("settings.speech.mode.synthesizer", table: .settings)
     }
   }
+}
 
-  private func announcementCadenceLabel(_ mode: AnnouncementCadenceMode) -> String {
-    switch mode {
-    case .distance:
-      return L10n.text("settings.guidance.cadence.distance", table: .settings)
-    case .time:
-      return L10n.text("settings.guidance.cadence.time", table: .settings)
+private struct AppSettingsDetailView: View {
+  @ObservedObject var model: AppModel
+
+  var body: some View {
+    Form {
+      Section {
+        LabeledContent(
+          L10n.text("settings.language.detected", table: .settings),
+          value: currentLanguageLabel
+        )
+        Text(L10n.text("settings.language.detected_message", table: .settings))
+          .font(.footnote)
+          .foregroundStyle(.secondary)
+      }
+
+      Section {
+        VStack(alignment: .leading, spacing: 4) {
+          Text(L10n.text("settings.updates.title", table: .settings))
+            .font(.headline)
+          Text(L10n.text("settings.updates.message", table: .settings))
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+        }
+        .accessibilityElement(children: .combine)
+      }
+
+      Section {
+        LabeledContent(L10n.text("settings.about.version", table: .settings), value: model.appVersionLabel)
+        LabeledContent(L10n.text("settings.about.build", table: .settings), value: model.appBuildLabel)
+      }
     }
+    .navigationTitle(L10n.text("settings.group.app_updates", table: .settings))
+    .navigationBarTitleDisplayMode(.inline)
+  }
+
+  private var currentLanguageLabel: String {
+    let locale = Locale.autoupdatingCurrent
+    return locale.localizedString(forIdentifier: locale.identifier) ?? locale.identifier
   }
 }
 

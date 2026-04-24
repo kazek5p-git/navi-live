@@ -122,6 +122,17 @@
     <string name="settings_title">Nastavenia</string>
     <string name="settings_status_title">Nastavenia navádzania</string>
     <string name="settings_status_message">Ponechajte len ovládacie prvky, ktoré podstatne ovplyvňujú hlas, vibrácie a zmenu trasy.</string>
+    <string name="settings_root_message">Nastavenia sú zoskupené do niekoľkých väčších častí, takže obrazovka zostane kratšia a ľahšie sa v nej dá navigovať pomocou čítačky obrazovky.</string>
+    <string name="settings_group_guidance_title">Navádzanie a trasa</string>
+    <string name="settings_group_guidance_summary">Hlasové oznámenia, vibrácie, zmena trasy a režim odpočítavania.</string>
+    <string name="settings_group_speech_title">Reč a hlas</string>
+    <string name="settings_group_speech_summary">Zdroj reči, Android TTS engine a hlasový náhľad.</string>
+    <string name="settings_group_app_title">Aplikácia a aktualizácie</string>
+    <string name="settings_group_app_summary">Jazyk, kanál aktualizácie, informácie o verzii a zostave.</string>
+    <string name="settings_group_diagnostics_title">Diagnostika</string>
+    <string name="settings_group_diagnostics_summary">Vyrovnávacia pamäť telemetrie, export a podrobnosti relácie aktuálneho ladenia.</string>
+    <string name="settings_group_help_title">Pomocník a súkromie</string>
+    <string name="settings_group_help_summary">Návod, podpora a podrobnosti o súkromí.</string>
     <string name="settings_help_privacy_title">Pomoc a ochrana osobných údajov</string>
     <string name="settings_help_privacy_summary">Kurz, podpora a ochrana osobných údajov</string>
     <string name="settings_help_privacy_status_message">Otvorte kurz, podporte vývoj a pozrite si, ako Navi Live spracováva miestne údaje, online služby a telemetriu.</string>
@@ -258,6 +269,7 @@
     <string name="settings_updates_current_version">Nainštalovaná verzia</string>
     <string name="settings_updates_current_build">Nainštalovaná zostava</string>
     <string name="settings_updates_latest_version">Najnovšie vydanie</string>
+    <string name="settings_about_title">O</string>
     <string name="settings_updates_release_name">Názov vydania</string>
     <string name="settings_updates_asset">Podklad APK</string>
     <string name="settings_updates_release_notes">Poznámky k vydaniu</string>

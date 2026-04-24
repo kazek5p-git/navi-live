@@ -1,7 +1,9 @@
 "settings.title" = "Ustawienia";
+"settings.root.message" = "Ustawienia są podzielone na kilka większych grup, żeby ekran był krótszy i łatwiejszy do przechodzenia czytnikiem ekranu.";
 "settings.section.tutorial" = "Samouczek";
 "settings.toggle.show_tutorial" = "Pokazuj samouczek przy starcie";
 "settings.section.guidance" = "Prowadzenie";
+"settings.group.guidance.summary" = "Komunikaty głosowe, wibracje, przeliczanie i sposób odliczania do skrętu.";
 "settings.toggle.vibration" = "Informacja haptyczna";
 "settings.toggle.auto_recalculate" = "Automatyczne przeliczanie trasy";
 "settings.toggle.junction_alerts" = "Alerty skrzyżowań";
@@ -11,6 +13,7 @@
 "settings.guidance.cadence.time" = "Według czasu";
 "settings.guidance.cadence.footer" = "Tryb odległościowy odlicza w metrach. Tryb czasowy odlicza według szacowanego czasu dojścia do następnego skrętu.";
 "settings.section.speech" = "Mowa";
+"settings.group.speech.summary" = "Źródło mowy, ustawienia głosu i odsłuch próbki.";
 "settings.speech.mode" = "Źródło mowy";
 "settings.speech.mode.automatic" = "Automatycznie";
 "settings.speech.mode.voiceover" = "VoiceOver";
@@ -19,6 +22,11 @@
 "settings.speech.volume" = "Głośność mowy";
 "settings.speech.footer" = "Tryb automatyczny korzysta z VoiceOver, gdy jest aktywny. W przeciwnym razie Navi Live używa wbudowanego syntezatora mowy.";
 "settings.speech_mode.updated" = "Zaktualizowano tryb mowy.";
+"settings.group.app_updates" = "Aplikacja i aktualizacje";
+"settings.group.app_updates.summary" = "Język, sposób dostarczania aktualizacji oraz informacje o wersji i buildzie.";
+"settings.group.help_privacy.summary" = "Samouczek, wsparcie i informacje o prywatności.";
+"settings.language.detected" = "Wykryto z telefonu";
+"settings.language.detected_message" = "Navi Live automatycznie używa języka ustawionego w telefonie.";
 "settings.section.support" = "Pomoc i aktualizacje";
 "settings.action.help_privacy" = "Pomoc, wsparcie i prywatność";
 "settings.updates.title" = "Aktualizacje aplikacji";
