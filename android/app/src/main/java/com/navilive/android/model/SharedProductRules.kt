@@ -14,6 +14,7 @@ object SharedProductRules {
 
     object Navigation {
         val countdownMilestonesMeters: List<Int> = listOf(10, 20, 30, 40, 50, 100, 200, 300, 400)
+        val countdownMilestonesSeconds: List<Int> = listOf(10, 20, 30, 40, 50)
 
         const val maneuverAdvanceAccuracyMinMeters: Float = 10.0f
         const val maneuverAdvanceAccuracyMaxMeters: Float = 20.0f

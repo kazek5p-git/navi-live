@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Appin fylgir sjálvvirkandi tínum telefonmáli.</string>
     <string name="settings_voice_title">Røddarfráboðanir</string>
     <string name="settings_voice_message">Les leiðarbroytingar og vegleiðing um vending hart.</string>
+    <string name="settings_announcement_cadence_title">Kunngerðarkadensur</string>
+    <string name="settings_announcement_cadence_message">Vel um Navi Live skal telja niður eftir fjarstøðu ella eftir mettari tíð áðrenn næsta vending.</string>
+    <string name="settings_announcement_cadence_distance_title">Fjarstøðugrundað</string>
+    <string name="settings_announcement_cadence_distance_message">Boða frá komandi svingum á 400, 300, 200, 100, 50, 40, 30, 20 og 10 metrum.</string>
+    <string name="settings_announcement_cadence_time_title">Tíðargrundað</string>
+    <string name="settings_announcement_cadence_time_message">Boða frá komandi vendingum umleið 50, 40, 30, 20 og 10 sekund áðrenn vendingina.</string>
+    <string name="settings_announcement_cadence_disabled_message">Virkja fráboðanir skifti fyri skifti fyrst fyri at broyta kadensstillingina.</string>
     <string name="settings_speech_source_title">Talukelda</string>
     <string name="settings_speech_source_message">Vel um Navi Live skal tosa við Android skipanarsyntetisaran ella hondfráboðanir til virkna skermlesaran.</string>
     <string name="settings_speech_source_system_title">Skipanarsamsetari</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Afturleiðin klár til %1$s.</string>
     <string name="format_route_ready">Leið klárt til %1$s.</string>
     <string name="format_continue_toward">Halt fram móti %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">Í %1$d metrum, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">Í %1$d sekundum, %2$s</string>
     <string name="format_navigation_upcoming_instruction">Í %1$d metrum, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Nú %1$s</string>
     <string name="format_current_position_announcement">%1$s Núverandi størv: %2$s</string>
     <string name="format_telemetry_exported">Fjarmáting útflutt til %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

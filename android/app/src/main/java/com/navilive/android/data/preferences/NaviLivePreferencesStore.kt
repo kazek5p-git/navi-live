@@ -13,6 +13,7 @@ import androidx.datastore.preferences.core.mutablePreferencesOf
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.navilive.android.model.AnnouncementCadenceMode
 import com.navilive.android.model.UpdateChannel
 import com.navilive.android.model.SpeechOutputMode
 import com.navilive.android.model.SettingsState
@@ -118,6 +119,12 @@ class NaviLivePreferencesStore(
         }
     }
 
+    suspend fun setAnnouncementCadenceMode(mode: AnnouncementCadenceMode) {
+        context.naviLiveDataStore.edit { prefs ->
+            prefs[Keys.AnnouncementCadenceMode] = mode.storageValue
+        }
+    }
+
     suspend fun setUpdateChannel(channel: UpdateChannel) {
         context.naviLiveDataStore.edit { prefs ->
             prefs[Keys.UpdateChannel] = channel.storageValue
@@ -180,6 +187,9 @@ class NaviLivePreferencesStore(
                 junctionAlerts = preferences[Keys.JunctionAlerts] ?: SettingsState().junctionAlerts,
                 turnByTurnAnnouncements = preferences[Keys.TurnByTurnAnnouncements]
                     ?: SettingsState().turnByTurnAnnouncements,
+                announcementCadenceMode = AnnouncementCadenceMode.fromStorageValue(
+                    preferences[Keys.AnnouncementCadenceMode],
+                ),
                 updateChannel = UpdateChannel.fromStorageValue(preferences[Keys.UpdateChannel]),
                 speechOutputMode = SpeechOutputMode.fromStorageValue(preferences[Keys.SpeechOutputMode]),
                 selectedSystemTtsEnginePackage = preferences[Keys.SelectedSystemTtsEnginePackage],
@@ -207,6 +217,7 @@ class NaviLivePreferencesStore(
         val AutoRecalculate = booleanPreferencesKey("auto_recalculate")
         val JunctionAlerts = booleanPreferencesKey("junction_alerts")
         val TurnByTurnAnnouncements = booleanPreferencesKey("turn_by_turn_announcements")
+        val AnnouncementCadenceMode = stringPreferencesKey("announcement_cadence_mode")
         val UpdateChannel = stringPreferencesKey("update_channel")
         val SpeechOutputMode = stringPreferencesKey("speech_output_mode")
         val SelectedSystemTtsEnginePackage = stringPreferencesKey("selected_system_tts_engine_package")

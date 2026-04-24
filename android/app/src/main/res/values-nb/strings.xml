@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Appen følger telefonspråket ditt automatisk.</string>
     <string name="settings_voice_title">Talekunngjøringer</string>
     <string name="settings_voice_message">Les ruteendringer og sving-for-sving veiledning høyt.</string>
+    <string name="settings_announcement_cadence_title">Kunngjøringskadens</string>
+    <string name="settings_announcement_cadence_message">Velg om Navi Live skal telle ned etter distanse eller etter estimert tid før neste sving.</string>
+    <string name="settings_announcement_cadence_distance_title">Avstandsbasert</string>
+    <string name="settings_announcement_cadence_distance_message">Kunngjør kommende svinger på 400, 300, 200, 100, 50, 40, 30, 20 og 10 meter.</string>
+    <string name="settings_announcement_cadence_time_title">Tidsbasert</string>
+    <string name="settings_announcement_cadence_time_message">Annonser kommende svinger ca. 50, 40, 30, 20 og 10 sekunder før svingen.</string>
+    <string name="settings_announcement_cadence_disabled_message">Aktiver sving-for-sving-kunngjøringer først for å endre tråkkfrekvensmodus.</string>
     <string name="settings_speech_source_title">Talekilde</string>
     <string name="settings_speech_source_message">Velg om Navi Live skal snakke med Android-systemets synthesizer eller håndkunngjøringer til den aktive skjermleseren.</string>
     <string name="settings_speech_source_system_title">Systemsynthesizer</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Reserverute klar for %1$s.</string>
     <string name="format_route_ready">Rute klar for %1$s.</string>
     <string name="format_continue_toward">Fortsett mot %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">I %1$d meter, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">På %1$d sekunder, %2$s</string>
     <string name="format_navigation_upcoming_instruction">I %1$d meter, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Nå %1$s</string>
     <string name="format_current_position_announcement">%1$s Nåværende stilling: %2$s</string>
     <string name="format_telemetry_exported">Telemetri eksportert til %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

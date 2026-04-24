@@ -49,6 +49,36 @@ class NavigationScenarioFixturesTest {
     }
 
     @Test
+    fun timeCountdownMilestonesMatchSharedFixtures() {
+        val countdowns = loadScenarioCases().getJSONArray("timeCountdowns")
+        for (index in 0 until countdowns.length()) {
+            val entry = countdowns.getJSONObject(index)
+            val expected = if (entry.isNull("expectedMilestone")) null else entry.getInt("expectedMilestone")
+            assertEquals(
+                entry.getString("name"),
+                expected,
+                NavigationScenarioCore.countdownMilestoneSeconds(entry.getInt("secondsToNext")),
+            )
+        }
+    }
+
+    @Test
+    fun routeEtaMatchesSharedFixtures() {
+        val cases = loadScenarioCases().getJSONArray("etaCases")
+        for (index in 0 until cases.length()) {
+            val entry = cases.getJSONObject(index)
+            assertEquals(
+                entry.getString("name"),
+                entry.getInt("expectedEtaMinutes"),
+                NavigationScenarioCore.routeEtaMinutes(
+                    distanceMeters = entry.getInt("distanceMeters"),
+                    providerDurationSeconds = entry.getDouble("providerDurationSeconds"),
+                ),
+            )
+        }
+    }
+
+    @Test
     fun advanceDecisionsMatchSharedFixtures() {
         val cases = loadScenarioCases().getJSONArray("advanceDecisions")
         for (index in 0 until cases.length()) {

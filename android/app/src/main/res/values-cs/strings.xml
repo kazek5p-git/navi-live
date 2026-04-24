@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Aplikace automaticky sleduje jazyk vašeho telefonu.</string>
     <string name="settings_voice_title">Hlasová hlášení</string>
     <string name="settings_voice_message">Přečtěte si nahlas změny trasy a podrobné pokyny.</string>
+    <string name="settings_announcement_cadence_title">Kadence oznámení</string>
+    <string name="settings_announcement_cadence_message">Vyberte, zda má Navi Live odpočítávat podle vzdálenosti nebo podle odhadovaného času před další zatáčkou.</string>
+    <string name="settings_announcement_cadence_distance_title">Na základě vzdálenosti</string>
+    <string name="settings_announcement_cadence_distance_message">Oznamte nadcházející zatáčky na 400, 300, 200, 100, 50, 40, 30, 20 a 10 metrech.</string>
+    <string name="settings_announcement_cadence_time_title">Na základě času</string>
+    <string name="settings_announcement_cadence_time_message">Oznamte nadcházející zatáčky přibližně 50, 40, 30, 20 a 10 sekund před zatáčkou.</string>
+    <string name="settings_announcement_cadence_disabled_message">Chcete-li změnit režim kadence, nejprve povolte hlášení krok za krokem.</string>
     <string name="settings_speech_source_title">Zdroj řeči</string>
     <string name="settings_speech_source_message">Vyberte, zda má Navi Live hovořit se systémovým syntezátorem Android nebo oznamovat rukou aktivní čtečce obrazovky.</string>
     <string name="settings_speech_source_system_title">Systémový syntezátor</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Záložní trasa připravena na %1$s.</string>
     <string name="format_route_ready">Trasa připravena na %1$s.</string>
     <string name="format_continue_toward">Pokračujte na %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">V %1$d metrech, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">Za %1$d sekund, %2$s</string>
     <string name="format_navigation_upcoming_instruction">V %1$d metrech, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Nyní %1$s</string>
     <string name="format_current_position_announcement">%1$s Aktuální pozice: %2$s</string>
     <string name="format_telemetry_exported">Telemetrie exportována na %1$s.</string>
     <string name="format_coordinates_label">Šířka %1$s, Šířka %2$s</string>

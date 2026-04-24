@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">D\'App verfollegt Är Telefonsprooch automatesch.</string>
     <string name="settings_voice_title">Stëmm Ukënnegung</string>
     <string name="settings_voice_message">Liest d\'Streck Ännerungen an d\'Tour-by-Turn Féierung haart.</string>
+    <string name="settings_announcement_cadence_title">Ukënnegung Kadens</string>
+    <string name="settings_announcement_cadence_message">Wielt ob Navi Live soll no Distanz oder no geschätzter Zäit virum nächste Tour ofzielen.</string>
+    <string name="settings_announcement_cadence_distance_title">Distanz baséiert</string>
+    <string name="settings_announcement_cadence_distance_message">Ukënnegt zukünfteg Wendungen op 400, 300, 200, 100, 50, 40, 30, 20 an 10 Meter.</string>
+    <string name="settings_announcement_cadence_time_title">Zäit baséiert</string>
+    <string name="settings_announcement_cadence_time_message">Ukënnegt zukünfteg Wendungen ongeféier 50, 40, 30, 20 an 10 Sekonnen virum Wend.</string>
+    <string name="settings_announcement_cadence_disabled_message">Aktivéiert turn-by-turn Ukënnegung als éischt fir de Kadensmodus z\'änneren.</string>
     <string name="settings_speech_source_title">Ried Quell</string>
     <string name="settings_speech_source_message">Wielt ob Navi Live mam Android System Synthesizer oder Hand Ukënnegung un den aktive Bildschirm Lieser soll schwätzen.</string>
     <string name="settings_speech_source_system_title">System Synthesizer</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Fallback Route prett fir %1$s.</string>
     <string name="format_route_ready">Route prett fir %1$s.</string>
     <string name="format_continue_toward">Fuert weider Richtung %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">An %1$d Meter, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">An %1$d Sekonnen, %2$s</string>
     <string name="format_navigation_upcoming_instruction">An %1$d Meter, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Elo %1$s</string>
     <string name="format_current_position_announcement">%1$s Aktuell Positioun: %2$s</string>
     <string name="format_telemetry_exported">Telemetrie exportéiert op %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

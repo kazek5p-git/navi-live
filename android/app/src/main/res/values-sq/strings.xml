@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Aplikacioni ndjek automatikisht gjuhën e telefonit tuaj.</string>
     <string name="settings_voice_title">Njoftimet zanore</string>
     <string name="settings_voice_message">Lexoni me zë të lartë ndryshimet e itinerarit dhe udhëzimet kthesë pas kthese.</string>
+    <string name="settings_announcement_cadence_title">Kadenca e njoftimit</string>
+    <string name="settings_announcement_cadence_message">Zgjidhni nëse Navi Live duhet të numërojë mbrapsht sipas distancës ose sipas kohës së parashikuar përpara kthesës tjetër.</string>
+    <string name="settings_announcement_cadence_distance_title">Bazuar në distancë</string>
+    <string name="settings_announcement_cadence_distance_message">Njoftoni kthesat e ardhshme në 400, 300, 200, 100, 50, 40, 30, 20 dhe 10 metra.</string>
+    <string name="settings_announcement_cadence_time_title">Bazuar në kohë</string>
+    <string name="settings_announcement_cadence_time_message">Njoftoni kthesat e ardhshme rreth 50, 40, 30, 20 dhe 10 sekonda para kthesës.</string>
+    <string name="settings_announcement_cadence_disabled_message">Aktivizo fillimisht njoftimet kthesë pas kthese për të ndryshuar modalitetin e kadencës.</string>
     <string name="settings_speech_source_title">Burimi i të folurit</string>
     <string name="settings_speech_source_message">Zgjidh nëse Navi Live duhet të flasë me sintetizuesin e sistemit Android ose njoftimet me dorë me lexuesin aktiv të ekranit.</string>
     <string name="settings_speech_source_system_title">Sintetizuesi i sistemit</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Rruga e kthimit gati për %1$s.</string>
     <string name="format_route_ready">Itinerari gati për %1$s.</string>
     <string name="format_continue_toward">Vazhdoni drejt %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">Në %1$d metra, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">Në %1$d sekonda, %2$s</string>
     <string name="format_navigation_upcoming_instruction">Në %1$d metra, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Tani %1$s</string>
     <string name="format_current_position_announcement">%1$s Pozicioni aktual: %2$s</string>
     <string name="format_telemetry_exported">Telemetria e eksportuar në %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

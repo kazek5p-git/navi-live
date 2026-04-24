@@ -17,6 +17,7 @@ import com.navilive.android.data.update.GitHubUpdateRepository
 import com.navilive.android.guidance.GuidanceFeedbackEngine
 import com.navilive.android.i18n.localizedLanguageDisplayName
 import com.navilive.android.model.ActiveNavigationState
+import com.navilive.android.model.AnnouncementCadenceMode
 import com.navilive.android.model.AppUpdatePhase
 import com.navilive.android.model.AppUpdateState
 import com.navilive.android.model.GeoPoint
@@ -101,6 +102,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     private var lastAnnouncedStepIndex = -1
     private var lastCountdownStepIndex = -1
     private var lastCountdownMilestoneMeters: Int? = null
+    private var lastCountdownCadenceMode: AnnouncementCadenceMode? = null
     private var lastImmediateAnnouncedStepIndex = -1
     private var lastTrackingState: Boolean? = null
     private var lastTelemetryFixPoint: GeoPoint? = null
@@ -871,6 +873,16 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun setAnnouncementCadenceMode(mode: AnnouncementCadenceMode) {
+        _uiState.update { current ->
+            current.copy(settingsState = current.settingsState.copy(announcementCadenceMode = mode))
+        }
+        resetCountdownAnnouncementState()
+        viewModelScope.launch {
+            preferencesStore.setAnnouncementCadenceMode(mode)
+        }
+    }
+
     fun setUpdateChannel(channel: UpdateChannel) {
         if (channel == _uiState.value.settingsState.updateChannel) {
             return
@@ -1537,33 +1549,51 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         state: ActiveNavigationState,
     ): Boolean {
         if (!_uiState.value.settingsState.turnByTurnAnnouncements) return false
+        val cadenceMode = _uiState.value.settingsState.announcementCadenceMode
         val upcomingStepIndex = session.currentStepIndex + 1
         val upcomingStep = session.steps.getOrNull(upcomingStepIndex) ?: return false
         val distanceToNext = state.distanceToNextMeters
-        val milestoneMeters = NavigationScenarioCore.countdownMilestoneMeters(distanceToNext) ?: return false
+        val milestoneValue = when (cadenceMode) {
+            AnnouncementCadenceMode.Distance ->
+                NavigationScenarioCore.countdownMilestoneMeters(distanceToNext)
+            AnnouncementCadenceMode.Time -> {
+                val secondsToNext = NavigationScenarioCore.estimatedSecondsToManeuver(distanceToNext)
+                NavigationScenarioCore.countdownMilestoneSeconds(secondsToNext)
+            }
+        } ?: return false
 
-        if (upcomingStepIndex != lastCountdownStepIndex) {
+        if (upcomingStepIndex != lastCountdownStepIndex || cadenceMode != lastCountdownCadenceMode) {
             lastCountdownStepIndex = upcomingStepIndex
             lastCountdownMilestoneMeters = null
+            lastCountdownCadenceMode = cadenceMode
         }
         val lastMilestone = lastCountdownMilestoneMeters
-        if (lastMilestone != null && milestoneMeters >= lastMilestone) return false
+        if (lastMilestone != null && milestoneValue >= lastMilestone) return false
 
-        lastCountdownMilestoneMeters = milestoneMeters
-        speakNavigationNow(
-            string(
-                R.string.format_navigation_upcoming_instruction,
-                milestoneMeters,
-                upcomingStep.instruction,
-            ),
-        )
+        lastCountdownMilestoneMeters = milestoneValue
+        val spokenMessage = when (cadenceMode) {
+            AnnouncementCadenceMode.Distance ->
+                string(
+                    R.string.format_navigation_upcoming_instruction_distance,
+                    milestoneValue,
+                    upcomingStep.instruction,
+                )
+            AnnouncementCadenceMode.Time ->
+                string(
+                    R.string.format_navigation_upcoming_instruction_time,
+                    milestoneValue,
+                    upcomingStep.instruction,
+                )
+        }
+        speakNavigationNow(spokenMessage)
         vibrateShortIfEnabled()
         telemetryLogger.log(
             type = "countdown_instruction_announced",
             message = "Countdown instruction announced.",
             attributes = linkedMapOf(
                 "step_index" to upcomingStepIndex,
-                "countdown_m" to milestoneMeters,
+                "countdown_value" to milestoneValue,
+                "countdown_mode" to cadenceMode.storageValue,
                 "instruction" to upcomingStep.instruction,
             ),
         )
@@ -1666,9 +1696,14 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
 
     private fun resetNavigationAnnouncementState() {
         lastAnnouncedStepIndex = -1
+        resetCountdownAnnouncementState()
+        lastImmediateAnnouncedStepIndex = -1
+    }
+
+    private fun resetCountdownAnnouncementState() {
         lastCountdownStepIndex = -1
         lastCountdownMilestoneMeters = null
-        lastImmediateAnnouncedStepIndex = -1
+        lastCountdownCadenceMode = null
     }
 
     private fun announceNavigationStartInstruction(session: RouteSession) {

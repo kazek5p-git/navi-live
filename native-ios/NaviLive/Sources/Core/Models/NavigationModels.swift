@@ -82,15 +82,48 @@ enum GuidanceSpeechMode: String, CaseIterable, Codable, Sendable {
   case speechSynthesizer
 }
 
+enum AnnouncementCadenceMode: String, CaseIterable, Codable, Sendable {
+  case distance
+  case time
+}
+
 struct AppSettings: Codable, Hashable, Sendable {
   var showTutorialOnLaunch: Bool = true
   var vibrationEnabled: Bool = true
   var autoRecalculate: Bool = true
   var junctionAlerts: Bool = true
   var turnByTurnAnnouncements: Bool = true
+  var announcementCadenceMode: AnnouncementCadenceMode = .distance
   var speechMode: GuidanceSpeechMode = .automatic
   var speechRate: Double = 1.0
   var speechVolume: Double = 1.0
+
+  enum CodingKeys: String, CodingKey {
+    case showTutorialOnLaunch
+    case vibrationEnabled
+    case autoRecalculate
+    case junctionAlerts
+    case turnByTurnAnnouncements
+    case announcementCadenceMode
+    case speechMode
+    case speechRate
+    case speechVolume
+  }
+
+  init() {}
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    showTutorialOnLaunch = try container.decodeIfPresent(Bool.self, forKey: .showTutorialOnLaunch) ?? true
+    vibrationEnabled = try container.decodeIfPresent(Bool.self, forKey: .vibrationEnabled) ?? true
+    autoRecalculate = try container.decodeIfPresent(Bool.self, forKey: .autoRecalculate) ?? true
+    junctionAlerts = try container.decodeIfPresent(Bool.self, forKey: .junctionAlerts) ?? true
+    turnByTurnAnnouncements = try container.decodeIfPresent(Bool.self, forKey: .turnByTurnAnnouncements) ?? true
+    announcementCadenceMode = try container.decodeIfPresent(AnnouncementCadenceMode.self, forKey: .announcementCadenceMode) ?? .distance
+    speechMode = try container.decodeIfPresent(GuidanceSpeechMode.self, forKey: .speechMode) ?? .automatic
+    speechRate = try container.decodeIfPresent(Double.self, forKey: .speechRate) ?? 1.0
+    speechVolume = try container.decodeIfPresent(Double.self, forKey: .speechVolume) ?? 1.0
+  }
 }
 
 struct PersistedSnapshot: Codable, Sendable {
@@ -98,6 +131,23 @@ struct PersistedSnapshot: Codable, Sendable {
   var lastRoutePlaceID: String?
   var settings: AppSettings = .init()
   var hasCompletedOnboarding: Bool = false
+
+  enum CodingKeys: String, CodingKey {
+    case favorites
+    case lastRoutePlaceID
+    case settings
+    case hasCompletedOnboarding
+  }
+
+  init() {}
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    favorites = try container.decodeIfPresent([Place].self, forKey: .favorites) ?? []
+    lastRoutePlaceID = try container.decodeIfPresent(String.self, forKey: .lastRoutePlaceID)
+    settings = try container.decodeIfPresent(AppSettings.self, forKey: .settings) ?? .init()
+    hasCompletedOnboarding = try container.decodeIfPresent(Bool.self, forKey: .hasCompletedOnboarding) ?? false
+  }
 }
 
 enum AppRoute: Hashable {

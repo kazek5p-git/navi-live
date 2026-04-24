@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Հավելվածն ավտոմատ կերպով հետևում է ձեր հեռախոսի լեզվին:</string>
     <string name="settings_voice_title">Ձայնային հայտարարություններ</string>
     <string name="settings_voice_message">Բարձրաձայն կարդացեք երթուղու փոփոխությունները և շրջադարձ առ քայլ ուղղորդումը:</string>
+    <string name="settings_announcement_cadence_title">Հայտարարության կադենս</string>
+    <string name="settings_announcement_cadence_message">Ընտրեք, թե արդյոք Navi Live-ը պետք է հետհաշվարկի ըստ հեռավորության, թե գնահատված ժամանակի մինչև հաջորդ շրջադարձը:</string>
+    <string name="settings_announcement_cadence_distance_title">Հեռավորության վրա հիմնված</string>
+    <string name="settings_announcement_cadence_distance_message">Հայտարարեք առաջիկա շրջադարձերը 400, 300, 200, 100, 50, 40, 30, 20 և 10 մետրերում:</string>
+    <string name="settings_announcement_cadence_time_title">Ժամանակի վրա հիմնված</string>
+    <string name="settings_announcement_cadence_time_message">Հայտարարեք գալիք շրջադարձերը շրջադարձից մոտ 50, 40, 30, 20 և 10 վայրկյան առաջ:</string>
+    <string name="settings_announcement_cadence_disabled_message">Սկզբում միացրեք հերթ առ քայլ հայտարարությունները՝ արագության ռեժիմը փոխելու համար:</string>
     <string name="settings_speech_source_title">Խոսքի աղբյուր</string>
     <string name="settings_speech_source_message">Ընտրեք՝ Navi Live-ը պետք է խոսի Android համակարգի սինթեզատորի հետ, թե ձեռքի հայտարարությունները էկրանի ակտիվ ընթերցողին:</string>
     <string name="settings_speech_source_system_title">Համակարգի սինթեզատոր</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Հետադարձ երթուղին պատրաստ է %1$s-ի համար:</string>
     <string name="format_route_ready">Երթուղին պատրաստ է %1$s համար։</string>
     <string name="format_continue_toward">Շարունակեք դեպի %1$s:</string>
+    <string name="format_navigation_upcoming_instruction_distance">%1$d մետրում, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">%1$d վայրկյանում, %2$s</string>
     <string name="format_navigation_upcoming_instruction">%1$d մետրում, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Այժմ %1$s</string>
     <string name="format_current_position_announcement">%1$s Ընթացիկ դիրքը՝ %2$s</string>
     <string name="format_telemetry_exported">Հեռուստաչափությունը արտահանվել է %1$s:</string>
     <string name="format_coordinates_label">Լատ %1$s, Լոն %2$s</string>

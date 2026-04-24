@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Sovellus seuraa puhelimen kieltä automaattisesti.</string>
     <string name="settings_voice_title">Äänitiedotukset</string>
     <string name="settings_voice_message">Lue reittimuutokset ja käännökseltä opastus ääneen.</string>
+    <string name="settings_announcement_cadence_title">Ilmoituspoljinnopeus</string>
+    <string name="settings_announcement_cadence_message">Valitse, lasketaanko Navi Live etäisyyden vai arvioidun ajan mukaan ennen seuraavaa käännöstä.</string>
+    <string name="settings_announcement_cadence_distance_title">Etäisyyteen perustuva</string>
+    <string name="settings_announcement_cadence_distance_message">Ilmoita tulevat käännökset 400, 300, 200, 100, 50, 40, 30, 20 ja 10 metrillä.</string>
+    <string name="settings_announcement_cadence_time_title">Aikaperusteinen</string>
+    <string name="settings_announcement_cadence_time_message">Ilmoita tulevista käännöksistä noin 50, 40, 30, 20 ja 10 sekuntia ennen käännöstä.</string>
+    <string name="settings_announcement_cadence_disabled_message">Ota vaiheittaiset ilmoitukset ensin käyttöön, jos haluat muuttaa poljinnopeustilaa.</string>
     <string name="settings_speech_source_title">Puhelähde</string>
     <string name="settings_speech_source_message">Valitse, pitäisikö Navi Live puhua Android-järjestelmäsyntetisaattorin kanssa vai antaa ilmoitukset aktiiviselle näytönlukuohjelmalle.</string>
     <string name="settings_speech_source_system_title">Järjestelmäsyntetisaattori</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Varareitti valmiina numeroon %1$s.</string>
     <string name="format_route_ready">Reitti valmis numeroon %1$s.</string>
     <string name="format_continue_toward">Jatka suuntaan %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">%1$d metriä, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">%1$d sekuntia, %2$s</string>
     <string name="format_navigation_upcoming_instruction">%1$d metriä, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Nyt 70799127</string>
     <string name="format_current_position_announcement">%1$s Nykyinen sijainti: %2$s</string>
     <string name="format_telemetry_exported">Telemetria vietiin numeroon %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, pituus %2$s</string>

@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Programa automatiškai seka jūsų telefono kalbą.</string>
     <string name="settings_voice_title">Balso pranešimai</string>
     <string name="settings_voice_message">Garsiai skaitykite maršruto pakeitimus ir nurodymus posūkis po posūkio.</string>
+    <string name="settings_announcement_cadence_title">Pranešimo kadencija</string>
+    <string name="settings_announcement_cadence_message">Pasirinkite, ar Navi Live turėtų skaičiuoti atgal pagal atstumą, ar pagal numatomą laiką iki kito posūkio.</string>
+    <string name="settings_announcement_cadence_distance_title">Pagal atstumą</string>
+    <string name="settings_announcement_cadence_distance_message">Praneškite apie būsimus posūkius 400, 300, 200, 100, 50, 40, 30, 20 ir 10 metrų.</string>
+    <string name="settings_announcement_cadence_time_title">Pagal laiką</string>
+    <string name="settings_announcement_cadence_time_message">Praneškite apie būsimus posūkius likus maždaug 50, 40, 30, 20 ir 10 sekundžių prieš posūkį.</string>
+    <string name="settings_announcement_cadence_disabled_message">Norėdami pakeisti ritmo režimą, pirmiausia įjunkite nuoseklius pranešimus.</string>
     <string name="settings_speech_source_title">Kalbos šaltinis</string>
     <string name="settings_speech_source_message">Pasirinkite, ar Navi Live turėtų kalbėti su Android sistemos sintezatoriumi, ar persiųsti pranešimus aktyviam ekrano skaitytuvui.</string>
     <string name="settings_speech_source_system_title">Sistemos sintezatorius</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Atsarginis maršrutas paruoštas %1$s.</string>
     <string name="format_route_ready">Maršrutas paruoštas %1$s.</string>
     <string name="format_continue_toward">Toliau važiuokite link %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">%1$d metrais, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">%1$d sekundėmis, %2$s</string>
     <string name="format_navigation_upcoming_instruction">Iš %1$d metrų, %2$s</string>
+    <string name="format_navigation_immediate_instruction">dabar 7079199</string>
     <string name="format_current_position_announcement">%1$s Dabartinė padėtis: %2$s</string>
     <string name="format_telemetry_exported">Telemetrija eksportuota į %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, ilg. %2$s</string>

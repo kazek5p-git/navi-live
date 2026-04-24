@@ -11,6 +11,7 @@ enum SharedProductRules {
 
   enum Navigation {
     static let countdownMilestonesMeters: [Int] = [10, 20, 30, 40, 50, 100, 200, 300, 400]
+    static let countdownMilestonesSeconds: [Int] = [10, 20, 30, 40, 50]
 
     static let maneuverAdvanceAccuracyMinMeters: Double = 10.0
     static let maneuverAdvanceAccuracyMaxMeters: Double = 20.0

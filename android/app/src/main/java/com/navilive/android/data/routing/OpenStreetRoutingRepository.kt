@@ -8,6 +8,7 @@ import com.navilive.android.model.Place
 import com.navilive.android.model.RouteStep
 import com.navilive.android.model.RouteSummary
 import com.navilive.android.model.SharedProductRules
+import com.navilive.android.ui.NavigationScenarioCore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -93,7 +94,10 @@ class OpenStreetRoutingRepository(
             val route = routes.getJSONObject(0)
             val distance = route.optDouble("distance", 0.0).roundToInt()
             val duration = route.optDouble("duration", 0.0)
-            val etaMinutes = (duration / 60.0).roundToInt().coerceAtLeast(1)
+            val etaMinutes = NavigationScenarioCore.routeEtaMinutes(
+                distanceMeters = distance,
+                providerDurationSeconds = duration,
+            )
 
             val steps = route
                 .optJSONArray("legs")
@@ -287,9 +291,7 @@ class OpenStreetRoutingRepository(
             val etaMinutes = if (distance <= 0) {
                 0
             } else {
-                (distance / SharedProductRules.Search.walkingEtaMetersPerMinute)
-                    .roundToInt()
-                    .coerceAtLeast(1)
+                NavigationScenarioCore.distanceBasedEtaMinutes(distance)
             }
             val place = Place(
                 id = "nominatim_${latitude}_$longitude",

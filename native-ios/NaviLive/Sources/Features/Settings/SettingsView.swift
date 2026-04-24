@@ -49,8 +49,23 @@ struct SettingsView: View {
             set: model.updateTurnByTurnAnnouncements
           )
         )
+
+        Picker(
+          L10n.text("settings.guidance.cadence", table: .settings),
+          selection: Binding(
+            get: { model.settings.announcementCadenceMode },
+            set: model.updateAnnouncementCadenceMode
+          )
+        ) {
+          ForEach(AnnouncementCadenceMode.allCases, id: \.self) { mode in
+            Text(announcementCadenceLabel(mode)).tag(mode)
+          }
+        }
+        .disabled(!model.settings.turnByTurnAnnouncements)
       } header: {
         Text(L10n.text("settings.section.guidance", table: .settings))
+      } footer: {
+        Text(L10n.text("settings.guidance.cadence.footer", table: .settings))
       }
 
       Section {
@@ -139,6 +154,15 @@ struct SettingsView: View {
       return L10n.text("settings.speech.mode.voiceover", table: .settings)
     case .speechSynthesizer:
       return L10n.text("settings.speech.mode.synthesizer", table: .settings)
+    }
+  }
+
+  private func announcementCadenceLabel(_ mode: AnnouncementCadenceMode) -> String {
+    switch mode {
+    case .distance:
+      return L10n.text("settings.guidance.cadence.distance", table: .settings)
+    case .time:
+      return L10n.text("settings.guidance.cadence.time", table: .settings)
     }
   }
 }

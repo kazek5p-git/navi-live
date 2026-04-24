@@ -39,6 +39,7 @@ final class AppModel: ObservableObject {
   private var isNavigationLive = false
   private var lastCountdownAnnouncementStepIndex = -1
   private var lastCountdownMilestoneMeters: Int?
+  private var lastCountdownCadenceMode: AnnouncementCadenceMode?
   private var lastImmediateAnnouncementStepIndex = -1
   private var headingIndex = 0
   private let headingSequence = [
@@ -231,8 +232,7 @@ final class AppModel: ObservableObject {
         fix: locationService.latestFix
       )
       isNavigationLive = false
-      lastCountdownAnnouncementStepIndex = -1
-      lastCountdownMilestoneMeters = nil
+      resetCountdownAnnouncementState()
       lastImmediateAnnouncementStepIndex = -1
       statusMessage = L10n.text("route.status.ready", table: .navigation)
       announceSuccess(message: L10n.text("route.status.ready", table: .navigation))
@@ -260,8 +260,7 @@ final class AppModel: ObservableObject {
     guard liveNavigationEngine.currentDestination != nil else { return }
     locationService.prepareForActiveNavigation()
     isNavigationLive = true
-    lastCountdownAnnouncementStepIndex = -1
-    lastCountdownMilestoneMeters = nil
+    resetCountdownAnnouncementState()
     lastImmediateAnnouncementStepIndex = -1
     activeNavigationState.isPaused = false
     statusMessage = L10n.text("active.status.started", table: .navigation)
@@ -305,8 +304,7 @@ final class AppModel: ObservableObject {
 
   func stopNavigation() {
     isNavigationLive = false
-    lastCountdownAnnouncementStepIndex = -1
-    lastCountdownMilestoneMeters = nil
+    resetCountdownAnnouncementState()
     lastImmediateAnnouncementStepIndex = -1
     locationService.finishActiveNavigation()
     announcer.stopSpeech()
@@ -321,8 +319,7 @@ final class AppModel: ObservableObject {
   func markArrived() {
     guard let destination = liveNavigationEngine.currentDestination else { return }
     isNavigationLive = false
-    lastCountdownAnnouncementStepIndex = -1
-    lastCountdownMilestoneMeters = nil
+    resetCountdownAnnouncementState()
     lastImmediateAnnouncementStepIndex = -1
     locationService.finishActiveNavigation()
     activeNavigationState.isPaused = false
@@ -394,6 +391,12 @@ final class AppModel: ObservableObject {
   func updateTurnByTurnAnnouncements(_ enabled: Bool) {
     settings.turnByTurnAnnouncements = enabled
     settingsStore.updateSettings { $0.turnByTurnAnnouncements = enabled }
+  }
+
+  func updateAnnouncementCadenceMode(_ mode: AnnouncementCadenceMode) {
+    settings.announcementCadenceMode = mode
+    settingsStore.updateSettings { $0.announcementCadenceMode = mode }
+    resetCountdownAnnouncementState()
   }
 
   func updateSpeechMode(_ mode: GuidanceSpeechMode) {
@@ -498,8 +501,7 @@ final class AppModel: ObservableObject {
         summary: summary,
         fix: locationService.latestFix
       )
-      lastCountdownAnnouncementStepIndex = -1
-      lastCountdownMilestoneMeters = nil
+      resetCountdownAnnouncementState()
       lastImmediateAnnouncementStepIndex = -1
       activeNavigationState.isRecalculating = false
       if autoTriggered {
@@ -518,34 +520,57 @@ final class AppModel: ObservableObject {
   private func maybeAnnounceCountdownInstruction(update: LiveNavigationUpdate) -> Bool {
     guard !update.stepChanged else { return false }
     guard !update.state.isOffRoute, !update.state.isRecalculating, !update.hasArrived else { return false }
+    let cadenceMode = settings.announcementCadenceMode
     let upcomingStepIndex = update.currentStepIndex + 1
     guard let upcomingInstruction = update.upcomingInstruction?.trimmingCharacters(in: .whitespacesAndNewlines),
           !upcomingInstruction.isEmpty else {
       return false
     }
-    guard let milestoneMeters = NavigationScenarioCore.countdownMilestoneMeters(
-      distanceToNext: update.state.distanceToNextMeters
-    ) else {
+    let milestoneValue: Int?
+    switch cadenceMode {
+    case .distance:
+      milestoneValue = NavigationScenarioCore.countdownMilestoneMeters(
+        distanceToNext: update.state.distanceToNextMeters
+      )
+    case .time:
+      milestoneValue = NavigationScenarioCore.countdownMilestoneSeconds(
+        secondsToNext: NavigationScenarioCore.estimatedSecondsToManeuver(
+          distanceToNextMeters: update.state.distanceToNextMeters
+        )
+      )
+    }
+    guard let milestoneValue else {
       return false
     }
 
-    if upcomingStepIndex != lastCountdownAnnouncementStepIndex {
+    if upcomingStepIndex != lastCountdownAnnouncementStepIndex || cadenceMode != lastCountdownCadenceMode {
       lastCountdownAnnouncementStepIndex = upcomingStepIndex
       lastCountdownMilestoneMeters = nil
+      lastCountdownCadenceMode = cadenceMode
     }
-    if let lastMilestone = lastCountdownMilestoneMeters, milestoneMeters >= lastMilestone {
+    if let lastMilestone = lastCountdownMilestoneMeters, milestoneValue >= lastMilestone {
       return false
     }
 
-    lastCountdownMilestoneMeters = milestoneMeters
-    announceNavigationPrompt(
-      L10n.text(
-        "active.spoken.upcoming",
+    lastCountdownMilestoneMeters = milestoneValue
+    let message: String
+    switch cadenceMode {
+    case .distance:
+      message = L10n.text(
+        "active.spoken.upcoming.distance",
         table: .navigation,
-        milestoneMeters,
+        milestoneValue,
         upcomingInstruction
       )
-    )
+    case .time:
+      message = L10n.text(
+        "active.spoken.upcoming.time",
+        table: .navigation,
+        milestoneValue,
+        upcomingInstruction
+      )
+    }
+    announceNavigationPrompt(message)
     return true
   }
 
@@ -599,5 +624,11 @@ final class AppModel: ObservableObject {
     if settings.vibrationEnabled {
       announcer.hapticSuccess()
     }
+  }
+
+  private func resetCountdownAnnouncementState() {
+    lastCountdownAnnouncementStepIndex = -1
+    lastCountdownMilestoneMeters = nil
+    lastCountdownCadenceMode = nil
   }
 }

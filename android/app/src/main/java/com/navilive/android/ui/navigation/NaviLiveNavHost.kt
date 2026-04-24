@@ -459,6 +459,7 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
                 onAutoRecalculateChange = viewModel::setAutoRecalculate,
                 onJunctionAlertChange = viewModel::setJunctionAlerts,
                 onTurnByTurnChange = viewModel::setTurnByTurnAnnouncements,
+                onAnnouncementCadenceModeChange = viewModel::setAnnouncementCadenceMode,
                 onUpdateChannelChange = viewModel::setUpdateChannel,
                 onSpeechOutputModeChange = viewModel::setSpeechOutputMode,
                 onSystemTtsEngineChange = viewModel::setSystemTtsEnginePackage,

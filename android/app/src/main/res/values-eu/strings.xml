@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Aplikazioak zure telefonoaren hizkuntza automatikoki jarraitzen du.</string>
     <string name="settings_voice_title">Ahots-iragarkiak</string>
     <string name="settings_voice_message">Irakurri ozen ibilbide aldaketak eta txandaz buelta jarraibideak.</string>
+    <string name="settings_announcement_cadence_title">Iragarpen kadentzia</string>
+    <string name="settings_announcement_cadence_message">Aukeratu Navi Live telefonoak hurrengo txanda baino lehen distantziaren arabera edo zenbat denboraren arabera zenbatu behar duen.</string>
+    <string name="settings_announcement_cadence_distance_title">Distantzian oinarrituta</string>
+    <string name="settings_announcement_cadence_distance_message">Iragarri datozen txandak 400, 300, 200, 100, 50, 40, 30, 20 eta 10 metroetan.</string>
+    <string name="settings_announcement_cadence_time_title">Denboran oinarrituta</string>
+    <string name="settings_announcement_cadence_time_message">Iragarri hurrengo txandak txanda baino 50, 40, 30, 20 eta 10 segundotan.</string>
+    <string name="settings_announcement_cadence_disabled_message">Gaitu txandaka iragarkiak lehenik kadentzia modua aldatzeko.</string>
     <string name="settings_speech_source_title">Hizketa-iturria</string>
     <string name="settings_speech_source_message">Aukeratu Navi Live Android sistemaren sintetizadorearekin hitz egin behar duen edo pantaila-irakurle aktiboari eskuz egindako iragarkiak.</string>
     <string name="settings_speech_source_system_title">Sistema sintetizadorea</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Ibilbidea %1$srako prest.</string>
     <string name="format_route_ready">Ibilbidea prest %1$srako.</string>
     <string name="format_continue_toward">Jarraitu %1$s aldera.</string>
+    <string name="format_navigation_upcoming_instruction_distance">%1$d metrotan, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">%1$d segundotan, %2$s</string>
     <string name="format_navigation_upcoming_instruction">%1$d metrotan, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Orain %1$s</string>
     <string name="format_current_position_announcement">%1$s Egungo postua: %2$s</string>
     <string name="format_telemetry_exported">Telemetria %1$s zenbakira esportatu da.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

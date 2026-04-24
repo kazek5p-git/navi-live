@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Приложението автоматично следва езика на вашия телефон.</string>
     <string name="settings_voice_title">Гласови съобщения</string>
     <string name="settings_voice_message">Прочетете промените в маршрута и напътствията завой по завой на глас.</string>
+    <string name="settings_announcement_cadence_title">Обява каданс</string>
+    <string name="settings_announcement_cadence_message">Изберете дали Navi Live да отброява по разстояние или по очаквано време преди следващия завой.</string>
+    <string name="settings_announcement_cadence_distance_title">Базирано на разстояние</string>
+    <string name="settings_announcement_cadence_distance_message">Обявете предстоящи завои на 400, 300, 200, 100, 50, 40, 30, 20 и 10 метра.</string>
+    <string name="settings_announcement_cadence_time_title">Въз основа на времето</string>
+    <string name="settings_announcement_cadence_time_message">Обявете предстоящи ходове около 50, 40, 30, 20 и 10 секунди преди хода.</string>
+    <string name="settings_announcement_cadence_disabled_message">Първо активирайте съобщенията завой по завой, за да промените режима на каданс.</string>
     <string name="settings_speech_source_title">Източник на говор</string>
     <string name="settings_speech_source_message">Изберете дали Navi Live да говори със системния синтезатор на Android или ръчни съобщения към активния екранен четец.</string>
     <string name="settings_speech_source_system_title">Системен синтезатор</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Резервен маршрут, готов за %1$s.</string>
     <string name="format_route_ready">Маршрут, готов за %1$s.</string>
     <string name="format_continue_toward">Продължете към %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">След %1$d метра, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">След %1$d секунди, %2$s</string>
     <string name="format_navigation_upcoming_instruction">На %1$d метра, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Сега %1$s</string>
     <string name="format_current_position_announcement">%1$s Текуща позиция: %2$s</string>
     <string name="format_telemetry_exported">Телеметрия, експортирана към %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

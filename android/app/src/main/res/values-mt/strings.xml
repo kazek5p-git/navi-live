@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">L-app issegwi l-lingwa tat-telefon tiegħek awtomatikament.</string>
     <string name="settings_voice_title">Avviżi bil-vuċi</string>
     <string name="settings_voice_message">Aqra bidliet fir-rotot u gwida dawra b\'dawra b\'leħen għoli.</string>
+    <string name="settings_announcement_cadence_title">Kadenza ta\' tħabbira</string>
+    <string name="settings_announcement_cadence_message">Agħżel jekk Navi Live għandux jgħodd skont id-distanza jew skont il-ħin stmat qabel id-dawra li jmiss.</string>
+    <string name="settings_announcement_cadence_distance_title">Distanza bbażata</string>
+    <string name="settings_announcement_cadence_distance_message">Tħabbar dawriet li ġejjin f\'400, 300, 200, 100, 50, 40, 30, 20 u 10 metri.</string>
+    <string name="settings_announcement_cadence_time_title">Ibbażat fuq il-ħin</string>
+    <string name="settings_announcement_cadence_time_message">Ħabbar dawriet li ġejjin madwar 50, 40, 30, 20 u 10 sekondi qabel id-dawran.</string>
+    <string name="settings_announcement_cadence_disabled_message">Ippermetti l-avviżi dawra b\'dawra l-ewwel biex tibdel il-mod tal-kadenza.</string>
     <string name="settings_speech_source_title">Sors tad-diskors</string>
     <string name="settings_speech_source_message">Agħżel jekk Navi Live għandux jitkellem mas-sintetizzatur tas-sistema Android jew avviżi bl-idejn lill-screen reader attiv.</string>
     <string name="settings_speech_source_system_title">System synthesizer</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Rotta fallback lesta għal %1$s.</string>
     <string name="format_route_ready">Rotta lesta g[al %1$s.</string>
     <string name="format_continue_toward">Kompli lejn %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">F’%1$d metri, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">F\'%1$d sekondi, %2$s</string>
     <string name="format_navigation_upcoming_instruction">F’%1$d metri, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Issa %1$s</string>
     <string name="format_current_position_announcement">%1$s Pożizzjoni attwali: %2$s</string>
     <string name="format_telemetry_exported">Telemetrija esportata lejn %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

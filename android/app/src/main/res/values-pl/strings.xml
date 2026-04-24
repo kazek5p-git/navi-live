@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Aplikacja automatycznie używa języka ustawionego w telefonie.</string>
     <string name="settings_voice_title">Komunikaty głosowe</string>
     <string name="settings_voice_message">Odczytuj na głos zmiany trasy i instrukcje krok po kroku.</string>
+    <string name="settings_announcement_cadence_title">Sposób odliczania komunikatów</string>
+    <string name="settings_announcement_cadence_message">Wybierz, czy Navi Live ma odliczać do skrętu według odległości czy według szacowanego czasu do następnego manewru.</string>
+    <string name="settings_announcement_cadence_distance_title">Według odległości</string>
+    <string name="settings_announcement_cadence_distance_message">Zapowiadaj skręty przy 400, 300, 200, 100, 50, 40, 30, 20 i 10 metrach.</string>
+    <string name="settings_announcement_cadence_time_title">Według czasu</string>
+    <string name="settings_announcement_cadence_time_message">Zapowiadaj skręty około 50, 40, 30, 20 i 10 sekund przed manewrem.</string>
+    <string name="settings_announcement_cadence_disabled_message">Najpierw włącz komunikaty krok po kroku, aby zmienić sposób odliczania.</string>
     <string name="settings_speech_source_title">Źródło mowy</string>
     <string name="settings_speech_source_message">Wybierz, czy Navi Live ma mówić przez systemowy syntezator Androida, czy przekazywać komunikaty do aktywnego screenreadera.</string>
     <string name="settings_speech_source_system_title">Syntezator systemowy</string>
@@ -238,6 +245,8 @@
     <string name="format_fallback_route_ready">Awaryjna trasa do %1$s jest gotowa.</string>
     <string name="format_route_ready">Trasa do %1$s jest gotowa.</string>
     <string name="format_continue_toward">Kieruj się w stronę %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">Za %1$d metrów: %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">Za %1$d sekund: %2$s</string>
     <string name="format_navigation_upcoming_instruction">Za %1$d metrów: %2$s</string>
     <string name="format_navigation_immediate_instruction">Teraz %1$s</string>
     <string name="format_current_position_announcement">%1$s Bieżąca pozycja: %2$s</string>

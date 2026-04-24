@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">L\'aplicació segueix l\'idioma del teu telèfon automàticament.</string>
     <string name="settings_voice_title">Anuncis de veu</string>
     <string name="settings_voice_message">Llegeix en veu alta els canvis de ruta i les indicacions pas a pas.</string>
+    <string name="settings_announcement_cadence_title">Cadència de l\'anunci</string>
+    <string name="settings_announcement_cadence_message">Trieu si el Navi Live ha de comptar enrere per distància o per temps estimat abans del següent torn.</string>
+    <string name="settings_announcement_cadence_distance_title">Basat en la distància</string>
+    <string name="settings_announcement_cadence_distance_message">Anuncia els propers torns als 400, 300, 200, 100, 50, 40, 30, 20 i 10 metres.</string>
+    <string name="settings_announcement_cadence_time_title">Basat en el temps</string>
+    <string name="settings_announcement_cadence_time_message">Anunciar els propers torns uns 50, 40, 30, 20 i 10 segons abans del torn.</string>
+    <string name="settings_announcement_cadence_disabled_message">Activa primer els anuncis pas a pas per canviar el mode de cadència.</string>
     <string name="settings_speech_source_title">Font de veu</string>
     <string name="settings_speech_source_message">Trieu si Navi Live ha de parlar amb el sintetitzador del sistema Android o anuncis manuals al lector de pantalla actiu.</string>
     <string name="settings_speech_source_system_title">Sintetitzador del sistema</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Ruta alternativa preparada per al %1$s.</string>
     <string name="format_route_ready">Ruta a punt per al %1$s.</string>
     <string name="format_continue_toward">Continueu cap al %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">En %1$d metres, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">En %1$d segons, %2$s</string>
     <string name="format_navigation_upcoming_instruction">En %1$d metres, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Ara %1$s</string>
     <string name="format_current_position_announcement">%1$s Posició actual: %2$s</string>
     <string name="format_telemetry_exported">La telemetria s\'ha exportat al %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

@@ -146,6 +146,37 @@
         "expectedMilestone": 10
       }
     ],
+    "timeCountdowns": [
+      {
+        "name": "time_above_largest_milestone_has_no_announcement",
+        "secondsToNext": 51,
+        "expectedMilestone": null
+      },
+      {
+        "name": "time_chooses_next_highest_bucket",
+        "secondsToNext": 34,
+        "expectedMilestone": 40
+      },
+      {
+        "name": "time_inside_close_bucket_uses_ten",
+        "secondsToNext": 8,
+        "expectedMilestone": 10
+      }
+    ],
+    "etaCases": [
+      {
+        "name": "route_eta_uses_distance_floor_when_provider_is_too_fast",
+        "distanceMeters": 2000,
+        "providerDurationSeconds": 120.0,
+        "expectedEtaMinutes": 27
+      },
+      {
+        "name": "route_eta_can_keep_provider_duration_when_it_is_slower",
+        "distanceMeters": 500,
+        "providerDurationSeconds": 780.0,
+        "expectedEtaMinutes": 13
+      }
+    ],
     "advanceDecisions": [
       {
         "name": "advance_when_within_threshold",

@@ -90,7 +90,8 @@
 "active.status.off_route" = "Jesteś poza trasą.";
 "active.spoken.off_route" = "Jesteś poza trasą.";
 "active.spoken.now" = "Teraz %1$@";
-"active.spoken.upcoming" = "Za %1$d metrów: %2$@";
+"active.spoken.upcoming.distance" = "Za %1$d metrów: %2$@";
+"active.spoken.upcoming.time" = "Za %1$d sekund: %2$@";
 "active.spoken.recalculated" = "Trasa została przeliczona.";
 "active.spoken.arrived" = "Dotarłeś do celu.";
 "arrival.title" = "Dotarcie";

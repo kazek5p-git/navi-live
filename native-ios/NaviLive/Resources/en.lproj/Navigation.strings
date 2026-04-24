@@ -90,7 +90,8 @@
 "active.status.off_route" = "You are off the route.";
 "active.spoken.off_route" = "You are off the route.";
 "active.spoken.now" = "Now %1$@";
-"active.spoken.upcoming" = "In %1$d meters, %2$@";
+"active.spoken.upcoming.distance" = "In %1$d meters, %2$@";
+"active.spoken.upcoming.time" = "In %1$d seconds, %2$@";
 "active.spoken.recalculated" = "Route recalculated.";
 "active.spoken.arrived" = "You have arrived.";
 "arrival.title" = "Arrival";

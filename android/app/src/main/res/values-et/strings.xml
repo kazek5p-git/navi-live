@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Rakendus järgib automaatselt teie telefoni keelt.</string>
     <string name="settings_voice_title">Häälteated</string>
     <string name="settings_voice_message">Lugege valjusti marsruudimuudatusi ja täppisjuhiseid.</string>
+    <string name="settings_announcement_cadence_title">Teadaannete kadents</string>
+    <string name="settings_announcement_cadence_message">Valige, kas Navi Live peaks loendama vahemaa või hinnangulise aja järgi enne järgmist pööret.</string>
+    <string name="settings_announcement_cadence_distance_title">Distantsipõhine</string>
+    <string name="settings_announcement_cadence_distance_message">Teatage eelseisvatest pöördetest 400, 300, 200, 100, 50, 40, 30, 20 ja 10 meetri kaugusel.</string>
+    <string name="settings_announcement_cadence_time_title">Ajapõhine</string>
+    <string name="settings_announcement_cadence_time_message">Teatage eelseisvatest pööretest umbes 50, 40, 30, 20 ja 10 sekundit enne pööret.</string>
+    <string name="settings_announcement_cadence_disabled_message">Kadentsirežiimi muutmiseks lubage kõigepealt üksikasjalikud teated.</string>
     <string name="settings_speech_source_title">Kõneallikas</string>
     <string name="settings_speech_source_message">Valige, kas Navi Live peaks rääkima Androidi süsteemi süntesaatoriga või edastama teadaanded aktiivsele ekraanilugejale.</string>
     <string name="settings_speech_source_system_title">Süsteemi süntesaator</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Varumarsruut on valmis numbrile %1$s.</string>
     <string name="format_route_ready">Marsruut on valmis numbrile %1$s.</string>
     <string name="format_continue_toward">Sõitke edasi numbri %1$s suunas.</string>
+    <string name="format_navigation_upcoming_instruction_distance">%1$d meetrit, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">%1$d sekundit, %2$s</string>
     <string name="format_navigation_upcoming_instruction">%1$d meetris, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Nüüd 7079222</string>
     <string name="format_current_position_announcement">%1$s Praegune asukoht: %2$s</string>
     <string name="format_telemetry_exported">Telemeetria eksporditud numbrile %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, pikk %2$s</string>

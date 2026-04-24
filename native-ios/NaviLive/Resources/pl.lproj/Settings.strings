@@ -6,6 +6,10 @@
 "settings.toggle.auto_recalculate" = "Automatyczne przeliczanie trasy";
 "settings.toggle.junction_alerts" = "Alerty skrzyżowań";
 "settings.toggle.turn_announcements" = "Komunikaty zakręt po zakręcie";
+"settings.guidance.cadence" = "Sposób odliczania komunikatów";
+"settings.guidance.cadence.distance" = "Według odległości";
+"settings.guidance.cadence.time" = "Według czasu";
+"settings.guidance.cadence.footer" = "Tryb odległościowy odlicza w metrach. Tryb czasowy odlicza według szacowanego czasu dojścia do następnego skrętu.";
 "settings.section.speech" = "Mowa";
 "settings.speech.mode" = "Źródło mowy";
 "settings.speech.mode.automatic" = "Automatycznie";

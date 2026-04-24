@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">telefonszámon Az alkalmazás automatikusan követi a telefon nyelvét.</string>
     <string name="settings_voice_title">Hangos bejelentések</string>
     <string name="settings_voice_message">Olvassa el az útvonalváltozásokat és a részletes útmutatást.</string>
+    <string name="settings_announcement_cadence_title">Bejelentési ütem</string>
+    <string name="settings_announcement_cadence_message">Válassza ki, hogy a Navi Live távolság vagy becsült idő szerint számoljon vissza a következő kanyar előtt.</string>
+    <string name="settings_announcement_cadence_distance_title">Távolság alapú</string>
+    <string name="settings_announcement_cadence_distance_message">Bejelenti a közelgő kanyarokat 400, 300, 200, 100, 50, 40, 30, 20 és 10 méteren.</string>
+    <string name="settings_announcement_cadence_time_title">Idő alapú</string>
+    <string name="settings_announcement_cadence_time_message">Bejelenti a közelgő kanyarokat körülbelül 50, 40, 30, 20 és 10 másodperccel a kanyar előtt.</string>
+    <string name="settings_announcement_cadence_disabled_message">Először engedélyezze a lépésről lépésre történő bejelentést a ritmusmód megváltoztatásához.</string>
     <string name="settings_speech_source_title">Beszédforrás</string>
     <string name="settings_speech_source_message">Válassza ki, hogy a Navi Live beszéljen-e az Android rendszerszintetizátorral, vagy kézbesítsen értesítéseket az aktív képernyőolvasónak.</string>
     <string name="settings_speech_source_system_title">Rendszerszintetizátor</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Tartalék útvonal készen áll a %1$s számra.</string>
     <string name="format_route_ready">Útvonal készen áll a %1$s számra.</string>
     <string name="format_continue_toward">Haladjon tovább a %1$s felé.</string>
+    <string name="format_navigation_upcoming_instruction_distance">%1$d méterben, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">%1$d másodpercben, %2$s</string>
     <string name="format_navigation_upcoming_instruction">%1$d méterben, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Most 70799127</string>
     <string name="format_current_position_announcement">%1$s Jelenlegi pozíció: %2$s</string>
     <string name="format_telemetry_exported">Telemetria exportálva a %1$s számra.</string>
     <string name="format_coordinates_label">%1$s hosszú, %2$s hosszú</string>

@@ -74,6 +74,18 @@ enum class SpeechOutputMode(val storageValue: String) {
     }
 }
 
+enum class AnnouncementCadenceMode(val storageValue: String) {
+    Distance("distance"),
+    Time("time"),
+    ;
+
+    companion object {
+        fun fromStorageValue(value: String?): AnnouncementCadenceMode {
+            return entries.firstOrNull { it.storageValue == value } ?: Distance
+        }
+    }
+}
+
 enum class UpdateChannel(val storageValue: String) {
     Stable("stable"),
     Beta("beta"),
@@ -102,6 +114,7 @@ data class SettingsState(
     val autoRecalculate: Boolean = true,
     val junctionAlerts: Boolean = true,
     val turnByTurnAnnouncements: Boolean = true,
+    val announcementCadenceMode: AnnouncementCadenceMode = AnnouncementCadenceMode.Distance,
     val updateChannel: UpdateChannel = UpdateChannel.Stable,
     val speechOutputMode: SpeechOutputMode = SpeechOutputMode.System,
     val selectedSystemTtsEnginePackage: String? = null,

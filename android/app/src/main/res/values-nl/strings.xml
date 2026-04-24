@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">De app volgt automatisch de taal van uw telefoon.</string>
     <string name="settings_voice_title">Gesproken mededelingen</string>
     <string name="settings_voice_message">Lees routewijzigingen en stapsgewijze begeleiding voor.</string>
+    <string name="settings_announcement_cadence_title">Aankondiging cadans</string>
+    <string name="settings_announcement_cadence_message">Kies of Navi Live moet aftellen op afstand of op geschatte tijd tot de volgende afslag.</string>
+    <string name="settings_announcement_cadence_distance_title">Op afstand gebaseerd</string>
+    <string name="settings_announcement_cadence_distance_message">Kondig komende afslagen aan op 400, 300, 200, 100, 50, 40, 30, 20 en 10 meter.</string>
+    <string name="settings_announcement_cadence_time_title">Op tijd gebaseerd</string>
+    <string name="settings_announcement_cadence_time_message">Kondig aankomende beurten ongeveer 50, 40, 30, 20 en 10 seconden vóór de beurt aan.</string>
+    <string name="settings_announcement_cadence_disabled_message">Schakel eerst stapsgewijze aankondigingen in om de cadansmodus te wijzigen.</string>
     <string name="settings_speech_source_title">Spraakbron</string>
     <string name="settings_speech_source_message">Kies of Navi Live met de synthesizer van het Android-systeem moet spreken of aankondigingen naar de actieve schermlezer moet sturen.</string>
     <string name="settings_speech_source_system_title">Systeemsynthesizer</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Terugvalroute gereed voor %1$s.</string>
     <string name="format_route_ready">Route gereed voor %1$s.</string>
     <string name="format_continue_toward">Ga verder richting %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">In %1$d meter, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">In %1$d seconden, %2$s</string>
     <string name="format_navigation_upcoming_instruction">In %1$d meter, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Nu %1$s</string>
     <string name="format_current_position_announcement">%1$s Huidige positie: %2$s</string>
     <string name="format_telemetry_exported">Telemetrie geëxporteerd naar %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

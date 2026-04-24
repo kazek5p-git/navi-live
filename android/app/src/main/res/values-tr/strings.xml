@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Uygulama telefonunuzun dilini otomatik olarak takip eder.</string>
     <string name="settings_voice_title">Sesli duyurular</string>
     <string name="settings_voice_message">Rota değişikliklerini ve adım adım yönlendirmeyi yüksek sesle okuyun.</string>
+    <string name="settings_announcement_cadence_title">Duyuru ritmi</string>
+    <string name="settings_announcement_cadence_message">Navi Live\'nin bir sonraki dönüşten önce mesafeye göre mi yoksa tahmini süreye göre mi geri sayacağını seçin.</string>
+    <string name="settings_announcement_cadence_distance_title">Mesafeye dayalı</string>
+    <string name="settings_announcement_cadence_distance_message">400, 300, 200, 100, 50, 40, 30, 20 ve 10 metredeki yaklaşan dönüşleri duyurun.</string>
+    <string name="settings_announcement_cadence_time_title">Zamana dayalı</string>
+    <string name="settings_announcement_cadence_time_message">Yaklaşan dönüşleri dönüşten yaklaşık 50, 40, 30, 20 ve 10 saniye önce duyurun.</string>
+    <string name="settings_announcement_cadence_disabled_message">Kadans modunu değiştirmek için önce adım adım duyuruları etkinleştirin.</string>
     <string name="settings_speech_source_title">Konuşma kaynağı</string>
     <string name="settings_speech_source_message">Navi Live\'nin Android sistem sentezleyicisiyle mi konuşacağını yoksa aktif ekran okuyucuya duyuruları mı ileteceğini seçin.</string>
     <string name="settings_speech_source_system_title">Sistem sentezleyici</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">%1$s için geri dönüş rotası hazır.</string>
     <string name="format_route_ready">%1$s için rota hazır.</string>
     <string name="format_continue_toward">%1$s\'a doğru devam edin.</string>
+    <string name="format_navigation_upcoming_instruction_distance">%1$d metrede, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">%1$d saniyede, %2$s</string>
     <string name="format_navigation_upcoming_instruction">%1$d metrede, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Şimdi %1$s</string>
     <string name="format_current_position_announcement">%1$s Mevcut konum: %2$s</string>
     <string name="format_telemetry_exported">Telemetri %1$s\'a aktarıldı.</string>
     <string name="format_coordinates_label">Enlem %1$s, Boylam %2$s</string>

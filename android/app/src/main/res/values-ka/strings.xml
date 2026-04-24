@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">აპი ავტომატურად მიჰყვება თქვენი ტელეფონის ენას.</string>
     <string name="settings_voice_title">ხმოვანი განცხადებები</string>
     <string name="settings_voice_message">ხმამაღლა წაიკითხეთ მარშრუტის ცვლილებები და ნაბიჯ-ნაბიჯ მითითებები.</string>
+    <string name="settings_announcement_cadence_title">განცხადების კადენცია</string>
+    <string name="settings_announcement_cadence_message">აირჩიეთ Navi Live უნდა დაითვალოს უკუღმა მანძილით თუ სავარაუდო დროით მომდევნო შემობრუნებამდე.</string>
+    <string name="settings_announcement_cadence_distance_title">დისტანციაზე დაფუძნებული</string>
+    <string name="settings_announcement_cadence_distance_message">გამოაცხადეთ მომავალი მოხვევები 400, 300, 200, 100, 50, 40, 30, 20 და 10 მეტრზე.</string>
+    <string name="settings_announcement_cadence_time_title">დროზე დაფუძნებული</string>
+    <string name="settings_announcement_cadence_time_message">გამოაცხადეთ მომავალი ბრუნვები შემობრუნებამდე დაახლოებით 50, 40, 30, 20 და 10 წამით ადრე.</string>
+    <string name="settings_announcement_cadence_disabled_message">ჯერ ჩართეთ ეტაპობრივი განცხადებები, რათა შეცვალოთ კადენციის რეჟიმი.</string>
     <string name="settings_speech_source_title">მეტყველების წყარო</string>
     <string name="settings_speech_source_message">აირჩიეთ, Navi Live ისაუბროს Android სისტემის სინთეზატორთან თუ ხელით განცხადებები ეკრანის აქტიურ წამკითხველთან.</string>
     <string name="settings_speech_source_system_title">სისტემის სინთეზატორი</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">სარეზერვო მარშრუტი მზად არის %1$s-ისთვის.</string>
     <string name="format_route_ready">მარშრუტი მზად არის %1$s.</string>
     <string name="format_continue_toward">გააგრძელეთ %1$s-ისკენ.</string>
+    <string name="format_navigation_upcoming_instruction_distance">%1$d მეტრში, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">%1$d წამში, %2$s</string>
     <string name="format_navigation_upcoming_instruction">%1$d მეტრში, %2$s</string>
+    <string name="format_navigation_immediate_instruction">ახლა %1$s</string>
     <string name="format_current_position_announcement">%1$s ამჟამინდელი პოზიცია: %2$s</string>
     <string name="format_telemetry_exported">ტელემეტრია ექსპორტირებულია %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

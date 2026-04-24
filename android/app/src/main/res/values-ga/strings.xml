@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Leanann an app teanga do ghutháin go huathoibríoch.</string>
     <string name="settings_voice_title">Fógraí gutha</string>
     <string name="settings_voice_message">Léigh athruithe bealaigh agus treoir cas ar chasadh os ard.</string>
+    <string name="settings_announcement_cadence_title">Deireadh fógra</string>
+    <string name="settings_announcement_cadence_message">Roghnaigh cé acu ar cheart do Navi Live comhaireamh síos de réir achair nó de réir ama measta roimh an gcéad chasadh eile.</string>
+    <string name="settings_announcement_cadence_distance_title">Cianbhunaithe</string>
+    <string name="settings_announcement_cadence_distance_message">Déan casadh atá le teacht a fhógairt ag 400, 300, 200, 100, 50, 40, 30, 20 agus 10 méadar.</string>
+    <string name="settings_announcement_cadence_time_title">Am bunaithe</string>
+    <string name="settings_announcement_cadence_time_message">Déan casadh atá le teacht a fhógairt thart ar 50, 40, 30, 20 agus 10 soicind roimh an casadh.</string>
+    <string name="settings_announcement_cadence_disabled_message">Cumasaigh fógraí cas ar chasadh ar dtús chun an modh dúnta a athrú.</string>
     <string name="settings_speech_source_title">Foinse cainte</string>
     <string name="settings_speech_source_message">Roghnaigh cé acu ar cheart do Navi Live labhairt leis an sintéiseoir córais Android nó le fógraí láimhe a thabhairt don léitheoir scáileáin gníomhach.</string>
     <string name="settings_speech_source_system_title">Sintéiseoir córais</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Bealach fallback réidh le haghaidh %1$s.</string>
     <string name="format_route_ready">Bealach réidh le haghaidh %1$s.</string>
     <string name="format_continue_toward">Lean ar aghaidh i dtreo %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">I %1$d méadar, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">I %1$d soicind, %2$s</string>
     <string name="format_navigation_upcoming_instruction">I %1$d méadar, %2$s</string>
+    <string name="format_navigation_immediate_instruction">%1$s anois</string>
     <string name="format_current_position_announcement">%1$s Staid reatha: %2$s</string>
     <string name="format_telemetry_exported">Teiliméadracht arna onnmhairiú go dtí %1$s.</string>
     <string name="format_coordinates_label">Deireanach %1$s, Lon %2$s</string>

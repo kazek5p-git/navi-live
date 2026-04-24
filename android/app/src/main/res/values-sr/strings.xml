@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Апликација аутоматски прати језик вашег телефона.</string>
     <string name="settings_voice_title">Гласовне најаве</string>
     <string name="settings_voice_message">Прочитајте наглас промене руте и упутства скретање по скретање.</string>
+    <string name="settings_announcement_cadence_title">Каденца најаве</string>
+    <string name="settings_announcement_cadence_message">Одаберите да ли Navi Live треба да одбројава по удаљености или према процењеном времену пре следећег скретања.</string>
+    <string name="settings_announcement_cadence_distance_title">На основу удаљености</string>
+    <string name="settings_announcement_cadence_distance_message">Најавите предстојеће окрете на 400, 300, 200, 100, 50, 40, 30, 20 и 10 метара.</string>
+    <string name="settings_announcement_cadence_time_title">Временски засновано</string>
+    <string name="settings_announcement_cadence_time_message">Најавите предстојеће скретање око 50, 40, 30, 20 и 10 секунди пре скретања.</string>
+    <string name="settings_announcement_cadence_disabled_message">Прво омогућите најаве скретања по скретање да бисте променили режим каденце.</string>
     <string name="settings_speech_source_title">Извор говора</string>
     <string name="settings_speech_source_message">Одаберите да ли навиливе треба да разговара са синтисајзером Андроид система или да ручне најаве активном читачу екрана.</string>
     <string name="settings_speech_source_system_title">Систем синтисајзер</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Резервна рута спремна за %1$s.</string>
     <string name="format_route_ready">Рута спремна за %1$s.</string>
     <string name="format_continue_toward">Наставите према %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">На %1$d метара, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">За %1$d секунди, %2$s</string>
     <string name="format_navigation_upcoming_instruction">На %1$d метара, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Сада %1$s</string>
     <string name="format_current_position_announcement">%1$s Тренутна позиција: %2$s</string>
     <string name="format_telemetry_exported">Телеметрија је извезена у %1$s.</string>
     <string name="format_coordinates_label">Лат %1$s, дужина %2$s</string>

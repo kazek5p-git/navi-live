@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Programma automātiski seko jūsu tālruņa valodai.</string>
     <string name="settings_voice_title">Balss paziņojumi</string>
     <string name="settings_voice_message">Skaļi lasiet maršruta izmaiņas un detalizētas norādes.</string>
+    <string name="settings_announcement_cadence_title">Paziņojumu kadence</string>
+    <string name="settings_announcement_cadence_message">Izvēlieties, vai Navi Live ir jāatskaita pēc attāluma vai aptuvenā laika pirms nākamā pagrieziena.</string>
+    <string name="settings_announcement_cadence_distance_title">Pamatojoties uz attālumu</string>
+    <string name="settings_announcement_cadence_distance_message">Paziņojiet par gaidāmajiem pagriezieniem 400, 300, 200, 100, 50, 40, 30, 20 un 10 metru attālumā.</string>
+    <string name="settings_announcement_cadence_time_title">Laika ziņā</string>
+    <string name="settings_announcement_cadence_time_message">Paziņojiet par gaidāmajiem pagriezieniem aptuveni 50, 40, 30, 20 un 10 sekundes pirms pagrieziena.</string>
+    <string name="settings_announcement_cadence_disabled_message">Vispirms iespējojiet detalizētus paziņojumus, lai mainītu ritma režīmu.</string>
     <string name="settings_speech_source_title">Runas avots</string>
     <string name="settings_speech_source_message">Izvēlieties, vai Navi Live runāt ar Android sistēmas sintezatoru vai nosūtīt paziņojumus aktīvajam ekrāna lasītājam.</string>
     <string name="settings_speech_source_system_title">Sistēmas sintezators</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Atkāpšanās maršruts gatavs %1$s.</string>
     <string name="format_route_ready">Maršruts gatavs %1$s.</string>
     <string name="format_continue_toward">Turpiniet braukt uz %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">%1$d metri, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">%1$d sekundes, %2$s</string>
     <string name="format_navigation_upcoming_instruction">%1$d metros, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Tagad 7079122</string>
     <string name="format_current_position_announcement">%1$s Pašreizējā pozīcija: %2$s</string>
     <string name="format_telemetry_exported">Telemetrija eksportēta uz %1$s.</string>
     <string name="format_coordinates_label">Lats %1$s, garums %2$s</string>

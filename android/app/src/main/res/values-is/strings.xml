@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Forritið fylgir tungumáli símans sjálfkrafa.</string>
     <string name="settings_voice_title">Raddtilkynningar</string>
     <string name="settings_voice_message">Lestu leiðarbreytingar og beygjuleiðsögn upphátt.</string>
+    <string name="settings_announcement_cadence_title">Hlutfall tilkynninga</string>
+    <string name="settings_announcement_cadence_message">Veldu hvort Navi Live ætti að telja niður eftir vegalengd eða áætluðum tíma fyrir næstu beygju.</string>
+    <string name="settings_announcement_cadence_distance_title">Byggt á fjarlægð</string>
+    <string name="settings_announcement_cadence_distance_message">Tilkynntu komandi beygjur í 400, 300, 200, 100, 50, 40, 30, 20 og 10 metra.</string>
+    <string name="settings_announcement_cadence_time_title">Tímabundið</string>
+    <string name="settings_announcement_cadence_time_message">Tilkynntu komandi beygjur um 50, 40, 30, 20 og 10 sekúndum fyrir beygjuna.</string>
+    <string name="settings_announcement_cadence_disabled_message">Virkjaðu tilkynningar frá beygju fyrir beygju fyrst til að breyta taktastillingu.</string>
     <string name="settings_speech_source_title">Talheimild</string>
     <string name="settings_speech_source_message">Veldu hvort Navi Live á að tala við Android kerfisgervilinn eða senda tilkynningar til virka skjálesarans.</string>
     <string name="settings_speech_source_system_title">Kerfisgervill</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Varaleið tilbúin fyrir %1$s.</string>
     <string name="format_route_ready">Leið tilbúin fyrir %1$s.</string>
     <string name="format_continue_toward">Haltu áfram í átt að %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">Í %1$d metrum, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">Eftir %1$d sekúndur, %2$s</string>
     <string name="format_navigation_upcoming_instruction">Í %1$d metrum, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Núna %1$s</string>
     <string name="format_current_position_announcement">%1$s Núverandi staða: %2$s</string>
     <string name="format_telemetry_exported">Fjarmælingar fluttar út í %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

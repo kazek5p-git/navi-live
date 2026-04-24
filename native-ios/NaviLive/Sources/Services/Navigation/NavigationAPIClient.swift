@@ -196,7 +196,10 @@ actor NavigationAPIClient {
 
     return RouteSummary(
       distanceMeters: Int(route.distance.rounded()),
-      etaMinutes: max(1, Int((route.duration / 60.0).rounded())),
+      etaMinutes: NavigationScenarioCore.routeEtaMinutes(
+        distanceMeters: Int(route.distance.rounded()),
+        providerDurationSeconds: route.duration
+      ),
       modeLabel: L10n.text("route.mode.walking", table: .navigation),
       currentInstruction: steps.first?.instruction ?? "",
       nextInstruction: steps.dropFirst().first?.instruction ?? "",
@@ -295,7 +298,7 @@ actor NavigationAPIClient {
         name: candidateName(for: item, fallback: displayName),
         address: formattedAddress(from: item.address, fallback: displayName),
         walkDistanceMeters: distance,
-        walkEtaMinutes: max(1, Int((Double(distance) / SharedProductRules.Search.walkingEtaMetersPerMinute).rounded())),
+        walkEtaMinutes: distance > 0 ? NavigationScenarioCore.distanceBasedEtaMinutes(distanceMeters: distance) : 0,
         point: point
       )
       return SearchCandidate(

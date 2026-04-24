@@ -1,6 +1,7 @@
 package com.navilive.android.ui
 
 import com.navilive.android.model.SharedProductRules
+import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 internal object NavigationScenarioCore {
@@ -42,6 +43,31 @@ internal object NavigationScenarioCore {
         return SharedProductRules.Navigation.countdownMilestonesMeters.firstOrNull {
             distanceToNext <= it
         }
+    }
+
+    fun countdownMilestoneSeconds(secondsToNext: Int): Int? {
+        return SharedProductRules.Navigation.countdownMilestonesSeconds.firstOrNull {
+            secondsToNext <= it
+        }
+    }
+
+    fun estimatedSecondsToManeuver(distanceToNextMeters: Int): Int {
+        val walkingSeconds = (
+            distanceToNextMeters.coerceAtLeast(0).toDouble() /
+                SharedProductRules.Search.walkingEtaMetersPerMinute
+            ) * 60.0
+        return ceil(walkingSeconds).toInt().coerceAtLeast(1)
+    }
+
+    fun distanceBasedEtaMinutes(distanceMeters: Int): Int {
+        val walkingMinutes = distanceMeters.coerceAtLeast(0).toDouble() /
+            SharedProductRules.Search.walkingEtaMetersPerMinute
+        return ceil(walkingMinutes).toInt().coerceAtLeast(1)
+    }
+
+    fun routeEtaMinutes(distanceMeters: Int, providerDurationSeconds: Double): Int {
+        val providerMinutes = ceil(providerDurationSeconds.coerceAtLeast(0.0) / 60.0).toInt().coerceAtLeast(1)
+        return maxOf(distanceBasedEtaMinutes(distanceMeters), providerMinutes)
     }
 
     fun shouldAdvanceStep(distanceToManeuverMeters: Double, accuracyMeters: Float): Boolean {

@@ -89,6 +89,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.navilive.android.R
 import com.navilive.android.model.ActiveNavigationState
+import com.navilive.android.model.AnnouncementCadenceMode
 import com.navilive.android.model.AppUpdatePhase
 import com.navilive.android.model.AppUpdateState
 import com.navilive.android.model.DiagnosticsState
@@ -1079,6 +1080,7 @@ fun SettingsScreen(
     onAutoRecalculateChange: (Boolean) -> Unit,
     onJunctionAlertChange: (Boolean) -> Unit,
     onTurnByTurnChange: (Boolean) -> Unit,
+    onAnnouncementCadenceModeChange: (AnnouncementCadenceMode) -> Unit,
     onUpdateChannelChange: (UpdateChannel) -> Unit,
     onSpeechOutputModeChange: (SpeechOutputMode) -> Unit,
     onSystemTtsEngineChange: (String?) -> Unit,
@@ -1179,6 +1181,12 @@ fun SettingsScreen(
                 onCheckedChange = onTurnByTurnChange,
             )
 
+            AnnouncementCadenceCard(
+                selectedMode = state.announcementCadenceMode,
+                enabled = state.turnByTurnAnnouncements,
+                onModeChange = onAnnouncementCadenceModeChange,
+            )
+
             SettingsToggleCard(
                 title = stringResource(R.string.settings_vibration_title),
                 description = stringResource(R.string.settings_vibration_message),
@@ -1247,6 +1255,54 @@ fun SettingsScreen(
                         Text(stringResource(R.string.settings_clear_telemetry))
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AnnouncementCadenceCard(
+    selectedMode: AnnouncementCadenceMode,
+    enabled: Boolean,
+    onModeChange: (AnnouncementCadenceMode) -> Unit,
+) {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            SectionHeading(stringResource(R.string.settings_announcement_cadence_title))
+            Text(
+                text = stringResource(R.string.settings_announcement_cadence_message),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            SelectableOptionRow(
+                title = stringResource(R.string.settings_announcement_cadence_distance_title),
+                description = stringResource(R.string.settings_announcement_cadence_distance_message),
+                selected = selectedMode == AnnouncementCadenceMode.Distance,
+                onSelect = {
+                    if (enabled) {
+                        onModeChange(AnnouncementCadenceMode.Distance)
+                    }
+                },
+            )
+            SelectableOptionRow(
+                title = stringResource(R.string.settings_announcement_cadence_time_title),
+                description = stringResource(R.string.settings_announcement_cadence_time_message),
+                selected = selectedMode == AnnouncementCadenceMode.Time,
+                onSelect = {
+                    if (enabled) {
+                        onModeChange(AnnouncementCadenceMode.Time)
+                    }
+                },
+            )
+            if (!enabled) {
+                Text(
+                    text = stringResource(R.string.settings_announcement_cadence_disabled_message),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
     }

@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Aplikacija samodejno sledi jeziku vašega telefona.</string>
     <string name="settings_voice_title">Glasovna obvestila</string>
     <string name="settings_voice_message">Glasno preberite spremembe poti in navodila zavoj za zavojem.</string>
+    <string name="settings_announcement_cadence_title">Kadenca obvestila</string>
+    <string name="settings_announcement_cadence_message">Izberite, ali naj Navi Live odšteva po razdalji ali po predvidenem času pred naslednjim zavojem.</string>
+    <string name="settings_announcement_cadence_distance_title">Na podlagi razdalje</string>
+    <string name="settings_announcement_cadence_distance_message">Napove prihajajoče zavoje na 400, 300, 200, 100, 50, 40, 30, 20 in 10 metrov.</string>
+    <string name="settings_announcement_cadence_time_title">Na podlagi časa</string>
+    <string name="settings_announcement_cadence_time_message">Napoved prihajajočih obratov približno 50, 40, 30, 20 in 10 sekund pred obratom.</string>
+    <string name="settings_announcement_cadence_disabled_message">Najprej omogočite obvestila zavoja za zavojem, da spremenite način kadence.</string>
     <string name="settings_speech_source_title">Vir govora</string>
     <string name="settings_speech_source_message">Izberite, ali naj Navi Live govori s sistemskim sintetizatorjem Android ali ročnim obvestilom aktivnemu bralniku zaslona.</string>
     <string name="settings_speech_source_system_title">Sistemski sintetizator</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Nadomestna pot pripravljena za %1$s.</string>
     <string name="format_route_ready">Pot pripravljena za %1$s.</string>
     <string name="format_continue_toward">Nadaljujte proti %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">Čez %1$d metrov, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">Čez %1$d sekund, %2$s</string>
     <string name="format_navigation_upcoming_instruction">V %1$d metrih, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Zdaj %1$s</string>
     <string name="format_current_position_announcement">%1$s Trenutni položaj: %2$s</string>
     <string name="format_telemetry_exported">Telemetrija izvožena v %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

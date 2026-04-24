@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Aplikácia automaticky sleduje jazyk vášho telefónu.</string>
     <string name="settings_voice_title">Hlasové oznámenia</string>
     <string name="settings_voice_message">Čítajte nahlas zmeny trasy a podrobné pokyny.</string>
+    <string name="settings_announcement_cadence_title">Kadencia oznámenia</string>
+    <string name="settings_announcement_cadence_message">Vyberte, či má Navi Live odpočítavať podľa vzdialenosti alebo podľa odhadovaného času pred ďalšou odbočkou.</string>
+    <string name="settings_announcement_cadence_distance_title">Na základe vzdialenosti</string>
+    <string name="settings_announcement_cadence_distance_message">Oznámte nadchádzajúce zákruty na 400, 300, 200, 100, 50, 40, 30, 20 a 10 metrov.</string>
+    <string name="settings_announcement_cadence_time_title">Na základe času</string>
+    <string name="settings_announcement_cadence_time_message">Oznámte nadchádzajúce zákruty približne 50, 40, 30, 20 a 10 sekúnd pred zákrutou.</string>
+    <string name="settings_announcement_cadence_disabled_message">Ak chcete zmeniť režim kadencie, najskôr povoľte hlásenia krok za krokom.</string>
     <string name="settings_speech_source_title">Zdroj reči</string>
     <string name="settings_speech_source_message">Vyberte, či má Navi Live hovoriť so syntetizátorom systému Android alebo oznamovať rukou aktívnej čítačke obrazovky.</string>
     <string name="settings_speech_source_system_title">Systémový syntetizátor</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Záložná trasa pripravená na %1$s.</string>
     <string name="format_route_ready">Trasa pripravená na %1$s.</string>
     <string name="format_continue_toward">Pokračujte smerom na %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">V %1$d metroch, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">Za %1$d sekúnd, %2$s</string>
     <string name="format_navigation_upcoming_instruction">V %1$d metroch, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Teraz %1$s</string>
     <string name="format_current_position_announcement">%1$s Aktuálna pozícia: %2$s</string>
     <string name="format_telemetry_exported">Telemetria exportovaná na %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

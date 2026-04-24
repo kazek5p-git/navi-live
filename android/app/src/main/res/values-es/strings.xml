@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">La aplicación sigue el idioma de su teléfono automáticamente.</string>
     <string name="settings_voice_title">Anuncios de voz</string>
     <string name="settings_voice_message">Lea los cambios de ruta y las indicaciones paso a paso en voz alta.</string>
+    <string name="settings_announcement_cadence_title">Cadencia de anuncio</string>
+    <string name="settings_announcement_cadence_message">Elige si Navi Live debe realizar la cuenta regresiva por distancia o por tiempo estimado antes del siguiente giro.</string>
+    <string name="settings_announcement_cadence_distance_title">Basado en distancia</string>
+    <string name="settings_announcement_cadence_distance_message">Anuncia próximos giros a 400, 300, 200, 100, 50, 40, 30, 20 y 10 metros.</string>
+    <string name="settings_announcement_cadence_time_title">Basado en el tiempo</string>
+    <string name="settings_announcement_cadence_time_message">Anuncia los próximos turnos aproximadamente 50, 40, 30, 20 y 10 segundos antes del turno.</string>
+    <string name="settings_announcement_cadence_disabled_message">Habilite primero los anuncios paso a paso para cambiar el modo de cadencia.</string>
     <string name="settings_speech_source_title">Fuente de voz</string>
     <string name="settings_speech_source_message">Elija si Navi Live debe hablar con el sintetizador del sistema Android o entregar anuncios al lector de pantalla activo.</string>
     <string name="settings_speech_source_system_title">Sintetizador del sistema</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Ruta alternativa lista para %1$s.</string>
     <string name="format_route_ready">Ruta lista para %1$s.</string>
     <string name="format_continue_toward">Continuar hacia %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">En %1$d metros, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">En %1$d segundos, %2$s</string>
     <string name="format_navigation_upcoming_instruction">En %1$d metros, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Ahora %1$s</string>
     <string name="format_current_position_announcement">%1$s Posición actual: %2$s</string>
     <string name="format_telemetry_exported">Telemetría exportada a %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

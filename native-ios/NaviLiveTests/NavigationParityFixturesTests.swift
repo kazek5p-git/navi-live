@@ -56,6 +56,31 @@ final class NavigationParityFixturesTests: XCTestCase {
     }
   }
 
+  func testNavigationTimeCountdownMilestonesMatchSharedFixtures() throws {
+    let fixtures = try SharedParityFixtureLoader.load()
+    for entry in fixtures.scenarioCases.timeCountdowns {
+      XCTAssertEqual(
+        NavigationScenarioCore.countdownMilestoneSeconds(secondsToNext: entry.secondsToNext),
+        entry.expectedMilestone,
+        entry.name
+      )
+    }
+  }
+
+  func testRouteEtaMatchesSharedFixtures() throws {
+    let fixtures = try SharedParityFixtureLoader.load()
+    for entry in fixtures.scenarioCases.etaCases {
+      XCTAssertEqual(
+        NavigationScenarioCore.routeEtaMinutes(
+          distanceMeters: entry.distanceMeters,
+          providerDurationSeconds: entry.providerDurationSeconds
+        ),
+        entry.expectedEtaMinutes,
+        entry.name
+      )
+    }
+  }
+
   func testNavigationAdvanceDecisionsMatchSharedFixtures() throws {
     let fixtures = try SharedParityFixtureLoader.load()
     for entry in fixtures.scenarioCases.advanceDecisions {
@@ -124,6 +149,8 @@ private enum SharedParityFixtureLoader {
   struct ScenarioCases: Decodable {
     let thresholds: [ThresholdCase]
     let countdowns: [CountdownCase]
+    let timeCountdowns: [TimeCountdownCase]
+    let etaCases: [EtaCase]
     let advanceDecisions: [AdvanceDecisionCase]
     let offRouteDecisions: [OffRouteDecisionCase]
     let autoRecalculate: [AutoRecalculateCase]
@@ -141,6 +168,19 @@ private enum SharedParityFixtureLoader {
     let name: String
     let distanceToNextMeters: Int
     let expectedMilestone: Int?
+  }
+
+  struct TimeCountdownCase: Decodable {
+    let name: String
+    let secondsToNext: Int
+    let expectedMilestone: Int?
+  }
+
+  struct EtaCase: Decodable {
+    let name: String
+    let distanceMeters: Int
+    let providerDurationSeconds: Double
+    let expectedEtaMinutes: Int
   }
 
   struct AdvanceDecisionCase: Decodable {

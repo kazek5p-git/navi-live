@@ -6,6 +6,10 @@
 "settings.toggle.auto_recalculate" = "Auto recalculate route";
 "settings.toggle.junction_alerts" = "Junction alerts";
 "settings.toggle.turn_announcements" = "Turn-by-turn announcements";
+"settings.guidance.cadence" = "Announcement cadence";
+"settings.guidance.cadence.distance" = "Distance based";
+"settings.guidance.cadence.time" = "Time based";
+"settings.guidance.cadence.footer" = "Distance based mode counts down in meters. Time based mode counts down using the estimated walking time to the next turn.";
 "settings.section.speech" = "Speech";
 "settings.speech.mode" = "Speech source";
 "settings.speech.mode.automatic" = "Automatic";

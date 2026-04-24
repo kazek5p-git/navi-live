@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Aplicația urmărește automat limba telefonului tău.</string>
     <string name="settings_voice_title">Anunțuri vocale</string>
     <string name="settings_voice_message">Citiți cu voce tare modificările rutei și ghidarea pas cu pas.</string>
+    <string name="settings_announcement_cadence_title">Cadența anunțului</string>
+    <string name="settings_announcement_cadence_message">Alegeți dacă Navi Live ar trebui să facă numărătoare inversă în funcție de distanță sau de timp estimat înainte de următorul viraj.</string>
+    <string name="settings_announcement_cadence_distance_title">Bazat pe distanță</string>
+    <string name="settings_announcement_cadence_distance_message">Anunțați virajele viitoare la 400, 300, 200, 100, 50, 40, 30, 20 și 10 metri.</string>
+    <string name="settings_announcement_cadence_time_title">Bazat pe timp</string>
+    <string name="settings_announcement_cadence_time_message">Anunțați virajele viitoare cu aproximativ 50, 40, 30, 20 și 10 secunde înainte de viraj.</string>
+    <string name="settings_announcement_cadence_disabled_message">Activați mai întâi anunțurile pas cu pas pentru a schimba modul de cadență.</string>
     <string name="settings_speech_source_title">Sursă de vorbire</string>
     <string name="settings_speech_source_message">Alegeți dacă Navi Live ar trebui să vorbească cu sintetizatorul sistemului Android sau anunțuri de mână către cititorul de ecran activ.</string>
     <string name="settings_speech_source_system_title">Sintetizator de sistem</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Rută de rezervă gata pentru %1$s.</string>
     <string name="format_route_ready">Traseu gata pentru %1$s.</string>
     <string name="format_continue_toward">Continuați către %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">În %1$d metri, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">În %1$d secunde, %2$s</string>
     <string name="format_navigation_upcoming_instruction">În %1$d metri, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Acum %1$s</string>
     <string name="format_current_position_announcement">%1$s Poziția actuală: %2$s</string>
     <string name="format_telemetry_exported">Telemetria exportată la %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

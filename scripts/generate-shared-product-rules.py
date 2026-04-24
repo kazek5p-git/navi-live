@@ -46,6 +46,7 @@ def render_android(rules: dict) -> str:
     instructions = rules["instructions"]
 
     countdown = ", ".join(str(value) for value in navigation["countdownMilestonesMeters"])
+    countdown_seconds = ", ".join(str(value) for value in navigation["countdownMilestonesSeconds"])
     distance_bands = ",\n            ".join(
         f"SearchDistanceBand(maxMeters = {item['maxMeters']}, bonus = {item['bonus']})"
         for item in scoring["distanceBands"]
@@ -71,6 +72,7 @@ object SharedProductRules {{
 
     object Navigation {{
         val countdownMilestonesMeters: List<Int> = listOf({countdown})
+        val countdownMilestonesSeconds: List<Int> = listOf({countdown_seconds})
 
         const val maneuverAdvanceAccuracyMinMeters: Float = {navigation['maneuverAdvance']['accuracyMinMeters']}f
         const val maneuverAdvanceAccuracyMaxMeters: Float = {navigation['maneuverAdvance']['accuracyMaxMeters']}f
@@ -142,6 +144,7 @@ def render_ios(rules: dict) -> str:
     instructions = rules["instructions"]
 
     countdown = ", ".join(str(value) for value in navigation["countdownMilestonesMeters"])
+    countdown_seconds = ", ".join(str(value) for value in navigation["countdownMilestonesSeconds"])
     distance_bands = ",\n      ".join(
         f"SearchDistanceBand(maxMeters: {item['maxMeters']}, bonus: {item['bonus']})"
         for item in scoring["distanceBands"]
@@ -164,6 +167,7 @@ enum SharedProductRules {{
 
   enum Navigation {{
     static let countdownMilestonesMeters: [Int] = [{countdown}]
+    static let countdownMilestonesSeconds: [Int] = [{countdown_seconds}]
 
     static let maneuverAdvanceAccuracyMinMeters: Double = {navigation['maneuverAdvance']['accuracyMinMeters']}
     static let maneuverAdvanceAccuracyMaxMeters: Double = {navigation['maneuverAdvance']['accuracyMaxMeters']}

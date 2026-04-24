@@ -147,6 +147,13 @@
     <string name="settings_language_detected_message">The app follows your phone language automatically.</string>
     <string name="settings_voice_title">Voice announcements</string>
     <string name="settings_voice_message">Read route changes and turn-by-turn guidance aloud.</string>
+    <string name="settings_announcement_cadence_title">Announcement cadence</string>
+    <string name="settings_announcement_cadence_message">Choose whether Navi Live should count down by distance or by estimated time before the next turn.</string>
+    <string name="settings_announcement_cadence_distance_title">Distance based</string>
+    <string name="settings_announcement_cadence_distance_message">Announce upcoming turns at 400, 300, 200, 100, 50, 40, 30, 20 and 10 meters.</string>
+    <string name="settings_announcement_cadence_time_title">Time based</string>
+    <string name="settings_announcement_cadence_time_message">Announce upcoming turns at about 50, 40, 30, 20 and 10 seconds before the turn.</string>
+    <string name="settings_announcement_cadence_disabled_message">Enable turn-by-turn announcements first to change the cadence mode.</string>
     <string name="settings_speech_source_title">Speech source</string>
     <string name="settings_speech_source_message">Choose whether Navi Live should speak with the Android system synthesizer or hand announcements to the active screen reader.</string>
     <string name="settings_speech_source_system_title">System synthesizer</string>
@@ -258,6 +265,8 @@
     <string name="format_fallback_route_ready">Fallback route ready for %1$s.</string>
     <string name="format_route_ready">Route ready for %1$s.</string>
     <string name="format_continue_toward">Continue toward %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">In %1$d meters, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">In %1$d seconds, %2$s</string>
     <string name="format_navigation_upcoming_instruction">In %1$d meters, %2$s</string>
     <string name="format_navigation_immediate_instruction">Now %1$s</string>
     <string name="format_current_position_announcement">%1$s Current position: %2$s</string>

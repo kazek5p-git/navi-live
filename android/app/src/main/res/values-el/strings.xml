@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Η εφαρμογή ακολουθεί αυτόματα τη γλώσσα του τηλεφώνου σας.</string>
     <string name="settings_voice_title">Φωνητικές ανακοινώσεις</string>
     <string name="settings_voice_message">Διαβάστε δυνατά τις αλλαγές διαδρομής και την καθοδήγηση στροφή προς στροφή.</string>
+    <string name="settings_announcement_cadence_title">Ρυθμός ανακοίνωσης</string>
+    <string name="settings_announcement_cadence_message">Επιλέξτε εάν το Navi Live θα πρέπει να μετράει αντίστροφα με βάση την απόσταση ή τον εκτιμώμενο χρόνο πριν από την επόμενη στροφή.</string>
+    <string name="settings_announcement_cadence_distance_title">Με βάση την απόσταση</string>
+    <string name="settings_announcement_cadence_distance_message">Ανακοινώστε τις επερχόμενες στροφές στα 400, 300, 200, 100, 50, 40, 30, 20 και 10 μέτρα.</string>
+    <string name="settings_announcement_cadence_time_title">Με βάση το χρόνο</string>
+    <string name="settings_announcement_cadence_time_message">Ανακοινώστε τις επερχόμενες στροφές περίπου στα 50, 40, 30, 20 και 10 δευτερόλεπτα πριν από τη στροφή.</string>
+    <string name="settings_announcement_cadence_disabled_message">Ενεργοποιήστε πρώτα τις αναλυτικές ανακοινώσεις για να αλλάξετε τη λειτουργία ρυθμού.</string>
     <string name="settings_speech_source_title">Πηγή ομιλίας</string>
     <string name="settings_speech_source_message">Επιλέξτε εάν το Navi Live θα μιλάει με το πρόγραμμα σύνθεσης συστήματος Android ή θα πρέπει να ανακοινώσει το χέρι στην ενεργή συσκευή ανάγνωσης οθόνης.</string>
     <string name="settings_speech_source_system_title">Synthesizer συστήματος</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Εναλλακτική διαδρομή έτοιμη για %1$s.</string>
     <string name="format_route_ready">Διαδρομή έτοιμη για %1$s.</string>
     <string name="format_continue_toward">Συνέχεια %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">Στα %1$d μέτρα, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">Σε %1$d δευτερόλεπτα, %2$s</string>
     <string name="format_navigation_upcoming_instruction">Στα %1$d μέτρα, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Τώρα %1$s</string>
     <string name="format_current_position_announcement">%1$s Τρέχουσα θέση: %2$s</string>
     <string name="format_telemetry_exported">Εξαγωγή τηλεμετρίας στο %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>

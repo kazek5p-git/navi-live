@@ -133,6 +133,13 @@
     <string name="settings_language_detected_message">Mae\'r ap yn dilyn iaith eich ffôn yn awtomatig.</string>
     <string name="settings_voice_title">Cyhoeddiadau llais</string>
     <string name="settings_voice_message">Darllenwch y newidiadau i lwybrau a chanllawiau tro wrth dro yn uchel.</string>
+    <string name="settings_announcement_cadence_title">Diweddeb cyhoeddiad</string>
+    <string name="settings_announcement_cadence_message">Dewiswch a ddylai Navi Live gyfrif i lawr yn ôl pellter neu yn ôl amcangyfrif o amser cyn y tro nesaf.</string>
+    <string name="settings_announcement_cadence_distance_title">Yn seiliedig ar bellter</string>
+    <string name="settings_announcement_cadence_distance_message">Cyhoeddi troadau sydd ar ddod ar 400, 300, 200, 100, 50, 40, 30, 20 a 10 metr.</string>
+    <string name="settings_announcement_cadence_time_title">Yn seiliedig ar amser</string>
+    <string name="settings_announcement_cadence_time_message">Cyhoeddi troeon sydd i ddod tua 50, 40, 30, 20 a 10 eiliad cyn y tro.</string>
+    <string name="settings_announcement_cadence_disabled_message">Galluogi cyhoeddiadau tro wrth dro yn gyntaf i newid y modd diweddeb.</string>
     <string name="settings_speech_source_title">Ffynhonnell lleferydd</string>
     <string name="settings_speech_source_message">Dewiswch a ddylai Navi Live siarad â syntheseisydd system Android neu gyhoeddiadau llaw i\'r darllenydd sgrin gweithredol.</string>
     <string name="settings_speech_source_system_title">Syntheseisydd system</string>
@@ -238,7 +245,10 @@
     <string name="format_fallback_route_ready">Llwybr wrth gefn yn barod ar gyfer %1$s.</string>
     <string name="format_route_ready">Llwybr yn barod ar gyfer %1$s.</string>
     <string name="format_continue_toward">Ewch ymlaen tuag at %1$s.</string>
+    <string name="format_navigation_upcoming_instruction_distance">Yn %1$d metr, %2$s</string>
+    <string name="format_navigation_upcoming_instruction_time">Yn %1$d eiliad, %2$s</string>
     <string name="format_navigation_upcoming_instruction">Yn %1$d metr, %2$s</string>
+    <string name="format_navigation_immediate_instruction">Nawr %1$s</string>
     <string name="format_current_position_announcement">%1$s Sefyllfa bresennol: %2$s</string>
     <string name="format_telemetry_exported">Telemetreg wedi\'i allforio i %1$s.</string>
     <string name="format_coordinates_label">Lat %1$s, Lon %2$s</string>
