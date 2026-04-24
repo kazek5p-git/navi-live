@@ -103,7 +103,7 @@ actor NavigationAPIClient {
       combinedByID[candidate.place.id] = candidate
     }
 
-    if nearbyCandidates.count < 5 {
+    if nearbyCandidates.count < SharedProductRules.Search.includeGlobalFallbackIfFewerThan {
       let globalCandidates = try await fetchSearchCandidates(query: query, near: location, nearbyOnly: false)
       for candidate in globalCandidates {
         if let existing = combinedByID[candidate.place.id] {
@@ -127,7 +127,7 @@ actor NavigationAPIClient {
         }
         return $0.importance > $1.importance
       }
-      .prefix(8)
+      .prefix(SharedProductRules.Search.resultLimit)
       .map(\.place)
   }
 
@@ -242,9 +242,13 @@ actor NavigationAPIClient {
   }
 
   private func modifierText(for modifier: String) -> String {
-    let key = "navigation.modifier.\(modifier)"
+    let normalized = SharedProductRules.Instructions.normalizeModifier(modifier)
+    guard SharedProductRules.Instructions.supportedModifiers.contains(normalized) else {
+      return modifier
+    }
+    let key = "navigation.modifier.\(normalized)"
     let localized = L10n.text(key, table: .navigation)
-    return localized == key ? modifier : localized
+    return localized == key ? normalized : localized
   }
 
   private func fetchSearchCandidates(
@@ -275,12 +279,13 @@ actor NavigationAPIClient {
         name: candidateName(for: item, fallback: displayName),
         address: formattedAddress(from: item.address, fallback: displayName),
         walkDistanceMeters: distance,
-        walkEtaMinutes: max(1, Int((Double(distance) / 78.0).rounded())),
+        walkEtaMinutes: max(1, Int((Double(distance) / SharedProductRules.Search.walkingEtaMetersPerMinute).rounded())),
         point: point
       )
       return SearchCandidate(
         place: place,
-        score: searchScore(for: place, query: query, currentLocation: location) + (nearbyOnly ? 420 : 0),
+        score: searchScore(for: place, query: query, currentLocation: location) +
+          (nearbyOnly ? SharedProductRules.Search.nearbyBonus : 0),
         distanceMeters: distance,
         importance: item.importance ?? 0,
         isNearbyCandidate: nearbyOnly
@@ -294,14 +299,19 @@ actor NavigationAPIClient {
     }
     var items: [URLQueryItem] = [
       .init(name: "format", value: "jsonv2"),
-      .init(name: "limit", value: nearbyOnly ? "10" : "16"),
+      .init(
+        name: "limit",
+        value: String(nearbyOnly ? SharedProductRules.Search.nearbyLimit : SharedProductRules.Search.globalLimit)
+      ),
       .init(name: "addressdetails", value: "1"),
       .init(name: "namedetails", value: "1"),
       .init(name: "dedupe", value: "1"),
       .init(name: "q", value: query)
     ]
     if let location {
-      let radiusKilometers = nearbyOnly ? 25.0 : 120.0
+      let radiusKilometers = nearbyOnly
+        ? SharedProductRules.Search.nearbyRadiusKm
+        : SharedProductRules.Search.globalRadiusKm
       let viewBox = searchViewBox(around: location, radiusKilometers: radiusKilometers)
       items.append(.init(name: "viewbox", value: viewBox))
       if nearbyOnly {
@@ -331,14 +341,7 @@ actor NavigationAPIClient {
   private func formattedAddress(from address: [String: String]?, fallback: String) -> String {
     guard let address else { return normalizeFallbackAddress(fallback) }
 
-    let streetName = firstNonBlank(
-      address["road"],
-      address["pedestrian"],
-      address["footway"],
-      address["path"],
-      address["cycleway"],
-      address["residential"]
-    )
+    let streetName = firstNonBlank(address, keys: SharedProductRules.Address.streetPriorityKeys)
     let houseNumber = cleanAddressValue(address["house_number"])
     let streetLine: String? = {
       if !streetName.isEmpty, let houseNumber {
@@ -353,23 +356,8 @@ actor NavigationAPIClient {
       return streetLineFromFallback(fallback, houseNumber: nil)
     }()
 
-    let locality = firstNonBlank(
-      address["city"],
-      address["town"],
-      address["village"],
-      address["hamlet"],
-      address["municipality"],
-      address["suburb"],
-      address["neighbourhood"],
-      address["quarter"],
-      address["city_district"]
-    )
-    let region = firstNonBlank(
-      address["state"],
-      address["region"],
-      address["state_district"],
-      address["county"]
-    )
+    let locality = firstNonBlank(address, keys: SharedProductRules.Address.localityPriorityKeys)
+    let region = firstNonBlank(address, keys: SharedProductRules.Address.regionPriorityKeys)
     let country = cleanAddressValue(address["country"])
 
     var orderedParts: [String] = []
@@ -378,10 +366,16 @@ actor NavigationAPIClient {
       guard !trimmed.isEmpty, !orderedParts.contains(trimmed) else { continue }
       orderedParts.append(trimmed)
     }
-    if orderedParts.count < 2, let country, !orderedParts.contains(country) {
+    if orderedParts.count < SharedProductRules.Address.appendCountryIfFewerThanParts,
+       let country,
+       !orderedParts.contains(country) {
       orderedParts.append(country)
     }
     return orderedParts.isEmpty ? normalizeFallbackAddress(fallback) : orderedParts.joined(separator: ", ")
+  }
+
+  private func firstNonBlank(_ address: [String: String], keys: [String]) -> String {
+    keys.compactMap { cleanAddressValue(address[$0]) }.first ?? ""
   }
 
   private func firstNonBlank(_ values: String?...) -> String {
@@ -430,7 +424,7 @@ actor NavigationAPIClient {
 
   private func normalizeStreetLine(_ value: String?) -> String? {
     guard let trimmed = cleanAddressValue(value) else { return nil }
-    let pattern = #"^(\d+[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]?(?:[/-]\d+[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]?)?)\s+(.+)$"#
+    let pattern = SharedProductRules.Address.leadingHouseNumberStreetPattern
     guard let regex = try? NSRegularExpression(pattern: pattern) else { return trimmed }
     let range = NSRange(trimmed.startIndex..<trimmed.endIndex, in: trimmed)
     guard let match = regex.firstMatch(in: trimmed, range: range),
@@ -443,7 +437,7 @@ actor NavigationAPIClient {
 
   private func isLikelyHouseNumber(_ value: String?) -> Bool {
     guard let trimmed = cleanAddressValue(value) else { return false }
-    let pattern = #"^\d+[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]?(?:[/-]\d+[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]?)?$"#
+    let pattern = SharedProductRules.Address.houseNumberPattern
     return trimmed.range(of: pattern, options: .regularExpression) != nil
   }
 
@@ -457,32 +451,31 @@ actor NavigationAPIClient {
     let nameTokens = normalizedName.split(separator: " ").map(String.init)
 
     var score = 0
-    if normalizedName == normalizedQuery { score += 600 }
-    if normalizedName.hasPrefix(normalizedQuery) { score += 320 }
+    if normalizedName == normalizedQuery { score += SharedProductRules.Search.exactNameScore }
+    if normalizedName.hasPrefix(normalizedQuery) { score += SharedProductRules.Search.prefixNameScore }
 
     for token in queryTokens {
       if nameTokens.contains(token) {
-        score += 220
+        score += SharedProductRules.Search.exactTokenScore
       } else if nameTokens.contains(where: { $0.hasPrefix(token) }) {
-        score += 180
+        score += SharedProductRules.Search.prefixTokenScore
       } else if normalizedName.contains(token) {
-        score += 140
+        score += SharedProductRules.Search.containsTokenScore
       }
       if normalizedAddress.contains(token) {
-        score += 60
+        score += SharedProductRules.Search.addressTokenScore
       }
     }
 
     if let currentLocation, let point = place.point {
       let distance = Int(currentLocation.distance(to: point).rounded())
-      switch distance {
-      case ...500: score += 700
-      case ...2_000: score += 550
-      case ...10_000: score += 350
-      case ...50_000: score += 120
-      default: break
+      if let band = SharedProductRules.Search.distanceBands.first(where: { distance <= $0.maxMeters }) {
+        score += band.bonus
       }
-      score -= min(distance / 5_000, 120)
+      score -= min(
+        distance / SharedProductRules.Search.distancePenaltyDivisorMeters,
+        SharedProductRules.Search.distancePenaltyCap
+      )
     }
 
     return score
@@ -501,7 +494,7 @@ actor NavigationAPIClient {
 
   private func searchViewBox(around location: GeoPoint, radiusKilometers: Double) -> String {
     let latDelta = radiusKilometers / 111.32
-    let cosine = max(cos(location.latitude * .pi / 180.0), 0.2)
+    let cosine = max(cos(location.latitude * .pi / 180.0), SharedProductRules.Search.viewBoxMinimumCosine)
     let lonDelta = radiusKilometers / (111.32 * cosine)
     let left = location.longitude - lonDelta
     let right = location.longitude + lonDelta

@@ -154,7 +154,8 @@ final class LiveNavigationEngine {
   }
 
   private func shouldAutoRecalculate(now: Date) -> Bool {
-    now.timeIntervalSince(lastAutoRecalculateAt) >= 15
+    now.timeIntervalSince(lastAutoRecalculateAt) >=
+      Double(SharedProductRules.Navigation.autoRecalculateCooldownMs) / 1000.0
   }
 
   private func resolveStepIndex(session: RouteSession, fix: LocationFix) -> Int {
@@ -172,11 +173,24 @@ final class LiveNavigationEngine {
   }
 
   private func maneuverAdvanceThresholdMeters(accuracyMeters: Double) -> Double {
-    min(max(accuracyMeters, 10), 20) * 1.5
+    min(
+      max(accuracyMeters, SharedProductRules.Navigation.maneuverAdvanceAccuracyMinMeters),
+      SharedProductRules.Navigation.maneuverAdvanceAccuracyMaxMeters
+    ) * SharedProductRules.Navigation.maneuverAdvanceMultiplier
   }
 
   private func offRouteThresholdMeters(accuracyMeters: Double) -> Int {
-    max(Int((min(max(accuracyMeters, 15), 32) * 1.8).rounded()), 30)
+    max(
+      Int(
+        (
+          min(
+            max(accuracyMeters, SharedProductRules.Navigation.offRouteAccuracyMinMeters),
+            SharedProductRules.Navigation.offRouteAccuracyMaxMeters
+          ) * SharedProductRules.Navigation.offRouteMultiplier
+        ).rounded()
+      ),
+      SharedProductRules.Navigation.offRouteMinimumThresholdMeters
+    )
   }
 
   private func buildState(

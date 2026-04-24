@@ -7,6 +7,7 @@ import com.navilive.android.model.GeoPoint
 import com.navilive.android.model.Place
 import com.navilive.android.model.RouteStep
 import com.navilive.android.model.RouteSummary
+import com.navilive.android.model.SharedProductRules
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -47,7 +48,8 @@ class OpenStreetRoutingRepository(
                 currentPoint = currentPoint,
                 nearbyOnly = true,
             )
-            val includeGlobalFallback = nearby.size < 5
+            val includeGlobalFallback =
+                nearby.size < SharedProductRules.Search.includeGlobalFallbackIfFewerThan
             val combined = linkedMapOf<String, SearchCandidate>()
             nearby.forEach { candidate ->
                 combined[candidate.place.id] = candidate
@@ -72,7 +74,7 @@ class OpenStreetRoutingRepository(
                         .thenByDescending { it.importance },
                 )
                 .map { it.place }
-                .take(8)
+                .take(SharedProductRules.Search.resultLimit)
         }
     }
 
@@ -199,7 +201,11 @@ class OpenStreetRoutingRepository(
     }
 
     private fun routeModifier(modifier: String): String {
-        return when (modifier.lowercase()) {
+        val normalized = SharedProductRules.Instructions.normalizeModifier(modifier)
+        if (normalized !in SharedProductRules.Instructions.supportedModifiers) {
+            return modifier
+        }
+        return when (normalized) {
             "left" -> string(R.string.route_modifier_left)
             "right" -> string(R.string.route_modifier_right)
             "slight left" -> string(R.string.route_modifier_slight_left)
@@ -257,7 +263,13 @@ class OpenStreetRoutingRepository(
             } else {
                 haversineMeters(currentPoint, point).roundToInt()
             }
-            val etaMinutes = if (distance <= 0) 0 else (distance / 75.0).roundToInt().coerceAtLeast(1)
+            val etaMinutes = if (distance <= 0) {
+                0
+            } else {
+                (distance / SharedProductRules.Search.walkingEtaMetersPerMinute)
+                    .roundToInt()
+                    .coerceAtLeast(1)
+            }
             val place = Place(
                 id = "nominatim_${latitude}_$longitude",
                 name = label,
@@ -268,7 +280,8 @@ class OpenStreetRoutingRepository(
             )
             candidates += SearchCandidate(
                 place = place,
-                score = searchScore(place, query, currentPoint) + if (nearbyOnly) 420 else 0,
+                score = searchScore(place, query, currentPoint) +
+                    if (nearbyOnly) SharedProductRules.Search.nearbyBonus else 0,
                 distanceMeters = distance,
                 importance = item.optDouble("importance", 0.0),
                 isNearbyCandidate = nearbyOnly,
@@ -285,10 +298,20 @@ class OpenStreetRoutingRepository(
         val encoded = URLEncoder.encode(query, Charsets.UTF_8.name())
         val base = StringBuilder("https://nominatim.openstreetmap.org/search")
         base.append("?format=jsonv2")
-        base.append("&limit=").append(if (nearbyOnly) 10 else 16)
+        base.append("&limit=").append(
+            if (nearbyOnly) {
+                SharedProductRules.Search.nearbyLimit
+            } else {
+                SharedProductRules.Search.globalLimit
+            },
+        )
         base.append("&addressdetails=1&namedetails=1&dedupe=1")
         if (currentPoint != null) {
-            val radiusKm = if (nearbyOnly) 25.0 else 120.0
+            val radiusKm = if (nearbyOnly) {
+                SharedProductRules.Search.nearbyRadiusKm
+            } else {
+                SharedProductRules.Search.globalRadiusKm
+            }
             val (left, top, right, bottom) = searchViewBox(currentPoint, radiusKm)
             base.append("&viewbox=")
                 .append(formatCoordinate(left))
@@ -311,7 +334,13 @@ class OpenStreetRoutingRepository(
         radiusKm: Double,
     ): DoubleArray {
         val latDelta = radiusKm / 111.32
-        val cosLatitude = cos(Math.toRadians(center.latitude)).let { if (it < 0.2) 0.2 else it }
+        val cosLatitude = cos(Math.toRadians(center.latitude)).let {
+            if (it < SharedProductRules.Search.viewBoxMinimumCosine) {
+                SharedProductRules.Search.viewBoxMinimumCosine
+            } else {
+                it
+            }
+        }
         val lonDelta = radiusKm / (111.32 * cosLatitude)
         val left = center.longitude - lonDelta
         val right = center.longitude + lonDelta
@@ -327,14 +356,7 @@ class OpenStreetRoutingRepository(
     private fun formatAddress(address: JSONObject?, fallback: String): String {
         if (address == null) return normalizeFallbackAddress(fallback)
 
-        val streetName = firstNonBlank(
-            address.optString("road"),
-            address.optString("pedestrian"),
-            address.optString("footway"),
-            address.optString("path"),
-            address.optString("cycleway"),
-            address.optString("residential"),
-        )
+        val streetName = firstNonBlankFromKeys(address, SharedProductRules.Address.streetPriorityKeys)
         val houseNumber = cleanAddressValue(address.optString("house_number"))
         val streetLine = when {
             !streetName.isNullOrBlank() && !houseNumber.isNullOrBlank() -> "$streetName $houseNumber"
@@ -343,23 +365,8 @@ class OpenStreetRoutingRepository(
             else -> streetLineFromFallback(fallback, null)
         }
 
-        val locality = firstNonBlank(
-            address.optString("city"),
-            address.optString("town"),
-            address.optString("village"),
-            address.optString("hamlet"),
-            address.optString("municipality"),
-            address.optString("suburb"),
-            address.optString("neighbourhood"),
-            address.optString("quarter"),
-            address.optString("city_district"),
-        )
-        val region = firstNonBlank(
-            address.optString("state"),
-            address.optString("region"),
-            address.optString("state_district"),
-            address.optString("county"),
-        )
+        val locality = firstNonBlankFromKeys(address, SharedProductRules.Address.localityPriorityKeys)
+        val region = firstNonBlankFromKeys(address, SharedProductRules.Address.regionPriorityKeys)
         val country = cleanAddressValue(address.optString("country"))
 
         val parts = linkedSetOf<String>()
@@ -368,10 +375,19 @@ class OpenStreetRoutingRepository(
             .map { it.trim() }
             .filter { it.isNotBlank() }
             .forEach(parts::add)
-        if (parts.size < 2 && !country.isNullOrBlank()) {
+        if (
+            parts.size < SharedProductRules.Address.appendCountryIfFewerThanParts &&
+            !country.isNullOrBlank()
+        ) {
             parts += country
         }
         return parts.joinToString(", ").ifBlank { normalizeFallbackAddress(fallback) }
+    }
+
+    private fun firstNonBlankFromKeys(address: JSONObject, keys: List<String>): String? {
+        return keys.firstNotNullOfOrNull { key ->
+            cleanAddressValue(address.optString(key))
+        }
     }
 
     private fun firstNonBlank(vararg values: String?): String? {
@@ -416,8 +432,7 @@ class OpenStreetRoutingRepository(
 
     private fun normalizeStreetLine(value: String?): String? {
         val trimmed = cleanAddressValue(value) ?: return null
-        val match = Regex("""^(\d+[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]?(?:[/-]\d+[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]?)?)\s+(.+)$""")
-            .matchEntire(trimmed)
+        val match = SharedProductRules.Address.leadingHouseNumberStreetPattern.matchEntire(trimmed)
         return if (match != null) {
             "${match.groupValues[2]} ${match.groupValues[1]}".trim()
         } else {
@@ -427,8 +442,7 @@ class OpenStreetRoutingRepository(
 
     private fun isLikelyHouseNumber(value: String?): Boolean {
         val trimmed = cleanAddressValue(value) ?: return false
-        return Regex("""^\d+[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]?(?:[/-]\d+[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]?)?$""")
-            .matches(trimmed)
+        return SharedProductRules.Address.houseNumberPattern.matches(trimmed)
     }
 
     private fun searchScore(place: Place, query: String, currentPoint: GeoPoint?): Int {
@@ -441,30 +455,34 @@ class OpenStreetRoutingRepository(
         val nameTokens = normalizedName.split(' ').filter { it.isNotBlank() }
 
         var score = 0
-        if (normalizedName == normalizedQuery) score += 600
-        if (normalizedName.startsWith(normalizedQuery)) score += 320
+        if (normalizedName == normalizedQuery) score += SharedProductRules.Search.exactNameScore
+        if (normalizedName.startsWith(normalizedQuery)) {
+            score += SharedProductRules.Search.prefixNameScore
+        }
 
         queryTokens.forEach { token ->
             when {
-                nameTokens.any { it == token } -> score += 220
-                nameTokens.any { it.startsWith(token) } -> score += 180
-                normalizedName.contains(token) -> score += 140
+                nameTokens.any { it == token } ->
+                    score += SharedProductRules.Search.exactTokenScore
+                nameTokens.any { it.startsWith(token) } ->
+                    score += SharedProductRules.Search.prefixTokenScore
+                normalizedName.contains(token) ->
+                    score += SharedProductRules.Search.containsTokenScore
             }
             if (normalizedAddress.contains(token)) {
-                score += 60
+                score += SharedProductRules.Search.addressTokenScore
             }
         }
 
         if (currentPoint != null && place.point != null) {
             val distance = haversineMeters(currentPoint, place.point).roundToInt()
-            score += when {
-                distance <= 500 -> 700
-                distance <= 2_000 -> 550
-                distance <= 10_000 -> 350
-                distance <= 50_000 -> 120
-                else -> 0
-            }
-            score -= (distance / 5_000).coerceAtMost(120)
+            score += SharedProductRules.Search.distanceBands
+                .firstOrNull { distance <= it.maxMeters }
+                ?.bonus
+                ?: 0
+            score -= (
+                distance / SharedProductRules.Search.distancePenaltyDivisorMeters
+                ).coerceAtMost(SharedProductRules.Search.distancePenaltyCap)
         }
 
         return score

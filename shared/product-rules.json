@@ -1,0 +1,92 @@
+{
+  "navigation": {
+    "countdownMilestonesMeters": [10, 20, 30, 40, 50, 100, 200, 300, 400],
+    "maneuverAdvance": {
+      "accuracyMinMeters": 10.0,
+      "accuracyMaxMeters": 20.0,
+      "multiplier": 1.5
+    },
+    "offRoute": {
+      "accuracyMinMeters": 15.0,
+      "accuracyMaxMeters": 32.0,
+      "multiplier": 1.8,
+      "minimumThresholdMeters": 30
+    },
+    "immediateInstruction": {
+      "accuracyMinMeters": 5.0,
+      "accuracyMaxMeters": 8.0,
+      "thresholdMinMeters": 5,
+      "thresholdMaxMeters": 8
+    },
+    "autoRecalculateCooldownMs": 15000
+  },
+  "search": {
+    "includeGlobalFallbackIfFewerThan": 5,
+    "nearbyBonus": 420,
+    "nearbyLimit": 10,
+    "globalLimit": 16,
+    "resultLimit": 8,
+    "nearbyRadiusKm": 25.0,
+    "globalRadiusKm": 120.0,
+    "viewBoxMinimumCosine": 0.2,
+    "walkingEtaMetersPerMinute": 75.0,
+    "scoring": {
+      "exactName": 600,
+      "prefixName": 320,
+      "exactToken": 220,
+      "prefixToken": 180,
+      "containsToken": 140,
+      "addressToken": 60,
+      "distanceBands": [
+        { "maxMeters": 500, "bonus": 700 },
+        { "maxMeters": 2000, "bonus": 550 },
+        { "maxMeters": 10000, "bonus": 350 },
+        { "maxMeters": 50000, "bonus": 120 }
+      ],
+      "distancePenaltyDivisorMeters": 5000,
+      "distancePenaltyCap": 120
+    }
+  },
+  "address": {
+    "streetPriorityKeys": [
+      "road",
+      "pedestrian",
+      "footway",
+      "path",
+      "cycleway",
+      "residential"
+    ],
+    "localityPriorityKeys": [
+      "city",
+      "town",
+      "village",
+      "hamlet",
+      "municipality",
+      "suburb",
+      "neighbourhood",
+      "quarter",
+      "city_district"
+    ],
+    "regionPriorityKeys": [
+      "state",
+      "region",
+      "state_district",
+      "county"
+    ],
+    "appendCountryIfFewerThanParts": 2,
+    "houseNumberPattern": "^\\d+[\\p{L}]?(?:[/-]\\d+[\\p{L}]?)?$",
+    "leadingHouseNumberStreetPattern": "^(\\d+[\\p{L}]?(?:[/-]\\d+[\\p{L}]?)?)\\s+(.+)$"
+  },
+  "instructions": {
+    "supportedModifiers": [
+      "left",
+      "right",
+      "slight left",
+      "slight right",
+      "sharp left",
+      "sharp right",
+      "straight",
+      "uturn"
+    ]
+  }
+}

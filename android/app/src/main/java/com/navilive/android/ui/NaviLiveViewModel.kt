@@ -27,6 +27,7 @@ import com.navilive.android.model.Place
 import com.navilive.android.model.RouteStep
 import com.navilive.android.model.RouteSummary
 import com.navilive.android.model.SettingsState
+import com.navilive.android.model.SharedProductRules
 import com.navilive.android.model.SpeechOutputMode
 import com.navilive.android.model.UpdateChannel
 import kotlinx.coroutines.CancellationException
@@ -1441,7 +1442,9 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun shouldAutoRecalculate(): Boolean {
-        return !isRouteRecalculating && System.currentTimeMillis() - lastAutoRecalculateMs >= 15_000L
+        return !isRouteRecalculating &&
+            System.currentTimeMillis() - lastAutoRecalculateMs >=
+            SharedProductRules.Navigation.autoRecalculateCooldownMs
     }
 
     private fun resolveStepIndex(session: RouteSession, fix: LocationFix): Int {
@@ -1459,15 +1462,36 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun maneuverAdvanceThresholdMeters(fix: LocationFix): Double {
-        return fix.accuracyMeters.coerceIn(10f, 20f).toDouble() * 1.5
+        return fix.accuracyMeters
+            .coerceIn(
+                SharedProductRules.Navigation.maneuverAdvanceAccuracyMinMeters,
+                SharedProductRules.Navigation.maneuverAdvanceAccuracyMaxMeters,
+            )
+            .toDouble() * SharedProductRules.Navigation.maneuverAdvanceMultiplier
     }
 
     private fun offRouteThresholdMeters(fix: LocationFix): Int {
-        return (fix.accuracyMeters.coerceIn(15f, 32f) * 1.8f).roundToInt().coerceAtLeast(30)
+        return (
+            fix.accuracyMeters.coerceIn(
+                SharedProductRules.Navigation.offRouteAccuracyMinMeters,
+                SharedProductRules.Navigation.offRouteAccuracyMaxMeters,
+            ) * SharedProductRules.Navigation.offRouteMultiplier
+            )
+            .roundToInt()
+            .coerceAtLeast(SharedProductRules.Navigation.offRouteMinimumThresholdMeters)
     }
 
     private fun immediateAnnouncementThresholdMeters(fix: LocationFix): Int {
-        return fix.accuracyMeters.coerceIn(5f, 8f).roundToInt().coerceIn(5, 8)
+        return fix.accuracyMeters
+            .coerceIn(
+                SharedProductRules.Navigation.immediateInstructionAccuracyMinMeters,
+                SharedProductRules.Navigation.immediateInstructionAccuracyMaxMeters,
+            )
+            .roundToInt()
+            .coerceIn(
+                SharedProductRules.Navigation.immediateInstructionThresholdMinMeters,
+                SharedProductRules.Navigation.immediateInstructionThresholdMaxMeters,
+            )
     }
 
     private fun buildActiveNavigationState(
@@ -1609,8 +1633,9 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun countdownMilestoneMeters(distanceToNext: Int): Int? {
-        val thresholds = listOf(10, 20, 30, 40, 50, 100, 200, 300, 400)
-        return thresholds.firstOrNull { distanceToNext <= it }
+        return SharedProductRules.Navigation.countdownMilestonesMeters.firstOrNull {
+            distanceToNext <= it
+        }
     }
 
     private fun logTrackingStateChangeIfNeeded(isTracking: Boolean) {

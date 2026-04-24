@@ -569,11 +569,18 @@ final class AppModel: ObservableObject {
   }
 
   private func countdownMilestoneMeters(distanceToNext: Int) -> Int? {
-    [10, 20, 30, 40, 50, 100, 200, 300, 400].first { distanceToNext <= $0 }
+    SharedProductRules.Navigation.countdownMilestonesMeters.first { distanceToNext <= $0 }
   }
 
   private func immediateNavigationThresholdMeters(accuracyMeters: Double) -> Int {
-    min(max(Int(min(max(accuracyMeters, 5), 8).rounded()), 5), 8)
+    let clampedAccuracy = min(
+      max(accuracyMeters, SharedProductRules.Navigation.immediateInstructionAccuracyMinMeters),
+      SharedProductRules.Navigation.immediateInstructionAccuracyMaxMeters
+    )
+    return min(
+      max(Int(clampedAccuracy.rounded()), SharedProductRules.Navigation.immediateInstructionThresholdMinMeters),
+      SharedProductRules.Navigation.immediateInstructionThresholdMaxMeters
+    )
   }
 
   private func announceNavigationPrompt(_ message: String, warning: Bool = false) {
