@@ -47,13 +47,6 @@ struct HomeView: View {
         ) {
           model.openFavorites()
         }
-
-        SecondaryActionButton(
-          title: L10n.text("home.action.settings", table: .home),
-          systemImage: "gearshape"
-        ) {
-          model.openSettings()
-        }
       } header: {
         Text(L10n.text("home.section.actions", table: .home))
       }
@@ -76,6 +69,19 @@ struct HomeView: View {
           .accessibilityHint(L10n.text("home.resume_last_route.hint", table: .home))
         } header: {
           Text(L10n.text("home.section.last_route", table: .home))
+        }
+      }
+
+      Section {
+        HStack {
+          Spacer()
+          SecondaryActionButton(
+            title: L10n.text("home.action.settings", table: .home),
+            systemImage: "gearshape"
+          ) {
+            model.openSettings()
+          }
+          .frame(maxWidth: 260)
         }
       }
     }

@@ -195,11 +195,6 @@ fun StartScreen(
     ScreenScaffold(
         title = stringResource(R.string.app_name),
         showBack = false,
-        actions = {
-            IconButton(onClick = onSettings) {
-                Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.action_settings))
-            }
-        },
     ) { modifier ->
         Column(
             modifier = modifier.verticalScroll(rememberScrollState()),
@@ -301,6 +296,13 @@ fun StartScreen(
                     }
                 }
             }
+
+            SecondaryActionButton(
+                label = stringResource(R.string.action_settings),
+                icon = Icons.Filled.Settings,
+                onClick = onSettings,
+                modifier = Modifier.align(Alignment.End),
+            )
         }
     }
 }
