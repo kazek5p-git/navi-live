@@ -1,33 +1,33 @@
 POLSKI
 
-Sprawdź delikatne dźwięki nawigacji.
-Najważniejsze: dźwięki są krótkie, ciche i nie zagłuszają komunikatów VoiceOver. Sprawdź odliczanie dystansu, sygnał „skręć teraz”, ostrzeżenie, start lub wznowienie oraz dotarcie do celu.
+Sprawdź ekran główny aplikacji.
+Najważniejsze: przycisk Ustawienia jest na samym końcu kolejności przechodzenia flickami i po nim nie ma już żadnych innych elementów ekranu głównego.
 
-Sprawdź przewodnik po dźwiękach w Ustawienia > Prowadzenie.
-Najważniejsze: każdy wiersz opisuje znaczenie dźwięku i pozwala go odtworzyć. Sprawdź kolejność fokusu VoiceOver i czy nazwy są zrozumiałe.
+Sprawdź położenie Ustawień.
+Najważniejsze: wejście do ustawień znajduje się wizualnie na dole po prawej stronie, ale nadal jest łatwe do znalezienia i aktywowania czytnikiem ekranu.
 
-Sprawdź przełącznik „Dźwięki nawigacji”.
-Najważniejsze: po wyłączeniu aplikacja nie odtwarza dźwięków podczas prowadzenia, ale podgląd w ustawieniach nadal pozwala odsłuchać próbki.
+Sprawdź główny ekran Ustawień.
+Najważniejsze: nie ma już zbędnego tekstu wprowadzającego o grupach ustawień, a ekran zaczyna się od właściwych grup.
 
-Sprawdź komunikaty podczas prowadzenia.
-Najważniejsze: dźwięki powinny tylko delikatnie poprzedzać komunikat głosowy, bez dublowania treści i bez utrudniania orientacji.
+Sprawdź opisy grup ustawień.
+Najważniejsze: opisy są krótkie i ogólne, bez długich wyliczanek. Sprawdź, czy VoiceOver czyta je naturalnie i bez nadmiaru informacji.
 
-Sprawdź stabilność ustawień.
-Najważniejsze: zmiana ustawień dźwięków, wibracji i mowy nie powinna wpływać na start trasy, przeliczanie ani dotarcie do celu.
+Sprawdź, czy nawigacja po grupach ustawień działa jak wcześniej.
+Najważniejsze: Prowadzenie, Mowa, Aplikacja i aktualizacje oraz Pomoc i prywatność nadal otwierają właściwe ekrany.
 
 ENGLISH
 
-Please test the gentle navigation sounds.
-Focus on short, quiet cues that do not cover VoiceOver announcements. Check distance countdown, turn now, warning, start or resume, and arrival sounds.
+Please test the Home screen.
+Focus on Settings being the last item in flick navigation, with no additional Home screen elements after it.
 
-Please test the sound guide in Settings > Guidance.
-Focus on each row explaining the sound meaning and letting you play a preview. Check VoiceOver focus order and whether the labels are clear.
+Please test the Settings position.
+Focus on Settings appearing visually in the lower-right area while still being easy to find and activate with a screen reader.
 
-Please test the Navigation sounds toggle.
-Focus on navigation sounds being disabled during guidance when the toggle is off, while the Settings preview still lets users learn the samples.
+Please test the main Settings screen.
+Focus on the unnecessary introductory text being removed, so the screen starts directly with the settings groups.
 
-Please test guidance announcements.
-Focus on sounds gently preceding spoken guidance without duplicate text and without making orientation harder.
+Please test the settings group descriptions.
+Focus on short, general descriptions without long lists. Check that VoiceOver reads them naturally and without excessive detail.
 
-Please test Settings stability.
-Focus on changing sound, vibration and speech settings without breaking route start, rerouting or arrival behavior.
+Please test navigation into each settings group.
+Focus on Guidance, Speech, App and updates, and Help and privacy still opening the correct screens.
