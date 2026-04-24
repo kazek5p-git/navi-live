@@ -1,9 +1,8 @@
 "settings.title" = "Settings";
-"settings.root.message" = "Settings are grouped into a few larger sections so the screen stays shorter and easier to navigate with a screen reader.";
 "settings.section.tutorial" = "Tutorial";
 "settings.toggle.show_tutorial" = "Show onboarding at launch";
 "settings.section.guidance" = "Guidance";
-"settings.group.guidance.summary" = "Voice announcements, vibration, rerouting and countdown mode.";
+"settings.group.guidance.summary" = "Navigation behavior.";
 "settings.toggle.vibration" = "Haptic feedback";
 "settings.toggle.sound_cues" = "Navigation sounds";
 "settings.sound_cues.tutorial.title" = "Sound guide";
@@ -27,7 +26,7 @@
 "settings.guidance.cadence.time" = "Time based";
 "settings.guidance.cadence.footer" = "Distance based mode counts down in meters. Time based mode counts down using the estimated walking time to the next turn.";
 "settings.section.speech" = "Speech";
-"settings.group.speech.summary" = "Speech source, voice settings and spoken preview.";
+"settings.group.speech.summary" = "Voice output.";
 "settings.speech.mode" = "Speech source";
 "settings.speech.mode.automatic" = "Automatic";
 "settings.speech.mode.voiceover" = "VoiceOver";
@@ -37,8 +36,8 @@
 "settings.speech.footer" = "Automatic follows VoiceOver when it is active. Otherwise Navi Live uses the built-in speech synthesizer.";
 "settings.speech_mode.updated" = "Speech mode updated.";
 "settings.group.app_updates" = "App and updates";
-"settings.group.app_updates.summary" = "Language, update delivery, version and build information.";
-"settings.group.help_privacy.summary" = "Tutorial, support and privacy details.";
+"settings.group.app_updates.summary" = "App information.";
+"settings.group.help_privacy.summary" = "Help and policies.";
 "settings.language.detected" = "Detected from phone";
 "settings.language.detected_message" = "Navi Live follows your phone language automatically.";
 "settings.section.support" = "Help and updates";

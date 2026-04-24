@@ -1141,7 +1141,6 @@ fun SettingsScreen(
         ) {
             when (destination) {
                 SettingsDestination.Root -> {
-                    SettingsRootIntroCard()
                     SettingsNavigationCard(
                         title = stringResource(R.string.settings_group_guidance_title),
                         summary = stringResource(R.string.settings_group_guidance_summary),
@@ -1264,18 +1263,6 @@ fun SettingsScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun SettingsRootIntroCard() {
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(R.string.settings_root_message),
-            modifier = Modifier.padding(16.dp),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }
 

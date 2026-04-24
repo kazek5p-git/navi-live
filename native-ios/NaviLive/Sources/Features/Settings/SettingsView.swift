@@ -6,12 +6,6 @@ struct SettingsView: View {
   var body: some View {
     Form {
       Section {
-        Text(L10n.text("settings.root.message", table: .settings))
-          .font(.footnote)
-          .foregroundStyle(.secondary)
-      }
-
-      Section {
         NavigationLink {
           GuidanceSettingsDetailView(model: model)
         } label: {
