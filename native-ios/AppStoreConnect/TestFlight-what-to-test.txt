@@ -1,39 +1,39 @@
 POLSKI
 
-Sprawdź szacowany czas trasy.
-Najważniejsze są: realistyczny ETA w podsumowaniu trasy, brak absurdalnie krótkich czasów marszu oraz spójność czasu z dystansem pieszym.
+Sprawdź nowy układ ustawień.
+Najważniejsze są: krótszy ekran główny ustawień, logiczne grupy na wzór ListenSDR oraz łatwiejsze przechodzenie po ekranie czytnikiem ekranu.
 
-Sprawdź nowe ustawienie sposobu odliczania komunikatów.
-Najważniejsze są: poprawne przełączanie między trybem odległościowym i czasowym, zachowanie wyboru po ponownym uruchomieniu oraz brak zawieszenia po zmianie w ustawieniach.
+Sprawdź zachowanie VoiceOver w ustawieniach.
+Najważniejsze są: mniejsza liczba zbędnych nagłówków, brak nadmiernego „Heading” przy każdej karcie oraz sensowna kolejność fokusu po wejściu do grup ustawień.
 
-Sprawdź aktywną nawigację pieszą w trybie odległościowym.
-Najważniejsze są: komunikaty przy 400, 300, 200, 100, 50, 40, 30, 20 i 10 metrach oraz końcowy komunikat „Teraz...”.
+Sprawdź grupę „Prowadzenie”.
+Najważniejsze są: działanie komunikatów krok po kroku, wibracji, automatycznego przeliczania i trybu odliczania odległościowego lub czasowego.
 
-Sprawdź aktywną nawigację pieszą w trybie czasowym.
-Najważniejsze są: komunikaty około 50, 40, 30, 20 i 10 sekund przed skrętem oraz końcowy komunikat „Teraz...”.
+Sprawdź grupę „Mowa”.
+Najważniejsze są: wybór źródła mowy, zmiana szybkości i głośności oraz poprawne działanie próbki głosu.
 
-Sprawdź treść komunikatów skrętu.
-Najważniejsze są: poprawny kierunek, poprawna nazwa ulicy w komunikacie, np. „Teraz skręć w Kalwaryjską w lewo”, oraz brak spóźnionych albo podwójnych odczytów.
+Sprawdź grupę „Aplikacja i aktualizacje”.
+Najważniejsze są: poprawne pokazanie języka telefonu, informacji o wersji i buildzie oraz czy treść o aktualizacjach jest czytelna.
 
-Sprawdź prowadzenie przy zablokowanym lub wygaszonym ekranie.
-Najważniejsze są: ciągłość komunikatów głosowych podczas marszu, stabilność działania oraz brak konieczności ręcznego sprawdzania wskazówek.
+Sprawdź grupę „Pomoc i prywatność”.
+Najważniejsze są: poprawne otwieranie pomocy, czytelność sekcji i brak chaosu semantycznego przy odczycie VoiceOver.
 
 ENGLISH
 
-Please test route ETA.
-Focus on realistic walking time in route summary, no impossibly short ETAs, and consistency between distance and estimated time.
+Please test the new Settings layout.
+Focus on a shorter root Settings screen, larger grouped sections similar to ListenSDR, and easier navigation with a screen reader.
 
-Please test the new announcement cadence setting.
-Focus on switching between distance based and time based countdowns, persistence after restart, and stable behavior after changing the setting.
+Please test VoiceOver behavior in Settings.
+Focus on fewer artificial headings, no excessive “Heading” announcements on every card, and sensible focus order when entering grouped settings screens.
 
-Please test active walking navigation in distance based mode.
-Focus on spoken guidance at 400, 300, 200, 100, 50, 40, 30, 20, and 10 meters before a turn, plus the final “Now...” instruction.
+Please test the Guidance section.
+Focus on turn-by-turn announcements, vibration, automatic rerouting, and switching between distance based and time based countdown modes.
 
-Please test active walking navigation in time based mode.
-Focus on spoken guidance roughly 50, 40, 30, 20, and 10 seconds before a turn, plus the final “Now...” instruction.
+Please test the Speech section.
+Focus on speech source selection, speech rate and volume controls, and correct behavior of the voice preview.
 
-Please test the turn instruction wording.
-Focus on correct direction, correct street name in the spoken prompt, for example “Now turn onto Kalwaryjska to the left”, and no late or duplicated announcements.
+Please test the App and updates section.
+Focus on correct phone language display, version and build information, and whether the update explanation is clear.
 
-Please test guidance with the screen locked or dimmed.
-Focus on continuous spoken guidance while walking, stability, and not needing to manually read the next instruction.
+Please test the Help and privacy section.
+Focus on opening help correctly, readable sections, and clean VoiceOver behavior without semantic clutter.
