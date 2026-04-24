@@ -119,6 +119,14 @@ private struct GuidanceSettingsDetailView: View {
         )
 
         Toggle(
+          L10n.text("settings.toggle.sound_cues", table: .settings),
+          isOn: Binding(
+            get: { model.settings.soundCuesEnabled },
+            set: model.updateSoundCuesEnabled
+          )
+        )
+
+        Toggle(
           L10n.text("settings.toggle.auto_recalculate", table: .settings),
           isOn: Binding(
             get: { model.settings.autoRecalculate },
@@ -136,6 +144,34 @@ private struct GuidanceSettingsDetailView: View {
       } footer: {
         Text(L10n.text("settings.guidance.cadence.footer", table: .settings))
       }
+
+      Section {
+        ForEach(SoundCuePreviewItem.allCases) { item in
+          Button {
+            model.previewSoundCue(item.cue)
+          } label: {
+            Label {
+              VStack(alignment: .leading, spacing: 3) {
+                Text(L10n.text(item.titleKey, table: .settings))
+                Text(L10n.text(item.messageKey, table: .settings))
+                  .font(.footnote)
+                  .foregroundStyle(.secondary)
+              }
+            } icon: {
+              Image(systemName: item.systemImage)
+            }
+          }
+          .buttonStyle(.plain)
+          .accessibilityLabel(
+            Text(L10n.text("settings.sound_cue.preview.accessibility", table: .settings, L10n.text(item.titleKey, table: .settings)))
+          )
+          .accessibilityHint(Text(L10n.text(item.messageKey, table: .settings)))
+        }
+      } header: {
+        Text(L10n.text("settings.sound_cues.tutorial.title", table: .settings))
+      } footer: {
+        Text(L10n.text("settings.sound_cues.tutorial.message", table: .settings))
+      }
     }
     .navigationTitle(L10n.text("settings.section.guidance", table: .settings))
     .navigationBarTitleDisplayMode(.inline)
@@ -147,6 +183,72 @@ private struct GuidanceSettingsDetailView: View {
       return L10n.text("settings.guidance.cadence.distance", table: .settings)
     case .time:
       return L10n.text("settings.guidance.cadence.time", table: .settings)
+    }
+  }
+}
+
+private enum SoundCuePreviewItem: CaseIterable, Identifiable {
+  case countdown
+  case turnNow
+  case warning
+  case success
+  case arrival
+
+  var id: Self { self }
+
+  var cue: NavigationSoundCue {
+    switch self {
+    case .countdown:
+      return .countdown
+    case .turnNow:
+      return .turnNow
+    case .warning:
+      return .warning
+    case .success:
+      return .success
+    case .arrival:
+      return .arrival
+    }
+  }
+
+  var titleKey: String {
+    switch self {
+    case .countdown:
+      return "settings.sound_cue.countdown.title"
+    case .turnNow:
+      return "settings.sound_cue.turn_now.title"
+    case .warning:
+      return "settings.sound_cue.warning.title"
+    case .success:
+      return "settings.sound_cue.success.title"
+    case .arrival:
+      return "settings.sound_cue.arrival.title"
+    }
+  }
+
+  var messageKey: String {
+    switch self {
+    case .countdown:
+      return "settings.sound_cue.countdown.message"
+    case .turnNow:
+      return "settings.sound_cue.turn_now.message"
+    case .warning:
+      return "settings.sound_cue.warning.message"
+    case .success:
+      return "settings.sound_cue.success.message"
+    case .arrival:
+      return "settings.sound_cue.arrival.message"
+    }
+  }
+
+  var systemImage: String {
+    switch self {
+    case .warning:
+      return "exclamationmark.triangle"
+    case .arrival:
+      return "checkmark.circle"
+    default:
+      return "speaker.wave.2"
     }
   }
 }

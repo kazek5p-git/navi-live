@@ -26,6 +26,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.AssistantDirection
 import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.BookmarkAdd
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
@@ -42,7 +43,9 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.SurroundSound
 import androidx.compose.material.icons.filled.Stop
+import com.navilive.android.guidance.NavigationSoundCue
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -1086,6 +1089,8 @@ fun SettingsScreen(
     diagnosticsState: DiagnosticsState,
     onOpenHelpPrivacy: () -> Unit,
     onVibrationChange: (Boolean) -> Unit,
+    onSoundCuesChange: (Boolean) -> Unit,
+    onPreviewSoundCue: (NavigationSoundCue) -> Unit,
     onAutoRecalculateChange: (Boolean) -> Unit,
     onJunctionAlertChange: (Boolean) -> Unit,
     onTurnByTurnChange: (Boolean) -> Unit,
@@ -1184,6 +1189,13 @@ fun SettingsScreen(
                         checked = state.vibrationEnabled,
                         onCheckedChange = onVibrationChange,
                     )
+                    SettingsToggleCard(
+                        title = stringResource(R.string.settings_sound_cues_title),
+                        description = stringResource(R.string.settings_sound_cues_message),
+                        checked = state.soundCuesEnabled,
+                        onCheckedChange = onSoundCuesChange,
+                    )
+                    SoundCueTutorialCard(onPreviewSoundCue = onPreviewSoundCue)
                     SettingsToggleCard(
                         title = stringResource(R.string.settings_auto_recalculate_title),
                         description = stringResource(R.string.settings_auto_recalculate_message),
@@ -1457,6 +1469,96 @@ private fun AnnouncementCadenceCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun SoundCueTutorialCard(
+    onPreviewSoundCue: (NavigationSoundCue) -> Unit,
+) {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            CardTitle(stringResource(R.string.settings_sound_cues_tutorial_title))
+            Text(
+                text = stringResource(R.string.settings_sound_cues_tutorial_message),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            SoundCuePreviewRow(
+                title = stringResource(R.string.settings_sound_cue_countdown_title),
+                description = stringResource(R.string.settings_sound_cue_countdown_message),
+                cue = NavigationSoundCue.Countdown,
+                onPreviewSoundCue = onPreviewSoundCue,
+            )
+            SoundCuePreviewRow(
+                title = stringResource(R.string.settings_sound_cue_turn_now_title),
+                description = stringResource(R.string.settings_sound_cue_turn_now_message),
+                cue = NavigationSoundCue.TurnNow,
+                onPreviewSoundCue = onPreviewSoundCue,
+            )
+            SoundCuePreviewRow(
+                title = stringResource(R.string.settings_sound_cue_warning_title),
+                description = stringResource(R.string.settings_sound_cue_warning_message),
+                cue = NavigationSoundCue.Warning,
+                onPreviewSoundCue = onPreviewSoundCue,
+            )
+            SoundCuePreviewRow(
+                title = stringResource(R.string.settings_sound_cue_success_title),
+                description = stringResource(R.string.settings_sound_cue_success_message),
+                cue = NavigationSoundCue.Success,
+                onPreviewSoundCue = onPreviewSoundCue,
+            )
+            SoundCuePreviewRow(
+                title = stringResource(R.string.settings_sound_cue_arrival_title),
+                description = stringResource(R.string.settings_sound_cue_arrival_message),
+                cue = NavigationSoundCue.Arrival,
+                onPreviewSoundCue = onPreviewSoundCue,
+            )
+        }
+    }
+}
+
+@Composable
+private fun SoundCuePreviewRow(
+    title: String,
+    description: String,
+    cue: NavigationSoundCue,
+    onPreviewSoundCue: (NavigationSoundCue) -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = when (cue) {
+                NavigationSoundCue.Warning -> Icons.Filled.Campaign
+                else -> Icons.Filled.SurroundSound
+            },
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+        )
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(3.dp),
+        ) {
+            Text(title, fontWeight = FontWeight.SemiBold)
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        OutlinedButton(
+            onClick = { onPreviewSoundCue(cue) },
+        ) {
+            Icon(Icons.Filled.PlayArrow, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(R.string.settings_sound_cue_play))
         }
     }
 }

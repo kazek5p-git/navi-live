@@ -90,6 +90,7 @@ enum AnnouncementCadenceMode: String, CaseIterable, Codable, Sendable {
 struct AppSettings: Codable, Hashable, Sendable {
   var showTutorialOnLaunch: Bool = true
   var vibrationEnabled: Bool = true
+  var soundCuesEnabled: Bool = true
   var autoRecalculate: Bool = true
   var junctionAlerts: Bool = true
   var turnByTurnAnnouncements: Bool = true
@@ -101,6 +102,7 @@ struct AppSettings: Codable, Hashable, Sendable {
   enum CodingKeys: String, CodingKey {
     case showTutorialOnLaunch
     case vibrationEnabled
+    case soundCuesEnabled
     case autoRecalculate
     case junctionAlerts
     case turnByTurnAnnouncements
@@ -116,6 +118,7 @@ struct AppSettings: Codable, Hashable, Sendable {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     showTutorialOnLaunch = try container.decodeIfPresent(Bool.self, forKey: .showTutorialOnLaunch) ?? true
     vibrationEnabled = try container.decodeIfPresent(Bool.self, forKey: .vibrationEnabled) ?? true
+    soundCuesEnabled = try container.decodeIfPresent(Bool.self, forKey: .soundCuesEnabled) ?? true
     autoRecalculate = try container.decodeIfPresent(Bool.self, forKey: .autoRecalculate) ?? true
     junctionAlerts = try container.decodeIfPresent(Bool.self, forKey: .junctionAlerts) ?? true
     turnByTurnAnnouncements = try container.decodeIfPresent(Bool.self, forKey: .turnByTurnAnnouncements) ?? true

@@ -15,6 +15,7 @@ import com.navilive.android.data.routing.OpenStreetRoutingRepository
 import com.navilive.android.data.telemetry.NavigationTelemetryLogger
 import com.navilive.android.data.update.GitHubUpdateRepository
 import com.navilive.android.guidance.GuidanceFeedbackEngine
+import com.navilive.android.guidance.NavigationSoundCue
 import com.navilive.android.i18n.localizedLanguageDisplayName
 import com.navilive.android.model.ActiveNavigationState
 import com.navilive.android.model.AnnouncementCadenceMode
@@ -652,6 +653,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             )
         }
         announceNavigationStartInstruction(session)
+        playSoundCueIfEnabled(NavigationSoundCue.Success)
         syncActiveNavigationWithLocation(_uiState.value.locationState.latestFix)
     }
 
@@ -674,6 +676,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         _uiState.update { current ->
             val paused = !current.activeNavigationState.isPaused
             pausedNow = paused
+            playSoundCueIfEnabled(if (paused) NavigationSoundCue.Warning else NavigationSoundCue.Success)
             if (paused) {
                 speakNavigationNow(string(R.string.spoken_navigation_paused))
             } else {
@@ -728,6 +731,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         resetNavigationAnnouncementState()
         lastTelemetryFixPoint = null
         lastTelemetryFixTimestampMs = 0L
+        playSoundCueIfEnabled(NavigationSoundCue.Arrival)
         speakNavigationNow(string(R.string.spoken_arrived))
         vibrateDoubleIfEnabled()
         _uiState.update { current ->
@@ -844,6 +848,19 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             preferencesStore.setVibrationEnabled(enabled)
         }
+    }
+
+    fun setSoundCues(enabled: Boolean) {
+        _uiState.update { current ->
+            current.copy(settingsState = current.settingsState.copy(soundCuesEnabled = enabled))
+        }
+        viewModelScope.launch {
+            preferencesStore.setSoundCuesEnabled(enabled)
+        }
+    }
+
+    fun previewSoundCue(cue: NavigationSoundCue) {
+        feedbackEngine.playSoundCue(cue)
     }
 
     fun setAutoRecalculate(enabled: Boolean) {
@@ -1435,6 +1452,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             )
         }
         if (!alreadyOffRoute) {
+            playSoundCueIfEnabled(NavigationSoundCue.Warning)
             vibrateDoubleIfEnabled()
             speakNavigationNow(string(R.string.navigation_status_off_route_title))
             telemetryLogger.log(
@@ -1522,6 +1540,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         lastAnnouncedStepIndex = session.currentStepIndex
         if (_uiState.value.settingsState.turnByTurnAnnouncements) {
             if (session.currentStepIndex != lastImmediateAnnouncedStepIndex) {
+                playSoundCueIfEnabled(NavigationSoundCue.TurnNow)
                 speakNavigationNow(
                     string(
                         R.string.format_navigation_immediate_instruction,
@@ -1585,6 +1604,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
                     upcomingStep.instruction,
                 )
         }
+        playSoundCueIfEnabled(NavigationSoundCue.Countdown)
         speakNavigationNow(spokenMessage)
         vibrateShortIfEnabled()
         telemetryLogger.log(
@@ -1619,6 +1639,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         }
 
         lastImmediateAnnouncedStepIndex = upcomingStepIndex
+        playSoundCueIfEnabled(NavigationSoundCue.TurnNow)
         speakNavigationNow(
             string(
                 R.string.format_navigation_immediate_instruction,
@@ -1795,6 +1816,12 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
 
     private fun speakNavigationNow(text: String) {
         feedbackEngine.speakNavigation(text)
+    }
+
+    private fun playSoundCueIfEnabled(cue: NavigationSoundCue) {
+        if (_uiState.value.settingsState.soundCuesEnabled) {
+            feedbackEngine.playSoundCue(cue)
+        }
     }
 
     private fun vibrateShortIfEnabled() {

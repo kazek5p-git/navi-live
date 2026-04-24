@@ -1,39 +1,33 @@
 POLSKI
 
-Sprawdź nowy układ ustawień.
-Najważniejsze są: krótszy ekran główny ustawień, logiczne grupy na wzór ListenSDR oraz łatwiejsze przechodzenie po ekranie czytnikiem ekranu.
+Sprawdź delikatne dźwięki nawigacji.
+Najważniejsze: dźwięki są krótkie, ciche i nie zagłuszają komunikatów VoiceOver. Sprawdź odliczanie dystansu, sygnał „skręć teraz”, ostrzeżenie, start lub wznowienie oraz dotarcie do celu.
 
-Sprawdź zachowanie VoiceOver w ustawieniach.
-Najważniejsze są: mniejsza liczba zbędnych nagłówków, brak nadmiernego „Heading” przy każdej karcie oraz sensowna kolejność fokusu po wejściu do grup ustawień.
+Sprawdź przewodnik po dźwiękach w Ustawienia > Prowadzenie.
+Najważniejsze: każdy wiersz opisuje znaczenie dźwięku i pozwala go odtworzyć. Sprawdź kolejność fokusu VoiceOver i czy nazwy są zrozumiałe.
 
-Sprawdź grupę „Prowadzenie”.
-Najważniejsze są: działanie komunikatów krok po kroku, wibracji, automatycznego przeliczania i trybu odliczania odległościowego lub czasowego.
+Sprawdź przełącznik „Dźwięki nawigacji”.
+Najważniejsze: po wyłączeniu aplikacja nie odtwarza dźwięków podczas prowadzenia, ale podgląd w ustawieniach nadal pozwala odsłuchać próbki.
 
-Sprawdź grupę „Mowa”.
-Najważniejsze są: wybór źródła mowy, zmiana szybkości i głośności oraz poprawne działanie próbki głosu.
+Sprawdź komunikaty podczas prowadzenia.
+Najważniejsze: dźwięki powinny tylko delikatnie poprzedzać komunikat głosowy, bez dublowania treści i bez utrudniania orientacji.
 
-Sprawdź grupę „Aplikacja i aktualizacje”.
-Najważniejsze są: poprawne pokazanie języka telefonu, informacji o wersji i buildzie oraz czy treść o aktualizacjach jest czytelna.
-
-Sprawdź grupę „Pomoc i prywatność”.
-Najważniejsze są: poprawne otwieranie pomocy, czytelność sekcji i brak chaosu semantycznego przy odczycie VoiceOver.
+Sprawdź stabilność ustawień.
+Najważniejsze: zmiana ustawień dźwięków, wibracji i mowy nie powinna wpływać na start trasy, przeliczanie ani dotarcie do celu.
 
 ENGLISH
 
-Please test the new Settings layout.
-Focus on a shorter root Settings screen, larger grouped sections similar to ListenSDR, and easier navigation with a screen reader.
+Please test the gentle navigation sounds.
+Focus on short, quiet cues that do not cover VoiceOver announcements. Check distance countdown, turn now, warning, start or resume, and arrival sounds.
 
-Please test VoiceOver behavior in Settings.
-Focus on fewer artificial headings, no excessive “Heading” announcements on every card, and sensible focus order when entering grouped settings screens.
+Please test the sound guide in Settings > Guidance.
+Focus on each row explaining the sound meaning and letting you play a preview. Check VoiceOver focus order and whether the labels are clear.
 
-Please test the Guidance section.
-Focus on turn-by-turn announcements, vibration, automatic rerouting, and switching between distance based and time based countdown modes.
+Please test the Navigation sounds toggle.
+Focus on navigation sounds being disabled during guidance when the toggle is off, while the Settings preview still lets users learn the samples.
 
-Please test the Speech section.
-Focus on speech source selection, speech rate and volume controls, and correct behavior of the voice preview.
+Please test guidance announcements.
+Focus on sounds gently preceding spoken guidance without duplicate text and without making orientation harder.
 
-Please test the App and updates section.
-Focus on correct phone language display, version and build information, and whether the update explanation is clear.
-
-Please test the Help and privacy section.
-Focus on opening help correctly, readable sections, and clean VoiceOver behavior without semantic clutter.
+Please test Settings stability.
+Focus on changing sound, vibration and speech settings without breaking route start, rerouting or arrival behavior.

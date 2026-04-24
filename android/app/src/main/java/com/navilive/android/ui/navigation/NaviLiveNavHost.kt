@@ -456,6 +456,8 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
                 diagnosticsState = uiState.value.diagnosticsState,
                 onOpenHelpPrivacy = { navController.navigate(Routes.HelpPrivacy) },
                 onVibrationChange = viewModel::setVibration,
+                onSoundCuesChange = viewModel::setSoundCues,
+                onPreviewSoundCue = viewModel::previewSoundCue,
                 onAutoRecalculateChange = viewModel::setAutoRecalculate,
                 onJunctionAlertChange = viewModel::setJunctionAlerts,
                 onTurnByTurnChange = viewModel::setTurnByTurnAnnouncements,

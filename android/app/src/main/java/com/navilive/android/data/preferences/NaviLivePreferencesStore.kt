@@ -101,6 +101,12 @@ class NaviLivePreferencesStore(
         }
     }
 
+    suspend fun setSoundCuesEnabled(enabled: Boolean) {
+        context.naviLiveDataStore.edit { prefs ->
+            prefs[Keys.SoundCuesEnabled] = enabled
+        }
+    }
+
     suspend fun setAutoRecalculate(enabled: Boolean) {
         context.naviLiveDataStore.edit { prefs ->
             prefs[Keys.AutoRecalculate] = enabled
@@ -183,6 +189,7 @@ class NaviLivePreferencesStore(
                 showTutorialOnStartup = preferences[Keys.ShowTutorialOnStartup]
                     ?: SettingsState().showTutorialOnStartup,
                 vibrationEnabled = preferences[Keys.VibrationEnabled] ?: SettingsState().vibrationEnabled,
+                soundCuesEnabled = preferences[Keys.SoundCuesEnabled] ?: SettingsState().soundCuesEnabled,
                 autoRecalculate = preferences[Keys.AutoRecalculate] ?: SettingsState().autoRecalculate,
                 junctionAlerts = preferences[Keys.JunctionAlerts] ?: SettingsState().junctionAlerts,
                 turnByTurnAnnouncements = preferences[Keys.TurnByTurnAnnouncements]
@@ -214,6 +221,7 @@ class NaviLivePreferencesStore(
         val Language = stringPreferencesKey("language")
         val ShowTutorialOnStartup = booleanPreferencesKey("show_tutorial_on_startup")
         val VibrationEnabled = booleanPreferencesKey("vibration_enabled")
+        val SoundCuesEnabled = booleanPreferencesKey("sound_cues_enabled")
         val AutoRecalculate = booleanPreferencesKey("auto_recalculate")
         val JunctionAlerts = booleanPreferencesKey("junction_alerts")
         val TurnByTurnAnnouncements = booleanPreferencesKey("turn_by_turn_announcements")

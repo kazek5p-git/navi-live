@@ -2,7 +2,9 @@ package com.navilive.android.guidance
 
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
+import android.media.AudioFormat
 import android.media.AudioAttributes
+import android.media.AudioTrack
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -15,6 +17,9 @@ import com.navilive.android.model.SpeechOutputMode
 import com.navilive.android.model.SystemTtsEngineOption
 import java.util.Locale
 import java.util.UUID
+import java.util.concurrent.Executors
+import kotlin.math.PI
+import kotlin.math.sin
 
 data class SpeechRuntimeStatus(
     val isScreenReaderActive: Boolean,
@@ -23,6 +28,14 @@ data class SpeechRuntimeStatus(
     val defaultSystemTtsEngineLabel: String? = null,
     val activeSystemTtsEngineLabel: String? = null,
 )
+
+enum class NavigationSoundCue {
+    Countdown,
+    TurnNow,
+    Warning,
+    Success,
+    Arrival,
+}
 
 class GuidanceFeedbackEngine(context: Context) {
     private val appContext = context.applicationContext
@@ -38,6 +51,7 @@ class GuidanceFeedbackEngine(context: Context) {
     private var availableSystemTtsEngines: List<SystemTtsEngineOption> = emptyList()
     private var defaultSystemTtsEngineLabel: String? = null
     private var activeSystemTtsEngineLabel: String? = null
+    private val soundExecutor = Executors.newSingleThreadExecutor()
 
     private val vibrator: Vibrator? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val manager = appContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
@@ -121,7 +135,18 @@ class GuidanceFeedbackEngine(context: Context) {
         vib.vibrate(VibrationEffect.createWaveform(timings, -1))
     }
 
+    fun playSoundCue(cue: NavigationSoundCue) {
+        soundExecutor.execute {
+            playToneSequence(cue.toneSequence())
+        }
+    }
+
     fun shutdown() {
+        shutdownTextToSpeech()
+        soundExecutor.shutdownNow()
+    }
+
+    private fun shutdownTextToSpeech() {
         textToSpeech?.stop()
         textToSpeech?.shutdown()
         textToSpeech = null
@@ -129,7 +154,7 @@ class GuidanceFeedbackEngine(context: Context) {
     }
 
     private fun recreateTextToSpeech() {
-        shutdown()
+        shutdownTextToSpeech()
         ensureTextToSpeech()
     }
 
@@ -223,6 +248,62 @@ class GuidanceFeedbackEngine(context: Context) {
         return tts.speak(text, queueMode, params, UUID.randomUUID().toString()) != TextToSpeech.ERROR
     }
 
+    private fun playToneSequence(sequence: List<ToneSpec>) {
+        if (sequence.isEmpty()) return
+        val pcm = generatePcm(sequence)
+        if (pcm.isEmpty()) return
+        val track = AudioTrack.Builder()
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build(),
+            )
+            .setAudioFormat(
+                AudioFormat.Builder()
+                    .setSampleRate(SoundSampleRate)
+                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                    .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                    .build(),
+            )
+            .setBufferSizeInBytes(pcm.size)
+            .setTransferMode(AudioTrack.MODE_STATIC)
+            .build()
+        runCatching {
+            track.write(pcm, 0, pcm.size)
+            track.play()
+            Thread.sleep(sequence.sumOf { it.durationMs + it.gapAfterMs }.toLong() + 80L)
+        }
+        track.release()
+    }
+
+    private fun generatePcm(sequence: List<ToneSpec>): ByteArray {
+        val samples = mutableListOf<Short>()
+        sequence.forEach { spec ->
+            val toneSamples = SoundSampleRate * spec.durationMs / 1000
+            for (sampleIndex in 0 until toneSamples) {
+                val progress = sampleIndex.toDouble() / toneSamples.coerceAtLeast(1)
+                val envelope = when {
+                    progress < 0.12 -> progress / 0.12
+                    progress > 0.82 -> (1.0 - progress) / 0.18
+                    else -> 1.0
+                }.coerceIn(0.0, 1.0)
+                val value = sin(2.0 * PI * spec.frequencyHz * sampleIndex / SoundSampleRate)
+                samples += (value * envelope * spec.amplitude * Short.MAX_VALUE).toInt().toShort()
+            }
+            repeat(SoundSampleRate * spec.gapAfterMs / 1000) {
+                samples += 0
+            }
+        }
+        val bytes = ByteArray(samples.size * 2)
+        samples.forEachIndexed { index, sample ->
+            val value = sample.toInt()
+            bytes[index * 2] = (value and 0xFF).toByte()
+            bytes[index * 2 + 1] = ((value shr 8) and 0xFF).toByte()
+        }
+        return bytes
+    }
+
     @Suppress("DEPRECATION")
     private fun announceThroughScreenReader(text: String): Boolean {
         val manager = accessibilityManager ?: return false
@@ -243,5 +324,39 @@ class GuidanceFeedbackEngine(context: Context) {
         val manager = accessibilityManager ?: return emptyList()
         if (!manager.isEnabled) return emptyList()
         return manager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_SPOKEN)
+    }
+
+    private data class ToneSpec(
+        val frequencyHz: Double,
+        val durationMs: Int,
+        val gapAfterMs: Int = 0,
+        val amplitude: Double = 0.13,
+    )
+
+    private fun NavigationSoundCue.toneSequence(): List<ToneSpec> {
+        return when (this) {
+            NavigationSoundCue.Countdown -> listOf(ToneSpec(620.0, 65))
+            NavigationSoundCue.TurnNow -> listOf(
+                ToneSpec(720.0, 75, gapAfterMs = 22),
+                ToneSpec(880.0, 85),
+            )
+            NavigationSoundCue.Warning -> listOf(
+                ToneSpec(520.0, 80, gapAfterMs = 26, amplitude = 0.14),
+                ToneSpec(420.0, 90, amplitude = 0.14),
+            )
+            NavigationSoundCue.Success -> listOf(
+                ToneSpec(660.0, 70, gapAfterMs = 22),
+                ToneSpec(880.0, 85),
+            )
+            NavigationSoundCue.Arrival -> listOf(
+                ToneSpec(660.0, 75, gapAfterMs = 24),
+                ToneSpec(830.0, 85, gapAfterMs = 24),
+                ToneSpec(1040.0, 100),
+            )
+        }
+    }
+
+    private companion object {
+        const val SoundSampleRate = 44_100
     }
 }

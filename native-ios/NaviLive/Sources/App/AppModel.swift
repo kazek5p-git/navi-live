@@ -269,6 +269,7 @@ final class AppModel: ObservableObject {
         ? L10n.text("route.follow_default", table: .navigation)
         : activeNavigationState.currentInstruction
     )
+    playSoundCueIfEnabled(.success)
     if let latestFix = locationService.latestFix {
       syncActiveNavigationWithLocation(latestFix)
     }
@@ -290,6 +291,7 @@ final class AppModel: ObservableObject {
     } else {
       statusMessage = L10n.text("active.status.resumed", table: .navigation)
       announceNavigationPrompt(L10n.text("active.status.resumed", table: .navigation))
+      playSoundCueIfEnabled(.success)
       if let latestFix = locationService.latestFix {
         syncActiveNavigationWithLocation(latestFix)
       }
@@ -326,6 +328,7 @@ final class AppModel: ObservableObject {
     activeNavigationState.isOffRoute = false
     activeNavigationState.isRecalculating = false
     statusMessage = L10n.text("active.status.arrived", table: .navigation)
+    playSoundCueIfEnabled(.arrival)
     announceNavigationPrompt(L10n.text("active.spoken.arrived", table: .navigation))
     if path.last != .arrival(placeID: destination.id) {
       path.append(.arrival(placeID: destination.id))
@@ -376,6 +379,15 @@ final class AppModel: ObservableObject {
   func updateVibrationEnabled(_ enabled: Bool) {
     settings.vibrationEnabled = enabled
     settingsStore.updateSettings { $0.vibrationEnabled = enabled }
+  }
+
+  func updateSoundCuesEnabled(_ enabled: Bool) {
+    settings.soundCuesEnabled = enabled
+    settingsStore.updateSettings { $0.soundCuesEnabled = enabled }
+  }
+
+  func previewSoundCue(_ cue: NavigationSoundCue) {
+    announcer.playSoundCue(cue)
   }
 
   func updateAutoRecalculate(_ enabled: Bool) {
@@ -510,6 +522,7 @@ final class AppModel: ObservableObject {
         statusMessage = L10n.text("active.status.recalculated", table: .navigation)
       }
       announceNavigationPrompt(L10n.text("active.spoken.recalculated", table: .navigation))
+      playSoundCueIfEnabled(.success)
     } catch {
       activeNavigationState.isRecalculating = false
       statusMessage = L10n.text("route.status.error", table: .navigation)
@@ -571,6 +584,7 @@ final class AppModel: ObservableObject {
       )
     }
     announceNavigationPrompt(message)
+    playSoundCueIfEnabled(.countdown)
     return true
   }
 
@@ -591,6 +605,7 @@ final class AppModel: ObservableObject {
     }
 
     lastImmediateAnnouncementStepIndex = upcomingStepIndex
+    playSoundCueIfEnabled(.turnNow)
     announceNavigationPrompt(
       L10n.text("active.spoken.now", table: .navigation, upcomingInstruction)
     )
@@ -598,6 +613,9 @@ final class AppModel: ObservableObject {
   }
 
   private func announceNavigationPrompt(_ message: String, warning: Bool = false) {
+    if warning {
+      playSoundCueIfEnabled(.warning)
+    }
     announcer.announceNavigation(message, settings: settings)
     if settings.vibrationEnabled {
       if warning {
@@ -609,11 +627,13 @@ final class AppModel: ObservableObject {
   }
 
   private func announceSuccess(message: String) {
+    playSoundCueIfEnabled(.success)
     announcer.announce(message, settings: settings)
     hapticSuccessIfEnabled()
   }
 
   private func announceWarning(message: String) {
+    playSoundCueIfEnabled(.warning)
     announcer.announce(message, settings: settings)
     if settings.vibrationEnabled {
       announcer.hapticWarning()
@@ -623,6 +643,12 @@ final class AppModel: ObservableObject {
   private func hapticSuccessIfEnabled() {
     if settings.vibrationEnabled {
       announcer.hapticSuccess()
+    }
+  }
+
+  private func playSoundCueIfEnabled(_ cue: NavigationSoundCue) {
+    if settings.soundCuesEnabled {
+      announcer.playSoundCue(cue)
     }
   }
 
