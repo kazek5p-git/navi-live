@@ -291,35 +291,25 @@ private struct SpeechSettingsDetailView: View {
       }
 
       Section {
-        VStack(alignment: .leading, spacing: 8) {
-          Text(L10n.text("settings.speech.rate", table: .settings))
-          Slider(
-            value: Binding(
-              get: { model.settings.speechRate },
-              set: model.updateSpeechRate
-            ),
-            in: 0.4...1.6,
-            step: 0.1
-          )
-          Text(String(format: "%.1f", model.settings.speechRate))
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-        }
+        SpeechSliderRow(
+          title: L10n.text("settings.speech.rate", table: .settings),
+          value: Binding(
+            get: { model.settings.speechRate },
+            set: model.updateSpeechRate
+          ),
+          range: 0.4...1.6,
+          step: 0.1
+        )
 
-        VStack(alignment: .leading, spacing: 8) {
-          Text(L10n.text("settings.speech.volume", table: .settings))
-          Slider(
-            value: Binding(
-              get: { model.settings.speechVolume },
-              set: model.updateSpeechVolume
-            ),
-            in: 0.1...1.0,
-            step: 0.1
-          )
-          Text(String(format: "%.1f", model.settings.speechVolume))
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-        }
+        SpeechSliderRow(
+          title: L10n.text("settings.speech.volume", table: .settings),
+          value: Binding(
+            get: { model.settings.speechVolume },
+            set: model.updateSpeechVolume
+          ),
+          range: 0.1...1.0,
+          step: 0.1
+        )
       }
 
       Section {
@@ -331,9 +321,9 @@ private struct SpeechSettingsDetailView: View {
             systemImage: "speaker.wave.2"
           )
         }
-        .accessibilityHint(Text(L10n.text("settings.speech.preview.hint", table: .settings)))
       } footer: {
         Text(L10n.text("settings.speech.preview.footer", table: .settings))
+          .accessibilityHidden(true)
       }
     }
     .navigationTitle(L10n.text("settings.section.speech", table: .settings))
@@ -349,6 +339,33 @@ private struct SpeechSettingsDetailView: View {
     case .speechSynthesizer:
       return L10n.text("settings.speech.mode.synthesizer", table: .settings)
     }
+  }
+}
+
+private struct SpeechSliderRow: View {
+  let title: String
+  @Binding var value: Double
+  let range: ClosedRange<Double>
+  let step: Double
+
+  var body: some View {
+    let valueText = Self.percentText(value)
+
+    VStack(alignment: .leading, spacing: 8) {
+      Text(title)
+        .accessibilityHidden(true)
+      Slider(value: $value, in: range, step: step)
+        .accessibilityLabel(Text(title))
+        .accessibilityValue(Text(valueText))
+      Text(valueText)
+        .font(.footnote)
+        .foregroundStyle(.secondary)
+        .accessibilityHidden(true)
+    }
+  }
+
+  private static func percentText(_ value: Double) -> String {
+    "\(Int((value * 100).rounded()))%"
   }
 }
 

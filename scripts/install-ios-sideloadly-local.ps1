@@ -110,6 +110,7 @@ cp -R "$APP_PATH" unsigned-ipa/Payload/
   zip -qry ../Navi-Live-local.ipa Payload
 )
 '@.Replace("__REMOTE_ROOT__", $RemoteRoot)
+    $remoteBuildScript = $remoteBuildScript -replace "`r`n", "`n" -replace "`r", "`n"
     New-Utf8NoBomFile -Path $localBuildScript -Content $remoteBuildScript
 
     try {
