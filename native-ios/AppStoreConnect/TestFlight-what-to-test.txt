@@ -1,33 +1,33 @@
 POLSKI
 
 Sprawdź ekran główny aplikacji.
-Najważniejsze: przycisk Ustawienia jest na samym końcu kolejności przechodzenia flickami i po nim nie ma już żadnych innych elementów ekranu głównego.
+Najważniejsze: Navi Live ma być czytane jako pierwszy element, a Ustawienia jako ostatnia główna kontrolka ekranu.
 
-Sprawdź położenie Ustawień.
-Najważniejsze: wejście do ustawień znajduje się wizualnie na dole po prawej stronie, ale nadal jest łatwe do znalezienia i aktywowania czytnikiem ekranu.
+Sprawdź Ustawienia, sekcję Mowa.
+Najważniejsze: przy przechodzeniu flickami mają zostać tylko dwa suwaki mowy: Szybkość mowy i Głośność mowy. Nie powinno być osobnych długich opisów ani dodatkowych przycisków zmniejszania i zwiększania.
 
-Sprawdź główny ekran Ustawień.
-Najważniejsze: nie ma już zbędnego tekstu wprowadzającego o grupach ustawień, a ekran zaczyna się od właściwych grup.
+Sprawdź obsługę suwaków z czytnikiem ekranu.
+Najważniejsze: zwiększanie wartości ma podnosić szybkość lub głośność, a zmniejszanie wartości ma je obniżać.
 
-Sprawdź opisy grup ustawień.
-Najważniejsze: opisy są krótkie i ogólne, bez długich wyliczanek. Sprawdź, czy VoiceOver czyta je naturalnie i bez nadmiaru informacji.
+Sprawdź przycisk Podgląd mowy.
+Najważniejsze: ma być na końcu sekcji Mowa, po obu suwakach, i ma mieć poprawną etykietę.
 
-Sprawdź, czy nawigacja po grupach ustawień działa jak wcześniej.
-Najważniejsze: Prowadzenie, Mowa, Aplikacja i aktualizacje oraz Pomoc i prywatność nadal otwierają właściwe ekrany.
+Sprawdź sekcję Dźwięki.
+Najważniejsze: dźwięki nawigacji i ich podgląd są w osobnej kategorii Dźwięki, a nie w środku ustawień prowadzenia.
 
 ENGLISH
 
 Please test the Home screen.
-Focus on Settings being the last item in flick navigation, with no additional Home screen elements after it.
+Focus on Navi Live being read first and Settings being the last main control on the screen.
 
-Please test the Settings position.
-Focus on Settings appearing visually in the lower-right area while still being easy to find and activate with a screen reader.
+Please test Settings, Speech.
+Focus on flick navigation exposing only two speech sliders: Speech rate and Speech volume. There should be no separate long descriptions and no extra decrease or increase buttons.
 
-Please test the main Settings screen.
-Focus on the unnecessary introductory text being removed, so the screen starts directly with the settings groups.
+Please test the sliders with the screen reader.
+Focus on increasing the value raising the rate or volume, and decreasing the value lowering it.
 
-Please test the settings group descriptions.
-Focus on short, general descriptions without long lists. Check that VoiceOver reads them naturally and without excessive detail.
+Please test the Speech preview button.
+Focus on it being at the end of the Speech section, after both sliders, with a correct label.
 
-Please test navigation into each settings group.
-Focus on Guidance, Speech, App and updates, and Help and privacy still opening the correct screens.
+Please test the Sounds section.
+Focus on navigation sounds and their preview being in a separate Sounds category, not inside Guidance settings.
