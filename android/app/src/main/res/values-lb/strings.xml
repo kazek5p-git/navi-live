@@ -124,6 +124,8 @@
     <string name="settings_status_message">Haalt nëmmen d\'Kontrollen déi materiell Stëmm, Schwéngung a Rerouting beaflossen.</string>
     <string name="settings_group_guidance_title">Leedung a Streck</string>
     <string name="settings_group_guidance_summary">Navigatioun Verhalen.</string>
+    <string name="settings_group_sounds_title">Kläng</string>
+    <string name="settings_group_sounds_summary">Navigatioun Kläng an Virschau.</string>
     <string name="settings_group_speech_title">Ried a Stëmm</string>
     <string name="settings_group_speech_summary">Stëmmausgang.</string>
     <string name="settings_group_app_title">App an Aktualiséierungen</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Sprachvolumen</string>
     <string name="settings_speech_volume_message">Upasst d\'relativ Stëmmlautheet fir de Systemsynthesizer. Apparat Medien Volume gëllt nach.</string>
     <string name="settings_speech_controls_disabled_message">Speechrate a Volumen gi vum Écran Lieser kontrolléiert wann dës Quell gewielt gëtt.</string>
+    <string name="settings_slider_decrease">Ofsenkung</string>
+    <string name="settings_slider_increase">Erhéigung</string>
     <string name="settings_vibration_title">Vibratioun</string>
     <string name="settings_vibration_message">Benotzt haptesch Bestätegung fir Ausrichtung, Rerouting an Arrivée.</string>
     <string name="settings_sound_cues_title">Navigatioun Kläng</string>

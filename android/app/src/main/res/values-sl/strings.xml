@@ -124,6 +124,8 @@
     <string name="settings_status_message">Ohranite le tiste kontrole, ki bistveno vplivajo na glas, vibriranje in preusmeritev.</string>
     <string name="settings_group_guidance_title">Vodenje in pot</string>
     <string name="settings_group_guidance_summary">Navigacijsko vedenje.</string>
+    <string name="settings_group_sounds_title">Zvoki</string>
+    <string name="settings_group_sounds_summary">Zvoki navigacije in predogledi.</string>
     <string name="settings_group_speech_title">Govor in glas</string>
     <string name="settings_group_speech_summary">Glasovni izhod.</string>
     <string name="settings_group_app_title">Aplikacija in posodobitve</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Glasnost govora</string>
     <string name="settings_speech_volume_message">Prilagodite relativno glasnost glasu za sistemski sintetizator. Glasnost predstavnosti naprave še vedno velja.</string>
     <string name="settings_speech_controls_disabled_message">Hitrost in glasnost govora nadzira bralnik zaslona, ​​ko je ta vir izbran.</string>
+    <string name="settings_slider_decrease">Zmanjšanje</string>
+    <string name="settings_slider_increase">Povečanje</string>
     <string name="settings_vibration_title">Vibracije</string>
     <string name="settings_vibration_message">Uporabite haptično potrditev za poravnavo, preusmeritev in prihod.</string>
     <string name="settings_sound_cues_title">Zvoki navigacije</string>

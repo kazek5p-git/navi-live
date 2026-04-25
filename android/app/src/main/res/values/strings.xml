@@ -138,6 +138,8 @@
     <string name="settings_status_message">Keep only the controls that materially affect voice, vibration and rerouting.</string>
     <string name="settings_group_guidance_title">Guidance and route</string>
     <string name="settings_group_guidance_summary">Navigation behavior.</string>
+    <string name="settings_group_sounds_title">Sounds</string>
+    <string name="settings_group_sounds_summary">Navigation sounds and previews.</string>
     <string name="settings_group_speech_title">Speech and voice</string>
     <string name="settings_group_speech_summary">Voice output.</string>
     <string name="settings_group_app_title">App and updates</string>
@@ -190,6 +192,8 @@
     <string name="settings_speech_volume_title">Speech volume</string>
     <string name="settings_speech_volume_message">Adjust relative voice loudness for the system synthesizer. Device media volume still applies.</string>
     <string name="settings_speech_controls_disabled_message">Speech rate and volume are controlled by the screen reader when that source is selected.</string>
+    <string name="settings_slider_decrease">Decrease</string>
+    <string name="settings_slider_increase">Increase</string>
     <string name="settings_vibration_title">Vibration</string>
     <string name="settings_vibration_message">Use haptic confirmation for alignment, rerouting and arrival.</string>
     <string name="settings_sound_cues_title">Navigation sounds</string>

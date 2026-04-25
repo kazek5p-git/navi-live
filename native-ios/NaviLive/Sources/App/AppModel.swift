@@ -390,6 +390,13 @@ final class AppModel: ObservableObject {
     announcer.playSoundCue(cue)
   }
 
+  func previewSpeechSettings() {
+    announcer.previewSynthesizer(
+      L10n.text("settings.speech.preview.sample", table: .settings),
+      settings: settings
+    )
+  }
+
   func updateAutoRecalculate(_ enabled: Bool) {
     settings.autoRecalculate = enabled
     settingsStore.updateSettings { $0.autoRecalculate = enabled }

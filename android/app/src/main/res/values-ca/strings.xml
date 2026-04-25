@@ -124,6 +124,8 @@
     <string name="settings_status_message">Conserveu només els controls que afecten materialment la veu, la vibració i el desviament.</string>
     <string name="settings_group_guidance_title">Orientació i ruta</string>
     <string name="settings_group_guidance_summary">Comportament de navegació.</string>
+    <string name="settings_group_sounds_title">Sons</string>
+    <string name="settings_group_sounds_summary">Sons de navegació i visualitzacions prèvies.</string>
     <string name="settings_group_speech_title">Parla i veu</string>
     <string name="settings_group_speech_summary">Sortida de veu.</string>
     <string name="settings_group_app_title">Aplicació i actualitzacions</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Volum de la veu</string>
     <string name="settings_speech_volume_message">Ajustar el volum relatiu de la veu per al sintetitzador del sistema. El volum multimèdia del dispositiu encara s\'aplica.</string>
     <string name="settings_speech_controls_disabled_message">El lector de pantalla controla la velocitat i el volum de la parla quan se selecciona aquesta font.</string>
+    <string name="settings_slider_decrease">Disminució</string>
+    <string name="settings_slider_increase">Augment</string>
     <string name="settings_vibration_title">Vibració</string>
     <string name="settings_vibration_message">Utilitzeu la confirmació hàptica per a l\'alineació, el desviament i l\'arribada.</string>
     <string name="settings_sound_cues_title">Sons de navegació</string>

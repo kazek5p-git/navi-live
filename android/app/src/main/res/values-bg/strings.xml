@@ -124,6 +124,8 @@
     <string name="settings_status_message">Запазете само контролите, които съществено засягат гласа, вибрациите и пренасочването.</string>
     <string name="settings_group_guidance_title">Насоки и маршрут</string>
     <string name="settings_group_guidance_summary">Навигационно поведение.</string>
+    <string name="settings_group_sounds_title">Звуци</string>
+    <string name="settings_group_sounds_summary">Навигационни звуци и прегледи.</string>
     <string name="settings_group_speech_title">Реч и глас</string>
     <string name="settings_group_speech_summary">Гласов изход.</string>
     <string name="settings_group_app_title">Приложение и актуализации</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Сила на звука на говора</string>
     <string name="settings_speech_volume_message">Регулиране на относителната сила на гласа за системния синтезатор. Мултимедията на устройството все още се прилага.</string>
     <string name="settings_speech_controls_disabled_message">Скоростта на говора и силата на звука се контролират от екранния четец, когато този източник е избран.</string>
+    <string name="settings_slider_decrease">Намаление</string>
+    <string name="settings_slider_increase">Увеличение</string>
     <string name="settings_vibration_title">Вибрация</string>
     <string name="settings_vibration_message">Използвайте хаптично потвърждение за подравняване, пренасочване и пристигане.</string>
     <string name="settings_sound_cues_title">Навигационни звуци</string>

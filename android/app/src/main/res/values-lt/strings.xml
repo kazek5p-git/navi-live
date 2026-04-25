@@ -124,6 +124,8 @@
     <string name="settings_status_message">Laikykite tik tuos valdiklius, kurie turi reikšmingos įtakos balsui, vibracijai ir maršruto keitimui.</string>
     <string name="settings_group_guidance_title">Nurodymai ir maršrutas</string>
     <string name="settings_group_guidance_summary">Navigacijos elgsena.</string>
+    <string name="settings_group_sounds_title">Garsai</string>
+    <string name="settings_group_sounds_summary">Navigacijos garsai ir peržiūros.</string>
     <string name="settings_group_speech_title">Kalba ir balsas</string>
     <string name="settings_group_speech_summary">Balso išvestis.</string>
     <string name="settings_group_app_title">Programa ir naujiniai</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Kalbos garsumas</string>
     <string name="settings_speech_volume_message">Sureguliuokite santykinį sistemos sintezatoriaus balso garsumą. Įrenginio medijos garsumas vis tiek taikomas.</string>
     <string name="settings_speech_controls_disabled_message">Kalbos greitį ir garsumą valdo ekrano skaitytuvas, kai pasirenkamas tas šaltinis.</string>
+    <string name="settings_slider_decrease">Sumažinti</string>
+    <string name="settings_slider_increase">Padidinti</string>
     <string name="settings_vibration_title">Vibracija</string>
     <string name="settings_vibration_message">Naudokite haptinį patvirtinimą, kad nustatytumėte, pakeistumėte maršrutą ir atvyktumėte.</string>
     <string name="settings_sound_cues_title">Navigacijos garsai</string>

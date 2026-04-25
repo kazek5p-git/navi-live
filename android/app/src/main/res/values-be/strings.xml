@@ -124,6 +124,8 @@
     <string name="settings_status_message">Захоўвайце толькі элементы кіравання, якія істотна ўплываюць на голас, вібрацыю і змену маршруту.</string>
     <string name="settings_group_guidance_title">Кіраўніцтва і маршрут</string>
     <string name="settings_group_guidance_summary">Паводзіны навігацыі.</string>
+    <string name="settings_group_sounds_title">Гукі</string>
+    <string name="settings_group_sounds_summary">Гукі навігацыі і папярэдні прагляд.</string>
     <string name="settings_group_speech_title">Маўленне і голас</string>
     <string name="settings_group_speech_summary">Галасавы выхад.</string>
     <string name="settings_group_app_title">Праграма і абнаўленні</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Гучнасць маўлення</string>
     <string name="settings_speech_volume_message">Наладзьце адносную гучнасць голасу для сістэмнага сінтэзатара. Гучнасць мультымедыя па-ранейшаму прымяняецца.</string>
     <string name="settings_speech_controls_disabled_message">Хуткасць і гучнасць маўлення кантралююцца праграмай чытання з экрана, калі выбрана гэтая крыніца.</string>
+    <string name="settings_slider_decrease">Памяншэнне</string>
+    <string name="settings_slider_increase">Павелічэнне</string>
     <string name="settings_vibration_title">Вібрацыя</string>
     <string name="settings_vibration_message">Выкарыстоўвайце тактыльнае пацвярджэнне для выраўноўвання, змены маршруту і прыбыцця.</string>
     <string name="settings_sound_cues_title">Гукі навігацыі</string>

@@ -124,6 +124,8 @@
     <string name="settings_status_message">Haltu aðeins þeim stjórntækjum sem hafa veruleg áhrif á rödd, titring og endurleið.</string>
     <string name="settings_group_guidance_title">Leiðsögn og leið</string>
     <string name="settings_group_guidance_summary">Leiðsöguhegðun.</string>
+    <string name="settings_group_sounds_title">Hljóð</string>
+    <string name="settings_group_sounds_summary">Leiðsöguhljóð og forskoðun.</string>
     <string name="settings_group_speech_title">Tal og rödd</string>
     <string name="settings_group_speech_summary">Raddúttak.</string>
     <string name="settings_group_app_title">App og uppfærslur</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Talstyrkur</string>
     <string name="settings_speech_volume_message">Stilla hlutfallslegan raddstyrk fyrir hljóðgervil kerfisins. Fjölmiðlastyrkur tækis gildir enn.</string>
     <string name="settings_speech_controls_disabled_message">Talhraði og hljóðstyrk er stjórnað af skjálesaranum þegar þessi uppspretta er valin.</string>
+    <string name="settings_slider_decrease">Lækka</string>
+    <string name="settings_slider_increase">Hækkun</string>
     <string name="settings_vibration_title">Titringur</string>
     <string name="settings_vibration_message">Notaðu haptic staðfestingu fyrir röðun, endurleið og komu.</string>
     <string name="settings_sound_cues_title">Leiðsöguhljóð</string>

@@ -124,6 +124,8 @@
     <string name="settings_status_message">Διατηρήστε μόνο τα στοιχεία ελέγχου που επηρεάζουν ουσιαστικά τη φωνή, τη δόνηση και την αλλαγή δρομολόγησης.</string>
     <string name="settings_group_guidance_title">Καθοδήγηση και διαδρομή</string>
     <string name="settings_group_guidance_summary">Συμπεριφορά πλοήγησης.</string>
+    <string name="settings_group_sounds_title">Ήχοι</string>
+    <string name="settings_group_sounds_summary">Ήχοι πλοήγησης και προεπισκοπήσεις.</string>
     <string name="settings_group_speech_title">Ομιλία και φωνή</string>
     <string name="settings_group_speech_summary">Έξοδος φωνής.</string>
     <string name="settings_group_app_title">Εφαρμογή και ενημερώσεις</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Ένταση ομιλίας</string>
     <string name="settings_speech_volume_message">Προσαρμόστε τη σχετική ένταση της φωνής για το συνθεσάιζερ συστήματος. Η ένταση πολυμέσων της συσκευής εξακολουθεί να ισχύει.</string>
     <string name="settings_speech_controls_disabled_message">Ο ρυθμός και η ένταση ομιλίας ελέγχονται από το πρόγραμμα ανάγνωσης οθόνης όταν επιλέγεται αυτή η πηγή.</string>
+    <string name="settings_slider_decrease">Μείωση</string>
+    <string name="settings_slider_increase">Αύξηση</string>
     <string name="settings_vibration_title">Δόνηση</string>
     <string name="settings_vibration_message">Χρησιμοποιήστε απτική επιβεβαίωση για ευθυγράμμιση, αλλαγή δρομολόγησης και άφιξη.</string>
     <string name="settings_sound_cues_title">Ήχοι πλοήγησης</string>

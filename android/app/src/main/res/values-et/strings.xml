@@ -124,6 +124,8 @@
     <string name="settings_status_message">Hoidke alles ainult need juhtnupud, mis mõjutavad oluliselt häält, vibratsiooni ja marsruutimist.</string>
     <string name="settings_group_guidance_title">Juhend ja marsruut</string>
     <string name="settings_group_guidance_summary">Navigeerimiskäitumine.</string>
+    <string name="settings_group_sounds_title">Helid</string>
+    <string name="settings_group_sounds_summary">Navigeerimishelid ja eelvaated.</string>
     <string name="settings_group_speech_title">Kõne ja hääl</string>
     <string name="settings_group_speech_summary">Häälväljund.</string>
     <string name="settings_group_app_title">Rakendus ja värskendused</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Kõne helitugevus</string>
     <string name="settings_speech_volume_message">Reguleerige süsteemi süntesaatori hääle suhtelist tugevust. Seadme meedia helitugevus on endiselt kehtiv.</string>
     <string name="settings_speech_controls_disabled_message">Kõne kiirust ja helitugevust juhib ekraanilugeja, kui see allikas on valitud.</string>
+    <string name="settings_slider_decrease">Vähendada</string>
+    <string name="settings_slider_increase">Suurendada</string>
     <string name="settings_vibration_title">Vibratsioon</string>
     <string name="settings_vibration_message">Kasutage joondamiseks, marsruudi muutmiseks ja saabumiseks haptilist kinnitust.</string>
     <string name="settings_sound_cues_title">Navigatsioonihelid</string>

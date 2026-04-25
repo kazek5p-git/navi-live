@@ -124,6 +124,8 @@
     <string name="settings_status_message">Ná coinnigh ach na rialuithe a théann i bhfeidhm go hábhartha ar ghuth, ar chreathadh agus ar athródú.</string>
     <string name="settings_group_guidance_title">Treoir agus bealach</string>
     <string name="settings_group_guidance_summary">Iompar loingseoireachta.</string>
+    <string name="settings_group_sounds_title">Fuaimeanna</string>
+    <string name="settings_group_sounds_summary">Fuaimeanna nascleanúna agus réamhamhairc.</string>
     <string name="settings_group_speech_title">Urlabhra agus guth</string>
     <string name="settings_group_speech_summary">Aschur gutha.</string>
     <string name="settings_group_app_title">App agus nuashonruithe</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Toirt cainte</string>
     <string name="settings_speech_volume_message">Coigeartaigh treise gutha coibhneasta don sintéiseoir córais. Tá méid meán an fheiste fós i bhfeidhm.</string>
     <string name="settings_speech_controls_disabled_message">Rialaíonn an léitheoir scáileáin an ráta cainte agus toirt nuair a roghnaítear an fhoinse sin.</string>
+    <string name="settings_slider_decrease">Laghdú</string>
+    <string name="settings_slider_increase">Méadú</string>
     <string name="settings_vibration_title">Creathadh</string>
     <string name="settings_vibration_message">Bain úsáid as deimhniú haptic le haghaidh ailíniú, athródú agus teacht.</string>
     <string name="settings_sound_cues_title">Fuaimeanna nascleanúna</string>

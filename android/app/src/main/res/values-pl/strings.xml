@@ -124,8 +124,10 @@
     <string name="settings_status_message">Zostaw tylko te opcje, które realnie wpływają na głos, wibracje i przeliczanie trasy.</string>
     <string name="settings_group_guidance_title">Prowadzenie i trasa</string>
     <string name="settings_group_guidance_summary">Zachowanie nawigacji.</string>
-    <string name="settings_group_speech_title">Mowa i głos</string>
-    <string name="settings_group_speech_summary">Odtwarzanie mowy.</string>
+    <string name="settings_group_sounds_title">Dźwięki</string>
+    <string name="settings_group_sounds_summary">Dźwięki nawigacji i podgląd.</string>
+    <string name="settings_group_speech_title">Mowa</string>
+    <string name="settings_group_speech_summary">Podgląd mowy.</string>
     <string name="settings_group_app_title">Aplikacja i aktualizacje</string>
     <string name="settings_group_app_summary">Informacje o aplikacji.</string>
     <string name="settings_group_diagnostics_title">Diagnostyka</string>
@@ -160,7 +162,7 @@
     <string name="settings_speech_source_system_status">Używany jest systemowy syntezator Androida.</string>
     <string name="format_settings_speech_source_screen_reader_active">Używany jest aktywny screenreader: %1$s.</string>
     <string name="settings_speech_source_screen_reader_fallback">Nie wykryto aktywnego screenreadera. Navi Live przełączy się awaryjnie na syntezator systemowy.</string>
-    <string name="settings_speech_preview_button">Odtwórz próbkę głosu</string>
+    <string name="settings_speech_preview_button">Podgląd mowy</string>
     <string name="settings_voice_preview_sample">To jest próbka głosu Navi Live dla bieżących ustawień mowy.</string>
     <string name="settings_system_tts_title">Silnik systemowego TTS</string>
     <string name="settings_system_tts_message">Wybierz, którego zainstalowanego silnika mowy Androida Navi Live ma używać, gdy aktywne jest źródło „syntezator systemowy”.</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Głośność mowy</string>
     <string name="settings_speech_volume_message">Dostosuj względną głośność głosu systemowego syntezatora. Nadal obowiązuje głośność multimediów urządzenia.</string>
     <string name="settings_speech_controls_disabled_message">Przy wybranym screenreaderze szybkością i głośnością steruje sam screenreader.</string>
+    <string name="settings_slider_decrease">Zmniejsz</string>
+    <string name="settings_slider_increase">Zwiększ</string>
     <string name="settings_vibration_title">Wibracje</string>
     <string name="settings_vibration_message">Używaj potwierdzeń haptycznych przy ustawieniu kierunku, przeliczaniu i dotarciu do celu.</string>
     <string name="settings_sound_cues_title">Dźwięki nawigacji</string>
@@ -349,7 +353,7 @@
     <string name="status_tutorial_on_start_disabled">Samouczek nie będzie już otwierany automatycznie przy starcie aplikacji.</string>
     <string name="format_status_speech_rate_updated">Ustawiono szybkość mowy na %1$d%%.</string>
     <string name="format_status_speech_volume_updated">Ustawiono głośność mowy na %1$d%%.</string>
-    <string name="status_voice_preview_played">Odtworzono próbkę głosu.</string>
+    <string name="status_voice_preview_played">Uruchomiono podgląd mowy.</string>
     <string name="status_route_service_unavailable">Usługa wyznaczania trasy jest niedostępna. Załadowano trasę awaryjną.</string>
     <string name="status_heading_aligned">Kierunek ustawiony.</string>
     <string name="status_active_guidance_started">Aktywne prowadzenie zostało uruchomione.</string>

@@ -51,6 +51,14 @@ final class VoiceOverAnnouncer: NSObject {
     speakWithSynthesizer(message, settings: settings, usesNavigationAudioSession: true)
   }
 
+  func previewSynthesizer(_ message: String, settings: AppSettings) {
+    guard !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+      return
+    }
+
+    speakWithSynthesizer(message, settings: settings, usesNavigationAudioSession: false)
+  }
+
   func stopSpeech() {
     synthesizer.stopSpeaking(at: .immediate)
     deactivateNavigationAudioSession()

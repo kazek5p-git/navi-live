@@ -17,6 +17,16 @@ struct SettingsView: View {
         }
 
         NavigationLink {
+          SoundSettingsDetailView(model: model)
+        } label: {
+          SettingsGroupRow(
+            title: L10n.text("settings.section.sounds", table: .settings),
+            summary: L10n.text("settings.group.sounds.summary", table: .settings),
+            systemImage: "speaker.wave.3"
+          )
+        }
+
+        NavigationLink {
           SpeechSettingsDetailView(model: model)
         } label: {
           SettingsGroupRow(
@@ -113,14 +123,6 @@ private struct GuidanceSettingsDetailView: View {
         )
 
         Toggle(
-          L10n.text("settings.toggle.sound_cues", table: .settings),
-          isOn: Binding(
-            get: { model.settings.soundCuesEnabled },
-            set: model.updateSoundCuesEnabled
-          )
-        )
-
-        Toggle(
           L10n.text("settings.toggle.auto_recalculate", table: .settings),
           isOn: Binding(
             get: { model.settings.autoRecalculate },
@@ -137,6 +139,35 @@ private struct GuidanceSettingsDetailView: View {
         )
       } footer: {
         Text(L10n.text("settings.guidance.cadence.footer", table: .settings))
+      }
+    }
+    .navigationTitle(L10n.text("settings.section.guidance", table: .settings))
+    .navigationBarTitleDisplayMode(.inline)
+  }
+
+  private func announcementCadenceLabel(_ mode: AnnouncementCadenceMode) -> String {
+    switch mode {
+    case .distance:
+      return L10n.text("settings.guidance.cadence.distance", table: .settings)
+    case .time:
+      return L10n.text("settings.guidance.cadence.time", table: .settings)
+    }
+  }
+}
+
+private struct SoundSettingsDetailView: View {
+  @ObservedObject var model: AppModel
+
+  var body: some View {
+    Form {
+      Section {
+        Toggle(
+          L10n.text("settings.toggle.sound_cues", table: .settings),
+          isOn: Binding(
+            get: { model.settings.soundCuesEnabled },
+            set: model.updateSoundCuesEnabled
+          )
+        )
       }
 
       Section {
@@ -167,17 +198,8 @@ private struct GuidanceSettingsDetailView: View {
         Text(L10n.text("settings.sound_cues.tutorial.message", table: .settings))
       }
     }
-    .navigationTitle(L10n.text("settings.section.guidance", table: .settings))
+    .navigationTitle(L10n.text("settings.section.sounds", table: .settings))
     .navigationBarTitleDisplayMode(.inline)
-  }
-
-  private func announcementCadenceLabel(_ mode: AnnouncementCadenceMode) -> String {
-    switch mode {
-    case .distance:
-      return L10n.text("settings.guidance.cadence.distance", table: .settings)
-    case .time:
-      return L10n.text("settings.guidance.cadence.time", table: .settings)
-    }
   }
 }
 
@@ -298,6 +320,20 @@ private struct SpeechSettingsDetailView: View {
             .font(.footnote)
             .foregroundStyle(.secondary)
         }
+      }
+
+      Section {
+        Button {
+          model.previewSpeechSettings()
+        } label: {
+          Label(
+            L10n.text("settings.speech.preview", table: .settings),
+            systemImage: "speaker.wave.2"
+          )
+        }
+        .accessibilityHint(Text(L10n.text("settings.speech.preview.hint", table: .settings)))
+      } footer: {
+        Text(L10n.text("settings.speech.preview.footer", table: .settings))
       }
     }
     .navigationTitle(L10n.text("settings.section.speech", table: .settings))

@@ -124,6 +124,8 @@
     <string name="settings_status_message">Yalnızca sesi, titreşimi ve yeniden yönlendirmeyi önemli ölçüde etkileyen kontrolleri saklayın.</string>
     <string name="settings_group_guidance_title">Rehberlik ve rota</string>
     <string name="settings_group_guidance_summary">Gezinme davranışı.</string>
+    <string name="settings_group_sounds_title">Sesler</string>
+    <string name="settings_group_sounds_summary">Gezinme sesleri ve önizlemeleri.</string>
     <string name="settings_group_speech_title">Konuşma ve ses</string>
     <string name="settings_group_speech_summary">Ses çıkışı.</string>
     <string name="settings_group_app_title">Uygulama ve güncellemeler</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Konuşma ses düzeyi</string>
     <string name="settings_speech_volume_message">Sistem sentezleyicisi için göreceli ses yüksekliğini ayarlayın. Cihaz medya hacmi hala geçerlidir.</string>
     <string name="settings_speech_controls_disabled_message">Kaynak seçildiğinde konuşma hızı ve ses düzeyi ekran okuyucu tarafından kontrol edilir.</string>
+    <string name="settings_slider_decrease">Azalt</string>
+    <string name="settings_slider_increase">Arttır</string>
     <string name="settings_vibration_title">Titreşim</string>
     <string name="settings_vibration_message">Hizalama, yeniden yönlendirme ve varış için dokunsal onayı kullanın.</string>
     <string name="settings_sound_cues_title">Navigasyon sesleri</string>

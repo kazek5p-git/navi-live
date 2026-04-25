@@ -3,6 +3,8 @@
 "settings.toggle.show_tutorial" = "Pokazuj samouczek przy starcie";
 "settings.section.guidance" = "Prowadzenie";
 "settings.group.guidance.summary" = "Zachowanie nawigacji.";
+"settings.section.sounds" = "Dźwięki";
+"settings.group.sounds.summary" = "Dźwięki nawigacji i podgląd.";
 "settings.toggle.vibration" = "Informacja haptyczna";
 "settings.toggle.sound_cues" = "Dźwięki nawigacji";
 "settings.sound_cues.tutorial.title" = "Przewodnik po dźwiękach";
@@ -26,7 +28,7 @@
 "settings.guidance.cadence.time" = "Według czasu";
 "settings.guidance.cadence.footer" = "Tryb odległościowy odlicza w metrach. Tryb czasowy odlicza według szacowanego czasu dojścia do następnego skrętu.";
 "settings.section.speech" = "Mowa";
-"settings.group.speech.summary" = "Odtwarzanie mowy.";
+"settings.group.speech.summary" = "Podgląd mowy.";
 "settings.speech.mode" = "Źródło mowy";
 "settings.speech.mode.automatic" = "Automatycznie";
 "settings.speech.mode.voiceover" = "VoiceOver";
@@ -34,6 +36,10 @@
 "settings.speech.rate" = "Szybkość mowy";
 "settings.speech.volume" = "Głośność mowy";
 "settings.speech.footer" = "Tryb automatyczny korzysta z VoiceOver, gdy jest aktywny. W przeciwnym razie Navi Live używa wbudowanego syntezatora mowy.";
+"settings.speech.preview" = "Podgląd mowy";
+"settings.speech.preview.hint" = "Uruchamia próbkę z bieżącą szybkością i głośnością mowy.";
+"settings.speech.preview.footer" = "Podgląd używa wbudowanego syntezatora, żeby było słychać aktualną szybkość i głośność.";
+"settings.speech.preview.sample" = "To jest próbka głosu Navi Live z bieżącymi ustawieniami mowy.";
 "settings.speech_mode.updated" = "Zaktualizowano tryb mowy.";
 "settings.group.app_updates" = "Aplikacja i aktualizacje";
 "settings.group.app_updates.summary" = "Informacje o aplikacji.";

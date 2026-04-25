@@ -124,6 +124,8 @@
     <string name="settings_status_message">Behåll endast de kontroller som väsentligt påverkar röst, vibration och omdirigering.</string>
     <string name="settings_group_guidance_title">Vägledning och rutt</string>
     <string name="settings_group_guidance_summary">Navigationsbeteende.</string>
+    <string name="settings_group_sounds_title">Ljud</string>
+    <string name="settings_group_sounds_summary">Navigeringsljud och förhandsvisningar.</string>
     <string name="settings_group_speech_title">Tal och röst</string>
     <string name="settings_group_speech_summary">Röstutgång.</string>
     <string name="settings_group_app_title">App och uppdateringar</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Talvolym</string>
     <string name="settings_speech_volume_message">Justera relativ röstljudstyrka för systemsyntesen. Enhetens mediavolym gäller fortfarande.</string>
     <string name="settings_speech_controls_disabled_message">Talhastighet och volym styrs av skärmläsaren när den källan är vald.</string>
+    <string name="settings_slider_decrease">Minska</string>
+    <string name="settings_slider_increase">Öka</string>
     <string name="settings_vibration_title">Vibration</string>
     <string name="settings_vibration_message">Använd haptisk bekräftelse för anpassning, omdirigering och ankomst.</string>
     <string name="settings_sound_cues_title">Navigationsljud</string>

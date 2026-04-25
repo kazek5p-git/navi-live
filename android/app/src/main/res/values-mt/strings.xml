@@ -124,6 +124,8 @@
     <string name="settings_status_message">Żomm biss il-kontrolli li materjalment jaffettwaw il-vuċi, il-vibrazzjoni u t-tibdil tar-rotta.</string>
     <string name="settings_group_guidance_title">Gwida u rotta</string>
     <string name="settings_group_guidance_summary">Imġieba tan-navigazzjoni.</string>
+    <string name="settings_group_sounds_title">Ħsejjes</string>
+    <string name="settings_group_sounds_summary">Ħsejjes u previews tan-navigazzjoni.</string>
     <string name="settings_group_speech_title">Diskors u vuċi</string>
     <string name="settings_group_speech_summary">Ħruġ tal-vuċi.</string>
     <string name="settings_group_app_title">App u aġġornamenti</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Volum tad-diskors</string>
     <string name="settings_speech_volume_message">Aġġusta loudness relattiv tal-vuċi għas-sintetizzatur tas-sistema. Il-volum tal-midja tal-apparat għadu japplika.</string>
     <string name="settings_speech_controls_disabled_message">Ir-rata u l-volum tad-diskors huma kkontrollati mill-screen reader meta jintgħażel dak is-sors.</string>
+    <string name="settings_slider_decrease">Tnaqqas</string>
+    <string name="settings_slider_increase">Żieda</string>
     <string name="settings_vibration_title">Vibrazzjoni</string>
     <string name="settings_vibration_message">Uża konferma haptic għall-allinjament, tibdil tar-rotta u l-wasla.</string>
     <string name="settings_sound_cues_title">Ħsejjes tan-navigazzjoni</string>

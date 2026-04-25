@@ -124,6 +124,8 @@
     <string name="settings_status_message">Halt bert tær stýringar, sum ávirka rødd, vibratiónir og umlegging veruliga.</string>
     <string name="settings_group_guidance_title">Vegleiðing og leið</string>
     <string name="settings_group_guidance_summary">Navigatiónsatferð.</string>
+    <string name="settings_group_sounds_title">Ljóð</string>
+    <string name="settings_group_sounds_summary">Navigatiónsljóð og forskoðanir.</string>
     <string name="settings_group_speech_title">Tala og rødd</string>
     <string name="settings_group_speech_summary">Røddarútflutningur.</string>
     <string name="settings_group_app_title">App og dagføringar</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Talustyrkin</string>
     <string name="settings_speech_volume_message">Stilla relativa røddarharðleika til skipanarsyntetisaran. Tólmiðlarúmdin er enn galdandi.</string>
     <string name="settings_speech_controls_disabled_message">Taluferðin og styrkin verða stýrd av skermlesaranum, tá tann keldan er vald.</string>
+    <string name="settings_slider_decrease">Minking</string>
+    <string name="settings_slider_increase">Hækking</string>
     <string name="settings_vibration_title">Ristingar</string>
     <string name="settings_vibration_message">Brúka haptiska staðfesting til linjuføring, umlegging og komu.</string>
     <string name="settings_sound_cues_title">Navigatiónsljóð</string>

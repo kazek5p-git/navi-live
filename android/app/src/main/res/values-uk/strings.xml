@@ -124,6 +124,8 @@
     <string name="settings_status_message">Зберігайте лише елементи керування, які суттєво впливають на голос, вібрацію та зміну маршруту.</string>
     <string name="settings_group_guidance_title">Наведення та маршрут</string>
     <string name="settings_group_guidance_summary">Поведінка навігації.</string>
+    <string name="settings_group_sounds_title">Звуки</string>
+    <string name="settings_group_sounds_summary">Звуки навігації та попередній перегляд.</string>
     <string name="settings_group_speech_title">Мовлення та голос</string>
     <string name="settings_group_speech_summary">Голосовий вихід.</string>
     <string name="settings_group_app_title">Програма та оновлення</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Гучність мовлення</string>
     <string name="settings_speech_volume_message">Налаштування відносної гучності голосу для системного синтезатора. Обсяг медіа на пристрої все ще застосовується.</string>
     <string name="settings_speech_controls_disabled_message">Швидкість і гучність мовлення контролюються програмою зчитування з екрана, коли вибрано це джерело.</string>
+    <string name="settings_slider_decrease">Зменшення</string>
+    <string name="settings_slider_increase">Збільшення</string>
     <string name="settings_vibration_title">Вібрація</string>
     <string name="settings_vibration_message">Використовуйте тактильне підтвердження для вирівнювання, зміни маршруту та прибуття.</string>
     <string name="settings_sound_cues_title">Звуки навігації</string>

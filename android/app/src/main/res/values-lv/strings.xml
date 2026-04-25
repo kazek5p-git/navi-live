@@ -124,6 +124,8 @@
     <string name="settings_status_message">Saglabājiet tikai tās vadīklas, kas būtiski ietekmē balsi, vibrāciju un maršruta maiņu.</string>
     <string name="settings_group_guidance_title">Vadība un maršruts</string>
     <string name="settings_group_guidance_summary">Navigācijas uzvedība.</string>
+    <string name="settings_group_sounds_title">Skaņas</string>
+    <string name="settings_group_sounds_summary">Navigācijas skaņas un priekšskatījumi.</string>
     <string name="settings_group_speech_title">Runa un balss</string>
     <string name="settings_group_speech_summary">Balss izvade.</string>
     <string name="settings_group_app_title">Lietotne un atjauninājumi</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Runas skaļums</string>
     <string name="settings_speech_volume_message">Pielāgojiet relatīvo balss skaļumu sistēmas sintezatoram. Ierīces multivides skaļums joprojām ir spēkā.</string>
     <string name="settings_speech_controls_disabled_message">Runas ātrumu un skaļumu kontrolē ekrāna lasītājs, kad ir atlasīts šis avots.</string>
+    <string name="settings_slider_decrease">Samazināt</string>
+    <string name="settings_slider_increase">Palielināt</string>
     <string name="settings_vibration_title">Vibrācija</string>
     <string name="settings_vibration_message">Izmantojiet taustes apstiprinājumu līdzināšanai, maršruta maiņai un ierašanās brīdim.</string>
     <string name="settings_sound_cues_title">Navigācijas skaņas</string>

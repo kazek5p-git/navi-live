@@ -124,6 +124,8 @@
     <string name="settings_status_message">Оставьте только те элементы управления, которые существенно влияют на голос, вибрацию и изменение маршрута.</string>
     <string name="settings_group_guidance_title">Наведение и маршрут</string>
     <string name="settings_group_guidance_summary">Навигационное поведение.</string>
+    <string name="settings_group_sounds_title">Звуки</string>
+    <string name="settings_group_sounds_summary">Звуки навигации и превью.</string>
     <string name="settings_group_speech_title">Речь и голос</string>
     <string name="settings_group_speech_summary">Голосовой вывод.</string>
     <string name="settings_group_app_title">Приложение и обновления</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Громкость речи</string>
     <string name="settings_speech_volume_message">Отрегулируйте относительную громкость голоса для системного синтезатора. Громкость носителя устройства по-прежнему применяется.</string>
     <string name="settings_speech_controls_disabled_message">Скорость и громкость речи контролируются программой чтения с экрана при выборе этого источника.</string>
+    <string name="settings_slider_decrease">Уменьшение</string>
+    <string name="settings_slider_increase">Увеличение</string>
     <string name="settings_vibration_title">Вибрация</string>
     <string name="settings_vibration_message">Используйте тактильное подтверждение для выравнивания, изменения маршрута и прибытия.</string>
     <string name="settings_sound_cues_title">Звуки навигации</string>

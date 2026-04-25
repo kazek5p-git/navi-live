@@ -124,6 +124,8 @@
     <string name="settings_status_message">Ahotsari, bibrazioari eta bideratzeei modu materialan eragiten dieten kontrolak soilik gorde.</string>
     <string name="settings_group_guidance_title">Gidabidea eta ibilbidea</string>
     <string name="settings_group_guidance_summary">Nabigazio portaera.</string>
+    <string name="settings_group_sounds_title">Soinuak</string>
+    <string name="settings_group_sounds_summary">Nabigazio-soinuak eta aurrebistak.</string>
     <string name="settings_group_speech_title">Hizketa eta ahotsa</string>
     <string name="settings_group_speech_summary">Ahots-irteera.</string>
     <string name="settings_group_app_title">Aplikazioa eta eguneraketak</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Ahots-bolumena</string>
     <string name="settings_speech_volume_message">Doitu ahots-ozentasun erlatiboa sistema sintetizadorerako. Gailuaren multimedia-bolumena aplikatzen da oraindik.</string>
     <string name="settings_speech_controls_disabled_message">Hizketa-abiadura eta bolumena pantaila-irakurgailuak kontrolatzen ditu iturri hori hautatzen denean.</string>
+    <string name="settings_slider_decrease">Gutxitu</string>
+    <string name="settings_slider_increase">Handitzea</string>
     <string name="settings_vibration_title">Dardara</string>
     <string name="settings_vibration_message">Erabili berrespen haptikoa lerrokatzeko, bideratzeko eta iristeko.</string>
     <string name="settings_sound_cues_title">Nabigazio-soinuak</string>

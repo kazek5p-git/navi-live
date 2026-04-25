@@ -124,6 +124,8 @@
     <string name="settings_status_message">Conservez uniquement les commandes qui affectent matériellement la voix, les vibrations et le reroutage.</string>
     <string name="settings_group_guidance_title">Guidage et itinéraire</string>
     <string name="settings_group_guidance_summary">Comportement de navigation.</string>
+    <string name="settings_group_sounds_title">Sons</string>
+    <string name="settings_group_sounds_summary">Sons de navigation et aperçus.</string>
     <string name="settings_group_speech_title">Parole et voix</string>
     <string name="settings_group_speech_summary">Sortie vocale.</string>
     <string name="settings_group_app_title">Application et mises à jour</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Volume vocal</string>
     <string name="settings_speech_volume_message">Ajuste le volume relatif de la voix pour le synthétiseur du système. Le volume multimédia de l’appareil s’applique toujours.</string>
     <string name="settings_speech_controls_disabled_message">Le débit et le volume de la parole sont contrôlés par le lecteur d\'écran lorsque cette source est sélectionnée.</string>
+    <string name="settings_slider_decrease">Diminution</string>
+    <string name="settings_slider_increase">Augmentation</string>
     <string name="settings_vibration_title">Vibrations</string>
     <string name="settings_vibration_message">Utilisez la confirmation haptique pour l’alignement, le réacheminement et l’arrivée.</string>
     <string name="settings_sound_cues_title">Sons de navigation</string>

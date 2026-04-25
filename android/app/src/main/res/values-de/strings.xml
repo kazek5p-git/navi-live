@@ -124,6 +124,8 @@
     <string name="settings_status_message">Behalten Sie nur die Bedienelemente bei, die sich wesentlich auf Sprache, Vibration und Umleitung auswirken.</string>
     <string name="settings_group_guidance_title">Zielführung und Route</string>
     <string name="settings_group_guidance_summary">Navigationsverhalten.</string>
+    <string name="settings_group_sounds_title">Sounds</string>
+    <string name="settings_group_sounds_summary">Navigationssounds und Vorschauen.</string>
     <string name="settings_group_speech_title">Sprache und Stimme</string>
     <string name="settings_group_speech_summary">Sprachausgabe.</string>
     <string name="settings_group_app_title">App und Updates</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Sprachlautstärke</string>
     <string name="settings_speech_volume_message">Passen Sie die relative Sprachlautstärke für den Systemsynthesizer an. Die Medienlautstärke des Geräts gilt weiterhin.</string>
     <string name="settings_speech_controls_disabled_message">Sprechgeschwindigkeit und Lautstärke werden durch den Bildschirmleser gesteuert, wenn diese Quelle ausgewählt ist.</string>
+    <string name="settings_slider_decrease">Verringern</string>
+    <string name="settings_slider_increase">Erhöhen</string>
     <string name="settings_vibration_title">Vibration</string>
     <string name="settings_vibration_message">Nutzen Sie die haptische Bestätigung für Ausrichtung, Umleitung und Ankunft.</string>
     <string name="settings_sound_cues_title">Navigationstöne</string>

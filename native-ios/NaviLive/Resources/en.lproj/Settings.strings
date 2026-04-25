@@ -3,6 +3,8 @@
 "settings.toggle.show_tutorial" = "Show onboarding at launch";
 "settings.section.guidance" = "Guidance";
 "settings.group.guidance.summary" = "Navigation behavior.";
+"settings.section.sounds" = "Sounds";
+"settings.group.sounds.summary" = "Navigation sounds and previews.";
 "settings.toggle.vibration" = "Haptic feedback";
 "settings.toggle.sound_cues" = "Navigation sounds";
 "settings.sound_cues.tutorial.title" = "Sound guide";
@@ -34,6 +36,10 @@
 "settings.speech.rate" = "Speech rate";
 "settings.speech.volume" = "Speech volume";
 "settings.speech.footer" = "Automatic follows VoiceOver when it is active. Otherwise Navi Live uses the built-in speech synthesizer.";
+"settings.speech.preview" = "Speech preview";
+"settings.speech.preview.hint" = "Plays a sample with the current speech rate and volume.";
+"settings.speech.preview.footer" = "The preview uses the built-in synthesizer so you can hear the current rate and volume settings.";
+"settings.speech.preview.sample" = "This is a Navi Live speech preview using the current speech settings.";
 "settings.speech_mode.updated" = "Speech mode updated.";
 "settings.group.app_updates" = "App and updates";
 "settings.group.app_updates.summary" = "App information.";

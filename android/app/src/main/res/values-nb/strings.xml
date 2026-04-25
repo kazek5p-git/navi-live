@@ -124,6 +124,8 @@
     <string name="settings_status_message">Behold bare kontrollene som vesentlig påvirker stemme, vibrasjon og omdirigering.</string>
     <string name="settings_group_guidance_title">Veiledning og rute</string>
     <string name="settings_group_guidance_summary">Navigasjonsadferd.</string>
+    <string name="settings_group_sounds_title">Lyder</string>
+    <string name="settings_group_sounds_summary">Navigasjonslyder og forhåndsvisninger.</string>
     <string name="settings_group_speech_title">Tale og stemme</string>
     <string name="settings_group_speech_summary">Stemmeutgang.</string>
     <string name="settings_group_app_title">App og oppdateringer</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Talevolum</string>
     <string name="settings_speech_volume_message">Juster relativ stemmestyrke for systemsynthesizeren. Device media volume still applies.</string>
     <string name="settings_speech_controls_disabled_message">Talehastighet og -volum kontrolleres av skjermleseren når den kilden er valgt.</string>
+    <string name="settings_slider_decrease">Reduser</string>
+    <string name="settings_slider_increase">Økning</string>
     <string name="settings_vibration_title">Vibrasjon</string>
     <string name="settings_vibration_message">Bruk haptisk bekreftelse for justering, omdirigering og ankomst.</string>
     <string name="settings_sound_cues_title">Navigasjonslyder</string>

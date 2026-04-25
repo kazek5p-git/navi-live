@@ -124,6 +124,8 @@
     <string name="settings_status_message">Păstrați numai comenzile care afectează în mod semnificativ vocea, vibrațiile și redirecționarea.</string>
     <string name="settings_group_guidance_title">Îndrumare și traseu</string>
     <string name="settings_group_guidance_summary">Comportamentul de navigare.</string>
+    <string name="settings_group_sounds_title">Sunete</string>
+    <string name="settings_group_sounds_summary">Sunete de navigare și previzualizări.</string>
     <string name="settings_group_speech_title">Vorbire și voce</string>
     <string name="settings_group_speech_summary">Ieșire voce.</string>
     <string name="settings_group_app_title">Aplicație și actualizări</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Volumul vorbirii</string>
     <string name="settings_speech_volume_message">Reglați volumul relativ al vocii pentru sintetizatorul de sistem. Volumul media al dispozitivului se aplică în continuare.</string>
     <string name="settings_speech_controls_disabled_message">Rata și volumul vorbirii sunt controlate de cititorul de ecran atunci când acea sursă este selectată.</string>
+    <string name="settings_slider_decrease">Scădere</string>
+    <string name="settings_slider_increase">Creștere</string>
     <string name="settings_vibration_title">Vibratie</string>
     <string name="settings_vibration_message">Utilizați confirmarea haptică pentru aliniere, redirecționare și sosire.</string>
     <string name="settings_sound_cues_title">Sunete de navigare</string>

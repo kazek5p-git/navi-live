@@ -124,6 +124,8 @@
     <string name="settings_status_message">Cadwch y rheolaethau sy\'n effeithio\'n sylweddol ar lais, dirgryniad ac ailgyfeirio yn unig.</string>
     <string name="settings_group_guidance_title">Canllawiau a llwybr</string>
     <string name="settings_group_guidance_summary">Ymddygiad mordwyo.</string>
+    <string name="settings_group_sounds_title">Seiniau</string>
+    <string name="settings_group_sounds_summary">Seiniau llywio a rhagolygon.</string>
     <string name="settings_group_speech_title">Lleferydd a llais</string>
     <string name="settings_group_speech_summary">Allbwn llais.</string>
     <string name="settings_group_app_title">Ap a diweddariadau</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Cyfrol lleferydd</string>
     <string name="settings_speech_volume_message">Addaswch gryfder llais cymharol ar gyfer syntheseisydd y system. Mae cyfaint cyfryngau dyfais yn dal i fod yn berthnasol.</string>
     <string name="settings_speech_controls_disabled_message">Mae cyfradd lleferydd a chyfaint yn cael eu rheoli gan y darllenydd sgrin pan ddewisir y ffynhonnell honno.</string>
+    <string name="settings_slider_decrease">Gostyngiad</string>
+    <string name="settings_slider_increase">Cynnydd</string>
     <string name="settings_vibration_title">Dirgryniad</string>
     <string name="settings_vibration_message">Defnyddiwch gadarnhad haptig ar gyfer aliniad, ailgyfeirio a chyrraedd.</string>
     <string name="settings_sound_cues_title">Seiniau llywio</string>

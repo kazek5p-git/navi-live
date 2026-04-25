@@ -84,8 +84,10 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -116,6 +118,7 @@ private enum class BannerTone {
 private enum class SettingsDestination {
     Root,
     Guidance,
+    Sounds,
     Speech,
     App,
     Diagnostics,
@@ -144,9 +147,16 @@ private fun ScreenScaffold(
     content: @Composable (Modifier) -> Unit,
 ) {
     Scaffold(
+        modifier = Modifier.semantics { isTraversalGroup = true },
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(title) },
+                modifier = Modifier.semantics { traversalIndex = -1f },
+                title = {
+                    Text(
+                        text = title,
+                        modifier = Modifier.semantics { heading() },
+                    )
+                },
                 navigationIcon = {
                     if (showBack && onBack != null) {
                         IconButton(onClick = onBack) {
@@ -1119,6 +1129,7 @@ fun SettingsScreen(
     val title = when (destination) {
         SettingsDestination.Root -> stringResource(R.string.settings_title)
         SettingsDestination.Guidance -> stringResource(R.string.settings_group_guidance_title)
+        SettingsDestination.Sounds -> stringResource(R.string.settings_group_sounds_title)
         SettingsDestination.Speech -> stringResource(R.string.settings_group_speech_title)
         SettingsDestination.App -> stringResource(R.string.settings_group_app_title)
         SettingsDestination.Diagnostics -> stringResource(R.string.settings_group_diagnostics_title)
@@ -1146,6 +1157,12 @@ fun SettingsScreen(
                         summary = stringResource(R.string.settings_group_guidance_summary),
                         icon = Icons.AutoMirrored.Filled.AssistantDirection,
                         onClick = { destination = SettingsDestination.Guidance },
+                    )
+                    SettingsNavigationCard(
+                        title = stringResource(R.string.settings_group_sounds_title),
+                        summary = stringResource(R.string.settings_group_sounds_summary),
+                        icon = Icons.Filled.SurroundSound,
+                        onClick = { destination = SettingsDestination.Sounds },
                     )
                     SettingsNavigationCard(
                         title = stringResource(R.string.settings_group_speech_title),
@@ -1191,13 +1208,6 @@ fun SettingsScreen(
                         onCheckedChange = onVibrationChange,
                     )
                     SettingsToggleCard(
-                        title = stringResource(R.string.settings_sound_cues_title),
-                        description = stringResource(R.string.settings_sound_cues_message),
-                        checked = state.soundCuesEnabled,
-                        onCheckedChange = onSoundCuesChange,
-                    )
-                    SoundCueTutorialCard(onPreviewSoundCue = onPreviewSoundCue)
-                    SettingsToggleCard(
                         title = stringResource(R.string.settings_auto_recalculate_title),
                         description = stringResource(R.string.settings_auto_recalculate_message),
                         checked = state.autoRecalculate,
@@ -1209,6 +1219,15 @@ fun SettingsScreen(
                         checked = state.junctionAlerts,
                         onCheckedChange = onJunctionAlertChange,
                     )
+                }
+                SettingsDestination.Sounds -> {
+                    SettingsToggleCard(
+                        title = stringResource(R.string.settings_sound_cues_title),
+                        description = stringResource(R.string.settings_sound_cues_message),
+                        checked = state.soundCuesEnabled,
+                        onCheckedChange = onSoundCuesChange,
+                    )
+                    SoundCueTutorialCard(onPreviewSoundCue = onPreviewSoundCue)
                 }
                 SettingsDestination.Speech -> {
                     VoiceOutputSettingsCard(
@@ -2272,7 +2291,19 @@ private fun VoiceSliderCard(
     disabledMessage: String,
     onCommit: (Int) -> Unit,
 ) {
-    var sliderValue by remember(value) { mutableFloatStateOf(value.toFloat()) }
+    var sliderValue by remember(value, valueRange) {
+        mutableFloatStateOf(value.toFloat().coerceIn(valueRange.start, valueRange.endInclusive))
+    }
+
+    fun commitValue(incoming: Float) {
+        val normalized = normalizeSliderValue(incoming, valueRange)
+        sliderValue = normalized
+        val normalizedInt = normalized.roundToInt()
+        if (normalizedInt != value) {
+            onCommit(normalizedInt)
+        }
+    }
+
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -2298,15 +2329,32 @@ private fun VoiceSliderCard(
             Slider(
                 value = sliderValue,
                 onValueChange = { incoming ->
-                    sliderValue = normalizeSliderValue(incoming, valueRange)
-                },
-                onValueChangeFinished = {
-                    onCommit(sliderValue.roundToInt())
+                    commitValue(incoming)
                 },
                 valueRange = valueRange,
                 steps = steps,
                 enabled = enabled,
+                modifier = Modifier.fillMaxWidth(),
             )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                OutlinedButton(
+                    onClick = { commitValue(sliderValue - 5f) },
+                    enabled = enabled && sliderValue > valueRange.start,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(stringResource(R.string.settings_slider_decrease))
+                }
+                OutlinedButton(
+                    onClick = { commitValue(sliderValue + 5f) },
+                    enabled = enabled && sliderValue < valueRange.endInclusive,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(stringResource(R.string.settings_slider_increase))
+                }
+            }
             if (!enabled) {
                 Text(
                     text = disabledMessage,

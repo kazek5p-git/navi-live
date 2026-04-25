@@ -124,6 +124,8 @@
     <string name="settings_status_message">Պահպանեք միայն այն կառավարները, որոնք էապես ազդում են ձայնի, թրթռման և երթուղիների փոփոխման վրա:</string>
     <string name="settings_group_guidance_title">Ուղեցույց և երթուղի</string>
     <string name="settings_group_guidance_summary">Նավիգացիոն վարքագիծ:</string>
+    <string name="settings_group_sounds_title">Ձայններ</string>
+    <string name="settings_group_sounds_summary">Նավիգացիոն հնչյուններ և նախադիտումներ:</string>
     <string name="settings_group_speech_title">Խոսք և ձայն</string>
     <string name="settings_group_speech_summary">Ձայնի ելք.</string>
     <string name="settings_group_app_title">Հավելված և թարմացումներ</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Խոսքի ծավալը</string>
     <string name="settings_speech_volume_message">Կարգավորեք ձայնի հարաբերական բարձրությունը համակարգի սինթեզատորի համար: Սարքի մեդիա ծավալը դեռ գործում է:</string>
     <string name="settings_speech_controls_disabled_message">Խոսքի արագությունը և ծավալը վերահսկվում են էկրանի ընթերցողի կողմից, երբ ընտրվում է այդ աղբյուրը:</string>
+    <string name="settings_slider_decrease">Նվազել</string>
+    <string name="settings_slider_increase">Բարձրացնել</string>
     <string name="settings_vibration_title">Թրթռում</string>
     <string name="settings_vibration_message">Օգտագործեք հապտիկ հաստատում հավասարեցման, վերափոխման և ժամանման համար:</string>
     <string name="settings_sound_cues_title">Նավիգացիոն հնչյուններ</string>

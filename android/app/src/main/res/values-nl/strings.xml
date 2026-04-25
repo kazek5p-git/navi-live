@@ -124,6 +124,8 @@
     <string name="settings_status_message">Bewaar alleen de bedieningselementen die een materiële invloed hebben op stem, trillingen en routewijziging.</string>
     <string name="settings_group_guidance_title">Begeleiding en route</string>
     <string name="settings_group_guidance_summary">Navigatiegedrag.</string>
+    <string name="settings_group_sounds_title">Geluiden</string>
+    <string name="settings_group_sounds_summary">Navigatiegeluiden en voorbeelden.</string>
     <string name="settings_group_speech_title">Spraak en stem</string>
     <string name="settings_group_speech_summary">Spraakuitvoer.</string>
     <string name="settings_group_app_title">App en updates</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Spraakvolume</string>
     <string name="settings_speech_volume_message">Pas de relatieve stemsterkte aan voor de systeemsynthesizer. Mediavolume op apparaat is nog steeds van toepassing.</string>
     <string name="settings_speech_controls_disabled_message">Spraaksnelheid en -volume worden geregeld door de schermlezer wanneer die bron wordt geselecteerd.</string>
+    <string name="settings_slider_decrease">Verlagen</string>
+    <string name="settings_slider_increase">Verhogen</string>
     <string name="settings_vibration_title">Trillingen</string>
     <string name="settings_vibration_message">Gebruik haptische bevestiging voor uitlijning, routewijziging en aankomst.</string>
     <string name="settings_sound_cues_title">Navigatiegeluiden</string>

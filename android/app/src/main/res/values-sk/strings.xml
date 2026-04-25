@@ -124,6 +124,8 @@
     <string name="settings_status_message">Ponechajte len ovládacie prvky, ktoré podstatne ovplyvňujú hlas, vibrácie a zmenu trasy.</string>
     <string name="settings_group_guidance_title">Navádzanie a trasa</string>
     <string name="settings_group_guidance_summary">Správanie pri navigácii.</string>
+    <string name="settings_group_sounds_title">Zvuky</string>
+    <string name="settings_group_sounds_summary">Zvuky a ukážky navigácie.</string>
     <string name="settings_group_speech_title">Reč a hlas</string>
     <string name="settings_group_speech_summary">Hlasový výstup.</string>
     <string name="settings_group_app_title">Aplikácia a aktualizácie</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Hlasitosť reči</string>
     <string name="settings_speech_volume_message">Upravte relatívnu hlasitosť hlasu pre systémový syntetizátor. Hlasitosť médií zariadenia stále platí.</string>
     <string name="settings_speech_controls_disabled_message">Rýchlosť reči a hlasitosť ovláda čítačka obrazovky, keď je vybratý tento zdroj.</string>
+    <string name="settings_slider_decrease">Zníženie</string>
+    <string name="settings_slider_increase">Zvýšenie</string>
     <string name="settings_vibration_title">Vibrácie</string>
     <string name="settings_vibration_message">Na zarovnanie, presmerovanie a príchod použite haptické potvrdenie.</string>
     <string name="settings_sound_cues_title">Zvuky navigácie</string>

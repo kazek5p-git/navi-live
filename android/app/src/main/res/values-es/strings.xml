@@ -124,6 +124,8 @@
     <string name="settings_status_message">Mantenga solo los controles que afecten materialmente la voz, la vibración y el desvío.</string>
     <string name="settings_group_guidance_title">Orientación y ruta</string>
     <string name="settings_group_guidance_summary">Comportamiento de navegación.</string>
+    <string name="settings_group_sounds_title">Sonidos</string>
+    <string name="settings_group_sounds_summary">Sonidos de navegación y vistas previas.</string>
     <string name="settings_group_speech_title">Voz y voz</string>
     <string name="settings_group_speech_summary">Salida de voz.</string>
     <string name="settings_group_app_title">Aplicación y actualizaciones</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Volumen de voz</string>
     <string name="settings_speech_volume_message">Ajusta el volumen relativo de la voz para el sintetizador del sistema. El volumen de medios del dispositivo aún se aplica.</string>
     <string name="settings_speech_controls_disabled_message">La velocidad y el volumen de la voz los controla el lector de pantalla cuando se selecciona esa fuente.</string>
+    <string name="settings_slider_decrease">Disminución</string>
+    <string name="settings_slider_increase">Incremento</string>
     <string name="settings_vibration_title">Vibración</string>
     <string name="settings_vibration_message">Utilice la confirmación táctil para la alineación, el desvío y la llegada.</string>
     <string name="settings_sound_cues_title">Sonidos de navegación</string>

@@ -124,6 +124,8 @@
     <string name="settings_status_message">Задржите само оне контроле које материјално утичу на глас, вибрације и преусмеравање.</string>
     <string name="settings_group_guidance_title">Навођење и рута</string>
     <string name="settings_group_guidance_summary">Понашање навигације.</string>
+    <string name="settings_group_sounds_title">Звукови</string>
+    <string name="settings_group_sounds_summary">Звукови и прегледи навигације.</string>
     <string name="settings_group_speech_title">Говор и глас</string>
     <string name="settings_group_speech_summary">Гласовни излаз.</string>
     <string name="settings_group_app_title">Апликација и ажурирања</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Јачина говора</string>
     <string name="settings_speech_volume_message">Подесите релативну гласноћу гласа за системски синтисајзер. Јачина звука медија уређаја и даље важи.</string>
     <string name="settings_speech_controls_disabled_message">Брзину говора и јачину звука контролише читач екрана када је тај извор изабран.</string>
+    <string name="settings_slider_decrease">Смањење</string>
+    <string name="settings_slider_increase">Повећање</string>
     <string name="settings_vibration_title">Вибрације</string>
     <string name="settings_vibration_message">Користите хаптичку потврду за поравнање, преусмеравање и долазак.</string>
     <string name="settings_sound_cues_title">Звукови за навигацију</string>

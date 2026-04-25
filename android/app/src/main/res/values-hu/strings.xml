@@ -124,6 +124,8 @@
     <string name="settings_status_message">Csak azokat a vezérlőket tartsa meg, amelyek lényegesen befolyásolják a hangot, a rezgést és az átirányítást.</string>
     <string name="settings_group_guidance_title">Útmutatás és útvonal</string>
     <string name="settings_group_guidance_summary">Navigációs viselkedés.</string>
+    <string name="settings_group_sounds_title">Hangok</string>
+    <string name="settings_group_sounds_summary">Navigációs hangok és előnézetek.</string>
     <string name="settings_group_speech_title">Beszéd és hang</string>
     <string name="settings_group_speech_summary">Hangkimenet.</string>
     <string name="settings_group_app_title">Alkalmazások és frissítések</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Beszéd hangereje</string>
     <string name="settings_speech_volume_message">Állítsa be a rendszerszintetizátor relatív hangerejét. Az eszköz média hangereje továbbra is érvényes.</string>
     <string name="settings_speech_controls_disabled_message">A beszédsebességet és a hangerőt a képernyőolvasó vezérli, amikor az adott forrást kiválasztja.</string>
+    <string name="settings_slider_decrease">Csökkentés</string>
+    <string name="settings_slider_increase">Növekedés</string>
     <string name="settings_vibration_title">Rezgés</string>
     <string name="settings_vibration_message">Használjon haptikus megerősítést az igazításhoz, az átirányításhoz és az érkezéshez.</string>
     <string name="settings_sound_cues_title">Navigációs hangok</string>

@@ -124,6 +124,8 @@
     <string name="settings_status_message">Mbani vetëm kontrollet që ndikojnë materialisht në zërin, dridhjet dhe riorientimin.</string>
     <string name="settings_group_guidance_title">Udhëzues dhe itinerar</string>
     <string name="settings_group_guidance_summary">Sjellja e navigimit.</string>
+    <string name="settings_group_sounds_title">Tingujt</string>
+    <string name="settings_group_sounds_summary">Tingujt e lundrimit dhe pamjet paraprake.</string>
     <string name="settings_group_speech_title">Fjalimi dhe zëri</string>
     <string name="settings_group_speech_summary">Dalja e zërit.</string>
     <string name="settings_group_app_title">Aplikacioni dhe përditësimet</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Vëllimi i të folurit</string>
     <string name="settings_speech_volume_message">Rregulloni lartësinë relative të zërit për sintetizuesin e sistemit. Vëllimi i medias së pajisjes vazhdon të zbatohet.</string>
     <string name="settings_speech_controls_disabled_message">Shpejtësia dhe vëllimi i të folurit kontrollohen nga lexuesi i ekranit kur zgjidhet ai burim.</string>
+    <string name="settings_slider_decrease">Ulje</string>
+    <string name="settings_slider_increase">Rritje</string>
     <string name="settings_vibration_title">Dridhje</string>
     <string name="settings_vibration_message">Përdorni konfirmimin haptik për shtrirjen, ridrejtimin dhe mbërritjen.</string>
     <string name="settings_sound_cues_title">Tingujt e navigimit</string>

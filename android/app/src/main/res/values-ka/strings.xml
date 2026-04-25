@@ -124,6 +124,8 @@
     <string name="settings_status_message">შეინახეთ მხოლოდ მართვის საშუალებები, რომლებიც არსებითად მოქმედებს ხმაზე, ვიბრაციაზე და მარშრუტიზაციაზე.</string>
     <string name="settings_group_guidance_title">მეგზური და მარშრუტი</string>
     <string name="settings_group_guidance_summary">ნავიგაციის ქცევა.</string>
+    <string name="settings_group_sounds_title">ხმები</string>
+    <string name="settings_group_sounds_summary">ნავიგაციის ხმები და გადახედვები.</string>
     <string name="settings_group_speech_title">მეტყველება და ხმა</string>
     <string name="settings_group_speech_summary">ხმის გამომავალი.</string>
     <string name="settings_group_app_title">აპლიკაცია და განახლებები</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">მეტყველების მოცულობა</string>
     <string name="settings_speech_volume_message">დაარეგულირეთ ხმის ფარდობითი სიძლიერე სისტემის სინთეზატორისთვის. მოწყობილობის მედიის მოცულობა კვლავ მოქმედებს.</string>
     <string name="settings_speech_controls_disabled_message">მეტყველების სიხშირე და მოცულობა კონტროლდება ეკრანის წამკითხველის მიერ, როდესაც ეს წყარო არჩეულია.</string>
+    <string name="settings_slider_decrease">შემცირება</string>
+    <string name="settings_slider_increase">გაზრდა</string>
     <string name="settings_vibration_title">ვიბრაცია</string>
     <string name="settings_vibration_message">გამოიყენეთ ჰაპტიკური დადასტურება გასწორების, გადამისამართების და მისვლისთვის.</string>
     <string name="settings_sound_cues_title">ნავიგაციის ხმები</string>

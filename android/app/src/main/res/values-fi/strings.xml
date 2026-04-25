@@ -124,6 +124,8 @@
     <string name="settings_status_message">Säilytä vain ne säätimet, jotka vaikuttavat olennaisesti ääneen, tärinään ja uudelleenreitittämiseen.</string>
     <string name="settings_group_guidance_title">Opastus ja reitti</string>
     <string name="settings_group_guidance_summary">Navigointikäyttäytyminen.</string>
+    <string name="settings_group_sounds_title">Äänet</string>
+    <string name="settings_group_sounds_summary">Navigointiäänet ja esikatselut.</string>
     <string name="settings_group_speech_title">Puhe ja ääni</string>
     <string name="settings_group_speech_summary">Äänilähtö.</string>
     <string name="settings_group_app_title">Sovellus ja päivitykset</string>
@@ -176,6 +178,8 @@
     <string name="settings_speech_volume_title">Puheen voimakkuus</string>
     <string name="settings_speech_volume_message">Säädä järjestelmäsyntetisaattorin äänenvoimakkuutta. Laitteen median äänenvoimakkuus on edelleen voimassa.</string>
     <string name="settings_speech_controls_disabled_message">Näytönlukuohjelma ohjaa puhenopeutta ja äänenvoimakkuutta, kun kyseinen lähde on valittu.</string>
+    <string name="settings_slider_decrease">Pienennä</string>
+    <string name="settings_slider_increase">Lisää</string>
     <string name="settings_vibration_title">Tärinä</string>
     <string name="settings_vibration_message">Käytä haptista vahvistusta kohdistukseen, uudelleenreitittämiseen ja saapumiseen.</string>
     <string name="settings_sound_cues_title">Navigointiäänet</string>
