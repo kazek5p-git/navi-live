@@ -34,13 +34,13 @@ object SharedProductRules {
     }
 
     object Search {
-        const val includeGlobalFallbackIfFewerThan: Int = 5
-        const val nearbyBonus: Int = 420
+        const val includeGlobalFallbackIfFewerThan: Int = 3
+        const val nearbyBonus: Int = 650
         const val nearbyLimit: Int = 10
         const val globalLimit: Int = 16
         const val resultLimit: Int = 8
-        const val nearbyRadiusKm: Double = 25.0
-        const val globalRadiusKm: Double = 120.0
+        const val nearbyRadiusKm: Double = 12.0
+        const val globalRadiusKm: Double = 60.0
         const val viewBoxMinimumCosine: Double = 0.2
         const val walkingEtaMetersPerMinute: Double = 75.0
 
@@ -50,7 +50,7 @@ object SharedProductRules {
         const val prefixTokenScore: Int = 180
         const val containsTokenScore: Int = 140
         const val addressTokenScore: Int = 60
-        const val distancePenaltyDivisorMeters: Int = 5000
+        const val distancePenaltyDivisorMeters: Int = 2500
         const val distancePenaltyCap: Int = 120
 
         val distanceBands: List<SearchDistanceBand> = listOf(

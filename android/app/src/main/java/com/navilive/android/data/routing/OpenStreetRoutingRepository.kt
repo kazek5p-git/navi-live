@@ -275,6 +275,12 @@ class OpenStreetRoutingRepository(
         val response = requestText(endpoint)
         val array = JSONArray(response)
         val candidates = mutableListOf<SearchCandidate>()
+        val radiusKm = if (nearbyOnly) {
+            SharedProductRules.Search.nearbyRadiusKm
+        } else {
+            SharedProductRules.Search.globalRadiusKm
+        }
+        val maxDistanceMeters = currentPoint?.let { (radiusKm * 1000).roundToInt() }
         for (index in 0 until array.length()) {
             val item = array.getJSONObject(index)
             val latitude = item.optString("lat").toDoubleOrNull() ?: continue
@@ -287,6 +293,9 @@ class OpenStreetRoutingRepository(
                 0
             } else {
                 haversineMeters(currentPoint, point).roundToInt()
+            }
+            if (maxDistanceMeters != null && distance > maxDistanceMeters) {
+                continue
             }
             val etaMinutes = if (distance <= 0) {
                 0

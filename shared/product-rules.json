@@ -22,13 +22,13 @@
     "autoRecalculateCooldownMs": 15000
   },
   "search": {
-    "includeGlobalFallbackIfFewerThan": 5,
-    "nearbyBonus": 420,
+    "includeGlobalFallbackIfFewerThan": 3,
+    "nearbyBonus": 650,
     "nearbyLimit": 10,
     "globalLimit": 16,
     "resultLimit": 8,
-    "nearbyRadiusKm": 25.0,
-    "globalRadiusKm": 120.0,
+    "nearbyRadiusKm": 12.0,
+    "globalRadiusKm": 60.0,
     "viewBoxMinimumCosine": 0.2,
     "walkingEtaMetersPerMinute": 75.0,
     "scoring": {
@@ -44,7 +44,7 @@
         { "maxMeters": 10000, "bonus": 350 },
         { "maxMeters": 50000, "bonus": 120 }
       ],
-      "distancePenaltyDivisorMeters": 5000,
+      "distancePenaltyDivisorMeters": 2500,
       "distancePenaltyCap": 120
     }
   },

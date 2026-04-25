@@ -31,13 +31,13 @@ enum SharedProductRules {
   }
 
   enum Search {
-    static let includeGlobalFallbackIfFewerThan: Int = 5
-    static let nearbyBonus: Int = 420
+    static let includeGlobalFallbackIfFewerThan: Int = 3
+    static let nearbyBonus: Int = 650
     static let nearbyLimit: Int = 10
     static let globalLimit: Int = 16
     static let resultLimit: Int = 8
-    static let nearbyRadiusKm: Double = 25.0
-    static let globalRadiusKm: Double = 120.0
+    static let nearbyRadiusKm: Double = 12.0
+    static let globalRadiusKm: Double = 60.0
     static let viewBoxMinimumCosine: Double = 0.2
     static let walkingEtaMetersPerMinute: Double = 75.0
 
@@ -47,7 +47,7 @@ enum SharedProductRules {
     static let prefixTokenScore: Int = 180
     static let containsTokenScore: Int = 140
     static let addressTokenScore: Int = 60
-    static let distancePenaltyDivisorMeters: Int = 5000
+    static let distancePenaltyDivisorMeters: Int = 2500
     static let distancePenaltyCap: Int = 120
 
     static let distanceBands: [SearchDistanceBand] = [

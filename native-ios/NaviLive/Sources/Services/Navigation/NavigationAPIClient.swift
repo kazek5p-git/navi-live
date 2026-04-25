@@ -289,9 +289,18 @@ actor NavigationAPIClient {
     }
 
     let decoded = try JSONDecoder().decode([SearchResultDTO].self, from: data)
-    return decoded.map { item in
+    let radiusKilometers = nearbyOnly
+      ? SharedProductRules.Search.nearbyRadiusKm
+      : SharedProductRules.Search.globalRadiusKm
+    let maxDistanceMeters = location.map { _ in
+      Int((radiusKilometers * 1000).rounded())
+    }
+    return decoded.compactMap { item -> SearchCandidate? in
       let point = GeoPoint(latitude: Double(item.lat) ?? 0, longitude: Double(item.lon) ?? 0)
       let distance = location.map { Int($0.distance(to: point).rounded()) } ?? 0
+      if let maxDistanceMeters, distance > maxDistanceMeters {
+        return nil
+      }
       let displayName = item.displayName.trimmingCharacters(in: .whitespacesAndNewlines)
       let place = Place(
         id: "nominatim-\(item.placeID ?? Int.random(in: 1000...9999))",
