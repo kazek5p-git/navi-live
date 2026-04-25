@@ -145,6 +145,7 @@ private val SupportQuickAmounts = listOf(5, 10, 20, 50)
 private fun ScreenScaffold(
     title: String,
     showBack: Boolean,
+    showTitle: Boolean = true,
     onBack: (() -> Unit)? = null,
     actions: @Composable (() -> Unit)? = null,
     content: @Composable (Modifier) -> Unit,
@@ -160,10 +161,12 @@ private fun ScreenScaffold(
                     .fillMaxWidth()
                     .semantics { traversalIndex = -1f },
                 title = {
-                    Text(
-                        text = title,
-                        modifier = Modifier.semantics { heading() },
-                    )
+                    if (showTitle) {
+                        Text(
+                            text = title,
+                            modifier = Modifier.semantics { heading() },
+                        )
+                    }
                 },
                 navigationIcon = {
                     if (showBack && onBack != null) {
@@ -518,7 +521,12 @@ fun SearchScreen(
     onSelectPlace: (String) -> Unit,
     onBack: () -> Unit,
 ) {
-    ScreenScaffold(title = stringResource(R.string.search_title), showBack = true, onBack = onBack) { modifier ->
+    ScreenScaffold(
+        title = stringResource(R.string.search_title),
+        showBack = true,
+        showTitle = false,
+        onBack = onBack,
+    ) { modifier ->
         LazyColumn(
             modifier = modifier,
             verticalArrangement = Arrangement.spacedBy(12.dp),

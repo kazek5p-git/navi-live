@@ -58,7 +58,7 @@
     <string name="search_title">Search</string>
     <string name="search_status_title">Find a destination</string>
     <string name="search_status_message">Type an address or place name. Results stay large and easy to scan with TalkBack.</string>
-    <string name="search_field_label">Address or place</string>
+    <string name="search_field_label">Enter address / place</string>
     <string name="search_field_supporting">Search online or use the suggested places below.</string>
     <string name="search_suggested_places">Suggested places</string>
     <string name="search_results">Search results</string>

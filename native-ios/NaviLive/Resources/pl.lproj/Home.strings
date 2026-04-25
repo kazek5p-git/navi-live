@@ -16,7 +16,7 @@
 "home.resume_last_route.hint" = "Otwiera ostatnio wybrany cel.";
 "search.title" = "Szukaj";
 "search.section.query" = "Cel";
-"search.query.placeholder" = "Dokąd chcesz iść?";
+"search.query.placeholder" = "Wpisz adres / miejsce";
 "search.action.search" = "Szukaj";
 "search.section.results" = "Wyniki";
 "search.status.loading" = "Wyszukiwanie pobliskich miejsc";

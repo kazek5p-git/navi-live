@@ -16,7 +16,7 @@
 "home.resume_last_route.hint" = "Opens the last selected destination.";
 "search.title" = "Search";
 "search.section.query" = "Destination";
-"search.query.placeholder" = "Where do you want to go?";
+"search.query.placeholder" = "Enter address / place";
 "search.action.search" = "Search";
 "search.section.results" = "Results";
 "search.status.loading" = "Searching nearby places";

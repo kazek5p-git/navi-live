@@ -1,6 +1,7 @@
 "common.ok" = "OK";
 "common.settings" = "Settings";
 "common.cancel" = "Cancel";
+"common.back" = "Back";
 "common.continue" = "Continue";
 "formatter.minute.one" = "1 min";
 "formatter.minute.other" = "%d min";

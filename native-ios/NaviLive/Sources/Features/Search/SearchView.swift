@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SearchView: View {
   @ObservedObject var model: AppModel
+  @Environment(\.dismiss) private var dismiss
   @FocusState private var queryFocused: Bool
 
   var body: some View {
@@ -22,8 +23,6 @@ struct SearchView: View {
         ) {
           Task { await model.performSearch() }
         }
-      } header: {
-        Text(L10n.text("search.section.query", table: .home))
       }
 
       if model.isSearching {
@@ -82,8 +81,19 @@ struct SearchView: View {
       }
     }
     .listStyle(.insetGrouped)
-    .navigationTitle(L10n.text("search.title", table: .home))
     .navigationBarTitleDisplayMode(.inline)
+    .navigationBarBackButtonHidden(true)
+    .toolbar {
+      ToolbarItem(placement: .navigationBarLeading) {
+        Button {
+          dismiss()
+        } label: {
+          Label(L10n.text("common.back"), systemImage: "chevron.backward")
+            .labelStyle(.iconOnly)
+        }
+        .accessibilityLabel(L10n.text("common.back"))
+      }
+    }
     .task {
       queryFocused = true
     }

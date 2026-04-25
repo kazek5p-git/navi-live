@@ -51,7 +51,7 @@
     <string name="search_title">Szukaj</string>
     <string name="search_status_title">Znajdź cel</string>
     <string name="search_status_message">Wpisz adres albo nazwę miejsca. Wyniki pozostają duże i łatwe do przeskanowania z TalkBack.</string>
-    <string name="search_field_label">Adres albo miejsce</string>
+    <string name="search_field_label">Wpisz adres / miejsce</string>
     <string name="search_field_supporting">Szukaj online albo skorzystaj z proponowanych miejsc poniżej.</string>
     <string name="search_suggested_places">Proponowane miejsca</string>
     <string name="search_results">Wyniki wyszukiwania</string>
