@@ -53,6 +53,28 @@ function Invoke-Capture {
     }
 }
 
+function Get-AdbDeviceStates {
+    $deviceLines = Invoke-Capture -Command @("adb", "devices")
+    $states = [ordered]@{}
+    foreach ($line in ($deviceLines -split "`n")) {
+        $trimmed = $line.Trim()
+        if ($trimmed -match "^([^\s]+)\s+([^\s]+)$") {
+            $states[$matches[1]] = $matches[2]
+        }
+    }
+    return $states
+}
+
+function Restart-AdbConnection {
+    Write-Host "[etap] Refreshing Android USB debugging connection."
+    & adb kill-server | Out-Host
+    Start-Sleep -Seconds 2
+    & adb start-server | Out-Host
+    Start-Sleep -Seconds 2
+    & adb reconnect | Out-Host
+    Start-Sleep -Seconds 3
+}
+
 function Resolve-AdbDevice {
     param([string]$PreferredSerial)
 
@@ -60,24 +82,29 @@ function Resolve-AdbDevice {
         throw "adb is not available in PATH. Install Android platform-tools first."
     }
 
-    $deviceLines = Invoke-Capture -Command @("adb", "devices")
-    $devices = @()
-    foreach ($line in ($deviceLines -split "`n")) {
-        $trimmed = $line.Trim()
-        if ($trimmed -match "^([^\s]+)\s+device$") {
-            $devices += $matches[1]
-        }
+    $states = Get-AdbDeviceStates
+    if ($states.Values -contains "offline") {
+        Restart-AdbConnection
+        $states = Get-AdbDeviceStates
     }
+
+    $devices = @($states.Keys | Where-Object { $states[$_] -eq "device" })
+    $blockedDevices = @($states.Keys | Where-Object { $states[$_] -ne "device" })
 
     if (-not [string]::IsNullOrWhiteSpace($PreferredSerial)) {
         if ($devices -notcontains $PreferredSerial) {
-            throw "Requested Android device '$PreferredSerial' is not connected. Connected devices: $($devices -join ', ')"
+            $state = if ($states.Contains($PreferredSerial)) { $states[$PreferredSerial] } else { "not connected" }
+            throw "Requested Android device '$PreferredSerial' is not ready. State: $state. Unlock the phone and accept USB debugging if prompted."
         }
         return $PreferredSerial
     }
 
     if ($devices.Count -eq 0) {
-        throw "No authorized Android device found. Connect the phone and accept USB debugging."
+        if ($blockedDevices.Count -gt 0) {
+            $blocked = ($blockedDevices | ForEach-Object { "$_=$($states[$_])" }) -join ', '
+            throw "No ready Android device found. Current state: $blocked. Unlock the phone and accept USB debugging if prompted."
+        }
+        throw "No Android device found. Connect the phone and accept USB debugging."
     }
 
     if ($devices.Count -gt 1) {
