@@ -1,5 +1,13 @@
 package com.navilive.android.ui.screens
 
+import android.text.Editable
+import android.text.InputType
+import android.text.TextWatcher
+import android.view.View
+import android.view.accessibility.AccessibilityNodeInfo
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -71,13 +79,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -96,6 +107,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.navilive.android.R
 import com.navilive.android.model.ActiveNavigationState
 import com.navilive.android.model.AnnouncementCadenceMode
@@ -108,6 +120,8 @@ import com.navilive.android.model.RouteSummary
 import com.navilive.android.model.SettingsState
 import com.navilive.android.model.SpeechOutputMode
 import com.navilive.android.model.UpdateChannel
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import java.math.BigDecimal
 import kotlin.math.roundToInt
 
@@ -521,6 +535,13 @@ fun SearchScreen(
     onSelectPlace: (String) -> Unit,
     onBack: () -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
+    val searchFieldLabel = stringResource(R.string.search_field_label)
+    val submitSearch = {
+        onQueryChange(query.trim())
+        focusManager.clearFocus()
+    }
+
     ScreenScaffold(
         title = stringResource(R.string.search_title),
         showBack = true,
@@ -533,13 +554,19 @@ fun SearchScreen(
             contentPadding = PaddingValues(bottom = 16.dp),
         ) {
             item {
-                OutlinedTextField(
+                AccessibleSearchTextField(
                     value = query,
                     onValueChange = onQueryChange,
+                    label = searchFieldLabel,
+                    onSearch = submitSearch,
                     modifier = Modifier.fillMaxWidth(),
-                    leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-                    label = { Text(stringResource(R.string.search_field_label)) },
-                    singleLine = true,
+                )
+            }
+            item {
+                PrimaryActionButton(
+                    label = stringResource(R.string.search_title),
+                    icon = Icons.Filled.Search,
+                    onClick = submitSearch,
                 )
             }
             if (isLoading) {
@@ -1021,6 +1048,91 @@ fun CurrentPositionScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun AccessibleSearchTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    onSearch: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val currentOnValueChange by rememberUpdatedState(onValueChange)
+    val currentOnSearch by rememberUpdatedState(onSearch)
+    val textColor = MaterialTheme.colorScheme.onSurface
+    val hintColor = MaterialTheme.colorScheme.onSurfaceVariant
+
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+            val density = context.resources.displayMetrics.density
+            val editText = TextInputEditText(context).apply {
+                hint = null
+                setSingleLine(true)
+                inputType = InputType.TYPE_CLASS_TEXT or
+                    InputType.TYPE_TEXT_FLAG_CAP_WORDS or
+                    InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+                imeOptions = EditorInfo.IME_ACTION_SEARCH
+                minHeight = (56 * density).toInt()
+                setText(value)
+                setSelection(text?.length ?: 0)
+                applyAccessibleSearchEditTextAnnouncement(this, label)
+                addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        currentOnValueChange(s?.toString().orEmpty())
+                    }
+                    override fun afterTextChanged(s: Editable?) = Unit
+                })
+                setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        currentOnSearch()
+                        true
+                    } else {
+                        false
+                    }
+                }
+            }
+
+            TextInputLayout(context).apply {
+                boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_OUTLINE
+                isHintEnabled = true
+                hint = label
+                addView(
+                    editText,
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                    ),
+                )
+            }
+        },
+        update = { inputLayout ->
+            val editText = inputLayout.editText ?: return@AndroidView
+            if (!editText.hasFocus() && editText.text?.toString().orEmpty() != value) {
+                editText.setText(value)
+                editText.setSelection(editText.text?.length ?: 0)
+            }
+            inputLayout.hint = label
+            editText.setTextColor(textColor.toArgb())
+            editText.setHintTextColor(hintColor.toArgb())
+            applyAccessibleSearchEditTextAnnouncement(editText, label)
+        },
+    )
+}
+
+private fun applyAccessibleSearchEditTextAnnouncement(editText: EditText, label: String) {
+    editText.contentDescription = null
+    editText.accessibilityDelegate = object : View.AccessibilityDelegate() {
+        override fun onInitializeAccessibilityNodeInfo(host: View, info: AccessibilityNodeInfo) {
+            super.onInitializeAccessibilityNodeInfo(host, info)
+            val currentText = editText.text?.toString().orEmpty().trim()
+            info.contentDescription = null
+            info.hintText = label
+            info.text = if (currentText.isBlank()) label else "$label ($currentText)"
         }
     }
 }
