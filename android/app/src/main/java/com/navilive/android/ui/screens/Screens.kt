@@ -61,7 +61,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -86,7 +85,11 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -146,11 +149,16 @@ private fun ScreenScaffold(
     actions: @Composable (() -> Unit)? = null,
     content: @Composable (Modifier) -> Unit,
 ) {
-    Scaffold(
-        modifier = Modifier.semantics { isTraversalGroup = true },
-        topBar = {
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .semantics { isTraversalGroup = true },
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
             CenterAlignedTopAppBar(
-                modifier = Modifier.semantics { traversalIndex = -1f },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics { traversalIndex = -1f },
                 title = {
                     Text(
                         text = title,
@@ -166,14 +174,15 @@ private fun ScreenScaffold(
                 },
                 actions = { actions?.invoke() },
             )
-        },
-    ) { innerPadding ->
-        content(
-            Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-        )
+
+            Box(modifier = Modifier.weight(1f)) {
+                content(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                )
+            }
+        }
     }
 }
 
@@ -1235,7 +1244,6 @@ fun SettingsScreen(
                         onSpeechOutputModeChange = onSpeechOutputModeChange,
                         onSystemTtsEngineChange = onSystemTtsEngineChange,
                         onOpenSystemTtsSettings = onOpenSystemTtsSettings,
-                        onPreviewSpeech = onPreviewSpeech,
                     )
                     VoiceSliderCard(
                         title = stringResource(R.string.settings_speech_rate_title),
@@ -1243,7 +1251,7 @@ fun SettingsScreen(
                         value = state.speechRatePercent,
                         valueRange = 50f..200f,
                         steps = 29,
-                        enabled = state.speechOutputMode == SpeechOutputMode.System,
+                        enabled = true,
                         disabledMessage = stringResource(R.string.settings_speech_controls_disabled_message),
                         onCommit = onSpeechRateChange,
                     )
@@ -1253,10 +1261,31 @@ fun SettingsScreen(
                         value = state.speechVolumePercent,
                         valueRange = 0f..100f,
                         steps = 19,
-                        enabled = state.speechOutputMode == SpeechOutputMode.System,
+                        enabled = true,
                         disabledMessage = stringResource(R.string.settings_speech_controls_disabled_message),
                         onCommit = onSpeechVolumeChange,
                     )
+                    val previewSpeechLabel = stringResource(R.string.settings_speech_preview_button)
+                    FilledTonalButton(
+                        onClick = onPreviewSpeech,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clearAndSetSemantics {
+                                contentDescription = previewSpeechLabel
+                                role = Role.Button
+                                onClick(label = previewSpeechLabel) {
+                                    onPreviewSpeech()
+                                    true
+                                }
+                            },
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.VolumeUp, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = previewSpeechLabel,
+                            modifier = Modifier.clearAndSetSemantics { },
+                        )
+                    }
                 }
                 SettingsDestination.App -> {
                     LanguageSettingsCard(language = state.language)
@@ -2092,7 +2121,6 @@ private fun VoiceOutputSettingsCard(
     onSpeechOutputModeChange: (SpeechOutputMode) -> Unit,
     onSystemTtsEngineChange: (String?) -> Unit,
     onOpenSystemTtsSettings: () -> Unit,
-    onPreviewSpeech: () -> Unit,
 ) {
     val sourceMessage = when (state.speechOutputMode) {
         SpeechOutputMode.System -> stringResource(R.string.settings_speech_source_system_status)
@@ -2138,14 +2166,6 @@ private fun VoiceOutputSettingsCard(
                 onSystemTtsEngineChange = onSystemTtsEngineChange,
                 onOpenSystemTtsSettings = onOpenSystemTtsSettings,
             )
-            FilledTonalButton(
-                onClick = onPreviewSpeech,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Icon(Icons.AutoMirrored.Filled.VolumeUp, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.settings_speech_preview_button))
-            }
         }
     }
 }
@@ -2309,20 +2329,30 @@ private fun VoiceSliderCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            val sliderPercentText = stringResource(
+                R.string.format_percent_value,
+                sliderValue.roundToInt(),
+            )
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(title, fontWeight = FontWeight.SemiBold)
                 Text(
-                    text = stringResource(R.string.format_percent_value, sliderValue.roundToInt()),
+                    text = title,
+                    modifier = Modifier.clearAndSetSemantics { },
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text = sliderPercentText,
+                    modifier = Modifier.clearAndSetSemantics { },
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             Text(
                 text = description,
+                modifier = Modifier.clearAndSetSemantics { },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -2334,27 +2364,13 @@ private fun VoiceSliderCard(
                 valueRange = valueRange,
                 steps = steps,
                 enabled = enabled,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics {
+                        contentDescription = title + String(charArrayOf(':', ' ')) + sliderPercentText
+                        stateDescription = sliderPercentText
+                    },
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                OutlinedButton(
-                    onClick = { commitValue(sliderValue - 5f) },
-                    enabled = enabled && sliderValue > valueRange.start,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text(stringResource(R.string.settings_slider_decrease))
-                }
-                OutlinedButton(
-                    onClick = { commitValue(sliderValue + 5f) },
-                    enabled = enabled && sliderValue < valueRange.endInclusive,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text(stringResource(R.string.settings_slider_increase))
-                }
-            }
             if (!enabled) {
                 Text(
                     text = disabledMessage,
