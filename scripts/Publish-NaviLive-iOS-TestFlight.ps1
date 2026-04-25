@@ -47,7 +47,7 @@ Invoke-GitHub @workflowArgs
 
 Start-Sleep -Seconds 8
 
-$runJson = gh run list --repo $RepoSlug --workflow "ios-signed-testflight.yml" --branch $Ref --limit 1 --json databaseId,url,status,conclusion,headSha
+$runJson = gh run list --repo $RepoSlug --workflow "ios-signed-testflight.yml" --branch $Ref --limit 1 --json databaseId,status,conclusion,headSha
 if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($runJson)) {
   throw "Unable to resolve the latest workflow run."
 }
@@ -56,11 +56,12 @@ $run = $runJson | ConvertFrom-Json | Select-Object -First 1
 if (-not $run) {
   throw "No workflow run found after dispatch."
 }
+$runUrl = "https://github.com/$RepoSlug/actions/runs/$($run.databaseId)"
 
 Write-Host ""
 Write-Host "Latest run:"
 Write-Host ("- Run ID: " + $run.databaseId)
-Write-Host ("- URL: " + $run.url)
+Write-Host ("- URL: " + $runUrl)
 Write-Host ("- Head SHA: " + $run.headSha)
 Write-Host ("- Status: " + $run.status)
 
@@ -69,10 +70,10 @@ if (-not $NoWait) {
   Write-Host "==> Waiting for workflow completion"
   & gh run watch $run.databaseId --repo $RepoSlug --exit-status
   if ($LASTEXITCODE -ne 0) {
-    throw "Workflow run failed: $($run.url)"
+    throw "Workflow run failed: $runUrl"
   }
 }
 
 Write-Host ""
 Write-Host "Workflow completed successfully."
-Write-Host ("URL: " + $run.url)
+Write-Host ("URL: " + $runUrl)

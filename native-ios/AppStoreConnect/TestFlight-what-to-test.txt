@@ -1,33 +1,33 @@
 POLSKI
 
-Sprawdź ekran główny aplikacji.
-Najważniejsze: Navi Live ma być czytane jako pierwszy element, a Ustawienia jako ostatnia główna kontrolka ekranu.
+Sprawdz ekran wyszukiwania celu.
+Najwazniejsze: pole edycyjne ma byc jasno podpisane jako Wpisz adres / miejsce, a pod nim ma byc osobny przycisk Szukaj.
 
-Sprawdź Ustawienia, sekcję Mowa.
-Najważniejsze: przy przechodzeniu flickami mają zostać tylko dwa suwaki mowy: Szybkość mowy i Głośność mowy. Nie powinno być osobnych długich opisów ani dodatkowych przycisków zmniejszania i zwiększania.
+Sprawdz wpisywanie i zatwierdzanie wyszukiwania.
+Najwazniejsze: wpisywanie tekstu, przycisk Szukaj i klawisz Szukaj/Enter z klawiatury maja normalnie uruchamiac wyszukiwanie bez gubienia fokusu czytnika ekranu.
 
-Sprawdź obsługę suwaków z czytnikiem ekranu.
-Najważniejsze: zwiększanie wartości ma podnosić szybkość lub głośność, a zmniejszanie wartości ma je obniżać.
+Sprawdz wyniki wyszukiwania.
+Najwazniejsze: adresy maja byc czytelne, a wybor wyniku ma prowadzic do szczegolow miejsca i podsumowania trasy.
 
-Sprawdź przycisk Podgląd mowy.
-Najważniejsze: ma być na końcu sekcji Mowa, po obu suwakach, i ma mieć poprawną etykietę.
+Sprawdz ekran glowny aplikacji.
+Najwazniejsze: Navi Live ma byc czytane jako pierwszy element, a Ustawienia jako ostatnia glowna kontrolka ekranu.
 
-Sprawdź sekcję Dźwięki.
-Najważniejsze: dźwięki nawigacji i ich podgląd są w osobnej kategorii Dźwięki, a nie w środku ustawień prowadzenia.
+Sprawdz Ustawienia, sekcje Mowa i Dzwieki.
+Najwazniejsze: suwaki mowy maja dzialac w dobra strone, Podglad mowy ma byc na koncu sekcji Mowa, a dzwieki nawigacji maja byc w osobnej kategorii Dzwieki.
 
 ENGLISH
+
+Please test the destination search screen.
+Focus on the edit field being clearly labeled Enter address / place, with a separate Search button below it.
+
+Please test typing and submitting a search.
+Focus on text entry, the Search button, and the keyboard Search/Enter action starting search without losing screen reader focus.
+
+Please test search results.
+Focus on addresses being readable and selecting a result opening place details and route summary.
 
 Please test the Home screen.
 Focus on Navi Live being read first and Settings being the last main control on the screen.
 
-Please test Settings, Speech.
-Focus on flick navigation exposing only two speech sliders: Speech rate and Speech volume. There should be no separate long descriptions and no extra decrease or increase buttons.
-
-Please test the sliders with the screen reader.
-Focus on increasing the value raising the rate or volume, and decreasing the value lowering it.
-
-Please test the Speech preview button.
-Focus on it being at the end of the Speech section, after both sliders, with a correct label.
-
-Please test the Sounds section.
-Focus on navigation sounds and their preview being in a separate Sounds category, not inside Guidance settings.
+Please test Settings, Speech and Sounds.
+Focus on speech sliders moving in the correct direction, Speech preview being last in Speech, and navigation sounds staying in the separate Sounds category.
