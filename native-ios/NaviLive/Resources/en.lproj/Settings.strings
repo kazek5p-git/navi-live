@@ -41,15 +41,13 @@
 "settings.speech.preview.footer" = "The preview uses the built-in synthesizer so you can hear the current rate and volume settings.";
 "settings.speech.preview.sample" = "This is a Navi Live speech preview using the current speech settings.";
 "settings.speech_mode.updated" = "Speech mode updated.";
-"settings.group.app_updates" = "App and updates";
+"settings.group.app_updates" = "App";
 "settings.group.app_updates.summary" = "App information.";
 "settings.group.help_privacy.summary" = "Help and policies.";
 "settings.language.detected" = "Detected from phone";
 "settings.language.detected_message" = "Navi Live follows your phone language automatically.";
 "settings.section.support" = "Help and updates";
 "settings.action.help_privacy" = "Help, support and privacy";
-"settings.updates.title" = "App updates";
-"settings.updates.message" = "On iPhone, updates are delivered through TestFlight or the App Store. Navi Live does not sideload updates from inside the app.";
 "settings.section.about" = "About";
 "settings.about.version" = "Version";
 "settings.about.build" = "Build";
@@ -59,6 +57,5 @@
 "help.section.support" = "Support";
 "help.support.issues" = "Open GitHub issues";
 "help.support.repository" = "Open project repository";
-"help.support.footer" = "Support links open outside the app in Safari.";
 "help.section.privacy" = "Privacy";
 "help.privacy.body" = "Navi Live stores favorites and guidance preferences on the device. Search, reverse geocoding and route preparation use online services only when you ask for them.";

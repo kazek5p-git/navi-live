@@ -20,7 +20,7 @@
 "search.action.search" = "Szukaj";
 "search.section.results" = "Wyniki";
 "search.status.loading" = "Wyszukiwanie pobliskich miejsc";
-"search.status.empty" = "Rozpocznij od wyszukania celu, aby zobaczyć wyniki.";
+"search.status.no_results" = "Brak wyników.";
 "search.status.results" = "Znaleziono %d wyników.";
 "search.status.error" = "Wyszukiwanie nie powiodło się. Spróbuj ponownie.";
 "search.result.meta" = "%@, %@";

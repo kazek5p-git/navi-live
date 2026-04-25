@@ -35,51 +35,49 @@ struct SearchView: View {
         }
       }
 
-      Section {
-        if model.searchResults.isEmpty {
-          Text(L10n.text("search.status.empty", table: .home))
-            .foregroundStyle(.secondary)
-        } else {
-          ForEach(model.searchResults) { place in
-            Button {
-              model.openPlaceDetails(place.id)
-            } label: {
-              VStack(alignment: .leading, spacing: 4) {
-                Text(place.name)
-                  .font(.headline)
-                Text(place.address)
-                  .font(.subheadline)
-                  .foregroundStyle(.secondary)
-                Text(
-                  L10n.text(
-                    "search.result.meta",
-                    table: .home,
-                    AppFormatters.distance(place.walkDistanceMeters),
-                    AppFormatters.eta(minutes: place.walkEtaMinutes)
+      if !model.isSearching && (model.hasPerformedSearch || !model.searchResults.isEmpty) {
+        Section {
+          if model.searchResults.isEmpty {
+            Text(model.statusMessage)
+              .foregroundStyle(.secondary)
+          } else {
+            ForEach(model.searchResults) { place in
+              Button {
+                model.openPlaceDetails(place.id)
+              } label: {
+                VStack(alignment: .leading, spacing: 4) {
+                  Text(place.name)
+                    .font(.headline)
+                  Text(place.address)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                  Text(
+                    L10n.text(
+                      "search.result.meta",
+                      table: .home,
+                      AppFormatters.distance(place.walkDistanceMeters),
+                      AppFormatters.eta(minutes: place.walkEtaMinutes)
+                    )
                   )
-                )
-                .font(.footnote)
-                .foregroundStyle(.tertiary)
+                  .font(.footnote)
+                  .foregroundStyle(.tertiary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
               }
-              .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .accessibilityLabel(
-              L10n.text(
-                "search.result.accessibility",
-                table: .home,
-                place.name,
-                place.address,
-                AppFormatters.distance(place.walkDistanceMeters),
-                AppFormatters.eta(minutes: place.walkEtaMinutes)
+              .accessibilityLabel(
+                L10n.text(
+                  "search.result.accessibility",
+                  table: .home,
+                  place.name,
+                  place.address,
+                  AppFormatters.distance(place.walkDistanceMeters),
+                  AppFormatters.eta(minutes: place.walkEtaMinutes)
+                )
               )
-            )
+            }
           }
-        }
-      } header: {
-        Text(L10n.text("search.section.results", table: .home))
-      } footer: {
-        if !model.statusMessage.isEmpty {
-          Text(model.statusMessage)
+        } header: {
+          Text(L10n.text("search.section.results", table: .home))
         }
       }
     }

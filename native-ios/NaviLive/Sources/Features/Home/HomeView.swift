@@ -47,8 +47,6 @@ struct HomeView: View {
         ) {
           model.openFavorites()
         }
-      } header: {
-        Text(L10n.text("home.section.actions", table: .home))
       }
 
       if let lastRoutePlaceID = model.lastRoutePlaceID,

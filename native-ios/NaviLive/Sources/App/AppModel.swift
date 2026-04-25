@@ -15,6 +15,7 @@ final class AppModel: ObservableObject {
   @Published var path: [AppRoute] = []
   @Published var searchQuery = ""
   @Published var searchResults: [Place] = []
+  @Published var hasPerformedSearch = false
   @Published var currentLocationDescription = ""
   @Published var statusMessage = ""
   @Published var settings: AppSettings
@@ -193,9 +194,11 @@ final class AppModel: ObservableObject {
     let query = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
     guard !query.isEmpty else {
       searchResults = []
+      hasPerformedSearch = false
       return
     }
 
+    hasPerformedSearch = true
     isSearching = true
     defer { isSearching = false }
 
@@ -203,7 +206,9 @@ final class AppModel: ObservableObject {
       let results = try await navigationAPI.searchPlaces(query: query, near: locationService.latestFix?.point)
       searchResults = results
       results.forEach { knownPlaces[$0.id] = $0 }
-      statusMessage = L10n.text("search.status.results", table: .home, results.count)
+      statusMessage = results.isEmpty
+        ? L10n.text("search.status.no_results", table: .home)
+        : L10n.text("search.status.results", table: .home, results.count)
     } catch {
       searchResults = []
       statusMessage = L10n.text("search.status.error", table: .home)

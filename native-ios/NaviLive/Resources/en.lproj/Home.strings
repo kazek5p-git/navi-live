@@ -20,7 +20,7 @@
 "search.action.search" = "Search";
 "search.section.results" = "Results";
 "search.status.loading" = "Searching nearby places";
-"search.status.empty" = "Start with a search to see nearby destinations.";
+"search.status.no_results" = "No results.";
 "search.status.results" = "%d results found.";
 "search.status.error" = "Search failed. Please try again.";
 "search.result.meta" = "%@, %@";

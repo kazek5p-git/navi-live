@@ -385,17 +385,6 @@ private struct AppSettingsDetailView: View {
       }
 
       Section {
-        VStack(alignment: .leading, spacing: 4) {
-          Text(L10n.text("settings.updates.title", table: .settings))
-            .font(.headline)
-          Text(L10n.text("settings.updates.message", table: .settings))
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-        }
-        .accessibilityElement(children: .combine)
-      }
-
-      Section {
         LabeledContent(L10n.text("settings.about.version", table: .settings), value: model.appVersionLabel)
         LabeledContent(L10n.text("settings.about.build", table: .settings), value: model.appBuildLabel)
       }

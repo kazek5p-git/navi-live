@@ -23,8 +23,6 @@ struct HelpPrivacyView: View {
         }
       } header: {
         Text(L10n.text("help.section.support", table: .settings))
-      } footer: {
-        Text(L10n.text("help.support.footer", table: .settings))
       }
 
       Section {

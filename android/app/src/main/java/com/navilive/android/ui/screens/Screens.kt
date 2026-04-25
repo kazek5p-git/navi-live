@@ -525,49 +525,36 @@ fun SearchScreen(
             contentPadding = PaddingValues(bottom = 16.dp),
         ) {
             item {
-                StatusCard(
-                    title = stringResource(R.string.search_status_title),
-                    message = stringResource(R.string.search_status_message),
-                    tone = BannerTone.Info,
-                )
-            }
-            item {
                 OutlinedTextField(
                     value = query,
                     onValueChange = onQueryChange,
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                     label = { Text(stringResource(R.string.search_field_label)) },
-                    supportingText = { Text(stringResource(R.string.search_field_supporting)) },
                     singleLine = true,
                 )
             }
             if (isLoading) {
                 item { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()) }
             }
-            item {
-                SectionHeading(
-                    if (query.isBlank()) {
-                        stringResource(R.string.search_suggested_places)
-                    } else {
-                        stringResource(R.string.search_results)
-                    },
-                )
-            }
-            if (results.isEmpty()) {
+            if (results.isNotEmpty() || query.isNotBlank()) {
                 item {
-                    EmptyStateCard(
-                        title = if (query.isBlank()) {
-                            stringResource(R.string.search_empty_start_title)
+                    SectionHeading(
+                        if (query.isBlank()) {
+                            stringResource(R.string.search_suggested_places)
                         } else {
-                            stringResource(R.string.search_empty_results_title)
-                        },
-                        message = if (query.isBlank()) {
-                            stringResource(R.string.search_empty_start_message)
-                        } else {
-                            stringResource(R.string.search_empty_results_message)
+                            stringResource(R.string.search_results)
                         },
                     )
+                }
+            }
+            if (results.isEmpty()) {
+                if (query.isNotBlank() && !isLoading) {
+                    item {
+                        EmptyStateCard(
+                            title = stringResource(R.string.search_empty_results_title),
+                        )
+                    }
                 }
             } else {
                 items(results, key = { it.id }) { place ->
@@ -2006,7 +1993,7 @@ private fun SecondaryActionButton(
 @Composable
 private fun StatusCard(
     title: String,
-    message: String,
+    message: String = "",
     tone: BannerTone,
     modifier: Modifier = Modifier,
 ) {
@@ -2102,7 +2089,7 @@ private fun HelperMapCard(
 @Composable
 private fun EmptyStateCard(
     title: String,
-    message: String,
+    message: String = "",
 ) {
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -2110,7 +2097,9 @@ private fun EmptyStateCard(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(title, fontWeight = FontWeight.Bold)
-            Text(message, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (message.isNotBlank()) {
+                Text(message, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         }
     }
 }
@@ -2434,11 +2423,6 @@ private fun AppUpdateCard(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             CardTitle(stringResource(R.string.settings_updates_title))
-            Text(
-                text = stringResource(R.string.settings_updates_message),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
             LabelValue(
                 label = stringResource(R.string.settings_updates_current_version),
                 value = updateState.currentVersionLabel,

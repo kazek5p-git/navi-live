@@ -41,15 +41,13 @@
 "settings.speech.preview.footer" = "Podgląd używa wbudowanego syntezatora, żeby było słychać aktualną szybkość i głośność.";
 "settings.speech.preview.sample" = "To jest próbka głosu Navi Live z bieżącymi ustawieniami mowy.";
 "settings.speech_mode.updated" = "Zaktualizowano tryb mowy.";
-"settings.group.app_updates" = "Aplikacja i aktualizacje";
+"settings.group.app_updates" = "Aplikacja";
 "settings.group.app_updates.summary" = "Informacje o aplikacji.";
 "settings.group.help_privacy.summary" = "Pomoc i zasady.";
 "settings.language.detected" = "Wykryto z telefonu";
 "settings.language.detected_message" = "Navi Live automatycznie używa języka ustawionego w telefonie.";
 "settings.section.support" = "Pomoc i aktualizacje";
 "settings.action.help_privacy" = "Pomoc, wsparcie i prywatność";
-"settings.updates.title" = "Aktualizacje aplikacji";
-"settings.updates.message" = "Na iPhonie aktualizacje są dostarczane przez TestFlight albo App Store. Navi Live nie instaluje aktualizacji z poziomu samej aplikacji.";
 "settings.section.about" = "Informacje";
 "settings.about.version" = "Wersja";
 "settings.about.build" = "Build";
@@ -59,6 +57,5 @@
 "help.section.support" = "Wsparcie";
 "help.support.issues" = "Otwórz zgłoszenia GitHub";
 "help.support.repository" = "Otwórz repozytorium projektu";
-"help.support.footer" = "Linki wsparcia otwierają się poza aplikacją w Safari.";
 "help.section.privacy" = "Prywatność";
 "help.privacy.body" = "Navi Live przechowuje ulubione i preferencje prowadzenia na urządzeniu. Wyszukiwanie, geokodowanie odwrotne i wyznaczanie trasy korzystają z usług online tylko wtedy, gdy o to poprosisz.";
