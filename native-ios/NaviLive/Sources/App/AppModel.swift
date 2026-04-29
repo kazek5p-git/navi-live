@@ -27,6 +27,7 @@ final class AppModel: ObservableObject {
   @Published var isSearching = false
   @Published var isRouting = false
   @Published var hasCompletedOnboarding: Bool
+  @Published var isLiveTracking = false
 
   let locationService: LocationService
 
@@ -136,6 +137,22 @@ final class AppModel: ObservableObject {
 
   func requestLocationPermission() {
     locationService.requestPermission()
+  }
+
+  func toggleLiveTracking() {
+    guard hasLocationPermission else {
+      requestLocationPermission()
+      return
+    }
+
+    if locationService.isUpdating {
+      locationService.stopUpdates()
+      statusMessage = L10n.text("home.status.live_tracking_stopped", table: .home)
+    } else {
+      locationService.startUpdates()
+      statusMessage = L10n.text("home.status.live_tracking_started", table: .home)
+      Task { await loadCurrentAddress() }
+    }
   }
 
   func continueWithoutPermission() {
@@ -456,6 +473,13 @@ final class AppModel: ObservableObject {
         guard let self else { return }
         Task { await self.loadCurrentAddress() }
         self.syncActiveNavigationWithLocation(fix)
+      }
+      .store(in: &cancellables)
+
+    locationService.$isUpdating
+      .removeDuplicates()
+      .sink { [weak self] isUpdating in
+        self?.isLiveTracking = isUpdating
       }
       .store(in: &cancellables)
   }

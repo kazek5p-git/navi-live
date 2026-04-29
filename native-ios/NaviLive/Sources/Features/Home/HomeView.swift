@@ -8,22 +8,19 @@ struct HomeView: View {
       Section {
         StatusCard(
           title: L10n.text("home.section.location", table: .home),
-          message: model.currentLocationDescription.isEmpty
-            ? L10n.text("home.location.waiting", table: .home)
-            : model.currentLocationDescription,
+          message: currentLocationMessage,
           tone: model.hasLocationPermission ? .success : .warning
         )
         .accessibilityHint(L10n.text("home.location.hint", table: .home))
       }
 
       Section {
-        StatusCard(
-          title: L10n.text("home.section.status", table: .home),
-          message: model.statusMessage.isEmpty
-            ? L10n.text("home.status.ready", table: .home)
-            : model.statusMessage,
-          tone: .info
-        )
+        SecondaryActionButton(
+          title: liveTrackingActionTitle,
+          systemImage: liveTrackingSystemImage
+        ) {
+          model.toggleLiveTracking()
+        }
       }
 
       Section {
@@ -89,6 +86,38 @@ struct HomeView: View {
     .refreshable {
       await model.loadCurrentAddress()
     }
+  }
+
+  private var currentLocationMessage: String {
+    guard !model.currentLocationDescription.isEmpty else {
+      return L10n.text("home.location.waiting", table: .home)
+    }
+
+    guard let accuracyMeters = model.locationService.latestFix?.accuracyMeters else {
+      return model.currentLocationDescription
+    }
+
+    let accuracyLabel = L10n.text(
+      "home.location.accuracy",
+      table: .home,
+      Int(accuracyMeters.rounded())
+    )
+    return "\(model.currentLocationDescription)\n\(accuracyLabel)"
+  }
+
+  private var liveTrackingActionTitle: String {
+    guard model.hasLocationPermission else {
+      return L10n.text("home.action.grant_location_access", table: .home)
+    }
+
+    return model.isLiveTracking
+      ? L10n.text("home.action.stop_live_tracking", table: .home)
+      : L10n.text("home.action.start_live_tracking", table: .home)
+  }
+
+  private var liveTrackingSystemImage: String {
+    guard model.hasLocationPermission else { return "location.circle" }
+    return model.isLiveTracking ? "stop.circle" : "location.viewfinder"
   }
 }
 

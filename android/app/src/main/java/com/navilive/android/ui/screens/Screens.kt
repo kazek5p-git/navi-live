@@ -2748,11 +2748,14 @@ private fun locationStatus(
             message = stringResource(R.string.location_status_gps_weak_message),
             tone = BannerTone.Warning,
         )
-        else -> StatusPresentation(
-            title = stringResource(R.string.location_status_ready_title),
-            message = currentLocation,
-            tone = BannerTone.Success,
-        )
+        else -> {
+            val accuracyLabel = stringResource(R.string.current_position_accuracy, accuracyMeters.roundToInt())
+            StatusPresentation(
+                title = stringResource(R.string.location_status_ready_title),
+                message = "$currentLocation\n$accuracyLabel",
+                tone = BannerTone.Success,
+            )
+        }
     }
 }
 
