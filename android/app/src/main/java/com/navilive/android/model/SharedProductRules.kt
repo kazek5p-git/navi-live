@@ -39,10 +39,13 @@ object SharedProductRules {
         const val nearbyLimit: Int = 10
         const val globalLimit: Int = 16
         const val resultLimit: Int = 8
-        const val nearbyRadiusKm: Double = 12.0
-        const val globalRadiusKm: Double = 60.0
+        const val nearbyRadiusKm: Double = 8.0
+        const val globalRadiusKm: Double = 25.0
         const val viewBoxMinimumCosine: Double = 0.2
         const val walkingEtaMetersPerMinute: Double = 75.0
+        const val localPoiRadiusMeters: Int = 3000
+        const val localPoiLimit: Int = 40
+        const val overpassTimeoutSeconds: Int = 12
 
         const val exactNameScore: Int = 600
         const val prefixNameScore: Int = 320
@@ -50,6 +53,10 @@ object SharedProductRules {
         const val prefixTokenScore: Int = 180
         const val containsTokenScore: Int = 140
         const val addressTokenScore: Int = 60
+        const val localPoiScore: Int = 900
+        const val categoryMatchScore: Int = 850
+        const val railQueryStationScore: Int = 1000
+        const val railQueryBusStopPenalty: Int = 450
         const val distancePenaltyDivisorMeters: Int = 2500
         const val distancePenaltyCap: Int = 120
 

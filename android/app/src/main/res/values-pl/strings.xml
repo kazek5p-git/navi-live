@@ -11,6 +11,16 @@
     <string name="start_last_route_title">Ostatnia trasa</string>
     <string name="start_resume_last_route">Wznów ostatnią trasę</string>
     <string name="start_quick_favorites_title">Szybkie ulubione</string>
+
+    <string name="search_type_bus_stop">Przystanek autobusowy: %1$s</string>
+    <string name="search_type_tram_stop">Przystanek tramwajowy: %1$s</string>
+    <string name="search_type_rail_station">Stacja kolejowa: %1$s</string>
+    <string name="search_type_parcel_locker">Paczkomat: %1$s</string>
+    <string name="search_type_unnamed_shop">Sklep</string>
+    <string name="search_type_unnamed_parcel_locker">Paczkomat</string>
+    <string name="search_type_unnamed_rail_station">Stacja kolejowa</string>
+    <string name="search_type_unnamed_bus_stop">Przystanek autobusowy</string>
+    <string name="search_type_unnamed_tram_stop">Przystanek tramwajowy</string>
     <string name="bootstrap_loading_title">Przygotowuję nawigację</string>
     <string name="bootstrap_loading_message">Przywracam ulubione miejsca, ustawienia i ostatnią trasę.</string>
     <string name="onboarding_title">Witamy</string>

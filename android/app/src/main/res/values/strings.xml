@@ -15,6 +15,16 @@
     <string name="start_resume_last_route">Resume last route</string>
     <string name="start_quick_favorites_title">Quick favorites</string>
 
+    <string name="search_type_bus_stop">Bus stop: %1$s</string>
+    <string name="search_type_tram_stop">Tram stop: %1$s</string>
+    <string name="search_type_rail_station">Railway station: %1$s</string>
+    <string name="search_type_parcel_locker">Parcel locker: %1$s</string>
+    <string name="search_type_unnamed_shop">Shop</string>
+    <string name="search_type_unnamed_parcel_locker">Parcel locker</string>
+    <string name="search_type_unnamed_rail_station">Railway station</string>
+    <string name="search_type_unnamed_bus_stop">Bus stop</string>
+    <string name="search_type_unnamed_tram_stop">Tram stop</string>
+
     <string name="bootstrap_loading_title">Loading navigation setup</string>
     <string name="bootstrap_loading_message">Restoring saved favorites, settings and the last route.</string>
 

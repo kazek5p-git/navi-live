@@ -9,8 +9,17 @@ Najwazniejsze: wpisywanie tekstu, przycisk Szukaj i klawisz Szukaj/Enter z klawi
 Sprawdz wyniki wyszukiwania.
 Najwazniejsze: adresy maja byc czytelne, a wybor wyniku ma prowadzic do szczegolow miejsca i podsumowania trasy.
 
+Sprawdz lokalne wyszukiwanie punktow w okolicy.
+Najwazniejsze: zapytania Lidl, Biedronka, Zabka, sklep i paczkomat maja pokazywac najpierw bliskie wyniki, a nie odlegle miejsca z innych dzielnic lub miast.
+
+Sprawdz wyszukiwanie stacji kolejowych.
+Najwazniejsze: zapytania typu PKP Falenica albo stacja kolejowa maja preferowac stacje kolejowe; przystanki autobusowe powinny byc jasno opisane jako przystanki autobusowe.
+
 Sprawdz ekran glowny aplikacji.
-Najwazniejsze: Navi Live ma byc czytane jako pierwszy element, a Ustawienia jako ostatnia glowna kontrolka ekranu.
+Najwazniejsze: Navi Live ma byc czytane jako pierwszy element, biezaca lokalizacja ma pokazywac przyblizona dokladnosc, a Ustawienia jako ostatnia glowna kontrolka ekranu.
+
+Sprawdz iOS ekran glowny.
+Najwazniejsze: zamiast niepotrzebnego statusu gotowosci ma byc przycisk Wlacz/Zatrzymaj sledzenie na zywo.
 
 Sprawdz Ustawienia, sekcje Mowa i Dzwieki.
 Najwazniejsze: suwaki mowy maja dzialac w dobra strone, Podglad mowy ma byc na koncu sekcji Mowa, a dzwieki nawigacji maja byc w osobnej kategorii Dzwieki.
@@ -26,8 +35,17 @@ Focus on text entry, the Search button, and the keyboard Search/Enter action sta
 Please test search results.
 Focus on addresses being readable and selecting a result opening place details and route summary.
 
+Please test local nearby place search.
+Focus on Lidl, Biedronka, Zabka, shop and parcel locker queries showing nearby results first, not distant places from other districts or cities.
+
+Please test railway station search.
+Focus on queries such as PKP Falenica or railway station preferring railway stations; bus stops should be clearly labeled as bus stops.
+
 Please test the Home screen.
-Focus on Navi Live being read first and Settings being the last main control on the screen.
+Focus on Navi Live being read first, current location showing approximate accuracy, and Settings being the last main control on the screen.
+
+Please test the iOS Home screen.
+Focus on the ready status being replaced by the Start/Stop live tracking button.
 
 Please test Settings, Speech and Sounds.
 Focus on speech sliders moving in the correct direction, Speech preview being last in Speech, and navigation sounds staying in the separate Sounds category.

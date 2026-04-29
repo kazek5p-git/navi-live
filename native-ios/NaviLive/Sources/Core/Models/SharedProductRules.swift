@@ -36,10 +36,13 @@ enum SharedProductRules {
     static let nearbyLimit: Int = 10
     static let globalLimit: Int = 16
     static let resultLimit: Int = 8
-    static let nearbyRadiusKm: Double = 12.0
-    static let globalRadiusKm: Double = 60.0
+    static let nearbyRadiusKm: Double = 8.0
+    static let globalRadiusKm: Double = 25.0
     static let viewBoxMinimumCosine: Double = 0.2
     static let walkingEtaMetersPerMinute: Double = 75.0
+    static let localPoiRadiusMeters: Int = 3000
+    static let localPoiLimit: Int = 40
+    static let overpassTimeoutSeconds: Int = 12
 
     static let exactNameScore: Int = 600
     static let prefixNameScore: Int = 320
@@ -47,6 +50,10 @@ enum SharedProductRules {
     static let prefixTokenScore: Int = 180
     static let containsTokenScore: Int = 140
     static let addressTokenScore: Int = 60
+    static let localPoiScore: Int = 900
+    static let categoryMatchScore: Int = 850
+    static let railQueryStationScore: Int = 1000
+    static let railQueryBusStopPenalty: Int = 450
     static let distancePenaltyDivisorMeters: Int = 2500
     static let distancePenaltyCap: Int = 120
 

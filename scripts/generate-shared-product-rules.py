@@ -101,6 +101,9 @@ object SharedProductRules {{
         const val globalRadiusKm: Double = {search['globalRadiusKm']}
         const val viewBoxMinimumCosine: Double = {search['viewBoxMinimumCosine']}
         const val walkingEtaMetersPerMinute: Double = {search['walkingEtaMetersPerMinute']}
+        const val localPoiRadiusMeters: Int = {search['localPoiRadiusMeters']}
+        const val localPoiLimit: Int = {search['localPoiLimit']}
+        const val overpassTimeoutSeconds: Int = {search['overpassTimeoutSeconds']}
 
         const val exactNameScore: Int = {scoring['exactName']}
         const val prefixNameScore: Int = {scoring['prefixName']}
@@ -108,6 +111,10 @@ object SharedProductRules {{
         const val prefixTokenScore: Int = {scoring['prefixToken']}
         const val containsTokenScore: Int = {scoring['containsToken']}
         const val addressTokenScore: Int = {scoring['addressToken']}
+        const val localPoiScore: Int = {scoring['localPoi']}
+        const val categoryMatchScore: Int = {scoring['categoryMatch']}
+        const val railQueryStationScore: Int = {scoring['railQueryStation']}
+        const val railQueryBusStopPenalty: Int = {scoring['railQueryBusStopPenalty']}
         const val distancePenaltyDivisorMeters: Int = {scoring['distancePenaltyDivisorMeters']}
         const val distancePenaltyCap: Int = {scoring['distancePenaltyCap']}
 
@@ -196,6 +203,9 @@ enum SharedProductRules {{
     static let globalRadiusKm: Double = {search['globalRadiusKm']}
     static let viewBoxMinimumCosine: Double = {search['viewBoxMinimumCosine']}
     static let walkingEtaMetersPerMinute: Double = {search['walkingEtaMetersPerMinute']}
+    static let localPoiRadiusMeters: Int = {search['localPoiRadiusMeters']}
+    static let localPoiLimit: Int = {search['localPoiLimit']}
+    static let overpassTimeoutSeconds: Int = {search['overpassTimeoutSeconds']}
 
     static let exactNameScore: Int = {scoring['exactName']}
     static let prefixNameScore: Int = {scoring['prefixName']}
@@ -203,6 +213,10 @@ enum SharedProductRules {{
     static let prefixTokenScore: Int = {scoring['prefixToken']}
     static let containsTokenScore: Int = {scoring['containsToken']}
     static let addressTokenScore: Int = {scoring['addressToken']}
+    static let localPoiScore: Int = {scoring['localPoi']}
+    static let categoryMatchScore: Int = {scoring['categoryMatch']}
+    static let railQueryStationScore: Int = {scoring['railQueryStation']}
+    static let railQueryBusStopPenalty: Int = {scoring['railQueryBusStopPenalty']}
     static let distancePenaltyDivisorMeters: Int = {scoring['distancePenaltyDivisorMeters']}
     static let distancePenaltyCap: Int = {scoring['distancePenaltyCap']}
 

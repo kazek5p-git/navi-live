@@ -26,6 +26,16 @@
 "search.action.search" = "Szukaj";
 "search.section.results" = "Wyniki";
 "search.status.loading" = "Wyszukiwanie pobliskich miejsc";
+"search.type.bus_stop" = "Przystanek autobusowy: %@";
+"search.type.tram_stop" = "Przystanek tramwajowy: %@";
+"search.type.rail_station" = "Stacja kolejowa: %@";
+"search.type.parcel_locker" = "Paczkomat: %@";
+"search.type.unnamed_shop" = "Sklep";
+"search.type.unnamed_parcel_locker" = "Paczkomat";
+"search.type.unnamed_rail_station" = "Stacja kolejowa";
+"search.type.unnamed_bus_stop" = "Przystanek autobusowy";
+"search.type.unnamed_tram_stop" = "Przystanek tramwajowy";
+"search.type.unknown_place" = "Nieznane miejsce";
 "search.status.no_results" = "Brak wyników.";
 "search.status.results" = "Znaleziono %d wyników.";
 "search.status.error" = "Wyszukiwanie nie powiodło się. Spróbuj ponownie.";

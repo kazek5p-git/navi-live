@@ -26,6 +26,16 @@
 "search.action.search" = "Search";
 "search.section.results" = "Results";
 "search.status.loading" = "Searching nearby places";
+"search.type.bus_stop" = "Bus stop: %@";
+"search.type.tram_stop" = "Tram stop: %@";
+"search.type.rail_station" = "Railway station: %@";
+"search.type.parcel_locker" = "Parcel locker: %@";
+"search.type.unnamed_shop" = "Shop";
+"search.type.unnamed_parcel_locker" = "Parcel locker";
+"search.type.unnamed_rail_station" = "Railway station";
+"search.type.unnamed_bus_stop" = "Bus stop";
+"search.type.unnamed_tram_stop" = "Tram stop";
+"search.type.unknown_place" = "Unknown place";
 "search.status.no_results" = "No results.";
 "search.status.results" = "%d results found.";
 "search.status.error" = "Search failed. Please try again.";
