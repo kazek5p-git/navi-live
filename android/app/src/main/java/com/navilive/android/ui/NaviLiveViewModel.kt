@@ -40,6 +40,7 @@ import com.navilive.android.model.SpeechOutputMode
 import com.navilive.android.model.UpdateChannel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -74,6 +75,7 @@ private const val NearbyPoiCacheFreshMs = 24L * 60L * 60L * 1_000L
 private const val NearbyPoiCacheMoveThresholdMeters = 800.0
 private const val NearbyPoiCacheAttemptThrottleMs = 2L * 60L * 1_000L
 private const val CustomFavoritePlaceIdPrefix = "custom-current-"
+private const val NavigationSpeechAfterSoundDelayMs = 500L
 
 class NaviLiveViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -117,6 +119,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     private var nearbyPoiCacheRefreshJob: Job? = null
     private var updateCheckJob: Job? = null
     private var updateDownloadJob: Job? = null
+    private var delayedNavigationSpeechJob: Job? = null
     private val routeCache = mutableMapOf<String, RouteSummary>()
     private var lastReversePoint: GeoPoint? = null
     private var lastReverseTimestampMs: Long = 0L
@@ -938,8 +941,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
                 ),
             )
         }
-        announceNavigationStartInstruction(session)
-        playSoundCueIfEnabled(NavigationSoundCue.Success)
+        announceNavigationStartInstruction(session, soundCue = NavigationSoundCue.Success)
         syncActiveNavigationWithLocation(_uiState.value.locationState.latestFix)
     }
 
@@ -968,11 +970,11 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         _uiState.update { current ->
             val paused = !current.activeNavigationState.isPaused
             pausedNow = paused
-            playSoundCueIfEnabled(if (paused) NavigationSoundCue.Warning else NavigationSoundCue.Success)
+            val delaySpeech = playSoundCueIfEnabled(if (paused) NavigationSoundCue.Warning else NavigationSoundCue.Success)
             if (paused) {
-                speakNavigationNow(string(R.string.spoken_navigation_paused))
+                speakNavigationNow(string(R.string.spoken_navigation_paused), delayAfterSound = delaySpeech)
             } else {
-                speakNavigationNow(string(R.string.spoken_navigation_resumed))
+                speakNavigationNow(string(R.string.spoken_navigation_resumed), delayAfterSound = delaySpeech)
             }
             current.copy(
                 activeNavigationState = current.activeNavigationState.copy(isPaused = paused),
@@ -1023,8 +1025,10 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         resetNavigationAnnouncementState()
         lastTelemetryFixPoint = null
         lastTelemetryFixTimestampMs = 0L
-        playSoundCueIfEnabled(NavigationSoundCue.Arrival)
-        speakNavigationNow(string(R.string.spoken_arrived))
+        speakNavigationNow(
+            string(R.string.spoken_arrived),
+            delayAfterSound = playSoundCueIfEnabled(NavigationSoundCue.Arrival),
+        )
         vibrateDoubleIfEnabled()
         _uiState.update { current ->
             current.copy(
@@ -1878,9 +1882,9 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             )
         }
         if (!alreadyOffRoute) {
-            playSoundCueIfEnabled(NavigationSoundCue.Warning)
+            val delaySpeech = playSoundCueIfEnabled(NavigationSoundCue.Warning)
             vibrateDoubleIfEnabled()
-            speakNavigationNow(string(R.string.navigation_status_off_route_title))
+            speakNavigationNow(string(R.string.navigation_status_off_route_title), delayAfterSound = delaySpeech)
             telemetryLogger.log(
                 type = "off_route_detected",
                 message = "Off-route detected.",
@@ -1983,12 +1987,13 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         lastAnnouncedStepIndex = session.currentStepIndex
         if (_uiState.value.settingsState.turnByTurnAnnouncements) {
             if (session.currentStepIndex != lastImmediateAnnouncedStepIndex) {
-                playSoundCueIfEnabled(session.steps[session.currentStepIndex].soundCue(defaultCue = NavigationSoundCue.TurnNow))
+                val delaySpeech = playSoundCueIfEnabled(session.steps[session.currentStepIndex].soundCue(defaultCue = NavigationSoundCue.TurnNow))
                 speakNavigationNow(
                     string(
                         R.string.format_navigation_immediate_instruction,
                         session.steps[session.currentStepIndex].instruction,
                     ),
+                    delayAfterSound = delaySpeech,
                 )
                 lastImmediateAnnouncedStepIndex = session.currentStepIndex
             }
@@ -2047,8 +2052,10 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
                     upcomingStep.instruction,
                 )
         }
-        playSoundCueIfEnabled(upcomingStep.soundCue(defaultCue = NavigationSoundCue.Countdown))
-        speakNavigationNow(spokenMessage)
+        speakNavigationNow(
+            spokenMessage,
+            delayAfterSound = playSoundCueIfEnabled(upcomingStep.soundCue(defaultCue = NavigationSoundCue.Countdown)),
+        )
         vibrateShortIfEnabled()
         telemetryLogger.log(
             type = "countdown_instruction_announced",
@@ -2082,12 +2089,13 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         }
 
         lastImmediateAnnouncedStepIndex = upcomingStepIndex
-        playSoundCueIfEnabled(upcomingStep.soundCue(defaultCue = NavigationSoundCue.TurnNow))
+        val delaySpeech = playSoundCueIfEnabled(upcomingStep.soundCue(defaultCue = NavigationSoundCue.TurnNow))
         speakNavigationNow(
             string(
                 R.string.format_navigation_immediate_instruction,
                 upcomingStep.instruction,
             ),
+            delayAfterSound = delaySpeech,
         )
         vibrateShortIfEnabled()
         telemetryLogger.log(
@@ -2159,6 +2167,8 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun resetNavigationAnnouncementState() {
+        delayedNavigationSpeechJob?.cancel()
+        delayedNavigationSpeechJob = null
         lastAnnouncedStepIndex = -1
         resetCountdownAnnouncementState()
         lastImmediateAnnouncedStepIndex = -1
@@ -2170,7 +2180,10 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         lastCountdownCadenceMode = null
     }
 
-    private fun announceNavigationStartInstruction(session: RouteSession) {
+    private fun announceNavigationStartInstruction(
+        session: RouteSession,
+        soundCue: NavigationSoundCue? = null,
+    ) {
         if (!_uiState.value.settingsState.turnByTurnAnnouncements) return
         val instruction = session.steps
             .getOrNull(session.currentStepIndex)
@@ -2178,7 +2191,8 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             ?.takeIf { it.isNotBlank() }
             ?: string(R.string.generic_follow_route_guidance)
         lastAnnouncedStepIndex = session.currentStepIndex
-        speakNavigationNow(instruction)
+        val delaySpeech = soundCue?.let { playSoundCueIfEnabled(it) } ?: false
+        speakNavigationNow(instruction, delayAfterSound = delaySpeech)
         vibrateShortIfEnabled()
         telemetryLogger.log(
             type = "navigation_instruction_announced",
@@ -2287,15 +2301,24 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         feedbackEngine.speak(text)
     }
 
-    private fun speakNavigationNow(text: String) {
-        feedbackEngine.speakNavigation(text)
+    private fun speakNavigationNow(text: String, delayAfterSound: Boolean = false) {
+        delayedNavigationSpeechJob?.cancel()
+        delayedNavigationSpeechJob = null
+        if (!delayAfterSound) {
+            feedbackEngine.speakNavigation(text)
+            return
+        }
+        delayedNavigationSpeechJob = viewModelScope.launch {
+            delay(NavigationSpeechAfterSoundDelayMs)
+            feedbackEngine.speakNavigation(text)
+        }
     }
 
-    private fun playSoundCueIfEnabled(cue: NavigationSoundCue) {
+    private fun playSoundCueIfEnabled(cue: NavigationSoundCue): Boolean {
         val settings = _uiState.value.settingsState
-        if (settings.soundCuesEnabled) {
-            feedbackEngine.playSoundCue(cue, settings.soundCueVolumePercent, settings.soundCueTheme)
-        }
+        if (!settings.soundCuesEnabled) return false
+        feedbackEngine.playSoundCue(cue, settings.soundCueVolumePercent, settings.soundCueTheme)
+        return true
     }
 
     private fun soundCueThemeLabel(theme: SoundCueTheme): String {
@@ -2489,6 +2512,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     }
 
     override fun onCleared() {
+        delayedNavigationSpeechJob?.cancel()
         feedbackEngine.shutdown()
         super.onCleared()
     }

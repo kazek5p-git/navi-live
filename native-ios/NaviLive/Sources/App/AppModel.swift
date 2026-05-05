@@ -46,6 +46,7 @@ final class AppModel: ObservableObject {
   private let pathMonitorQueue = DispatchQueue(label: "NaviLive.NearbyPOICache.Network")
   private var currentNetworkPath: NWPath?
   private var nearbyPOICacheRefreshTask: Task<Void, Never>?
+  private var delayedAnnouncementTask: Task<Void, Never>?
   private var lastNearbyPOICacheAttemptAt: Date?
   private var isNavigationLive = false
   private var lastCountdownAnnouncementStepIndex = -1
@@ -73,6 +74,7 @@ final class AppModel: ObservableObject {
   private static let nearbyPOICacheFreshInterval: TimeInterval = 24 * 60 * 60
   private static let nearbyPOICacheMoveThresholdMeters: Double = 800
   private static let nearbyPOICacheAttemptThrottle: TimeInterval = 2 * 60
+  private static let speechAfterSoundDelayNanoseconds: UInt64 = 500_000_000
 
   convenience init() {
     self.init(
@@ -356,9 +358,9 @@ final class AppModel: ObservableObject {
     announceNavigationPrompt(
       activeNavigationState.currentInstruction.isEmpty
         ? L10n.text("route.follow_default", table: .navigation)
-        : activeNavigationState.currentInstruction
+        : activeNavigationState.currentInstruction,
+      cue: .success
     )
-    playSoundCueIfEnabled(.success)
     if let latestFix = locationService.latestFix {
       syncActiveNavigationWithLocation(latestFix)
     }
@@ -395,8 +397,7 @@ final class AppModel: ObservableObject {
       announceNavigationPrompt(L10n.text("active.status.paused", table: .navigation), warning: true)
     } else {
       statusMessage = L10n.text("active.status.resumed", table: .navigation)
-      announceNavigationPrompt(L10n.text("active.status.resumed", table: .navigation))
-      playSoundCueIfEnabled(.success)
+      announceNavigationPrompt(L10n.text("active.status.resumed", table: .navigation), cue: .success)
       if let latestFix = locationService.latestFix {
         syncActiveNavigationWithLocation(latestFix)
       }
@@ -431,6 +432,8 @@ final class AppModel: ObservableObject {
     resetCountdownAnnouncementState()
     lastImmediateAnnouncementStepIndex = -1
     locationService.finishActiveNavigation()
+    delayedAnnouncementTask?.cancel()
+    delayedAnnouncementTask = nil
     announcer.stopSpeech()
     liveNavigationEngine.reset()
     headingIndex = 0
@@ -450,8 +453,7 @@ final class AppModel: ObservableObject {
     activeNavigationState.isOffRoute = false
     activeNavigationState.isRecalculating = false
     statusMessage = L10n.text("active.status.arrived", table: .navigation)
-    playSoundCueIfEnabled(.arrival)
-    announceNavigationPrompt(L10n.text("active.spoken.arrived", table: .navigation))
+    announceNavigationPrompt(L10n.text("active.spoken.arrived", table: .navigation), cue: .arrival)
     if path.last != .arrival(placeID: destination.id) {
       path.append(.arrival(placeID: destination.id))
     }
@@ -763,9 +765,9 @@ final class AppModel: ObservableObject {
     activeNavigationState = update.state
     if update.stepChanged && settings.turnByTurnAnnouncements {
       if update.currentStepIndex != lastImmediateAnnouncementStepIndex {
-        playSoundCueIfEnabled(soundCue(for: update.currentStepKind, defaultCue: .turnNow))
         announceNavigationPrompt(
-          L10n.text("active.spoken.now", table: .navigation, update.state.currentInstruction)
+          L10n.text("active.spoken.now", table: .navigation, update.state.currentInstruction),
+          cue: soundCue(for: update.currentStepKind, defaultCue: .turnNow)
         )
         lastImmediateAnnouncementStepIndex = update.currentStepIndex
       }
@@ -828,8 +830,7 @@ final class AppModel: ObservableObject {
       } else {
         statusMessage = L10n.text("active.status.recalculated", table: .navigation)
       }
-      announceNavigationPrompt(L10n.text("active.spoken.recalculated", table: .navigation))
-      playSoundCueIfEnabled(.success)
+      announceNavigationPrompt(L10n.text("active.spoken.recalculated", table: .navigation), cue: .success)
     } catch {
       activeNavigationState.isRecalculating = false
       statusMessage = L10n.text("route.status.error", table: .navigation)
@@ -890,8 +891,10 @@ final class AppModel: ObservableObject {
         upcomingInstruction
       )
     }
-    announceNavigationPrompt(message)
-    playSoundCueIfEnabled(soundCue(for: update.upcomingStepKind, defaultCue: .countdown))
+    announceNavigationPrompt(
+      message,
+      cue: soundCue(for: update.upcomingStepKind, defaultCue: .countdown)
+    )
     return true
   }
 
@@ -912,18 +915,21 @@ final class AppModel: ObservableObject {
     }
 
     lastImmediateAnnouncementStepIndex = upcomingStepIndex
-    playSoundCueIfEnabled(soundCue(for: update.upcomingStepKind, defaultCue: .turnNow))
     announceNavigationPrompt(
-      L10n.text("active.spoken.now", table: .navigation, upcomingInstruction)
+      L10n.text("active.spoken.now", table: .navigation, upcomingInstruction),
+      cue: soundCue(for: update.upcomingStepKind, defaultCue: .turnNow)
     )
     return true
   }
 
-  private func announceNavigationPrompt(_ message: String, warning: Bool = false) {
-    if warning {
-      playSoundCueIfEnabled(.warning)
-    }
-    announcer.announceNavigation(message, settings: settings)
+  private func announceNavigationPrompt(
+    _ message: String,
+    cue: NavigationSoundCue? = nil,
+    warning: Bool = false
+  ) {
+    let effectiveCue = cue ?? (warning ? .warning : nil)
+    let shouldDelaySpeech = effectiveCue.map { playSoundCueIfEnabled($0) } ?? false
+    announceNavigationSpeech(message, delayAfterSound: shouldDelaySpeech)
     if settings.vibrationEnabled {
       if warning {
         announcer.hapticWarning()
@@ -934,16 +940,52 @@ final class AppModel: ObservableObject {
   }
 
   private func announceSuccess(message: String) {
-    playSoundCueIfEnabled(.success)
-    announcer.announce(message, settings: settings)
+    let shouldDelaySpeech = playSoundCueIfEnabled(.success)
+    announceSpeech(message, delayAfterSound: shouldDelaySpeech)
     hapticSuccessIfEnabled()
   }
 
   private func announceWarning(message: String) {
-    playSoundCueIfEnabled(.warning)
-    announcer.announce(message, settings: settings)
+    let shouldDelaySpeech = playSoundCueIfEnabled(.warning)
+    announceSpeech(message, delayAfterSound: shouldDelaySpeech)
     if settings.vibrationEnabled {
       announcer.hapticWarning()
+    }
+  }
+
+  private func announceNavigationSpeech(_ message: String, delayAfterSound: Bool) {
+    scheduleSpeech(delayAfterSound: delayAfterSound) { [weak self] in
+      guard let self else { return }
+      self.announcer.announceNavigation(message, settings: self.settings)
+    }
+  }
+
+  private func announceSpeech(_ message: String, delayAfterSound: Bool) {
+    scheduleSpeech(delayAfterSound: delayAfterSound) { [weak self] in
+      guard let self else { return }
+      self.announcer.announce(message, settings: self.settings)
+    }
+  }
+
+  private func scheduleSpeech(delayAfterSound: Bool, action: @escaping @MainActor () -> Void) {
+    delayedAnnouncementTask?.cancel()
+    delayedAnnouncementTask = nil
+    guard delayAfterSound else {
+      action()
+      return
+    }
+
+    delayedAnnouncementTask = Task { [weak self] in
+      do {
+        try await Task.sleep(nanoseconds: Self.speechAfterSoundDelayNanoseconds)
+      } catch {
+        return
+      }
+      guard !Task.isCancelled else { return }
+      await MainActor.run {
+        guard self != nil else { return }
+        action()
+      }
     }
   }
 
@@ -953,10 +995,11 @@ final class AppModel: ObservableObject {
     }
   }
 
-  private func playSoundCueIfEnabled(_ cue: NavigationSoundCue) {
-    if settings.soundCuesEnabled {
-      announcer.playSoundCue(cue, volume: settings.soundCueVolume, theme: settings.soundCueTheme)
-    }
+  @discardableResult
+  private func playSoundCueIfEnabled(_ cue: NavigationSoundCue) -> Bool {
+    guard settings.soundCuesEnabled else { return false }
+    announcer.playSoundCue(cue, volume: settings.soundCueVolume, theme: settings.soundCueTheme)
+    return true
   }
 
   private func soundCue(for stepKind: RouteStepKind?, defaultCue: NavigationSoundCue) -> NavigationSoundCue {

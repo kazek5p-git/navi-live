@@ -36,6 +36,8 @@ Do sprawdzenia: alerty przejść, sposób odliczania komunikatów, siła potrzą
 Sprawdź szybkie akcje i rotory VoiceOver podczas nawigacji.
 Do sprawdzenia: rotor Wskazówki trasy, rotor Alerty oraz akcje: powtórz, poprzednia/następna wskazówka, pauza/wznów, przelicz, pokaż podsumowanie i zatrzymaj.
 
+Sprawdź kolejność dźwięku i mowy podczas prowadzenia.
+Dźwięk nawigacyjny powinien pojawić się pierwszy, a komunikat głosowy około pół sekundy później, bez nakładania się na początek wypowiedzi.
 Sprawdź zachowanie po aktualizacji.
 Ulubione, wybrany głos oraz ustawienia dźwięków, mowy, wyszukiwania i prowadzenia powinny zostać po zwykłej aktualizacji.
 
@@ -77,5 +79,7 @@ Check crossing alerts, prompt countdown mode, shake strength, haptics, speech so
 Test VoiceOver quick actions and rotors during navigation.
 Check the Route Instructions rotor, Alerts rotor and actions: repeat, previous/next instruction, pause/resume, recalculate, show summary and stop.
 
+Test sound and speech timing during guidance.
+The navigation sound should play first, followed by speech about half a second later, without covering the beginning of the spoken prompt.
 Test behavior after update.
 Favorites, selected voice and sound, speech, search and guidance settings should be preserved after a normal update.
