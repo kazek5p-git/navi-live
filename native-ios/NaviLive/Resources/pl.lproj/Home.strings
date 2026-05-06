@@ -17,6 +17,7 @@
 "home.action.current_position" = "Bieżąca pozycja";
 "home.action.favorites" = "Ulubione";
 "home.action.settings" = "Ustawienia";
+"home.action.visual_assistance" = "Pomoc wzrokowa";
 "home.action.grant_location_access" = "Zezwól na lokalizację";
 "home.action.start_live_tracking" = "Włącz śledzenie na żywo";
 "home.action.stop_live_tracking" = "Zatrzymaj śledzenie na żywo";

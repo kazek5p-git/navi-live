@@ -85,26 +85,49 @@ private struct RootNavigationView: View {
         }
     }
     .safeAreaInset(edge: .bottom, alignment: .trailing) {
-      if model.path.last != .settings {
-        HStack {
-          Spacer()
-          SecondaryActionButton(
+      HStack(spacing: 10) {
+        Spacer(minLength: 0)
+        RootQuickActionButton(
+          title: L10n.text("home.action.visual_assistance", table: .home),
+          systemImage: "eye"
+        ) {
+          VisualAssistanceLauncher.openBeMyEyes()
+        }
+
+        if model.path.last != .settings {
+          RootQuickActionButton(
             title: L10n.text("home.action.settings", table: .home),
             systemImage: "gearshape"
           ) {
             model.openSettings()
           }
-          .frame(maxWidth: 260)
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
-        .padding(.bottom, 6)
-        .background(.regularMaterial)
       }
+      .padding(.horizontal, 16)
+      .padding(.top, 8)
+      .padding(.bottom, 6)
+      .background(.regularMaterial)
     }
   }
 }
 
+
+private struct RootQuickActionButton: View {
+  let title: String
+  let systemImage: String
+  let action: () -> Void
+
+  var body: some View {
+    Button(action: action) {
+      Label(title, systemImage: systemImage)
+        .lineLimit(1)
+        .minimumScaleFactor(0.82)
+    }
+    .buttonStyle(.bordered)
+    .controlSize(.regular)
+    .accessibilityLabel(Text(title))
+  }
+}
 private struct BootstrappingView: View {
   var body: some View {
     VStack(spacing: 20) {

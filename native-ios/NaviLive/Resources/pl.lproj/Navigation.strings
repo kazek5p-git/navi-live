@@ -84,6 +84,7 @@
 "active.action.resume" = "Wznów prowadzenie";
 "active.action.recalculate" = "Przelicz trasę";
 "active.action.report_problem" = "Zgłoś problem z trasą";
+"active.action.visual_assistance" = "Pomoc wzrokowa";
 "active.action.show_route_summary" = "Pokaż podsumowanie trasy";
 "active.action.stop" = "Zatrzymaj nawigację";
 "active.action.arrived" = "Oznacz jako dotarcie";

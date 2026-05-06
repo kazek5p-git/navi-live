@@ -52,6 +52,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.SurroundSound
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.Stop
 import com.navilive.android.guidance.NavigationSoundCue
 import androidx.compose.material3.AlertDialog
@@ -169,6 +170,7 @@ private const val SupportBaseUrl = "https://paypal.me/KazimierzParzych"
 private val SupportQuickAmounts = listOf(5, 10, 20, 50)
 
 val LocalOpenSettings = staticCompositionLocalOf<(() -> Unit)?> { null }
+val LocalOpenVisualAssistance = staticCompositionLocalOf<(() -> Unit)?> { null }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -182,6 +184,7 @@ private fun ScreenScaffold(
     content: @Composable (Modifier) -> Unit,
 ) {
     val openSettings = LocalOpenSettings.current
+    val openVisualAssistance = LocalOpenVisualAssistance.current
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -222,21 +225,39 @@ private fun ScreenScaffold(
                             start = 16.dp,
                             top = 12.dp,
                             end = 16.dp,
-                            bottom = if (showSettingsAction && openSettings != null) 96.dp else 12.dp,
+                            bottom = if (showSettingsAction && (openSettings != null || openVisualAssistance != null)) 96.dp else 12.dp,
                         ),
                 )
-                if (showSettingsAction && openSettings != null) {
-                    FloatingActionButton(
-                        onClick = openSettings,
+                if (showSettingsAction && (openSettings != null || openVisualAssistance != null)) {
+                    Row(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
-                            .padding(16.dp)
-                            .semantics { traversalIndex = 1f },
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(
-                            Icons.Filled.Settings,
-                            contentDescription = stringResource(R.string.action_settings),
-                        )
+                        openVisualAssistance?.let { action ->
+                            FloatingActionButton(
+                                onClick = action,
+                                modifier = Modifier.semantics { traversalIndex = 0.9f },
+                            ) {
+                                Icon(
+                                    Icons.Filled.Visibility,
+                                    contentDescription = stringResource(R.string.action_visual_assistance),
+                                )
+                            }
+                        }
+                        openSettings?.let { action ->
+                            FloatingActionButton(
+                                onClick = action,
+                                modifier = Modifier.semantics { traversalIndex = 1f },
+                            ) {
+                                Icon(
+                                    Icons.Filled.Settings,
+                                    contentDescription = stringResource(R.string.action_settings),
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -474,6 +495,7 @@ fun HelpPrivacyScreen(
     onShowTutorialOnStartupChange: (Boolean) -> Unit,
     onOpenTutorial: () -> Unit,
     onOpenSupportUrl: (String) -> Unit,
+    onOpenVisualAssistance: () -> Unit,
     onBack: () -> Unit,
 ) {
     ScreenScaffold(
@@ -489,6 +511,9 @@ fun HelpPrivacyScreen(
                 showOnStartup = showTutorialOnStartup,
                 onShowOnStartupChange = onShowTutorialOnStartupChange,
                 onOpenTutorial = onOpenTutorial,
+            )
+            VisualAssistanceCard(
+                onOpenVisualAssistance = onOpenVisualAssistance,
             )
             SupportDevelopmentCard(
                 onOpenSupportUrl = onOpenSupportUrl,
@@ -2381,6 +2406,29 @@ private fun TutorialSettingsCard(
     }
 }
 
+@Composable
+private fun VisualAssistanceCard(
+    onOpenVisualAssistance: () -> Unit,
+) {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            CardTitle(stringResource(R.string.settings_visual_assistance_section_title))
+            Text(
+                text = stringResource(R.string.settings_visual_assistance_body),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            PrimaryActionButton(
+                label = stringResource(R.string.settings_visual_assistance_open_button),
+                icon = Icons.Filled.Visibility,
+                onClick = onOpenVisualAssistance,
+            )
+        }
+    }
+}
 @Composable
 private fun SupportDevelopmentCard(
     onOpenSupportUrl: (String) -> Unit,

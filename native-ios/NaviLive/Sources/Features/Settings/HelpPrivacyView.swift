@@ -13,6 +13,12 @@ struct HelpPrivacyView: View {
       }
 
       Section {
+        VisualAssistanceCard()
+      } header: {
+        Text(L10n.text("help.section.visual_assistance", table: .settings))
+      }
+
+      Section {
         SupportDevelopmentCard()
       } header: {
         Text(L10n.text("settings.support.section", table: .settings))
@@ -30,6 +36,26 @@ struct HelpPrivacyView: View {
   }
 }
 
+private struct VisualAssistanceCard: View {
+  var body: some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Text(L10n.text("help.visual_assistance.body", table: .settings))
+        .font(.footnote)
+        .foregroundStyle(.secondary)
+
+      Button {
+        VisualAssistanceLauncher.openBeMyEyes()
+      } label: {
+        Label(
+          L10n.text("help.visual_assistance.open", table: .settings),
+          systemImage: "eye"
+        )
+        .frame(maxWidth: .infinity)
+      }
+      .buttonStyle(.borderedProminent)
+    }
+  }
+}
 private struct SupportDevelopmentCard: View {
   @Environment(\.openURL) private var openURL
 

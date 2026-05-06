@@ -53,6 +53,9 @@ struct ActiveNavigationView: View {
         .accessibilityAction(named: Text(L10n.text("active.action.report_problem", table: .navigation))) {
           model.reportRouteProblem()
         }
+        .accessibilityAction(named: Text(L10n.text("active.action.visual_assistance", table: .navigation))) {
+          VisualAssistanceLauncher.openBeMyEyes()
+        }
         .accessibilityAction(named: Text(L10n.text("active.action.show_route_summary", table: .navigation))) {
           model.openRouteSummary(placeID)
         }
@@ -146,6 +149,13 @@ struct ActiveNavigationView: View {
           systemImage: "exclamationmark.bubble"
         ) {
           model.reportRouteProblem()
+        }
+
+        SecondaryActionButton(
+          title: L10n.text("active.action.visual_assistance", table: .navigation),
+          systemImage: "eye"
+        ) {
+          VisualAssistanceLauncher.openBeMyEyes()
         }
 
         SecondaryActionButton(

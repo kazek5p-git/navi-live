@@ -48,6 +48,7 @@ import com.navilive.android.ui.screens.CurrentPositionScreen
 import com.navilive.android.ui.screens.FavoritesScreen
 import com.navilive.android.ui.screens.HelpPrivacyScreen
 import com.navilive.android.ui.screens.LocalOpenSettings
+import com.navilive.android.ui.screens.LocalOpenVisualAssistance
 import com.navilive.android.ui.screens.HeadingAlignScreen
 import com.navilive.android.ui.screens.NotFoundScreen
 import com.navilive.android.ui.screens.OnboardingScreen
@@ -62,6 +63,8 @@ import java.io.File
 import kotlin.math.sqrt
 
 private const val ProjectRepositoryUrl = "https://github.com/kazek5p-git/navi-live"
+private const val BeMyEyesPackageName = "com.bemyeyes.bemyeyes"
+private const val BeMyEyesPlayStoreUrl = "https://play.google.com/store/apps/details?id=com.bemyeyes.bemyeyes"
 
 @Composable
 fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
@@ -191,8 +194,14 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
             launchSingleTop = true
         }
     }
+    val openVisualAssistance: () -> Unit = {
+        openVisualAssistance(context)
+    }
 
-    CompositionLocalProvider(LocalOpenSettings provides openSettings) {
+    CompositionLocalProvider(
+        LocalOpenSettings provides openSettings,
+        LocalOpenVisualAssistance provides openVisualAssistance,
+    ) {
         NavHost(
             navController = navController,
             startDestination = Routes.Bootstrap,
@@ -578,6 +587,7 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
                 onOpenSupportUrl = { supportUrl ->
                     openExternalUrl(context, supportUrl)
                 },
+                onOpenVisualAssistance = openVisualAssistance,
                 onBack = { navController.popBackStack() },
             )
         }
@@ -679,6 +689,27 @@ private fun openUnknownAppSourcesSettings(context: Context) {
     context.startActivity(intent)
 }
 
+private fun openVisualAssistance(context: Context) {
+    val packageManager = context.packageManager
+    val launchIntent = packageManager.getLaunchIntentForPackage(BeMyEyesPackageName)?.apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    if (launchIntent != null) {
+        context.startActivity(launchIntent)
+        return
+    }
+
+    val marketIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$BeMyEyesPackageName")).apply {
+        setPackage("com.android.vending")
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    if (marketIntent.resolveActivity(packageManager) != null) {
+        context.startActivity(marketIntent)
+        return
+    }
+
+    openExternalUrl(context, BeMyEyesPlayStoreUrl)
+}
 private fun openExternalUrl(context: Context, url: String) {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

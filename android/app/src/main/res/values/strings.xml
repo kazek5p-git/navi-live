@@ -4,6 +4,7 @@
 
     <string name="action_back">Back</string>
     <string name="action_settings">Settings</string>
+    <string name="action_visual_assistance">Visual help</string>
 
     <string name="start_button_grant_location_access">Grant location access</string>
     <string name="start_button_stop_live_tracking">Stop live tracking</string>
@@ -227,6 +228,9 @@
     <string name="settings_junction_alerts_title">Junction alerts</string>
     <string name="settings_pedestrian_crossing_alerts_title">Pedestrian crossing alerts</string>
     <string name="settings_support_section_title">Support development</string>
+    <string name="settings_visual_assistance_section_title">Visual help</string>
+    <string name="settings_visual_assistance_body">When you need visual assistance during a route, Navi Live can quickly open Be My Eyes. Use it for finding a building number, an entrance, or the right intercom button.</string>
+    <string name="settings_visual_assistance_open_button">Open Be My Eyes</string>
     <string name="settings_support_body">If you enjoy Navi Live and want to support its development, you can contribute through PayPal. Every contribution helps fund accessibility work, fixes, and new features.</string>
     <string name="settings_support_amounts_description">Choose a quick amount or enter your own. PayPal still asks the user to confirm the payment.</string>
     <string name="format_settings_support_amount_button">%1$d PLN</string>

@@ -84,6 +84,7 @@
 "active.action.resume" = "Resume guidance";
 "active.action.recalculate" = "Recalculate route";
 "active.action.report_problem" = "Report route problem";
+"active.action.visual_assistance" = "Visual help";
 "active.action.show_route_summary" = "Show route summary";
 "active.action.stop" = "Stop navigation";
 "active.action.arrived" = "Mark as arrived";

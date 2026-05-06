@@ -17,6 +17,7 @@
 "home.action.current_position" = "Current position";
 "home.action.favorites" = "Favorites";
 "home.action.settings" = "Settings";
+"home.action.visual_assistance" = "Visual help";
 "home.action.grant_location_access" = "Allow location access";
 "home.action.start_live_tracking" = "Start live tracking";
 "home.action.stop_live_tracking" = "Stop live tracking";

@@ -79,6 +79,9 @@
 "help.title" = "Help and privacy";
 "help.section.tutorial" = "Tutorial";
 "help.tutorial.body" = "Use Search to pick a destination, review the route summary, then continue to walking guidance. Large actions and native controls are kept for reliable VoiceOver focus.";
+"help.section.visual_assistance" = "Visual help";
+"help.visual_assistance.body" = "When you need someone else's eyes during a route, Navi Live can quickly open Be My Eyes. Use it for finding a building number, an entrance, or the right intercom button.";
+"help.visual_assistance.open" = "Open Be My Eyes";
 "settings.support.section" = "Support development";
 "settings.support.body" = "If you enjoy Navi Live and want to support its development, you can contribute through PayPal. Every contribution helps fund accessibility work, fixes, and new features.";
 "support.amounts.description" = "Choose a quick amount or enter your own. PayPal still asks the user to confirm the payment.";

@@ -2,6 +2,7 @@
 <resources>
     <string name="action_back">Wróć</string>
     <string name="action_settings">Ustawienia</string>
+    <string name="action_visual_assistance">Pomoc wzrokowa</string>
     <string name="start_button_grant_location_access">Nadaj dostęp do lokalizacji</string>
     <string name="start_button_stop_live_tracking">Zatrzymaj śledzenie na żywo</string>
     <string name="start_button_start_live_tracking">Włącz śledzenie na żywo</string>
@@ -219,6 +220,9 @@
     <string name="settings_junction_alerts_title">Alerty skrzyżowań</string>
     <string name="settings_pedestrian_crossing_alerts_title">Alerty przejść dla pieszych</string>
     <string name="settings_support_section_title">Wesprzyj rozwój</string>
+    <string name="settings_visual_assistance_section_title">Pomoc wzrokowa</string>
+    <string name="settings_visual_assistance_body">Gdy na trasie potrzebujesz czyjegoś oka, Navi Live może szybko otworzyć Be My Eyes. Użyj tego np. przy szukaniu numeru budynku, wejścia albo przycisku na domofonie.</string>
+    <string name="settings_visual_assistance_open_button">Otwórz Be My Eyes</string>
     <string name="settings_support_body">Jeśli podoba Ci się Navi Live i chcesz wesprzeć dalszy rozwój aplikacji, możesz zrobić to przez PayPal. Każde wsparcie pomaga rozwijać dostępność, poprawki i nowe funkcje.</string>
     <string name="settings_support_amounts_description">Wybierz szybką kwotę albo wpisz własną. PayPal i tak poprosi użytkownika o potwierdzenie płatności.</string>
     <string name="format_settings_support_amount_button">%1$d PLN</string>
