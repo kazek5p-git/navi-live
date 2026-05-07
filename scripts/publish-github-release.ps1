@@ -186,8 +186,26 @@ function Test-GitHubReleaseExists {
         [string]$ReleaseTag
     )
 
-    $null = & gh api "repos/$RepoSlug/releases/tags/$ReleaseTag" 2>$null
-    return $LASTEXITCODE -eq 0
+    $previousErrorActionPreference = $ErrorActionPreference
+    $previousNativeErrorPreference = $null
+    $hasNativeErrorPreference = Test-Path Variable:\PSNativeCommandUseErrorActionPreference
+    if ($hasNativeErrorPreference) {
+        $previousNativeErrorPreference = $PSNativeCommandUseErrorActionPreference
+    }
+
+    try {
+        $ErrorActionPreference = "Continue"
+        if ($hasNativeErrorPreference) {
+            $global:PSNativeCommandUseErrorActionPreference = $false
+        }
+        $null = & gh api "repos/$RepoSlug/releases/tags/$ReleaseTag" 2>$null
+        return $LASTEXITCODE -eq 0
+    } finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+        if ($hasNativeErrorPreference) {
+            $global:PSNativeCommandUseErrorActionPreference = $previousNativeErrorPreference
+        }
+    }
 }
 
 function Test-RemoteTagExists {
