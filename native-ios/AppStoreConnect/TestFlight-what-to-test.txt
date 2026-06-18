@@ -1,7 +1,7 @@
 POLSKI
 
 Sprawdź komunikaty prowadzenia na krótkiej trasie pieszej.
-Przejdź trasę z kilkoma skrętami i przejściami przez ulice. Zwróć uwagę, czy aplikacja mówi realny skręt w odpowiednim miejscu oraz czy nie zastępuje skrętu mylącym komunikatem o przejściu dla pieszych.
+Przejdź trasę z kilkoma skrętami i przejściami przez ulice. Zwróć uwagę, czy aplikacja mówi realny skręt w odpowiednim miejscu, czy nie przeskakuje za wcześnie do następnego kroku oraz czy nie zastępuje skrętu mylącym komunikatem o przejściu dla pieszych.
 
 Sprawdź komunikaty o przecznicach i przejściach.
 Na trasie z nazwanymi ulicami sprawdź, czy komunikat „przejdź przez ...” pojawia się tylko wtedy, gdy faktycznie trzeba przeciąć ulicę, a boczne przejścia i ścieżki rowerowe nie przykrywają manewrów.
@@ -9,16 +9,16 @@ Na trasie z nazwanymi ulicami sprawdź, czy komunikat „przejdź przez ...” p
 Sprawdź powtarzanie wskazówki.
 Podczas aktywnej nawigacji użyj potrząśnięcia lub przycisku powtórzenia i sprawdź, czy najpierw czytany jest bieżący krok, a dopiero potem następny.
 
-Sprawdź listę kroków trasy na Androidzie.
-Z czytnikiem ekranu przejdź listę kroków i sprawdź, czy elementy nie są pomijane ani odczytywane w złej kolejności.
+Sprawdź listę kroków trasy z VoiceOver.
+Podczas aktywnej nawigacji przejdź listę kroków i rotor instrukcji. Sprawdź, czy aktualny krok jest oznaczany poprawnie, a fokus VoiceOver nie przeskakuje nieoczekiwanie po zmianie kroku.
 
 Sprawdź regresje.
 Wyszukiwanie, budowanie trasy, aktywna nawigacja, ulubione oraz ustawienia mowy i dźwięków powinny działać jak wcześniej.
 
 ENGLISH
 
-Check spoken walking guidance on a short route.
-Walk a route with several turns and street crossings. Verify that the app announces real turns at the right moment and does not replace a turn with a misleading pedestrian-crossing message.
+Check spoken walking guidance on a short walking route.
+Walk a route with several turns and street crossings. Verify that the app announces real turns at the right moment, does not advance too early to the next step, and does not replace a turn with a misleading pedestrian-crossing message.
 
 Check street-crossing and pedestrian-crossing prompts.
 On a route with named streets, verify that “cross ...” is spoken only when the route really crosses that street, and that side crossings or bike-path crossings do not hide maneuvers.
@@ -26,8 +26,8 @@ On a route with named streets, verify that “cross ...” is spoken only when t
 Check repeating guidance.
 During active navigation, use shake or the repeat action and verify that the current step is spoken first, followed by the next step.
 
-Check the route step list on Android.
-With a screen reader, move through the step list and verify that items are not skipped or read out of order.
+Check the route step list with VoiceOver.
+During active navigation, move through the step list and the instructions rotor. Verify that the current step is marked correctly and VoiceOver focus does not jump unexpectedly after the current step changes.
 
 Check regressions.
 Search, route building, active navigation, favorites, and speech or sound settings should keep working as before.

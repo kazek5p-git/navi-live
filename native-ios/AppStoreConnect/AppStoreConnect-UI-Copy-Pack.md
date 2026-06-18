@@ -19,7 +19,11 @@ Settings include speech, vibration, tutorial, help, and privacy options. The app
 ### What to Test
 
 ```text
-Check app language selection after changing the phone language and through Settings > App > App language. Verify the phone-language mode, manual language overrides, the home screen, search, settings, tutorial, favorites, active navigation, VoiceOver labels, and spoken route instructions in the newly added localizations. Added or completed languages include Arabic, Persian, Bengali, Hindi, Indonesian, Vietnamese, Simplified Chinese, Japanese, Korean, and Sorani Kurdish. Report leftover English, technical number artifacts, broken percent values, or unclear route/navigation text.
+Check spoken walking guidance on a short walking route. Walk a route with several turns and street crossings. Verify that the app announces real turns at the right moment, does not advance too early to the next step, and does not replace a turn with a misleading pedestrian-crossing message.
+
+Check street-crossing and pedestrian-crossing prompts. On a route with named streets, verify that “cross ...” is spoken only when the route really crosses that street, and that side crossings or bike-path crossings do not hide maneuvers.
+
+Check repeating guidance, VoiceOver step list, search, route building, active navigation, favorites, and speech or sound settings.
 ```
 
 ### Beta App Review Notes
