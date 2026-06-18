@@ -76,6 +76,70 @@ final class NavigationParityFixturesTests: XCTestCase {
     )
   }
 
+  func testRouteStepSimplificationSuppressesShortUnnamedTurnBetweenSameRoadSections() {
+    let previous = RouteStep(
+      instruction: "Continue Main Street",
+      distanceMeters: 80,
+      maneuverType: "continue",
+      roadName: "Main Street"
+    )
+    let shortConnector = RouteStep(
+      instruction: "Turn left",
+      distanceMeters: 14,
+      maneuverType: "turn",
+      maneuverModifier: "left",
+      roadName: nil
+    )
+    let next = RouteStep(
+      instruction: "Continue Main Street",
+      distanceMeters: 160,
+      maneuverType: "continue",
+      roadName: "Main Street"
+    )
+
+    XCTAssertTrue(
+      RouteStepSimplificationCore.shouldSuppressRouteStep(
+        shortConnector,
+        previous: previous,
+        next: next,
+        index: 2,
+        lastIndex: 4
+      )
+    )
+  }
+
+  func testRouteStepSimplificationKeepsShortUnnamedTurnWhenNextRoadDiffers() {
+    let previous = RouteStep(
+      instruction: "Continue Main Street",
+      distanceMeters: 80,
+      maneuverType: "continue",
+      roadName: "Main Street"
+    )
+    let shortConnector = RouteStep(
+      instruction: "Turn right",
+      distanceMeters: 14,
+      maneuverType: "turn",
+      maneuverModifier: "right",
+      roadName: nil
+    )
+    let next = RouteStep(
+      instruction: "Continue Oak Street",
+      distanceMeters: 160,
+      maneuverType: "continue",
+      roadName: "Oak Street"
+    )
+
+    XCTAssertFalse(
+      RouteStepSimplificationCore.shouldSuppressRouteStep(
+        shortConnector,
+        previous: previous,
+        next: next,
+        index: 2,
+        lastIndex: 4
+      )
+    )
+  }
+
   func testRouteStepSimplificationSuppressesShortSameRoadTurnConnectors() {
     let previous = RouteStep(
       instruction: "Continue Main Street",
@@ -145,6 +209,12 @@ final class NavigationParityFixturesTests: XCTestCase {
         entry.expectedImmediate,
         entry.name
       )
+      XCTAssertEqual(
+        NavigationScenarioCore.maneuverActivationLeadMeters(accuracyMeters: entry.accuracyMeters),
+        entry.expectedManeuverActivationLead,
+        accuracy: 0.0001,
+        entry.name
+      )
     }
   }
 
@@ -196,6 +266,35 @@ final class NavigationParityFixturesTests: XCTestCase {
         entry.name
       )
     }
+  }
+
+  func testProjectedManeuverAdvanceDoesNotUseAnnouncementLead() {
+    let accuracyMeters = 5.0
+    let maneuverDistance = 100.0
+    let announcementLead = NavigationScenarioCore.maneuverActivationLeadMeters(accuracyMeters: accuracyMeters)
+
+    XCTAssertFalse(
+      NavigationScenarioCore.hasPassedManeuverPoint(
+        projectedDistanceAlongRouteMeters: maneuverDistance - announcementLead,
+        maneuverDistanceAlongRouteMeters: maneuverDistance,
+        accuracyMeters: accuracyMeters
+      )
+    )
+    XCTAssertFalse(
+      NavigationScenarioCore.hasPassedManeuverPoint(
+        projectedDistanceAlongRouteMeters: maneuverDistance,
+        maneuverDistanceAlongRouteMeters: maneuverDistance,
+        accuracyMeters: accuracyMeters
+      )
+    )
+    XCTAssertTrue(
+      NavigationScenarioCore.hasPassedManeuverPoint(
+        projectedDistanceAlongRouteMeters: maneuverDistance +
+          NavigationScenarioCore.maneuverPassThresholdMeters(accuracyMeters: accuracyMeters),
+        maneuverDistanceAlongRouteMeters: maneuverDistance,
+        accuracyMeters: accuracyMeters
+      )
+    )
   }
 
   func testNavigationOffRouteDecisionsMatchSharedFixtures() throws {
@@ -265,6 +364,7 @@ private enum SharedParityFixtureLoader {
     let expectedManeuverAdvance: Double
     let expectedOffRoute: Int
     let expectedImmediate: Int
+    let expectedManeuverActivationLead: Double
   }
 
   struct CountdownCase: Decodable {

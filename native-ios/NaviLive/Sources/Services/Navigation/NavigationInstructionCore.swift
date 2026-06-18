@@ -98,6 +98,7 @@ enum RouteStepSimplificationCore {
   static func shouldSuppressRouteStep(
     _ step: RouteStep,
     previous: RouteStep?,
+    next: RouteStep? = nil,
     index: Int,
     lastIndex: Int
   ) -> Bool {
@@ -109,10 +110,15 @@ enum RouteStepSimplificationCore {
     }
     let currentRoad = normalizedRouteRoadName(step.roadName)
     let previousRoad = normalizedRouteRoadName(previous.roadName)
+    let nextRoad = normalizedRouteRoadName(next?.roadName)
     let isSameRoad = currentRoad != nil && currentRoad == previousRoad
     let isShortConnector = step.distanceMeters <= shortConnectorStepMaxMeters
     if isTurnLikeManeuver(step) {
-      return isShortConnector && isSameRoad
+      if isShortConnector && isSameRoad { return true }
+      return isShortConnector &&
+        currentRoad == nil &&
+        previousRoad != nil &&
+        previousRoad == nextRoad
     }
     guard let currentRoad else { return isShortConnector }
     guard currentRoad == previousRoad else { return false }

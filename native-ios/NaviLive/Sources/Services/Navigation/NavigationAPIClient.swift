@@ -229,6 +229,7 @@ actor NavigationAPIClient {
   private let streetCrossingDeduplicateMeters = 25.0
   private let streetCrossingLateralLimitMeters = 4.0
   private let streetCrossingMinimumBearingDifferenceDegrees = 55.0
+  private let streetCrossingRouteRoadOverlapToleranceMeters = 12.0
   private let streetCrossingManeuverType = "street_crossing"
   private let routeStartApproachThresholdMeters = 18.0
   private let minimumInferredRoadStepDistanceMeters = 45
@@ -471,11 +472,14 @@ actor NavigationAPIClient {
         ? GeoPoint(latitude: step.maneuver.location[1], longitude: step.maneuver.location[0])
         : nil
       let distanceMeters = Int(step.distance.rounded())
-      let inferredRoadName = distanceMeters >= minimumInferredRoadStepDistanceMeters
+      let stepGeometry = stepGeometry(for: step)
+      let inferredRoadName = shouldInferRoadName(distanceMeters: distanceMeters, stepGeometry: stepGeometry)
         ? inferredRoadName(
           for: step,
+          providedStepGeometry: stepGeometry,
           maneuverPoint: maneuverPoint,
-          namedRouteWays: namedRouteWays
+          namedRouteWays: namedRouteWays,
+          maximumDistanceMeters: roadNameInferenceDistanceLimit(distanceMeters: distanceMeters)
         )
         : nil
       let explicitRoadName = step.name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -647,11 +651,16 @@ actor NavigationAPIClient {
 
   private func inferredRoadName(
     for step: OSRMStep,
+    providedStepGeometry: [GeoPoint]? = nil,
     maneuverPoint: GeoPoint?,
-    namedRouteWays: [NamedRouteWay]
+    namedRouteWays: [NamedRouteWay],
+    maximumDistanceMeters: Double = 45
   ) -> String? {
     guard !namedRouteWays.isEmpty else { return nil }
-    let samples = routeNameSamples(stepGeometry: stepGeometry(for: step), maneuverPoint: maneuverPoint)
+    let samples = routeNameSamples(
+      stepGeometry: providedStepGeometry ?? stepGeometry(for: step),
+      maneuverPoint: maneuverPoint
+    )
     guard !samples.isEmpty else { return nil }
 
     return namedRouteWays
@@ -659,12 +668,20 @@ actor NavigationAPIClient {
         let distance = samples
           .map { routeWayDistanceMeters(way: way, point: $0) }
           .min() ?? .greatestFiniteMagnitude
-        guard distance <= 45 else { return nil }
+        guard distance <= maximumDistanceMeters else { return nil }
         return (way, distance + routeWayPriorityPenalty(highway: way.highway))
       }
       .min(by: { $0.score < $1.score })?
       .way
       .name
+  }
+
+  private func shouldInferRoadName(distanceMeters: Int, stepGeometry: [GeoPoint]) -> Bool {
+    !stepGeometry.isEmpty || distanceMeters >= minimumInferredRoadStepDistanceMeters
+  }
+
+  private func roadNameInferenceDistanceLimit(distanceMeters: Int) -> Double {
+    distanceMeters < minimumInferredRoadStepDistanceMeters ? 15 : 45
   }
 
   private func stepGeometry(for step: OSRMStep) -> [GeoPoint] {
@@ -768,7 +785,8 @@ actor NavigationAPIClient {
     var simplified: [RouteStep] = []
     for (index, step) in steps.enumerated() {
       let previous = simplified.last
-      if shouldSuppressRouteStep(step, previous: previous, index: index, lastIndex: steps.count - 1) {
+      let next = index < steps.count - 1 ? steps[index + 1] : nil
+      if shouldSuppressRouteStep(step, previous: previous, next: next, index: index, lastIndex: steps.count - 1) {
         guard var mergedPrevious = simplified.popLast() else { continue }
         mergedPrevious.distanceMeters += step.distanceMeters
         simplified.append(mergedPrevious)
@@ -823,12 +841,14 @@ actor NavigationAPIClient {
   private func shouldSuppressRouteStep(
     _ step: RouteStep,
     previous: RouteStep?,
+    next: RouteStep?,
     index: Int,
     lastIndex: Int
   ) -> Bool {
     RouteStepSimplificationCore.shouldSuppressRouteStep(
       step,
       previous: previous,
+      next: next,
       index: index,
       lastIndex: lastIndex
     )
@@ -875,12 +895,19 @@ actor NavigationAPIClient {
         let previousStep = augmented.last(where: { $0.kind == .instruction })
         let distanceFromPreviousRaw = alert.distanceAlongRouteMeters - lastAlongMeters
         let distanceToNextStep = stepAlongMeters - alert.distanceAlongRouteMeters
+        let nearbyRouteRoadNames = routeRoadNamesNearAlert(
+          steps: steps,
+          stepDistances: stepDistances,
+          alertDistanceMeters: alert.distanceAlongRouteMeters,
+          nextStepIndex: stepIndex
+        )
         if shouldSuppressRouteAlert(
           alert: alert,
           distanceFromPreviousMeters: distanceFromPreviousRaw,
           previousStep: previousStep,
           distanceToNextStepMeters: distanceToNextStep,
-          nextStep: nextStep
+          nextStep: nextStep,
+          nearbyRouteRoadNames: nearbyRouteRoadNames
         ) {
           alertIndex += 1
           continue
@@ -931,13 +958,15 @@ actor NavigationAPIClient {
     distanceFromPreviousMeters: Double,
     previousStep: RouteStep?,
     distanceToNextStepMeters: Double,
-    nextStep: RouteStep
+    nextStep: RouteStep,
+    nearbyRouteRoadNames: Set<String>
   ) -> Bool {
     if distanceFromPreviousMeters < crossingDuplicateProximityMeters { return true }
     if isNamedStreetCrossing(alert) {
       if let alertRoad = normalizedRouteRoadName(alert.roadName) {
         if normalizedRouteRoadName(previousStep?.roadName) == alertRoad { return true }
         if normalizedRouteRoadName(nextStep.roadName) == alertRoad { return true }
+        if nearbyRouteRoadNames.contains(alertRoad) { return true }
       }
       return false
     }
@@ -950,6 +979,34 @@ actor NavigationAPIClient {
       return true
     }
     return false
+  }
+
+  private func routeRoadNamesNearAlert(
+    steps: [RouteStep],
+    stepDistances: [Double],
+    alertDistanceMeters: Double,
+    nextStepIndex: Int
+  ) -> Set<String> {
+    guard !steps.isEmpty, !stepDistances.isEmpty else { return [] }
+    var names: Set<String> = []
+    let startIndex = max(nextStepIndex - 3, 0)
+    let endIndex = min(nextStepIndex + 3, steps.count - 1)
+    for index in startIndex...endIndex {
+      guard let roadName = normalizedRouteRoadName(steps[index].roadName),
+            stepDistances.indices.contains(index) else {
+        continue
+      }
+      let stepStart = stepDistances[index]
+      let stepEnd = stepDistances.indices.contains(index + 1)
+        ? stepDistances[index + 1]
+        : stepStart + Double(steps[index].distanceMeters)
+      let spanStart = min(stepStart, stepEnd) - streetCrossingRouteRoadOverlapToleranceMeters
+      let spanEnd = max(stepStart, stepEnd) + streetCrossingRouteRoadOverlapToleranceMeters
+      if alertDistanceMeters >= spanStart, alertDistanceMeters <= spanEnd {
+        names.insert(roadName)
+      }
+    }
+    return names
   }
 
   private func isNamedStreetCrossing(_ alert: RouteAlertCandidate) -> Bool {

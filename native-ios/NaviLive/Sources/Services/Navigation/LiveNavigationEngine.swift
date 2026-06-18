@@ -215,13 +215,22 @@ final class LiveNavigationEngine {
       guard let nextManeuver = session.steps[safe: index + 1]?.maneuverPoint else { break }
       let projectedProgress = routeProgressProjection(session: session, point: fix.point, currentStepIndex: index)
       let nextDistanceAlongRoute = session.stepDistancesAlongRoute[safe: index + 1] ?? .greatestFiniteMagnitude
-      let passThreshold = maneuverPassThresholdMeters(accuracyMeters: fix.accuracyMeters)
       let hasPassedManeuver = projectedProgress != nil &&
-        projectedProgress!.distanceAlongRouteMeters >= nextDistanceAlongRoute + passThreshold
+        NavigationScenarioCore.hasPassedManeuverPoint(
+          projectedDistanceAlongRouteMeters: projectedProgress!.distanceAlongRouteMeters,
+          maneuverDistanceAlongRouteMeters: nextDistanceAlongRoute,
+          accuracyMeters: fix.accuracyMeters
+        )
       let fallbackPassedManeuver = projectedProgress == nil &&
-        fix.point.distance(to: nextManeuver) <= passThreshold
-      if hasPassedManeuver || fallbackPassedManeuver {
+        fix.point.distance(to: nextManeuver) <=
+        NavigationScenarioCore.maneuverPassThresholdMeters(accuracyMeters: fix.accuracyMeters)
+      if hasPassedManeuver {
         index += 1
+        continue
+      }
+      if fallbackPassedManeuver {
+        index += 1
+        break
       } else {
         break
       }
@@ -337,10 +346,6 @@ final class LiveNavigationEngine {
       previous = normalized
     }
     return distances
-  }
-
-  private func maneuverPassThresholdMeters(accuracyMeters: Double) -> Double {
-    min(max(accuracyMeters, 5), 12)
   }
 
   private func routeProgressProjection(

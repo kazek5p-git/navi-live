@@ -98,7 +98,11 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.CustomAccessibilityAction
@@ -1085,12 +1089,16 @@ private fun ActiveNavigationRouteStepsCard(
     currentStepIndex: Int,
 ) {
     if (steps.isEmpty()) return
+    val safeCurrentStepIndex = currentStepIndex.coerceIn(steps.indices)
 
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .semantics { isTraversalGroup = true },
+                .semantics {
+                    isTraversalGroup = true
+                    collectionInfo = CollectionInfo(rowCount = steps.size, columnCount = 1)
+                },
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             CardTitle(stringResource(R.string.active_navigation_route_steps))
@@ -1110,7 +1118,7 @@ private fun ActiveNavigationRouteStepsCard(
                         distance,
                     )
                 }
-                val isCurrent = index == currentStepIndex
+                val isCurrent = index == safeCurrentStepIndex
                 val spokenText = if (isCurrent) {
                     stringResource(R.string.active_navigation_current_step_format, baseText)
                 } else {
@@ -1123,6 +1131,12 @@ private fun ActiveNavigationRouteStepsCard(
                         .clearAndSetSemantics {
                             contentDescription = spokenText
                             traversalIndex = index.toFloat()
+                            collectionItemInfo = CollectionItemInfo(
+                                rowIndex = index,
+                                rowSpan = 1,
+                                columnIndex = 0,
+                                columnSpan = 1,
+                            )
                         },
                     color = when {
                         isCurrent -> MaterialTheme.colorScheme.onSurface

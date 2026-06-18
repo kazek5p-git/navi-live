@@ -98,6 +98,7 @@ internal object RouteStepSimplificationCore {
     fun shouldSuppressRouteStep(
         step: RouteStep,
         previous: RouteStep?,
+        next: RouteStep? = null,
         index: Int,
         lastIndex: Int,
     ): Boolean {
@@ -106,10 +107,15 @@ internal object RouteStepSimplificationCore {
         if (step.maneuverType.equals("arrive", ignoreCase = true)) return false
         val currentRoad = normalizedRouteRoadName(step.roadName)
         val previousRoad = normalizedRouteRoadName(previous.roadName)
+        val nextRoad = normalizedRouteRoadName(next?.roadName)
         val isSameRoad = currentRoad != null && currentRoad == previousRoad
         val isShortConnector = step.distanceMeters <= SHORT_CONNECTOR_STEP_MAX_METERS
         if (isTurnLikeManeuver(step)) {
-            return isShortConnector && isSameRoad
+            if (isShortConnector && isSameRoad) return true
+            return isShortConnector &&
+                currentRoad == null &&
+                previousRoad != null &&
+                previousRoad == nextRoad
         }
         if (currentRoad == null) return isShortConnector
         if (currentRoad != previousRoad) return false

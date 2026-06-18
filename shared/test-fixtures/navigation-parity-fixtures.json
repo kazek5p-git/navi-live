@@ -112,21 +112,24 @@
         "accuracyMeters": 3.0,
         "expectedManeuverAdvance": 15.0,
         "expectedOffRoute": 25,
-        "expectedImmediate": 5
+        "expectedImmediate": 5,
+        "expectedManeuverActivationLead": 12.0
       },
       {
         "name": "mid_accuracy_uses_live_values",
         "accuracyMeters": 12.0,
         "expectedManeuverAdvance": 18.0,
         "expectedOffRoute": 25,
-        "expectedImmediate": 8
+        "expectedImmediate": 8,
+        "expectedManeuverActivationLead": 15.0
       },
       {
         "name": "high_accuracy_clamps_maximums",
         "accuracyMeters": 40.0,
         "expectedManeuverAdvance": 30.0,
         "expectedOffRoute": 42,
-        "expectedImmediate": 8
+        "expectedImmediate": 8,
+        "expectedManeuverActivationLead": 15.0
       }
     ],
     "countdowns": [

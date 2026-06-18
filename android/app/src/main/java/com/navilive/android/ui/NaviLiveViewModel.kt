@@ -2082,14 +2082,23 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             val nextManeuver = session.steps.getOrNull(nextIndex)?.maneuverPoint ?: break
             val projectedProgress = routeProgressProjectionForStep(session, fix.point, index)
             val nextDistanceAlongRoute = session.stepDistancesAlongRoute.getOrNull(nextIndex)
-            val passThreshold = maneuverPassThresholdMeters(fix.accuracyMeters)
             val hasPassedManeuver = projectedProgress != null &&
                 nextDistanceAlongRoute != null &&
-                projectedProgress.distanceAlongRouteMeters >= nextDistanceAlongRoute + passThreshold
+                NavigationScenarioCore.hasPassedManeuverPoint(
+                    projectedDistanceAlongRouteMeters = projectedProgress.distanceAlongRouteMeters,
+                    maneuverDistanceAlongRouteMeters = nextDistanceAlongRoute,
+                    accuracyMeters = fix.accuracyMeters,
+                )
             val fallbackPassedManeuver = projectedProgress == null &&
-                distanceMeters(fix.point, nextManeuver) <= passThreshold
-            if (hasPassedManeuver || fallbackPassedManeuver) {
+                distanceMeters(fix.point, nextManeuver) <=
+                NavigationScenarioCore.maneuverPassThresholdMeters(fix.accuracyMeters)
+            if (hasPassedManeuver) {
                 index += 1
+                continue
+            }
+            if (fallbackPassedManeuver) {
+                index += 1
+                break
             } else {
                 break
             }
@@ -2585,10 +2594,6 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             length += distanceMeters(pathPoints[index], pathPoints[index + 1])
         }
         return length
-    }
-
-    private fun maneuverPassThresholdMeters(accuracyMeters: Float): Double {
-        return accuracyMeters.coerceIn(5f, 12f).toDouble()
     }
 
     private fun routeProgressProjectionForStep(

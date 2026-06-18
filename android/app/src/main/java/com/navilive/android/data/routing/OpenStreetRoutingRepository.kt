@@ -178,6 +178,7 @@ class OpenStreetRoutingRepository(
         const val STREET_CROSSING_DEDUPLICATE_METERS = 25.0
         const val STREET_CROSSING_LATERAL_LIMIT_METERS = 4.0
         const val STREET_CROSSING_MIN_BEARING_DIFFERENCE_DEGREES = 55.0
+        const val STREET_CROSSING_ROUTE_ROAD_OVERLAP_TOLERANCE_METERS = 12.0
         const val STREET_CROSSING_MANEUVER_TYPE = "street_crossing"
         const val ROUTE_START_APPROACH_THRESHOLD_METERS = 18.0
         const val MIN_INFERRED_ROAD_STEP_DISTANCE_METERS = 45
@@ -460,11 +461,12 @@ class OpenStreetRoutingRepository(
             }
             val stepDistanceMeters = step.optDouble("distance", 0.0).roundToInt()
             val stepGeometry = parsePath(step.optJSONObject("geometry"))
-            val inferredRoadName = if (stepDistanceMeters >= MIN_INFERRED_ROAD_STEP_DISTANCE_METERS) {
+            val inferredRoadName = if (shouldInferRoadNameForStep(stepDistanceMeters, stepGeometry)) {
                 inferRoadNameForStep(
                     stepGeometry = stepGeometry,
                     maneuverPoint = maneuverPoint,
                     namedRouteWays = namedRouteWays,
+                    maximumDistanceMeters = roadNameInferenceDistanceLimit(stepDistanceMeters),
                 )
             } else {
                 null
@@ -522,7 +524,8 @@ class OpenStreetRoutingRepository(
         val simplified = mutableListOf<RouteStep>()
         steps.forEachIndexed { index, step ->
             val previous = simplified.lastOrNull()
-            if (shouldSuppressRouteStep(step, previous, index, steps.lastIndex)) {
+            val next = steps.getOrNull(index + 1)
+            if (shouldSuppressRouteStep(step, previous, next, index, steps.lastIndex)) {
                 simplified[simplified.lastIndex] = previous!!.copy(
                     distanceMeters = previous.distanceMeters + step.distanceMeters,
                 )
@@ -571,11 +574,13 @@ class OpenStreetRoutingRepository(
     private fun shouldSuppressRouteStep(
         step: RouteStep,
         previous: RouteStep?,
+        next: RouteStep?,
         index: Int,
         lastIndex: Int,
     ): Boolean = RouteStepSimplificationCore.shouldSuppressRouteStep(
         step = step,
         previous = previous,
+        next = next,
         index = index,
         lastIndex = lastIndex,
     )
@@ -617,6 +622,12 @@ class OpenStreetRoutingRepository(
                 val previousStep = augmented.lastOrNull { it.kind == RouteStepKind.Instruction }
                 val distanceFromPreviousRaw = alert.distanceAlongRouteMeters - lastAlongMeters
                 val distanceToNextStep = stepAlongMeters - alert.distanceAlongRouteMeters
+                val nearbyRouteRoadNames = routeRoadNamesNearAlert(
+                    steps = steps,
+                    stepDistances = stepDistances,
+                    alertDistanceMeters = alert.distanceAlongRouteMeters,
+                    nextStepIndex = stepIndex,
+                )
                 if (
                     shouldSuppressRouteAlert(
                         alert = alert,
@@ -624,6 +635,7 @@ class OpenStreetRoutingRepository(
                         previousStep = previousStep,
                         distanceToNextStepMeters = distanceToNextStep,
                         nextStep = nextStep,
+                        nearbyRouteRoadNames = nearbyRouteRoadNames,
                     )
                 ) {
                     alertIndex += 1
@@ -677,6 +689,7 @@ class OpenStreetRoutingRepository(
         previousStep: RouteStep?,
         distanceToNextStepMeters: Double,
         nextStep: RouteStep,
+        nearbyRouteRoadNames: Set<String>,
     ): Boolean {
         if (distanceFromPreviousMeters < CROSSING_DUPLICATE_PROXIMITY_METERS) return true
         if (alert.isNamedStreetCrossing()) {
@@ -684,6 +697,7 @@ class OpenStreetRoutingRepository(
             if (alertRoad != null) {
                 if (normalizedRouteRoadName(previousStep?.roadName) == alertRoad) return true
                 if (normalizedRouteRoadName(nextStep.roadName) == alertRoad) return true
+                if (alertRoad in nearbyRouteRoadNames) return true
             }
             return false
         }
@@ -700,6 +714,30 @@ class OpenStreetRoutingRepository(
             return true
         }
         return false
+    }
+
+    private fun routeRoadNamesNearAlert(
+        steps: List<RouteStep>,
+        stepDistances: List<Double>,
+        alertDistanceMeters: Double,
+        nextStepIndex: Int,
+    ): Set<String> {
+        if (steps.isEmpty() || stepDistances.isEmpty()) return emptySet()
+        val names = mutableSetOf<String>()
+        val startIndex = (nextStepIndex - 3).coerceAtLeast(0)
+        val endIndex = (nextStepIndex + 3).coerceAtMost(steps.lastIndex)
+        for (index in startIndex..endIndex) {
+            val roadName = normalizedRouteRoadName(steps[index].roadName) ?: continue
+            val stepStart = stepDistances.getOrNull(index) ?: continue
+            val stepEnd = stepDistances.getOrNull(index + 1)
+                ?: (stepStart + steps[index].distanceMeters.toDouble())
+            val spanStart = minOf(stepStart, stepEnd) - STREET_CROSSING_ROUTE_ROAD_OVERLAP_TOLERANCE_METERS
+            val spanEnd = maxOf(stepStart, stepEnd) + STREET_CROSSING_ROUTE_ROAD_OVERLAP_TOLERANCE_METERS
+            if (alertDistanceMeters in spanStart..spanEnd) {
+                names += roadName
+            }
+        }
+        return names
     }
 
     private fun RouteAlertCandidate.isNamedStreetCrossing(): Boolean =
@@ -923,6 +961,7 @@ class OpenStreetRoutingRepository(
         stepGeometry: List<GeoPoint>,
         maneuverPoint: GeoPoint?,
         namedRouteWays: List<NamedRouteWay>,
+        maximumDistanceMeters: Double = 45.0,
     ): String? {
         if (namedRouteWays.isEmpty()) return null
         val samples = routeNameSamples(stepGeometry, maneuverPoint)
@@ -932,12 +971,23 @@ class OpenStreetRoutingRepository(
                 val distance = samples.minOfOrNull { sample ->
                     routeWayDistanceMeters(way, sample)
                 } ?: return@mapNotNull null
-                if (distance > 45.0) return@mapNotNull null
+                if (distance > maximumDistanceMeters) return@mapNotNull null
                 way to (distance + routeWayPriorityPenalty(way.highway))
             }
             .minByOrNull { it.second }
             ?.first
             ?.name
+    }
+
+    private fun shouldInferRoadNameForStep(
+        stepDistanceMeters: Int,
+        stepGeometry: List<GeoPoint>,
+    ): Boolean {
+        return stepGeometry.isNotEmpty() || stepDistanceMeters >= MIN_INFERRED_ROAD_STEP_DISTANCE_METERS
+    }
+
+    private fun roadNameInferenceDistanceLimit(stepDistanceMeters: Int): Double {
+        return if (stepDistanceMeters < MIN_INFERRED_ROAD_STEP_DISTANCE_METERS) 15.0 else 45.0
     }
 
     private fun routeNameSamples(

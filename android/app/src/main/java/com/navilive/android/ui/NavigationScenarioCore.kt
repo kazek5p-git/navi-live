@@ -39,6 +39,26 @@ internal object NavigationScenarioCore {
             )
     }
 
+    fun maneuverActivationLeadMeters(accuracyMeters: Float): Double {
+        return (
+            SharedProductRules.Navigation.guidanceLeadMeters +
+                immediateAnnouncementThresholdMeters(accuracyMeters)
+            ).toDouble()
+    }
+
+    fun maneuverPassThresholdMeters(accuracyMeters: Float): Double {
+        return accuracyMeters.coerceIn(5f, 12f).toDouble()
+    }
+
+    fun hasPassedManeuverPoint(
+        projectedDistanceAlongRouteMeters: Double,
+        maneuverDistanceAlongRouteMeters: Double,
+        accuracyMeters: Float,
+    ): Boolean {
+        return projectedDistanceAlongRouteMeters >=
+            maneuverDistanceAlongRouteMeters + maneuverPassThresholdMeters(accuracyMeters)
+    }
+
     fun countdownMilestoneMeters(distanceToNext: Int): Int? {
         return SharedProductRules.Navigation.countdownMilestonesMeters.firstOrNull {
             distanceToNext <= it

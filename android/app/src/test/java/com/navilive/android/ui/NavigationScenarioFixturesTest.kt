@@ -2,6 +2,8 @@ package com.navilive.android.ui
 
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.nio.file.Files
 import java.nio.file.Path
@@ -30,6 +32,12 @@ class NavigationScenarioFixturesTest {
                 entry.getString("name"),
                 entry.getInt("expectedImmediate"),
                 NavigationScenarioCore.immediateAnnouncementThresholdMeters(accuracyMeters),
+            )
+            assertEquals(
+                entry.getString("name"),
+                entry.getDouble("expectedManeuverActivationLead"),
+                NavigationScenarioCore.maneuverActivationLeadMeters(accuracyMeters),
+                0.0001,
             )
         }
     }
@@ -92,6 +100,36 @@ class NavigationScenarioFixturesTest {
                 ),
             )
         }
+    }
+
+    @Test
+    fun projectedManeuverAdvanceDoesNotUseAnnouncementLead() {
+        val accuracyMeters = 5f
+        val maneuverDistance = 100.0
+        val announcementLead = NavigationScenarioCore.maneuverActivationLeadMeters(accuracyMeters)
+
+        assertFalse(
+            NavigationScenarioCore.hasPassedManeuverPoint(
+                projectedDistanceAlongRouteMeters = maneuverDistance - announcementLead,
+                maneuverDistanceAlongRouteMeters = maneuverDistance,
+                accuracyMeters = accuracyMeters,
+            ),
+        )
+        assertFalse(
+            NavigationScenarioCore.hasPassedManeuverPoint(
+                projectedDistanceAlongRouteMeters = maneuverDistance,
+                maneuverDistanceAlongRouteMeters = maneuverDistance,
+                accuracyMeters = accuracyMeters,
+            ),
+        )
+        assertTrue(
+            NavigationScenarioCore.hasPassedManeuverPoint(
+                projectedDistanceAlongRouteMeters = maneuverDistance +
+                    NavigationScenarioCore.maneuverPassThresholdMeters(accuracyMeters),
+                maneuverDistanceAlongRouteMeters = maneuverDistance,
+                accuracyMeters = accuracyMeters,
+            ),
+        )
     }
 
     @Test

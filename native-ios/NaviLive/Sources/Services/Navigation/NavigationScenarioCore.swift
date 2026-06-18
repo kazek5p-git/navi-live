@@ -36,6 +36,23 @@ enum NavigationScenarioCore {
     )
   }
 
+  static func maneuverActivationLeadMeters(accuracyMeters: Double) -> Double {
+    Double(SharedProductRules.Navigation.guidanceLeadMeters + immediateAnnouncementThresholdMeters(accuracyMeters: accuracyMeters))
+  }
+
+  static func maneuverPassThresholdMeters(accuracyMeters: Double) -> Double {
+    min(max(accuracyMeters, 5), 12)
+  }
+
+  static func hasPassedManeuverPoint(
+    projectedDistanceAlongRouteMeters: Double,
+    maneuverDistanceAlongRouteMeters: Double,
+    accuracyMeters: Double
+  ) -> Bool {
+    projectedDistanceAlongRouteMeters >=
+      maneuverDistanceAlongRouteMeters + maneuverPassThresholdMeters(accuracyMeters: accuracyMeters)
+  }
+
   static func countdownMilestoneMeters(distanceToNext: Int) -> Int? {
     SharedProductRules.Navigation.countdownMilestonesMeters.first { distanceToNext <= $0 }
   }
