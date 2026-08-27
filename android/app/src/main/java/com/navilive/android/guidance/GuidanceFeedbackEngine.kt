@@ -138,14 +138,24 @@ class GuidanceFeedbackEngine(context: Context) {
     fun vibrateShort() {
         val vib = vibrator ?: return
         if (!vib.hasVibrator()) return
-        vib.vibrate(VibrationEffect.createOneShot(120, VibrationEffect.DEFAULT_AMPLITUDE))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vib.vibrate(VibrationEffect.createOneShot(120, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            @Suppress("DEPRECATION")
+            vib.vibrate(120)
+        }
     }
 
     fun vibrateDouble() {
         val vib = vibrator ?: return
         if (!vib.hasVibrator()) return
         val timings = longArrayOf(0, 90, 70, 90)
-        vib.vibrate(VibrationEffect.createWaveform(timings, -1))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vib.vibrate(VibrationEffect.createWaveform(timings, -1))
+        } else {
+            @Suppress("DEPRECATION")
+            vib.vibrate(timings, -1)
+        }
     }
 
     fun playSoundCue(

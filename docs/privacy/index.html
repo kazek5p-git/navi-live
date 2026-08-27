@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Navi Live Privacy Policy</title>
-    <meta name="description" content="Public privacy policy for the Navi Live iPhone app.">
+    <meta name="description" content="Public privacy policy for the Navi Live walking navigation app.">
     <link rel="canonical" href="https://kazek5p-git.github.io/navi-live/privacy/">
     <link rel="stylesheet" href="../assets/site.css">
   </head>
@@ -19,7 +19,7 @@
           App Store Connect, TestFlight, and end users.
         </p>
         <div class="hero-meta" aria-label="Page metadata">
-          <span>Last updated: 2026-04-22</span>
+          <span>Last updated: 2026-08-27</span>
           <span>Languages: Polish and English</span>
           <span>Support: GitHub Issues</span>
         </div>
@@ -60,7 +60,8 @@
               <ul>
                 <li>z lokalizacji urządzenia, aby wyszukiwać pobliskie miejsca, wyznaczać trasy piesze i prowadzić aktywną nawigację,</li>
                 <li>z pamięci lokalnej urządzenia, aby zapisywać ulubione miejsca, ustawienia, stan samouczka i ostatnią trasę,</li>
-                <li>z dostępu do sieci, aby wysyłać zapytania wyszukiwania, geokodowania wstecznego i routingu do publicznych usług opartych o OpenStreetMap.</li>
+                <li>z dostępu do sieci, aby wysyłać zapytania wyszukiwania, geokodowania wstecznego i routingu do publicznych usług opartych o OpenStreetMap,</li>
+                <li>na Androidzie opcjonalnie z krótkiego skanowania Wi-Fi i beaconów BLE, aby przy słabym GPS-ie uzyskać pomocniczą wskazówkę lokalizacyjną.</li>
               </ul>
             </section>
 
@@ -106,13 +107,16 @@
               <h3>Usługi zewnętrzne</h3>
               <p>
                 Aplikacja wysyła niezbędne zapytania do publicznych usług wyszukiwania i routingu
-                opartych o OpenStreetMap, aby realizować podstawowe funkcje nawigacyjne.
+                opartych o OpenStreetMap, aby realizować podstawowe funkcje nawigacyjne. Androidowa
+                wersja może także korzystać z eksperymentalnego beaconDB jako pomocniczego źródła
+                geolokalizacji przy słabym GPS-ie.
               </p>
               <p>Zapytania te mogą obejmować:</p>
               <ul>
                 <li>tekst wyszukiwanego celu,</li>
                 <li>przybliżone punkty trasy,</li>
-                <li>współrzędne potrzebne do wyznaczenia trasy lub geokodowania wstecznego.</li>
+                <li>współrzędne potrzebne do wyznaczenia trasy lub geokodowania wstecznego,</li>
+                <li>na Androidzie identyfikatory BSSID Wi-Fi oraz adresy wykrytych beaconów BLE i ich siłę sygnału, wysyłane do beaconDB bez nazw sieci i nazw urządzeń.</li>
               </ul>
             </section>
 
@@ -120,7 +124,9 @@
               <h3>Udostępnianie danych</h3>
               <p>
                 Aplikacja nie utrzymuje obecnie własnego systemu kont użytkowników ani
-                chmury powiązanej z Twoją tożsamością.
+                chmury powiązanej z Twoją tożsamością. Androidowe identyfikatory radiowe
+                są przekazywane bezpośrednio do beaconDB tylko w celu otrzymania odpowiedzi
+                geolokalizacyjnej; nie są zapisywane przez Navi Live jako historia trasy.
               </p>
             </section>
 
@@ -156,7 +162,8 @@
               <ul>
                 <li>device location, to search nearby places, build walking routes, and support active navigation,</li>
                 <li>local device storage, to save favorites, settings, tutorial state, and recent route state,</li>
-                <li>network access, to send search, reverse geocoding, and routing requests to public OpenStreetMap-based services used by the app.</li>
+                <li>network access, to send search, reverse geocoding, and routing requests to public OpenStreetMap-based services used by the app,</li>
+                <li>on Android, optional short Wi-Fi and BLE beacon scans to obtain an auxiliary location signal when GPS is weak.</li>
               </ul>
             </section>
 
@@ -202,13 +209,16 @@
               <h3>Third-party services</h3>
               <p>
                 The app sends necessary requests to public OpenStreetMap-based search and routing
-                services in order to perform core navigation functions.
+                services in order to perform core navigation functions. The Android version may
+                also use the experimental beaconDB service as an auxiliary geolocation source when
+                GPS is weak.
               </p>
               <p>These requests may include:</p>
               <ul>
                 <li>destination search text,</li>
                 <li>approximate route endpoints,</li>
-                <li>coordinates needed for route calculation or reverse geocoding.</li>
+                <li>coordinates needed for route calculation or reverse geocoding,</li>
+                <li>on Android, Wi-Fi BSSID identifiers and addresses of detected BLE beacons with signal strength, sent to beaconDB without network or device names.</li>
               </ul>
             </section>
 
@@ -216,7 +226,9 @@
               <h3>Data sharing</h3>
               <p>
                 The app does not currently maintain a developer-operated user account system or a
-                developer-operated cloud profile tied to your identity.
+                developer-operated cloud profile tied to your identity. Android radio identifiers
+                are sent directly to beaconDB only to obtain a geolocation response; Navi Live does
+                not store them as a route history.
               </p>
             </section>
 

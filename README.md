@@ -12,6 +12,7 @@ Project structure:
 - `NAVILIVE_UX_BLUEPRINT.md` - UX blueprint reconstructed from archived ViaOpta materials
 - `NAVILIVE_ANDROID_BACKLOG.md` - current Android implementation backlog
 - `screens/` - supporting reference images and archived screen material
+- `docs/lokalizacja-radiowa-android.md` - opis pomocniczego skanowania Wi-Fi/BLE na Androidzie
 
 Quick start:
 

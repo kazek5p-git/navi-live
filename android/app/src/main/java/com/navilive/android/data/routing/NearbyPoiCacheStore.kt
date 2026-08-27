@@ -49,7 +49,11 @@ internal class NearbyPoiCacheStore(context: Context) {
         records.forEach { record -> merged[record.id] = record.copy(fetchedAtMs = fetchedAtMs) }
         readSnapshot().records
             .filter { fetchedAtMs - it.fetchedAtMs <= MaxRecordAgeMs }
-            .forEach { record -> merged.putIfAbsent(record.id, record) }
+            .forEach { record ->
+                if (!merged.containsKey(record.id)) {
+                    merged[record.id] = record
+                }
+            }
 
         val pruned = merged.values
             .sortedByDescending { it.fetchedAtMs }

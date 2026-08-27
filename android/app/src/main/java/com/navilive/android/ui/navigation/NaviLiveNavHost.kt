@@ -646,18 +646,19 @@ private fun checkLocationPermission(context: Context): Boolean {
 }
 
 private fun locationPermissionsForRequest(): Array<String> {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.POST_NOTIFICATIONS,
-        )
-    } else {
-        arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-        )
+    val permissions = mutableListOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+    )
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        permissions += Manifest.permission.BLUETOOTH_SCAN
+        permissions += Manifest.permission.BLUETOOTH_CONNECT
     }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        permissions += Manifest.permission.POST_NOTIFICATIONS
+        permissions += Manifest.permission.NEARBY_WIFI_DEVICES
+    }
+    return permissions.toTypedArray()
 }
 
 private fun shareDiagnosticsFile(context: Context, exportPath: String) {

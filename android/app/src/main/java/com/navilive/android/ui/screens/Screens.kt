@@ -3,6 +3,7 @@ package com.navilive.android.ui.screens
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.os.Build
 import android.view.KeyEvent
 import android.view.View
 import android.view.accessibility.AccessibilityNodeInfo
@@ -1369,7 +1370,9 @@ private fun applyAccessibleSearchEditTextAnnouncement(editText: EditText, label:
             super.onInitializeAccessibilityNodeInfo(host, info)
             val currentText = editText.text?.toString().orEmpty().trim()
             info.contentDescription = null
-            info.hintText = label
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                info.hintText = label
+            }
             info.text = if (currentText.isBlank()) label else "$label ($currentText)"
         }
     }

@@ -8,6 +8,8 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -22,16 +24,31 @@ import com.navilive.android.MainActivity
 import com.navilive.android.R
 import com.navilive.android.model.GeoPoint
 import com.navilive.android.model.LocationFix
+import com.navilive.android.model.SharedProductRules
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class LocationForegroundService : Service() {
 
     private lateinit var fusedClient: FusedLocationProviderClient
     private var locationCallback: LocationCallback? = null
     private var isTracking = false
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private lateinit var radioLocationProvider: RadioLocationProvider
+    private lateinit var beaconDbClient: BeaconDbClient
+    private var radioLookupJob: Job? = null
+    private var lastRadioAttemptMs: Long = 0L
 
     override fun onCreate() {
         super.onCreate()
         fusedClient = LocationServices.getFusedLocationProviderClient(this)
+        radioLocationProvider = AndroidRadioLocationProvider(this)
+        beaconDbClient = BeaconDbClient()
         createNotificationChannel()
     }
 
@@ -48,6 +65,7 @@ class LocationForegroundService : Service() {
 
     override fun onDestroy() {
         stopTracking()
+        serviceScope.cancel()
         super.onDestroy()
     }
 
@@ -93,6 +111,7 @@ class LocationForegroundService : Service() {
                         timestampMs = latest.time,
                     ),
                 )
+                maybeUseRadioLocation(latest.accuracy)
             }
         }
 
@@ -109,9 +128,51 @@ class LocationForegroundService : Service() {
         locationCallback?.let { fusedClient.removeLocationUpdates(it) }
         locationCallback = null
         isTracking = false
+        radioLookupJob?.cancel()
+        radioLookupJob = null
+        lastRadioAttemptMs = 0L
         LocationTrackerStore.setTracking(false)
-        stopForeground(STOP_FOREGROUND_REMOVE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+        } else {
+            @Suppress("DEPRECATION")
+            stopForeground(true)
+        }
         stopSelf()
+    }
+
+    private fun maybeUseRadioLocation(gpsAccuracyMeters: Float) {
+        if (!gpsAccuracyMeters.isFinite() ||
+            gpsAccuracyMeters < SharedProductRules.Navigation.gpsWeakAccuracyMeters
+        ) {
+            return
+        }
+        if (!hasInternetConnection()) return
+        if (radioLookupJob?.isActive == true) return
+        val now = System.currentTimeMillis()
+        if (now - lastRadioAttemptMs < RadioLocationConfig.attemptCooldownMs) return
+        lastRadioAttemptMs = now
+        radioLookupJob = serviceScope.launch {
+            try {
+                val observations = radioLocationProvider.scan()
+                if (observations.observations.size < RadioLocationConfig.minimumObservationsForLookup) return@launch
+                val estimate = beaconDbClient.geolocate(observations) ?: return@launch
+                LocationTrackerStore.pushRadioEstimate(estimate)
+            } catch (error: CancellationException) {
+                throw error
+            } catch (_: SecurityException) {
+                // Brak opcjonalnego uprawnienia radiowego nie może wyłączyć GPS-u.
+            } catch (_: RuntimeException) {
+                // Skanery i dostawca sieci są zależne od urządzenia i mogą odmówić działania.
+            }
+        }
+    }
+
+    private fun hasInternetConnection(): Boolean {
+        val connectivityManager = getSystemService(ConnectivityManager::class.java) ?: return false
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun buildNotification(text: String) = NotificationCompat.Builder(this, CHANNEL_ID)

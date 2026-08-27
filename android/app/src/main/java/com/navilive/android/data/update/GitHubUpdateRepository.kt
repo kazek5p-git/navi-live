@@ -98,7 +98,8 @@ class GitHubUpdateRepository(
                 val payload = connection.errorStream?.bufferedReader()?.use { it.readText() }.orEmpty()
                 throw IllegalStateException("HTTP $status: $payload")
             }
-            val contentLength = connection.contentLengthLong.takeIf { it > 0L }
+            // contentLengthLong pojawia się dopiero w API 24; APK obsługuje także API 23.
+            val contentLength = connection.contentLength.toLong().takeIf { it > 0L }
             var bytesRead = 0L
             var lastProgress = -1
             connection.inputStream.use { input ->
