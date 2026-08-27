@@ -447,6 +447,8 @@ private fun legacyPreferencesMigration(context: Context): DataMigration<Preferen
     }
 }
 
+// Mapa Preferences traci typ klucza; typ wartości pozwala bezpiecznie odtworzyć go podczas migracji.
+@Suppress("UNCHECKED_CAST")
 private fun MutablePreferences.copyAllFrom(source: Preferences) {
     source.asMap().forEach { (key, value) ->
         when (value) {
@@ -457,7 +459,6 @@ private fun MutablePreferences.copyAllFrom(source: Preferences) {
             is Long -> this[key as Preferences.Key<Long>] = value
             is String -> this[key as Preferences.Key<String>] = value
             is Set<*> -> {
-                @Suppress("UNCHECKED_CAST")
                 this[key as Preferences.Key<Set<String>>] = value.filterIsInstance<String>().toSet()
             }
         }

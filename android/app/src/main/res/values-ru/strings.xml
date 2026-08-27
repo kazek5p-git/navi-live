@@ -29,21 +29,8 @@
     <string name="bootstrap_loading_message">Восстановление сохранённых мест, настроек и последнего маршрута.</string>
 
     <string name="onboarding_title">Добро пожаловать в Navi Live</string>
-    <string name="onboarding_status_title">Краткое руководство</string>
-    <string name="onboarding_status_message">Узнайте основной сценарий: поиск пункта назначения, проверка маршрута и голосовое сопровождение во время ходьбы.</string>
-    <string name="onboarding_how_it_works_title">Основной сценарий</string>
-    <string name="onboarding_search_label">Поиск пункта назначения</string>
-    <string name="onboarding_search_message">Используйте «Поиск пункта назначения» и введите адрес или место. Когда Navi Live знает ваше местоположение, ближайшие точки показываются первыми.</string>
-    <string name="onboarding_align_label">Проверка маршрута</string>
-    <string name="onboarding_align_message">Откройте предварительный просмотр маршрута перед началом движения. Список указаний поможет понять, подходит ли маршрут.</string>
-    <string name="onboarding_navigate_label">Идите с сопровождением</string>
-    <string name="onboarding_navigate_message">После запуска навигации слушайте отсчёт расстояния, указания поворотов, предупреждения о переходах, звуки и вибрацию.</string>
-    <string name="onboarding_expect_title">Полезные действия и безопасность</string>
-    <string name="onboarding_expect_message">Сохраняйте текущее местоположение под своим именем, открывайте настройки с любого экрана, используйте действия свайпом вверх и вниз для мест и встряхивайте телефон, чтобы повторить подсказки. GPS и картографические данные могут быть неточными, поэтому всегда проверяйте переходы и обстановку вокруг.</string>
     <string name="onboarding_continue">Продолжить настройку</string>
     <string name="tutorial_navigation_title">Обучение</string>
-    <string name="tutorial_status_title">Как пользоваться Navi Live</string>
-    <string name="tutorial_status_message">Повторите ежедневный сценарий: поиск, предварительный просмотр маршрута, ведение по маршруту и быстрые действия.</string>
     <string name="tutorial_welcome_status_title">Краткое руководство</string>
     <string name="tutorial_welcome_status_message">Узнайте основной сценарий: поиск пункта назначения, проверка маршрута и голосовое сопровождение во время ходьбы.</string>
     <string name="tutorial_revisit_status_title">Как пользоваться Navi Live</string>
@@ -81,16 +68,10 @@
     <string name="permissions_continue_for_now">Пока пропустить</string>
 
     <string name="search_title">Поиск</string>
-    <string name="search_status_title">Найти пункт назначения</string>
-    <string name="search_status_message">Введите адрес или название места. Результаты остаются крупными и удобными для просмотра с TalkBack.</string>
     <string name="search_field_label">Введите адрес или место</string>
-    <string name="search_field_supporting">Ищите онлайн или используйте предложенные места ниже.</string>
     <string name="search_suggested_places">Предлагаемые места</string>
     <string name="search_results">Результаты поиска</string>
-    <string name="search_empty_start_title">Начните с поиска</string>
-    <string name="search_empty_start_message">Введите название места или адрес для поиска онлайн.</string>
     <string name="search_empty_results_title">Места не найдены</string>
-    <string name="search_empty_results_message">Попробуйте другое название места или вернитесь назад и используйте избранное.</string>
 
     <string name="place_details_title">Сведения о месте</string>
     <string name="label_address">Адрес</string>
@@ -113,7 +94,7 @@
     <string name="route_summary_guidance_preview">Предварительный просмотр маршрута</string>
     <string name="route_summary_favorite_saved">Сохранено в избранном</string>
     <string name="route_summary_start_route">Начать навигацию</string>
-    <string name="route_summary_preparing_route">Построение маршрута...</string>
+    <string name="route_summary_preparing_route">Построение маршрута…</string>
     <string name="heading_title">Установить направление</string>
     <string name="heading_confirmed_title">Направление подтверждено</string>
     <string name="heading_confirmed_message">Вы смотрите вдоль маршрута. Начинайте движение, когда будете готовы.</string>
@@ -128,7 +109,7 @@
     <string name="active_navigation_distance_to_next">Расстояние до следующего манёвра</string>
     <string name="active_navigation_remaining_distance">Оставшееся расстояние</string>
     <string name="active_navigation_distance_from_route">Отклонение от маршрута</string>
-    <string name="active_navigation_recalculating">Перестроение маршрута...</string>
+    <string name="active_navigation_recalculating">Перестроение маршрута…</string>
     <string name="active_navigation_recalculate">Перестроить маршрут</string>
     <string name="active_navigation_need_new_route">Обновить маршрут</string>
     <string name="active_navigation_report_problem">Сообщить о проблеме на маршруте</string>
@@ -182,7 +163,12 @@
     <string name="format_search_radius_value">%1$d км</string>
     <string name="format_status_search_radius_updated">Радиус поиска: %1$d км.</string>
     <string name="settings_search_result_limit_title">Количество результатов поиска</string>
-    <string name="format_search_result_limit_value">%1$d результатов</string>
+    <plurals name="format_search_result_limit_value">
+        <item quantity="one">%1$d результатов</item>
+        <item quantity="few">%1$d результатов</item>
+        <item quantity="many">%1$d результатов</item>
+        <item quantity="other">%1$d результатов</item>
+    </plurals>
     <string name="format_status_search_result_limit_updated">Количество результатов поиска: %1$d.</string>
     <string name="settings_nearby_poi_cache_mode_title">Загрузка ближайших мест</string>
     <string name="settings_nearby_poi_cache_mode_enabled">Включена</string>
@@ -190,7 +176,12 @@
     <string name="settings_nearby_poi_cache_mode_disabled">Отключена</string>
     <string name="settings_nearby_poi_cache_radius_title">Радиус загружаемых мест</string>
     <string name="nearby_poi_cache_status_refreshing">Ближайшие места: обновление в фоновом режиме</string>
-    <string name="format_nearby_poi_cache_status_saved">Ближайшие места: сохранено %1$d</string>
+    <plurals name="format_nearby_poi_cache_status_saved">
+        <item quantity="one">Ближайшие места: сохранено %1$d</item>
+        <item quantity="few">Ближайшие места: сохранено %1$d</item>
+        <item quantity="many">Ближайшие места: сохранено %1$d</item>
+        <item quantity="other">Ближайшие места: сохранено %1$d</item>
+    </plurals>
     <string name="nearby_poi_cache_status_empty">Ближайшие места: нет сохранённых</string>
     <string name="settings_nearby_poi_cache_refresh_now">Обновить сейчас</string>
     <string name="settings_nearby_poi_cache_clear">Очистить сохранённые</string>
@@ -214,8 +205,6 @@
     <string name="settings_speech_rate_title">Скорость речи</string>
     <string name="settings_speech_volume_title">Громкость речи</string>
     <string name="settings_speech_controls_disabled_message">Скорость и громкость речи управляются программой экранного доступа, когда выбран этот источник.</string>
-    <string name="settings_slider_decrease">Уменьшить</string>
-    <string name="settings_slider_increase">Увеличить</string>
     <string name="settings_vibration_title">Вибрация</string>
     <string name="settings_shake_gesture_title">Жест встряхивания</string>
     <string name="settings_shake_strength_title">Сила встряхивания</string>
@@ -233,17 +222,11 @@
     <string name="settings_sound_cue_volume_disabled_message">Сначала включите звуки навигации, чтобы изменить громкость звуков.</string>
     <string name="settings_sound_cue_play">Воспроизвести</string>
     <string name="settings_sound_cue_countdown_title">Обратный отсчёт расстояния</string>
-    <string name="settings_sound_cue_countdown_message">Двойной короткий сигнал перед напоминаниями о расстоянии, например за 100 метров или 50 метров до поворота.</string>
     <string name="settings_sound_cue_turn_now_title">Поворот сейчас</string>
-    <string name="settings_sound_cue_turn_now_message">Трёхчастный сигнал «высокий-низкий-высокий», когда следующую подсказку нужно выполнить немедленно.</string>
     <string name="settings_sound_cue_pedestrian_crossing_title">Пешеходный переход</string>
-    <string name="settings_sound_cue_pedestrian_crossing_message">Чёткий чередующийся сигнал для оповещений о пешеходном переходе.</string>
     <string name="settings_sound_cue_warning_title">Предупреждение</string>
-    <string name="settings_sound_cue_warning_message">Мягкий нисходящий сигнал для паузы, отклонения от маршрута или других предупреждающих ситуаций.</string>
     <string name="settings_sound_cue_success_title">Готово или возобновлено</string>
-    <string name="settings_sound_cue_success_message">Лёгкий восходящий сигнал, когда навигация запускается, возобновляется или успешно перестраивается.</string>
     <string name="settings_sound_cue_arrival_title">Прибытие</string>
-    <string name="settings_sound_cue_arrival_message">Короткий трёхнотный сигнал при достижении пункта назначения.</string>
     <string name="settings_auto_recalculate_title">Автоматически перестраивать маршрут</string>
     <string name="settings_junction_alerts_title">Оповещения о перекрёстках</string>
     <string name="settings_pedestrian_crossing_alerts_title">Оповещения о пешеходных переходах</string>
@@ -324,16 +307,35 @@
     <string name="format_step_preview">%1$d. %2$s</string>
     <string name="format_step_preview_with_distance">%1$d. %2$s, %3$s</string>
     <string name="format_progress_step">Шаг %1$d из %2$d</string>
-    <string name="format_found_matching_places">Найдено %1$d подходящих мест.</string>
-    <string name="format_preparing_route">Построение маршрута до %1$s...</string>
+    <plurals name="format_found_matching_places">
+        <item quantity="one">Найдено %1$d подходящих мест.</item>
+        <item quantity="few">Найдено %1$d подходящих мест.</item>
+        <item quantity="many">Найдено %1$d подходящих мест.</item>
+        <item quantity="other">Найдено %1$d подходящих мест.</item>
+    </plurals>
+    <string name="format_preparing_route">Построение маршрута до %1$s…</string>
     <string name="format_fallback_route_ready">Запасной маршрут до %1$s построен.</string>
     <string name="format_route_ready">Маршрут до %1$s построен.</string>
     <string name="format_continue_toward">Продолжайте движение к %1$s.</string>
-    <string name="format_navigation_upcoming_instruction_distance">Через %1$d метров, %2$s</string>
-    <string name="format_navigation_upcoming_instruction_time">Через %1$d секунд, %2$s</string>
-    <string name="format_navigation_upcoming_instruction">Через %1$d метров, %2$s</string>
+    <plurals name="format_navigation_upcoming_instruction_distance">
+        <item quantity="one">Через %1$d метров, %2$s</item>
+        <item quantity="few">Через %1$d метров, %2$s</item>
+        <item quantity="many">Через %1$d метров, %2$s</item>
+        <item quantity="other">Через %1$d метров, %2$s</item>
+    </plurals>
+    <plurals name="format_navigation_upcoming_instruction_time">
+        <item quantity="one">Через %1$d секунд, %2$s</item>
+        <item quantity="few">Через %1$d секунд, %2$s</item>
+        <item quantity="many">Через %1$d секунд, %2$s</item>
+        <item quantity="other">Через %1$d секунд, %2$s</item>
+    </plurals>
     <string name="format_navigation_immediate_instruction">Сейчас: %1$s</string>
-    <string name="format_navigation_repeat_following_distance">Затем через %1$d метров: %2$s</string>
+    <plurals name="format_navigation_repeat_following_distance">
+        <item quantity="one">Затем через %1$d метров: %2$s</item>
+        <item quantity="few">Затем через %1$d метров: %2$s</item>
+        <item quantity="many">Затем через %1$d метров: %2$s</item>
+        <item quantity="other">Затем через %1$d метров: %2$s</item>
+    </plurals>
     <string name="format_navigation_repeat_plan_two_steps">%1$s. %2$s</string>
     <string name="format_current_position_announcement">%1$s Текущее местоположение: %2$s</string>
     <string name="format_telemetry_exported">Телеметрия экспортирована в %1$s.</string>
@@ -355,20 +357,12 @@
     <string name="settings_updates_channel_beta_title">Бета</string>
     <string name="settings_updates_check">Проверить обновления</string>
     <string name="settings_updates_checking_action">Проверка GitHub…</string>
-    <string name="settings_updates_download">Загрузить обновление</string>
     <string name="settings_updates_downloading_action">Загрузка APK…</string>
     <string name="settings_updates_download_install">Загрузить и установить обновление</string>
     <string name="settings_updates_install">Установить загруженное обновление</string>
     <string name="settings_updates_open_release">Открыть страницу релиза</string>
     <string name="settings_updates_allow_installs">Разрешить установку APK</string>
-    <string name="start_version_card_title">Версия и обновления</string>
-    <string name="start_version_label">Версия</string>
-    <string name="start_build_label">Сборка</string>
-    <string name="start_latest_release_label">Последний известный релиз</string>
-    <string name="start_changelog_title">Последние изменения</string>
-    <string name="start_open_update_settings">Открыть настройки обновлений</string>
     <string name="update_status_idle_auto">Navi Live также автоматически проверяет GitHub при запуске.</string>
-    <string name="update_status_idle">Откройте этот раздел, чтобы проверить GitHub на наличие новой версии.</string>
     <string name="update_status_checking">Проверка последнего релиза на GitHub…</string>
     <string name="format_update_ready_to_install">Обновление %1$s загружено и готово к установке.</string>
     <string name="format_update_available">Доступно обновление %1$s.</string>
@@ -381,7 +375,6 @@
     <string name="update_status_install_permission_required">Разрешите Navi Live устанавливать APK-файлы для продолжения.</string>
     <string name="status_update_channel_stable_selected">Выбран стабильный канал обновлений.</string>
     <string name="status_update_channel_beta_selected">Выбран бета-канал обновлений.</string>
-    <string name="status_update_channel_test_selected">Выбран тестовый канал обновлений.</string>
 
     <string name="heading_instruction_rotate_right">Повернитесь немного вправо, чтобы совместить направление с маршрутом.</string>
     <string name="heading_instruction_almost_aligned">Почти совпало. Повернитесь немного влево.</string>
@@ -450,7 +443,6 @@
     <string name="generic_follow_route_guidance">Следуйте подсказкам маршрута.</string>
     <string name="generic_destination_ahead">Пункт назначения впереди.</string>
     <string name="generic_arriving_destination">Вы на месте</string>
-    <string name="generic_next_segment">следующий сегмент</string>
 
     <string name="route_step_depart">Начинайте движение. Двигайтесь по %1$s</string>
     <string name="route_step_depart_default">Начинайте движение</string>

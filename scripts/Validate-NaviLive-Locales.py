@@ -42,9 +42,12 @@ REQUESTED_LOCALES = [
 ]
 ANDROID_RESOURCE_QUALIFIERS = {
     "en": "values",
-    "id": "values-b+id",
+    "id": "values-in",
     "zh-Hans": "values-b+zh+Hans",
     "ckb": "values-b+ckb",
+}
+ANDROID_LOCALE_CONFIG_ALIASES = {
+    "id": ("id", "in"),
 }
 ANDROID_PLACEHOLDER = re.compile(r"%(?:\d+\$)?[sd]|%%")
 IOS_PLACEHOLDER = re.compile(r"%(?:\d+\$)?[@dfisu]|%%")
@@ -139,7 +142,11 @@ def validate_android(repo: Path, errors: list[str]) -> None:
     }
 
     for locale in REQUESTED_LOCALES:
-        if locale != "en" and f'android:name="{locale}"' not in locale_config:
+        config_tags = ANDROID_LOCALE_CONFIG_ALIASES.get(locale, (locale,))
+        if locale != "en" and not any(
+            f'android:name="{tag}"' in locale_config
+            for tag in config_tags
+        ):
             errors.append(f"Android locale_config missing {locale}")
 
         locale_dir = res_dir / android_qualifier(locale)

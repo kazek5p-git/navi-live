@@ -239,14 +239,12 @@ class GuidanceFeedbackEngine(context: Context) {
         if (!ttsReady) return
         tts.language = Locale.getDefault()
         tts.setSpeechRate(speechRate)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            tts.setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                    .build(),
-            )
-        }
+        tts.setAudioAttributes(
+            AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                .build(),
+        )
     }
 
     private fun refreshEngineMetadata(requestedEnginePackage: String? = preferredSystemTtsEnginePackage) {

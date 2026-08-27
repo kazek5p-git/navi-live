@@ -28,7 +28,8 @@
     <locale android:name="hu" />
     <locale android:name="hy" />
     <locale android:name="is" />
-    <locale android:name="id" />
+    <!-- Android używa historycznego kodu in dla języka indonezyjskiego. -->
+    <locale android:name="in" />
     <locale android:name="it" />
     <locale android:name="ja" />
     <locale android:name="ka" />

@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.AndroidViewModel
@@ -266,6 +267,12 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun string(@StringRes resId: Int, vararg args: Any): String = appContext.getString(resId, *args)
+
+    private fun quantityString(
+        @PluralsRes resId: Int,
+        quantity: Int,
+        vararg args: Any,
+    ): String = appContext.resources.getQuantityString(resId, quantity, *args)
 
     private fun initialAppUpdateState(): AppUpdateState {
         return AppUpdateState(
@@ -551,7 +558,11 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
                         },
                         isLoadingSearch = false,
                         statusMessage = if (remote.isNotEmpty()) {
-                            string(R.string.format_found_matching_places, remote.size)
+                            quantityString(
+                                R.plurals.format_found_matching_places,
+                                remote.size,
+                                remote.size,
+                            )
                         } else {
                             string(R.string.status_no_online_match)
                         },
@@ -1026,9 +1037,11 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             ?.trim()
             ?.takeIf { it.isNotBlank() }
             ?: return firstMessage
-        val followingMessage = string(
-            R.string.format_navigation_repeat_following_distance,
-            state.distanceToNextMeters.coerceAtLeast(0),
+        val followingDistance = state.distanceToNextMeters.coerceAtLeast(0)
+        val followingMessage = quantityString(
+            R.plurals.format_navigation_repeat_following_distance,
+            followingDistance,
+            followingDistance,
             followingInstruction,
         )
         return string(R.string.format_navigation_repeat_plan_two_steps, firstMessage, followingMessage)
@@ -1041,8 +1054,9 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         return if (distanceMeters <= 0) {
             string(R.string.format_navigation_immediate_instruction, instruction)
         } else {
-            string(
-                R.string.format_navigation_upcoming_instruction_distance,
+            quantityString(
+                R.plurals.format_navigation_upcoming_instruction_distance,
+                distanceMeters,
                 distanceMeters,
                 instruction,
             )
@@ -2241,14 +2255,16 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         lastCountdownMilestoneMeters = milestoneValue
         val spokenMessage = when (cadenceMode) {
             AnnouncementCadenceMode.Distance ->
-                string(
-                    R.string.format_navigation_upcoming_instruction_distance,
+                quantityString(
+                    R.plurals.format_navigation_upcoming_instruction_distance,
+                    milestoneValue,
                     milestoneValue,
                     upcomingStep.instruction,
                 )
             AnnouncementCadenceMode.Time ->
-                string(
-                    R.string.format_navigation_upcoming_instruction_time,
+                quantityString(
+                    R.plurals.format_navigation_upcoming_instruction_time,
+                    milestoneValue,
                     milestoneValue,
                     upcomingStep.instruction,
                 )

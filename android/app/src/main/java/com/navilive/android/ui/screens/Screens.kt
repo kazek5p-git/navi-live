@@ -98,6 +98,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
@@ -900,7 +901,7 @@ fun HeadingAlignScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            StatusCard(status.title, status.message, status.tone)
+            StatusCard(title = status.title, message = status.message, tone = status.tone)
 
             Text(
                 text = stringResource(R.string.heading_destination, place.name),
@@ -978,7 +979,7 @@ fun ActiveNavigationScreen(
             modifier = modifier.verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            StatusCard(status.title, status.message, status.tone)
+            StatusCard(title = status.title, message = status.message, tone = status.tone)
 
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(
@@ -1211,7 +1212,7 @@ fun CurrentPositionScreen(
             modifier = modifier.verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            StatusCard(status.title, status.message, status.tone)
+            StatusCard(title = status.title, message = status.message, tone = status.tone)
 
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(
@@ -2161,7 +2162,8 @@ private fun SearchResultLimitCard(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             val title = stringResource(R.string.settings_search_result_limit_title)
-            val limitLabel = stringResource(R.string.format_search_result_limit_value, sliderValue.roundToInt())
+            val limit = sliderValue.roundToInt()
+            val limitLabel = pluralStringResource(R.plurals.format_search_result_limit_value, limit, limit)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -2320,8 +2322,9 @@ private fun NearbyPoiCacheStatusCard(
 ) {
     val status = when {
         cacheState.isRefreshing -> stringResource(R.string.nearby_poi_cache_status_refreshing)
-        cacheState.cachedPlaceCount > 0 -> stringResource(
-            R.string.format_nearby_poi_cache_status_saved,
+        cacheState.cachedPlaceCount > 0 -> pluralStringResource(
+            R.plurals.format_nearby_poi_cache_status_saved,
+            cacheState.cachedPlaceCount,
             cacheState.cachedPlaceCount,
         )
         else -> stringResource(R.string.nearby_poi_cache_status_empty)
@@ -2934,9 +2937,9 @@ private fun SecondaryActionButton(
 @Composable
 private fun StatusCard(
     title: String,
-    message: String = "",
     tone: BannerTone,
     modifier: Modifier = Modifier,
+    message: String = "",
 ) {
     val (container, content) = bannerColors(tone)
     Card(
@@ -3358,7 +3361,7 @@ private fun AppUpdateCard(
                     value = stringResource(R.string.format_percent_value, progress),
                 )
                 LinearProgressIndicator(
-                    progress = progress / 100f,
+                    progress = { progress / 100f },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }

@@ -25,11 +25,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -616,12 +616,7 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
 
 private fun closeApp(context: Context) {
     context.findActivity()?.let { activity ->
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity.finishAndRemoveTask()
-        } else {
-            @Suppress("DEPRECATION")
-            activity.finishAffinity()
-        }
+        activity.finishAndRemoveTask()
     }
 }
 
@@ -763,21 +758,12 @@ private fun installDownloadedApk(context: Context, apkPath: String): Boolean {
         "${context.packageName}.fileprovider",
         apkFile,
     )
-    val installIntent = Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
-        data = uri
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
-        putExtra(Intent.EXTRA_RETURN_RESULT, false)
-    }
-    val fallbackIntent = Intent(Intent.ACTION_VIEW).apply {
+    val installIntent = Intent(Intent.ACTION_VIEW).apply {
         setDataAndType(uri, "application/vnd.android.package-archive")
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
-    val launchIntent = listOf(installIntent, fallbackIntent).firstOrNull { intent ->
-        intent.resolveActivity(context.packageManager) != null
-    } ?: return false
-    context.startActivity(launchIntent)
+    if (installIntent.resolveActivity(context.packageManager) == null) return false
+    context.startActivity(installIntent)
     return true
 }
