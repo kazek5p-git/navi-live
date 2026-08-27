@@ -128,11 +128,7 @@ class MainActivity : ComponentActivity() {
     private fun applyLegacyAppLanguage(locale: Locale) {
         Locale.setDefault(locale)
         val configuration = Configuration(resources.configuration)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            configuration.setLocales(LocaleList(locale))
-        } else {
-            configuration.setLocale(locale)
-        }
+        configuration.setLocales(LocaleList(locale))
         resources.updateConfiguration(configuration, resources.displayMetrics)
     }
 

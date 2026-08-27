@@ -15,6 +15,7 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.SystemClock
 import androidx.core.content.ContextCompat
+import androidx.core.util.size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -183,7 +184,7 @@ internal class AndroidRadioLocationProvider(
     private fun isBeaconAdvertisement(result: ScanResult): Boolean {
         val record = result.scanRecord ?: return false
         val manufacturerData = record.manufacturerSpecificData
-        for (index in 0 until manufacturerData.size()) {
+        for (index in 0 until manufacturerData.size) {
             val data = manufacturerData.valueAt(index) ?: continue
             if (isIBeaconData(data) || isAltBeaconData(data)) return true
         }

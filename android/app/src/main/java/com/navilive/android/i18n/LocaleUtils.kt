@@ -1,16 +1,10 @@
 package com.navilive.android.i18n
 
 import android.content.res.Configuration
-import android.os.Build
 import java.util.Locale
 
 fun currentAppLocale(configuration: Configuration): Locale {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        configuration.locales[0] ?: Locale.getDefault()
-    } else {
-        @Suppress("DEPRECATION")
-        configuration.locale ?: Locale.getDefault()
-    }
+    return configuration.locales[0] ?: Locale.getDefault()
 }
 
 fun localizedLanguageDisplayName(configuration: Configuration): String {

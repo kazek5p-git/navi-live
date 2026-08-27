@@ -1535,19 +1535,21 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         val updated = synchronizeSpeechSettings(
             _uiState.value.settingsState.copy(speechOutputMode = mode),
         )
+        val activeScreenReaderName = updated.activeScreenReaderName
+        val activeSystemTtsEngineLabel = updated.activeSystemTtsEngineLabel
         _uiState.update { current ->
             current.copy(
                 settingsState = updated,
                 statusMessage = if (mode == SpeechOutputMode.ScreenReader) {
-                    if (updated.isScreenReaderActive && !updated.activeScreenReaderName.isNullOrBlank()) {
-                        string(R.string.format_status_screen_reader_selected, updated.activeScreenReaderName!!)
+                    if (updated.isScreenReaderActive && !activeScreenReaderName.isNullOrBlank()) {
+                        string(R.string.format_status_screen_reader_selected, activeScreenReaderName)
                     } else {
                         string(R.string.status_screen_reader_fallback_selected)
                     }
                 } else if (!updated.isSelectedSystemTtsEngineAvailable) {
                     string(R.string.status_selected_system_tts_unavailable)
-                } else if (!updated.activeSystemTtsEngineLabel.isNullOrBlank()) {
-                    string(R.string.format_status_specific_system_tts_selected, updated.activeSystemTtsEngineLabel!!)
+                } else if (!activeSystemTtsEngineLabel.isNullOrBlank()) {
+                    string(R.string.format_status_specific_system_tts_selected, activeSystemTtsEngineLabel)
                 } else {
                     string(R.string.status_system_voice_selected)
                 },
@@ -1563,11 +1565,12 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         val updated = synchronizeSpeechSettings(
             _uiState.value.settingsState.copy(selectedSystemTtsEnginePackage = normalized),
         )
+        val activeSystemTtsEngineLabel = updated.activeSystemTtsEngineLabel
         val statusMessage = when {
             normalized == null -> string(R.string.status_default_system_tts_selected)
             !updated.isSelectedSystemTtsEngineAvailable -> string(R.string.status_selected_system_tts_unavailable)
-            updated.activeSystemTtsEngineLabel.isNullOrBlank() -> string(R.string.status_system_voice_selected)
-            else -> string(R.string.format_status_specific_system_tts_selected, updated.activeSystemTtsEngineLabel!!)
+            activeSystemTtsEngineLabel.isNullOrBlank() -> string(R.string.status_system_voice_selected)
+            else -> string(R.string.format_status_specific_system_tts_selected, activeSystemTtsEngineLabel)
         }
         _uiState.update { current ->
             current.copy(
@@ -1997,22 +2000,21 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         }
         activeRouteSession = updatedSession
         val wasOffRoute = currentState.isOffRoute
-        var updatedState: ActiveNavigationState? = null
+        val updatedState = buildActiveNavigationState(
+            session = updatedSession,
+            fix = fix,
+            previous = currentState,
+            isOffRoute = false,
+            isRecalculating = false,
+            offRouteDistanceMeters = null,
+        )
         _uiState.update { current ->
-            updatedState = buildActiveNavigationState(
-                session = updatedSession,
-                fix = fix,
-                previous = current.activeNavigationState,
-                isOffRoute = false,
-                isRecalculating = false,
-                offRouteDistanceMeters = null,
-            )
             current.copy(
                 statusMessage = if (wasOffRoute) string(R.string.status_back_on_route) else current.statusMessage,
-                activeNavigationState = updatedState!!,
+                activeNavigationState = updatedState,
             )
         }
-        val freshState = updatedState ?: return
+        val freshState = updatedState
         logNavigationFixIfNeeded(updatedSession, fix, deviationMeters)
 
         if (shouldMarkArrived(updatedSession, fix)) {
@@ -2758,6 +2760,5 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     override fun onCleared() {
         delayedNavigationSpeechJob?.cancel()
         feedbackEngine.shutdown()
-        super.onCleared()
     }
 }

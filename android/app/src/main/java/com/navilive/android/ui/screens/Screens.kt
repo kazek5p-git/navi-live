@@ -1,5 +1,6 @@
 package com.navilive.android.ui.screens
 
+import android.content.ClipData
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -95,7 +96,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.pluralStringResource
@@ -118,7 +120,6 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.traversalIndex
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -153,6 +154,8 @@ import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.Date
 import kotlin.math.roundToInt
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 private enum class BannerTone {
     Info,
@@ -2664,7 +2667,8 @@ private fun VisualAssistanceCard(
 private fun SupportDevelopmentCard(
     onOpenSupportUrl: (String) -> Unit,
 ) {
-    val clipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val coroutineScope = rememberCoroutineScope()
     var customAmountInput by remember { mutableStateOf("") }
     var localStatusMessage by remember { mutableStateOf<String?>(null) }
     val copySuccessMessage = stringResource(R.string.settings_support_copy_success)
@@ -2747,8 +2751,12 @@ private fun SupportDevelopmentCard(
             }
             TextButton(
                 onClick = {
-                    clipboardManager.setText(AnnotatedString(SupportBaseUrl))
-                    localStatusMessage = copySuccessMessage
+                    coroutineScope.launch {
+                        clipboard.setClipEntry(
+                            ClipEntry(ClipData.newPlainText("Navi Live", SupportBaseUrl)),
+                        )
+                        localStatusMessage = copySuccessMessage
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {
