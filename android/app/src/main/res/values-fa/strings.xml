@@ -464,4 +464,11 @@
     <string name="diagnostics_event_tracking_stopped">ردیابی پیش زمینه متوقف شد.</string>
     <string name="diagnostics_event_navigation_fix">نمونه GPS ذخیره شده برای مرحله %1$d از %2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">چه خبر</string>
+    <string name="settings_whats_new_version">نسخه فعلی</string>
+    <string name="settings_whats_new_intro">مهمترین تغییرات این نسخه Navi Live.</string>
+    <string name="settings_whats_new_guidance">راهنمایی پیاده روی پایدارتر و دستورالعمل های مسیر دقیق تر.</string>
+    <string name="settings_whats_new_search">جستجوی مکان های اطراف بهبود یافته و آدرس های واضح تر در نتایج.</string>
+    <string name="settings_whats_new_accessibility">بهبود یافته صفحه خوان، زبان، گفتار و صدای ناوبری.</string>
+    <string name="settings_whats_new_location">مدیریت مکان قابل اطمینان تر و پایداری کلی برنامه.</string>
 </resources>

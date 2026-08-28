@@ -196,12 +196,41 @@ def read_existing_strings(path: Path) -> dict[str, str]:
     }
 
 
-def write_strings_file(path: Path, entries: list[dict[str, str]]) -> None:
-    lines = [
-        f'"{strings_escape(entry["key"])}" = "{strings_escape(entry["value"])}";'
-        for entry in entries
-    ]
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+def update_strings_file(path: Path, entries: list[dict[str, str]]) -> None:
+    if not path.exists():
+        raise RuntimeError(f"Missing iOS localization file: {path}")
+
+    translations = {entry["key"]: entry["value"] for entry in entries}
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        contents = handle.read()
+    newline = "\r\n" if "\r\n" in contents else "\n"
+    missing_keys = set(translations)
+    updated_lines: list[str] = []
+    for line in contents.splitlines(keepends=True):
+        body = line.rstrip("\r\n")
+        line_ending = line[len(body):]
+        match = STRINGS_LINE_PATTERN.match(body)
+        if match and match.group("key") in translations:
+            key = match.group("key")
+            updated_lines.append(
+                f'"{strings_escape(key)}" = "{strings_escape(translations[key])}";{line_ending}',
+            )
+            missing_keys.discard(key)
+        else:
+            updated_lines.append(line)
+
+    updated_contents = "".join(updated_lines)
+    if missing_keys:
+        if updated_contents and not updated_contents.endswith(("\n", "\r")):
+            updated_contents += newline
+        updated_contents += "".join(
+            f'"{strings_escape(entry["key"])}" = "{strings_escape(entry["value"])}";{newline}'
+            for entry in entries
+            if entry["key"] in missing_keys
+        )
+
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        handle.write(updated_contents)
 
 
 def parse_args() -> argparse.Namespace:
@@ -256,26 +285,18 @@ def main() -> None:
                 if args.rewrite_existing
                 else [entry for entry in base_entries if entry["key"] not in existing]
             )
+            if not entries_to_translate:
+                continue
 
-            translated_by_key: dict[str, str] = {}
+            translated_entries: list[dict[str, str]] = []
             for index in range(0, len(entries_to_translate), BATCH_SIZE):
                 chunk = entries_to_translate[index : index + BATCH_SIZE]
                 translated_texts = translate_texts([entry["value"] for entry in chunk], locale)
                 for entry, translated in zip(chunk, translated_texts, strict=True):
-                    translated_by_key[entry["key"]] = translated
+                    translated_entries.append({"key": entry["key"], "value": translated})
 
-            merged_entries = []
-            for entry in base_entries:
-                value = (
-                    translated_by_key[entry["key"]]
-                    if args.rewrite_existing or entry["key"] not in existing
-                    else existing[entry["key"]]
-                )
-                merged_entries.append({"key": entry["key"], "value": value})
-
-            write_strings_file(target_file, merged_entries)
-            if translated_by_key:
-                generated_any = True
+            update_strings_file(target_file, translated_entries)
+            generated_any = True
 
         print(("generated" if generated_any else "skip") + f" {locale}", flush=True)
 

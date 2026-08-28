@@ -464,4 +464,11 @@
     <string name="diagnostics_event_tracking_stopped">Etualan seuranta pysäytetty.</string>
     <string name="diagnostics_event_navigation_fix">GPS-näyte tallennettu vaiheeseen %1$d/%2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Uutta</string>
+    <string name="settings_whats_new_version">Nykyinen versio</string>
+    <string name="settings_whats_new_intro">Tärkeimmät muutokset tässä Navi Live-versiossa.</string>
+    <string name="settings_whats_new_guidance">Vakaampi kävelyopastus ja tarkemmat reittiohjeet.</string>
+    <string name="settings_whats_new_search">Parannettu lähipaikkojen haku ja selkeämmät osoitteet tuloksissa.</string>
+    <string name="settings_whats_new_accessibility">Parannettu näytönlukuohjelman, kielen, puheen ja navigointiäänen tuki.</string>
+    <string name="settings_whats_new_location">Luotettavampi sijainninkäsittely ja yleinen sovelluksen vakaus.</string>
 </resources>

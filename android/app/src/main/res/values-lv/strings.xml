@@ -470,4 +470,11 @@
     <string name="diagnostics_event_tracking_stopped">Priekšplāna izsekošana apturēta.</string>
     <string name="diagnostics_event_navigation_fix">GPS paraugs saglabāts solim %1$d no %2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Jaunumi</string>
+    <string name="settings_whats_new_version">Pašreizējā versija</string>
+    <string name="settings_whats_new_intro">Svarīgākās izmaiņas šajā Navi Live versijā.</string>
+    <string name="settings_whats_new_guidance">Stabilāka iešanas vadība un precīzākas maršruta norādes.</string>
+    <string name="settings_whats_new_search">Uzlabota tuvumā esošo vietu meklēšana un skaidrākas adreses rezultātos.</string>
+    <string name="settings_whats_new_accessibility">Uzlabots ekrāna lasītājs, valodas, runas un navigācijas skaņas atbalsts.</string>
+    <string name="settings_whats_new_location">Uzticamāka atrašanās vietas apstrāde un vispārēja lietotnes stabilitāte.</string>
 </resources>

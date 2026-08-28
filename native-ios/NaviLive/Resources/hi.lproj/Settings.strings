@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "पेपैल समर्थन लिंक अब क्लिपबोर्ड में है।";
 "help.section.privacy" = "गोपनीयता";
 "help.privacy.body" = "Navi Live डिवाइस पर पसंदीदा और मार्गदर्शन प्राथमिकताओं को संग्रहीत करता है। खोज, रिवर्स जियोकोडिंग और रूट तैयारी ऑनलाइन सेवाओं का उपयोग केवल तभी करें जब आप उनके बारे में पूछें।";
+"settings.whats_new.title" = "नया क्या है";
+"settings.whats_new.version" = "वर्तमान संस्करण";
+"settings.whats_new.intro" = "Navi Live के इस संस्करण में सबसे महत्वपूर्ण परिवर्तन।";
+"settings.whats_new.guidance" = "अधिक स्थिर चलने का मार्गदर्शन और अधिक सटीक मार्ग निर्देश।";
+"settings.whats_new.search" = "निकटवर्ती स्थान खोज में सुधार और परिणामों में स्पष्ट पते।";
+"settings.whats_new.accessibility" = "बेहतर स्क्रीन रीडर, भाषा, भाषण और नेविगेशन ध्वनि समर्थन।";
+"settings.whats_new.location" = "अधिक विश्वसनीय स्थान प्रबंधन और समग्र ऐप स्थिरता।";

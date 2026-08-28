@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "پیوند پشتیبانی PayPal اکنون در کلیپ بورد است.";
 "help.section.privacy" = "حریم خصوصی";
 "help.privacy.body" = "Navi Live موارد دلخواه و تنظیمات برگزیده راهنمایی را در دستگاه ذخیره می کند. جستجو، رمزگذاری معکوس جغرافیایی و آماده سازی مسیر تنها زمانی از خدمات آنلاین استفاده می کنند که شما آنها را درخواست کنید.";
+"settings.whats_new.title" = "چه خبر";
+"settings.whats_new.version" = "نسخه فعلی";
+"settings.whats_new.intro" = "مهمترین تغییرات این نسخه Navi Live.";
+"settings.whats_new.guidance" = "راهنمایی پیاده روی پایدارتر و دستورالعمل های مسیر دقیق تر.";
+"settings.whats_new.search" = "جستجوی مکان های اطراف بهبود یافته و آدرس های واضح تر در نتایج.";
+"settings.whats_new.accessibility" = "بهبود یافته صفحه خوان، زبان، گفتار و صدای ناوبری.";
+"settings.whats_new.location" = "مدیریت مکان قابل اطمینان تر و پایداری کلی برنامه.";

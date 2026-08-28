@@ -488,4 +488,11 @@
     <string name="route_step_continue_default">Daliwch ati</string>
     <string name="route_step_cross_named_street">Croeswch %1$s.</string>
     <string name="diagnostics_event_route_problem_reported">Adroddwyd am broblem gyda’r llwybr.</string>
+    <string name="settings_whats_new_title">Beth sy\'n newydd</string>
+    <string name="settings_whats_new_version">Fersiwn gyfredol</string>
+    <string name="settings_whats_new_intro">Y newidiadau pwysicaf yn y fersiwn hon o Navi Live.</string>
+    <string name="settings_whats_new_guidance">Canllawiau cerdded mwy sefydlog a chyfarwyddiadau llwybr mwy manwl gywir.</string>
+    <string name="settings_whats_new_search">Gwell chwiliad lleoedd cyfagos a chyfeiriadau cliriach yn y canlyniadau.</string>
+    <string name="settings_whats_new_accessibility">Gwell cymorth sain darllenydd sgrin, iaith, lleferydd a llywio.</string>
+    <string name="settings_whats_new_location">Trin lleoliad mwy dibynadwy a sefydlogrwydd cyffredinol yr ap.</string>
 </resources>

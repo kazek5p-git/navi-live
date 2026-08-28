@@ -458,4 +458,11 @@
     <string name="diagnostics_event_tracking_stopped">전경 추적이 중지되었습니다.</string>
     <string name="diagnostics_event_navigation_fix">%2$d의 %1$d 단계에 대해 GPS 샘플이 저장되었습니다.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">새로운 기능</string>
+    <string name="settings_whats_new_version">현재 버전</string>
+    <string name="settings_whats_new_intro">Navi Live 버전의 가장 중요한 변경 사항입니다.</string>
+    <string name="settings_whats_new_guidance">더욱 안정적인 보행 안내와 더욱 정확한 경로 안내입니다.</string>
+    <string name="settings_whats_new_search">주변 장소 검색이 개선되고 결과의 주소가 더욱 명확해졌습니다.</string>
+    <string name="settings_whats_new_accessibility">향상된 화면 판독기, 언어, 음성 및 탐색 사운드 지원.</string>
+    <string name="settings_whats_new_location">보다 안정적인 위치 처리 및 전반적인 앱 안정성.</string>
 </resources>

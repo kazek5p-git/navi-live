@@ -476,4 +476,11 @@
     <string name="diagnostics_event_tracking_stopped">Відстеження на передньому плані зупинено.</string>
     <string name="diagnostics_event_navigation_fix">Зразок GPS збережено для кроку %1$d з %2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Що нового</string>
+    <string name="settings_whats_new_version">Поточна версія</string>
+    <string name="settings_whats_new_intro">Найважливіші зміни в цій версії Navi Live.</string>
+    <string name="settings_whats_new_guidance">Стабільніші підказки для піших прогулянок і точніші вказівки щодо маршруту.</string>
+    <string name="settings_whats_new_search">Покращено пошук місць поблизу та чіткіші адреси в результатах.</string>
+    <string name="settings_whats_new_accessibility">Покращена програма зчитування з екрана, підтримка мови, мовлення та звуку навігації.</string>
+    <string name="settings_whats_new_location">Більш надійна обробка місцезнаходження та загальна стабільність програми.</string>
 </resources>

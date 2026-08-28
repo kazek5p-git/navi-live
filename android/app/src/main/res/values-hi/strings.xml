@@ -464,4 +464,11 @@
     <string name="diagnostics_event_tracking_stopped">अग्रभूमि ट्रैकिंग बंद कर दी गई.</string>
     <string name="diagnostics_event_navigation_fix">जीपीएस नमूना %2$d के चरण %1$d के लिए सहेजा गया।</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">नया क्या है</string>
+    <string name="settings_whats_new_version">वर्तमान संस्करण</string>
+    <string name="settings_whats_new_intro">Navi Live के इस संस्करण में सबसे महत्वपूर्ण परिवर्तन।</string>
+    <string name="settings_whats_new_guidance">अधिक स्थिर चलने का मार्गदर्शन और अधिक सटीक मार्ग निर्देश।</string>
+    <string name="settings_whats_new_search">निकटवर्ती स्थान खोज में सुधार और परिणामों में स्पष्ट पते।</string>
+    <string name="settings_whats_new_accessibility">बेहतर स्क्रीन रीडर, भाषा, भाषण और नेविगेशन ध्वनि समर्थन।</string>
+    <string name="settings_whats_new_location">अधिक विश्वसनीय स्थान प्रबंधन और समग्र ऐप स्थिरता।</string>
 </resources>

@@ -476,4 +476,11 @@
     <string name="diagnostics_event_tracking_stopped">Priekinio plano sekimas sustabdytas.</string>
     <string name="diagnostics_event_navigation_fix">GPS pavyzdys išsaugotas %1$d veiksmui iš %2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Kas naujo</string>
+    <string name="settings_whats_new_version">Dabartinė versija</string>
+    <string name="settings_whats_new_intro">Svarbiausi šios Navi Live versijos pakeitimai.</string>
+    <string name="settings_whats_new_guidance">Stabilesnis ėjimo nurodymas ir tikslesnės maršruto instrukcijos.</string>
+    <string name="settings_whats_new_search">Patobulinta netoliese esančių vietų paieška ir aiškesni adresai rezultatuose.</string>
+    <string name="settings_whats_new_accessibility">Patobulintas ekrano skaitytuvas, kalbos, kalbos ir navigacijos garso palaikymas.</string>
+    <string name="settings_whats_new_location">Patikimesnis vietos valdymas ir bendras programos stabilumas.</string>
 </resources>

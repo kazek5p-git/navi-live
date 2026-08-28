@@ -458,4 +458,11 @@
     <string name="diagnostics_event_tracking_stopped">前台跟踪停止。</string>
     <string name="diagnostics_event_navigation_fix">为 %2$d 的步骤 %1$d 保存的 GPS 样本。</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">新增内容</string>
+    <string name="settings_whats_new_version">当前版本</string>
+    <string name="settings_whats_new_intro">该版本最重要的变化是 Navi Live。</string>
+    <string name="settings_whats_new_guidance">更稳定的行走引导和更精确的路线指示。</string>
+    <string name="settings_whats_new_search">改进了附近地点搜索，结果中的地址更清晰。</string>
+    <string name="settings_whats_new_accessibility">改进了屏幕阅读器、语言、语音和导航声音支持。</string>
+    <string name="settings_whats_new_location">更可靠的位置处理和整体应用程序稳定性。</string>
 </resources>

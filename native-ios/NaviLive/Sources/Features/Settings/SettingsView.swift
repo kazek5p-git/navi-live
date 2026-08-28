@@ -44,6 +44,15 @@ struct SettingsView: View {
         }
 
         NavigationLink {
+          WhatsNewView(model: model)
+        } label: {
+          SettingsGroupRow(
+            title: L10n.text("settings.whats_new.title", table: .settings),
+            systemImage: "sparkles"
+          )
+        }
+
+        NavigationLink {
           AppSettingsDetailView(model: model)
         } label: {
           SettingsGroupRow(
@@ -64,6 +73,46 @@ struct SettingsView: View {
     }
     .navigationTitle(L10n.text("settings.title", table: .settings))
     .navigationBarTitleDisplayMode(.inline)
+  }
+}
+
+private struct WhatsNewView: View {
+  @ObservedObject var model: AppModel
+
+  var body: some View {
+    Form {
+      Section {
+        LabeledContent(
+          L10n.text("settings.whats_new.version", table: .settings),
+          value: model.appVersionLabel
+        )
+        Text(L10n.text("settings.whats_new.intro", table: .settings))
+          .foregroundStyle(.secondary)
+      }
+
+      Section {
+        WhatsNewItem(key: "settings.whats_new.guidance")
+        WhatsNewItem(key: "settings.whats_new.search")
+        WhatsNewItem(key: "settings.whats_new.accessibility")
+        WhatsNewItem(key: "settings.whats_new.location")
+      }
+    }
+    .navigationTitle(L10n.text("settings.whats_new.title", table: .settings))
+    .navigationBarTitleDisplayMode(.inline)
+  }
+}
+
+private struct WhatsNewItem: View {
+  let key: String
+
+  var body: some View {
+    HStack(alignment: .top, spacing: 10) {
+      Text("•")
+        .foregroundStyle(Color.accentColor)
+        .accessibilityHidden(true)
+      Text(L10n.text(key, table: .settings))
+    }
+    .accessibilityElement(children: .combine)
   }
 }
 

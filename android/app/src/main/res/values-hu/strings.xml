@@ -464,4 +464,11 @@
     <string name="diagnostics_event_tracking_stopped">Az előtérben történő követés leállt.</string>
     <string name="diagnostics_event_navigation_fix">GPS-minta mentve a %2$d/%1$d. lépéshez.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Újdonságok</string>
+    <string name="settings_whats_new_version">Jelenlegi verzió</string>
+    <string name="settings_whats_new_intro">A legfontosabb változtatások a Navi Live verzióban.</string>
+    <string name="settings_whats_new_guidance">Stabilabb sétavezetés és pontosabb útmutatás.</string>
+    <string name="settings_whats_new_search">Továbbfejlesztett közeli helyek keresése és világosabb címek a találatok között.</string>
+    <string name="settings_whats_new_accessibility">Továbbfejlesztett képernyőolvasó, nyelvi, beszéd- és navigációs hangtámogatás.</string>
+    <string name="settings_whats_new_location">Megbízhatóbb helykezelés és általános alkalmazásstabilitás.</string>
 </resources>

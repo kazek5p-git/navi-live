@@ -353,6 +353,13 @@
     <string name="settings_updates_install">Install downloaded update</string>
     <string name="settings_updates_open_release">Open release page</string>
     <string name="settings_updates_allow_installs">Allow APK installs</string>
+    <string name="settings_whats_new_title">What\'s new</string>
+    <string name="settings_whats_new_version">Current version</string>
+    <string name="settings_whats_new_intro">The most important changes in this version of Navi Live.</string>
+    <string name="settings_whats_new_guidance">More stable walking guidance and more precise route instructions.</string>
+    <string name="settings_whats_new_search">Improved nearby place search and clearer addresses in results.</string>
+    <string name="settings_whats_new_accessibility">Improved screen reader, language, speech and navigation sound support.</string>
+    <string name="settings_whats_new_location">More reliable location handling and overall app stability.</string>
     <string name="update_status_idle_auto">Navi Live also checks GitHub automatically at startup.</string>
     <string name="update_status_checking">Checking the latest GitHub release…</string>
     <string name="format_update_ready_to_install">Update %1$s is downloaded and ready to install.</string>

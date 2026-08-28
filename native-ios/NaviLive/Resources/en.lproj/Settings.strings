@@ -80,6 +80,13 @@
 "settings.about.version" = "Version";
 "settings.about.build" = "Build";
 "settings.app.repository" = "Open project repository";
+"settings.whats_new.title" = "What's new";
+"settings.whats_new.version" = "Current version";
+"settings.whats_new.intro" = "The most important changes in this version of Navi Live.";
+"settings.whats_new.guidance" = "More stable walking guidance and more precise route instructions.";
+"settings.whats_new.search" = "Improved nearby place search and clearer addresses in results.";
+"settings.whats_new.accessibility" = "Improved screen reader, language, speech and navigation sound support.";
+"settings.whats_new.location" = "More reliable location handling and overall app stability.";
 "help.title" = "Help and privacy";
 "help.section.tutorial" = "Tutorial";
 "help.tutorial.body" = "Search for a destination, check the route preview, then start walking guidance. During navigation you can open Settings from any screen, use rotor actions on places, save your current location as a favorite, and shake the phone to repeat the current instruction.";

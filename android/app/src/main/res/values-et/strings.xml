@@ -464,4 +464,11 @@
     <string name="diagnostics_event_tracking_stopped">Esiplaani jälgimine on peatatud.</string>
     <string name="diagnostics_event_navigation_fix">GPS-i näidis salvestatud sammu %1$d jaoks %2$d-st.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Mida uut</string>
+    <string name="settings_whats_new_version">Praegune versioon</string>
+    <string name="settings_whats_new_intro">Olulisemad muudatused selles versioonis Navi Live.</string>
+    <string name="settings_whats_new_guidance">Stabiilsem kõndimisjuhis ja täpsemad marsruudijuhised.</string>
+    <string name="settings_whats_new_search">Täiustatud lähedalasuvate kohtade otsing ja selgemad aadressid tulemustes.</string>
+    <string name="settings_whats_new_accessibility">Täiustatud ekraanilugeja, keele-, kõne- ja navigeerimisheli tugi.</string>
+    <string name="settings_whats_new_location">Usaldusväärsem asukohahaldus ja üldine rakenduse stabiilsus.</string>
 </resources>

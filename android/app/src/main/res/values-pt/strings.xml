@@ -470,4 +470,11 @@
     <string name="diagnostics_event_tracking_stopped">Rastreamento em primeiro plano interrompido.</string>
     <string name="diagnostics_event_navigation_fix">Amostra de GPS salva para a etapa %1$d de %2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Novidades</string>
+    <string name="settings_whats_new_version">Versão atual</string>
+    <string name="settings_whats_new_intro">As alterações mais importantes nesta versão do Navi Live.</string>
+    <string name="settings_whats_new_guidance">Orientação de caminhada mais estável e instruções de rota mais precisas.</string>
+    <string name="settings_whats_new_search">Pesquisa aprimorada de locais próximos e endereços mais claros nos resultados.</string>
+    <string name="settings_whats_new_accessibility">Suporte aprimorado para leitor de tela, idioma, fala e som de navegação.</string>
+    <string name="settings_whats_new_location">Tratamento de localização mais confiável e estabilidade geral do aplicativo.</string>
 </resources>

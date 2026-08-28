@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "이제 PayPal 지원 링크가 클립보드에 있습니다.";
 "help.section.privacy" = "개인 정보 보호";
 "help.privacy.body" = "Navi Live 장치에 즐겨찾기 및 안내 기본 설정을 저장합니다. 검색, 역지오코딩 및 경로 준비는 귀하가 요청할 때만 온라인 서비스를 사용합니다.";
+"settings.whats_new.title" = "새로운 기능";
+"settings.whats_new.version" = "현재 버전";
+"settings.whats_new.intro" = "Navi Live 버전의 가장 중요한 변경 사항입니다.";
+"settings.whats_new.guidance" = "더욱 안정적인 보행 안내와 더욱 정확한 경로 안내입니다.";
+"settings.whats_new.search" = "주변 장소 검색이 개선되고 결과의 주소가 더욱 명확해졌습니다.";
+"settings.whats_new.accessibility" = "향상된 화면 판독기, 언어, 음성 및 탐색 사운드 지원.";
+"settings.whats_new.location" = "보다 안정적인 위치 처리 및 전반적인 앱 안정성.";

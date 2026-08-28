@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "PayPal サポート リンクがクリップボードにあります。";
 "help.section.privacy" = "プライバシー";
 "help.privacy.body" = "Navi Live は、お気に入りとガイダンス設定をデバイスに保存します。検索、リバース ジオコーディング、ルートの準備は、ユーザーが要求した場合にのみオンライン サービスを使用します。";
+"settings.whats_new.title" = "新機能";
+"settings.whats_new.version" = "現在のバージョン";
+"settings.whats_new.intro" = "このバージョン Navi Live での最も重要な変更点。";
+"settings.whats_new.guidance" = "より安定した歩行案内とより正確なルート指示。";
+"settings.whats_new.search" = "近くの場所の検索が改善され、結果の住所がより明確になりました。";
+"settings.whats_new.accessibility" = "スクリーン リーダー、言語、音声、ナビゲーション サウンドのサポートが改善されました。";
+"settings.whats_new.location" = "より信頼性の高い位置情報処理とアプリ全体の安定性。";

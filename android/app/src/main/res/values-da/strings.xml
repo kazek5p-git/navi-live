@@ -464,4 +464,11 @@
     <string name="route_step_continue_default">Fortsæt</string>
     <string name="route_step_cross_named_street">Kryds %1$s.</string>
     <string name="diagnostics_event_route_problem_reported">Ruteproblem rapporteret.</string>
+    <string name="settings_whats_new_title">Hvad er nyt</string>
+    <string name="settings_whats_new_version">Nuværende version</string>
+    <string name="settings_whats_new_intro">De vigtigste ændringer i denne version af Navi Live.</string>
+    <string name="settings_whats_new_guidance">Mere stabil gangvejledning og mere præcise ruteinstruktioner.</string>
+    <string name="settings_whats_new_search">Forbedret stedsøgning i nærheden og klarere adresser i resultater.</string>
+    <string name="settings_whats_new_accessibility">Forbedret understøttelse af skærmlæser, sprog, tale og navigationslyd.</string>
+    <string name="settings_whats_new_location">Mere pålidelig placeringshåndtering og overordnet app-stabilitet.</string>
 </resources>

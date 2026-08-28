@@ -160,15 +160,55 @@ def xml_escape(text: str) -> str:
     return html.escape(text, quote=False).replace("'", "\\'")
 
 
-def write_locale_file(locale: str, items: list[dict[str, str]]) -> None:
+def update_locale_file(locale: str, items: list[dict[str, str]]) -> None:
     locale_dir = RES_DIR / f"values-{resource_qualifier(locale)}"
-    locale_dir.mkdir(parents=True, exist_ok=True)
     output = locale_dir / "strings.xml"
-    lines = ['<?xml version="1.0" encoding="utf-8"?>', "<resources>"]
-    for item in items:
-        lines.append(f'    <string name="{item["name"]}">{xml_escape(item["text"])}</string>')
-    lines.append("</resources>")
-    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    if not output.exists():
+        raise RuntimeError(f"Missing Android locale file: {output}")
+
+    translations = {item["name"]: item["text"] for item in items}
+    with output.open("r", encoding="utf-8", newline="") as handle:
+        contents = handle.read()
+    newline = "\r\n" if "\r\n" in contents else "\n"
+    missing_names = set(translations)
+    updated_lines: list[str] = []
+    string_pattern = re.compile(
+        r'^(?P<indent>\s*)<string name="(?P<name>[^"]+)"(?P<attributes>[^>]*)>'
+        r".*</string>(?P<trailing>\s*)$",
+    )
+    for line in contents.splitlines(keepends=True):
+        body = line.rstrip("\r\n")
+        line_ending = line[len(body):]
+        match = string_pattern.match(body)
+        name = match.group("name") if match else None
+        if name in translations:
+            updated_lines.append(
+                f'{match.group("indent")}<string name="{name}"{match.group("attributes")}>'
+                f'{xml_escape(translations[name])}</string>{match.group("trailing")}{line_ending}',
+            )
+            missing_names.discard(name)
+        else:
+            updated_lines.append(line)
+
+    if missing_names:
+        updated_contents = "".join(updated_lines)
+        closing_index = updated_contents.rfind("</resources>")
+        if closing_index < 0:
+            raise RuntimeError(f"Missing resources closing tag: {output}")
+        prefix = updated_contents[:closing_index]
+        if not prefix.endswith(("\n", "\r")):
+            prefix += newline
+        inserted = "".join(
+            f'    <string name="{item["name"]}">{xml_escape(item["text"])}</string>{newline}'
+            for item in items
+            if item["name"] in missing_names
+        )
+        updated_contents = prefix + inserted + updated_contents[closing_index:]
+    else:
+        updated_contents = "".join(updated_lines)
+
+    with output.open("w", encoding="utf-8", newline="") as handle:
+        handle.write(updated_contents)
 
 
 def read_existing_locale(locale: str) -> dict[str, str]:
@@ -233,21 +273,7 @@ def main() -> None:
             for item, translated in zip(chunk, translated_texts, strict=True):
                 translated_items.append({"name": item["name"], "text": translated})
 
-        merged_items = []
-        translated_by_name = {item["name"]: item["text"] for item in translated_items}
-        for item in base_items:
-            text = (
-                translated_by_name[item["name"]]
-                if args.rewrite_existing or item["name"] not in existing
-                else existing[item["name"]]
-            )
-            merged_items.append(
-                {
-                    "name": item["name"],
-                    "text": text,
-                },
-            )
-        write_locale_file(locale, merged_items)
+        update_locale_file(locale, translated_items)
         print(f"generated {locale}", flush=True)
 
 

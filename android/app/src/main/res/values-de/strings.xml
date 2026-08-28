@@ -464,4 +464,11 @@
     <string name="diagnostics_event_tracking_stopped">Vordergrundverfolgung gestoppt.</string>
     <string name="diagnostics_event_navigation_fix">GPS-Beispiel für Schritt %1$d von %2$d gespeichert.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Was ist neu</string>
+    <string name="settings_whats_new_version">Aktuelle Version</string>
+    <string name="settings_whats_new_intro">Die wichtigsten Änderungen in dieser Version von Navi Live.</string>
+    <string name="settings_whats_new_guidance">Stabilere Gehführung und präzisere Routenanweisungen.</string>
+    <string name="settings_whats_new_search">Verbesserte Suche nach Orten in der Nähe und klarere Adressen in den Ergebnissen.</string>
+    <string name="settings_whats_new_accessibility">Verbesserte Unterstützung für Bildschirmleser, Sprache, Sprache und Navigationssound.</string>
+    <string name="settings_whats_new_location">Zuverlässigere Standortverwaltung und allgemeine App-Stabilität.</string>
 </resources>

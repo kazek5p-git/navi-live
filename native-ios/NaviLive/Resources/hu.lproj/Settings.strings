@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "A PayPal támogatási hivatkozása most a vágólapon található.";
 "help.section.privacy" = "Adatvédelem";
 "help.privacy.body" = "Navi Live tárolja a kedvenceket és az útmutatási beállításokat az eszközön. A keresés, a fordított geokódolás és az útvonal-készítés csak akkor használja az online szolgáltatásokat, ha Ön kéri.";
+"settings.whats_new.title" = "Újdonságok";
+"settings.whats_new.version" = "Jelenlegi verzió";
+"settings.whats_new.intro" = "A legfontosabb változtatások a Navi Live verzióban.";
+"settings.whats_new.guidance" = "Stabilabb sétavezetés és pontosabb útmutatás.";
+"settings.whats_new.search" = "Továbbfejlesztett közeli helyek keresése és világosabb címek a találatok között.";
+"settings.whats_new.accessibility" = "Továbbfejlesztett képernyőolvasó, nyelvi, beszéd- és navigációs hangtámogatás.";
+"settings.whats_new.location" = "Megbízhatóbb helykezelés és általános alkalmazásstabilitás.";

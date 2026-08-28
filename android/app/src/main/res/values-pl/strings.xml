@@ -352,6 +352,13 @@
     <string name="settings_updates_install">Zainstaluj pobraną aktualizację</string>
     <string name="settings_updates_open_release">Otwórz stronę wydania</string>
     <string name="settings_updates_allow_installs">Zezwól na instalację APK</string>
+    <string name="settings_whats_new_title">Co nowego</string>
+    <string name="settings_whats_new_version">Bieżąca wersja</string>
+    <string name="settings_whats_new_intro">Najważniejsze zmiany w bieżącej wersji Navi Live.</string>
+    <string name="settings_whats_new_guidance">Stabilniejsze prowadzenie i dokładniejsze komunikaty na trasie.</string>
+    <string name="settings_whats_new_search">Ulepszone wyszukiwanie punktów w okolicy i czytelniejsze adresy wyników.</string>
+    <string name="settings_whats_new_accessibility">Lepsza obsługa czytników ekranu, języków, mowy i dźwięków nawigacji.</string>
+    <string name="settings_whats_new_location">Pewniejsze działanie lokalizacji i większa stabilność aplikacji.</string>
     <string name="update_status_idle_auto">Navi Live automatycznie sprawdza też GitHuba przy starcie.</string>
     <string name="update_status_checking">Sprawdzam najnowsze wydanie na GitHubie…</string>
     <string name="format_update_ready_to_install">Aktualizacja %1$s jest pobrana i gotowa do instalacji.</string>

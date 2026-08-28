@@ -464,4 +464,11 @@
     <string name="route_step_continue_default">Halt fram</string>
     <string name="route_step_cross_named_street">Far tvørtur um %1$s.</string>
     <string name="diagnostics_event_route_problem_reported">Fráboðan um trupulleika við leiðini.</string>
+    <string name="settings_whats_new_title">Hvat er nýtt</string>
+    <string name="settings_whats_new_version">Núverandi útgáva</string>
+    <string name="settings_whats_new_intro">Týdningarmestu broytingarnar í hesi útgávuni av Navi Live.</string>
+    <string name="settings_whats_new_guidance">Støðugari gonguvegleiðing og nágreiniligari leiðbeining.</string>
+    <string name="settings_whats_new_search">Betrað nærliggjandi staðleiting og greiðari adressur í úrslitum.</string>
+    <string name="settings_whats_new_accessibility">Betraður skermlesari, mál, talu og navigatiónsljóðstuðul.</string>
+    <string name="settings_whats_new_location">Álítandi staðsetingarhandfaring og samlaður appstabilitetur.</string>
 </resources>

@@ -482,4 +482,11 @@
     <string name="route_step_continue_default">Lean ar aghaidh</string>
     <string name="route_step_cross_named_street">Trasnaigh %1$s.</string>
     <string name="diagnostics_event_route_problem_reported">Tuairiscíodh fadhb leis an mbealach.</string>
+    <string name="settings_whats_new_title">Cad atá nua</string>
+    <string name="settings_whats_new_version">Leagan reatha</string>
+    <string name="settings_whats_new_intro">Na hathruithe is tábhachtaí sa leagan seo de Navi Live.</string>
+    <string name="settings_whats_new_guidance">Treoir siúil níos cobhsaí agus treoracha bealaigh níos cruinne.</string>
+    <string name="settings_whats_new_search">Feabhsaíodh cuardach áite in aice láimhe agus seoltaí níos soiléire sna torthaí.</string>
+    <string name="settings_whats_new_accessibility">Léitheoir scáileáin feabhsaithe, tacaíocht fuaime teanga, cainte agus loingseoireachta.</string>
+    <string name="settings_whats_new_location">Láimhseáil suímh níos iontaofa agus cobhsaíocht fhoriomlán aipeanna.</string>
 </resources>

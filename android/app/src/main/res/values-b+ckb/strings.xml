@@ -464,4 +464,11 @@
     <string name="diagnostics_event_tracking_stopped">شوێنپێهەڵگرتنی پێشەوە وەستا.</string>
     <string name="diagnostics_event_navigation_fix">نمونەی جی پی ئێس پاشەکەوت کراوە بۆ هەنگاوی %1$d لە %2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">چی نوێیە</string>
+    <string name="settings_whats_new_version">وەشانی ئێستا</string>
+    <string name="settings_whats_new_intro">گرنگترین گۆڕانکارییەکانی ئەم وەشانەی Navi Live.</string>
+    <string name="settings_whats_new_guidance">ڕێنمایی ڕۆیشتن جێگیرتر و ڕێنماییەکانی ڕێگا وردتر.</string>
+    <string name="settings_whats_new_search">باشترکردنی گەڕانی شوێنی نزیک و ڕوونتر ناونیشانەکان لە ئەنجامەکاندا.</string>
+    <string name="settings_whats_new_accessibility">باشترکردنی پشتگیری دەنگی خوێنەری شاشە، زمان، قسەکردن و گەشتکردن.</string>
+    <string name="settings_whats_new_location">مامەڵەکردنی شوێن بە شێوەیەکی متمانەپێکراوتر و سەقامگیری گشتی ئەپ.</string>
 </resources>

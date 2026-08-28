@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "PayPali toe link on nüüd lõikelaual.";
 "help.section.privacy" = "Privaatsus";
 "help.privacy.body" = "Navi Live salvestab seadmesse lemmikud ja juhiste eelistused. Otsing, pöördgeokodeerimine ja marsruudi ettevalmistamine kasutavad võrguteenuseid ainult siis, kui te neid küsite.";
+"settings.whats_new.title" = "Mida uut";
+"settings.whats_new.version" = "Praegune versioon";
+"settings.whats_new.intro" = "Olulisemad muudatused selles versioonis Navi Live.";
+"settings.whats_new.guidance" = "Stabiilsem kõndimisjuhis ja täpsemad marsruudijuhised.";
+"settings.whats_new.search" = "Täiustatud lähedalasuvate kohtade otsing ja selgemad aadressid tulemustes.";
+"settings.whats_new.accessibility" = "Täiustatud ekraanilugeja, keele-, kõne- ja navigeerimisheli tugi.";
+"settings.whats_new.location" = "Usaldusväärsem asukohahaldus ja üldine rakenduse stabiilsus.";

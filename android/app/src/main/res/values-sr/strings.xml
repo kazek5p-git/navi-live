@@ -470,4 +470,11 @@
     <string name="diagnostics_event_tracking_stopped">Праћење у првом плану је заустављено.</string>
     <string name="diagnostics_event_navigation_fix">ГПС узорак је сачуван за корак %1$d од %2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Шта је ново</string>
+    <string name="settings_whats_new_version">Тренутна верзија</string>
+    <string name="settings_whats_new_intro">Најважније промене у овој верзији Navi Live.</string>
+    <string name="settings_whats_new_guidance">Стабилније навођење за ходање и прецизнија упутства за руту.</string>
+    <string name="settings_whats_new_search">Побољшана претрага места у близини и јасније адресе у резултатима.</string>
+    <string name="settings_whats_new_accessibility">Побољшана подршка за читач екрана, језик, говор и навигацију.</string>
+    <string name="settings_whats_new_location">Поузданије руковање локацијом и општа стабилност апликације.</string>
 </resources>

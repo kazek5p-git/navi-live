@@ -464,4 +464,11 @@
     <string name="route_step_continue_default">Haltu áfram</string>
     <string name="route_step_cross_named_street">Farðu yfir %1$s.</string>
     <string name="diagnostics_event_route_problem_reported">Tilkynnt var um leiðarvandamál.</string>
+    <string name="settings_whats_new_title">Hvað er nýtt</string>
+    <string name="settings_whats_new_version">Núverandi útgáfa</string>
+    <string name="settings_whats_new_intro">Mikilvægustu breytingarnar í þessari útgáfu af Navi Live.</string>
+    <string name="settings_whats_new_guidance">Stöðugari gönguleiðsögn og nákvæmari leiðarleiðbeiningar.</string>
+    <string name="settings_whats_new_search">Bætt staðleit í nágrenninu og skýrari vistföng í niðurstöðum.</string>
+    <string name="settings_whats_new_accessibility">Bættur stuðningur við skjálesara, tungumál, tal og siglingarhljóð.</string>
+    <string name="settings_whats_new_location">Áreiðanlegri staðsetningarmeðferð og heildarstöðugleiki apps.</string>
 </resources>

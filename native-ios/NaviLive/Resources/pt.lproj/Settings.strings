@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "O link de suporte do PayPal agora está na área de transferência.";
 "help.section.privacy" = "Privacidade";
 "help.privacy.body" = "Navi Live armazena favoritos e preferências de orientação no dispositivo. Pesquisa, geocodificação reversa e preparação de rotas usam serviços on-line somente quando você os solicita.";
+"settings.whats_new.title" = "Novidades";
+"settings.whats_new.version" = "Versão atual";
+"settings.whats_new.intro" = "As alterações mais importantes nesta versão do Navi Live.";
+"settings.whats_new.guidance" = "Orientação de caminhada mais estável e instruções de rota mais precisas.";
+"settings.whats_new.search" = "Pesquisa aprimorada de locais próximos e endereços mais claros nos resultados.";
+"settings.whats_new.accessibility" = "Suporte aprimorado para leitor de tela, idioma, fala e som de navegação.";
+"settings.whats_new.location" = "Tratamento de localização mais confiável e estabilidade geral do aplicativo.";

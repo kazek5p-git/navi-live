@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "Veza za podršku za PayPal sada je u međuspremniku.";
 "help.section.privacy" = "Privatnost";
 "help.privacy.body" = "Navi Live pohranjuje favorite i postavke navođenja na uređaju. Pretraživanje, obrnuto geokodiranje i priprema rute koriste online usluge samo kada ih zatražite.";
+"settings.whats_new.title" = "Što je novo";
+"settings.whats_new.version" = "Trenutna verzija";
+"settings.whats_new.intro" = "Najvažnije promjene u ovoj verziji Navi Live.";
+"settings.whats_new.guidance" = "Stabilnije navođenje za hodanje i preciznije upute za rutu.";
+"settings.whats_new.search" = "Poboljšano pretraživanje mjesta u blizini i jasnije adrese u rezultatima.";
+"settings.whats_new.accessibility" = "Poboljšani čitač zaslona, ​​podrška za jezik, govor i zvuk navigacije.";
+"settings.whats_new.location" = "Pouzdanije rukovanje lokacijom i ukupna stabilnost aplikacije.";

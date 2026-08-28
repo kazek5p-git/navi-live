@@ -464,4 +464,11 @@
     <string name="route_step_continue_default">Jarraitu</string>
     <string name="route_step_cross_named_street">Zeharkatu %1$s.</string>
     <string name="diagnostics_event_route_problem_reported">Ibilbide-arazoaren berri eman da.</string>
+    <string name="settings_whats_new_title">Nobedadeak</string>
+    <string name="settings_whats_new_version">Egungo bertsioa</string>
+    <string name="settings_whats_new_intro">Navi Live bertsio honetako aldaketarik garrantzitsuenak.</string>
+    <string name="settings_whats_new_guidance">Oinezko orientazio egonkorragoa eta ibilbideko argibide zehatzagoak.</string>
+    <string name="settings_whats_new_search">Inguruko lekuen bilaketa hobetu da eta helbide argiagoak emaitzetan.</string>
+    <string name="settings_whats_new_accessibility">Pantaila-irakurlea, hizkuntza, hizketa eta nabigazio-soinu laguntza hobetua.</string>
+    <string name="settings_whats_new_location">Kokapen-kudeaketa fidagarriagoa eta aplikazioaren egonkortasun orokorra.</string>
 </resources>

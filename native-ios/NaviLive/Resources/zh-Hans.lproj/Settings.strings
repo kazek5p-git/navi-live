@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "PayPal 支持链接现已位于剪贴板中。";
 "help.section.privacy" = "隐私";
 "help.privacy.body" = "Navi Live 在设备上存储收藏夹和指导首选项。搜索、反向地理编码和路线准备仅在您需要时才使用在线服务。";
+"settings.whats_new.title" = "新增内容";
+"settings.whats_new.version" = "当前版本";
+"settings.whats_new.intro" = "该版本最重要的变化是 Navi Live。";
+"settings.whats_new.guidance" = "更稳定的行走引导和更精确的路线指示。";
+"settings.whats_new.search" = "改进了附近地点搜索，结果中的地址更清晰。";
+"settings.whats_new.accessibility" = "改进了屏幕阅读器、语言、语音和导航声音支持。";
+"settings.whats_new.location" = "更可靠的位置处理和整体应用程序稳定性。";

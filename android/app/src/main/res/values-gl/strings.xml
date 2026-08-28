@@ -464,4 +464,11 @@
     <string name="route_step_continue_default">Continuar</string>
     <string name="route_step_cross_named_street">Cruza %1$s.</string>
     <string name="diagnostics_event_route_problem_reported">Informouse dun problema da ruta.</string>
+    <string name="settings_whats_new_title">Novidades</string>
+    <string name="settings_whats_new_version">Versión actual</string>
+    <string name="settings_whats_new_intro">Os cambios máis importantes nesta versión do Navi Live.</string>
+    <string name="settings_whats_new_guidance">Guía de camiñada máis estable e instrucións de ruta máis precisas.</string>
+    <string name="settings_whats_new_search">Busca mellorada de lugares próximos e enderezos máis claros nos resultados.</string>
+    <string name="settings_whats_new_accessibility">Mellorado do lector de pantalla, do idioma, da voz e do son de navegación.</string>
+    <string name="settings_whats_new_location">Manexo de localización máis fiable e estabilidade xeral da aplicación.</string>
 </resources>

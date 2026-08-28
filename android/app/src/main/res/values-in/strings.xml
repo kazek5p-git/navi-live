@@ -458,4 +458,11 @@
     <string name="diagnostics_event_tracking_stopped">Pelacakan latar depan dihentikan.</string>
     <string name="diagnostics_event_navigation_fix">Sampel GPS disimpan untuk langkah %1$d dari %2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Yang baru</string>
+    <string name="settings_whats_new_version">Versi saat ini</string>
+    <string name="settings_whats_new_intro">Perubahan terpenting pada versi Navi Live ini.</string>
+    <string name="settings_whats_new_guidance">Panduan jalan kaki yang lebih stabil dan petunjuk rute yang lebih tepat.</string>
+    <string name="settings_whats_new_search">Peningkatan pencarian tempat terdekat dan hasil alamat yang lebih jelas.</string>
+    <string name="settings_whats_new_accessibility">Peningkatan pembaca layar, bahasa, ucapan, dan dukungan suara navigasi.</string>
+    <string name="settings_whats_new_location">Penanganan lokasi yang lebih andal dan stabilitas aplikasi secara keseluruhan.</string>
 </resources>

@@ -476,4 +476,11 @@
     <string name="diagnostics_event_tracking_stopped">Sledování popředí zastaveno.</string>
     <string name="diagnostics_event_navigation_fix">Ukázka GPS uložena pro krok %1$d z %2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Co je nového</string>
+    <string name="settings_whats_new_version">Aktuální verze</string>
+    <string name="settings_whats_new_intro">Nejdůležitější změny v této verzi Navi Live.</string>
+    <string name="settings_whats_new_guidance">Stabilnější vedení chůze a přesnější pokyny k trase.</string>
+    <string name="settings_whats_new_search">Vylepšené vyhledávání míst v okolí a přehlednější adresy ve výsledcích.</string>
+    <string name="settings_whats_new_accessibility">Vylepšená podpora čtečky obrazovky, jazyka, řeči a zvuku navigace.</string>
+    <string name="settings_whats_new_location">Spolehlivější zpracování polohy a celková stabilita aplikace.</string>
 </resources>

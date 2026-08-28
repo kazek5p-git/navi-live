@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "PayPal-tukilinkki on nyt leikepöydällä.";
 "help.section.privacy" = "Yksityisyys";
 "help.privacy.body" = "Navi Live tallentaa suosikit ja opastusasetukset laitteeseen. Haku, käänteinen geokoodaus ja reitin valmistelu käyttävät verkkopalveluita vain pyydettäessä.";
+"settings.whats_new.title" = "Uutta";
+"settings.whats_new.version" = "Nykyinen versio";
+"settings.whats_new.intro" = "Tärkeimmät muutokset tässä Navi Live-versiossa.";
+"settings.whats_new.guidance" = "Vakaampi kävelyopastus ja tarkemmat reittiohjeet.";
+"settings.whats_new.search" = "Parannettu lähipaikkojen haku ja selkeämmät osoitteet tuloksissa.";
+"settings.whats_new.accessibility" = "Parannettu näytönlukuohjelman, kielen, puheen ja navigointiäänen tuki.";
+"settings.whats_new.location" = "Luotettavampi sijainninkäsittely ja yleinen sovelluksen vakaus.";

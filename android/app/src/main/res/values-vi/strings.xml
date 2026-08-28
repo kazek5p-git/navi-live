@@ -458,4 +458,11 @@
     <string name="diagnostics_event_tracking_stopped">Theo dõi tiền cảnh đã dừng.</string>
     <string name="diagnostics_event_navigation_fix">Đã lưu mẫu GPS cho bước %1$d của %2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Có gì mới</string>
+    <string name="settings_whats_new_version">Phiên bản hiện tại</string>
+    <string name="settings_whats_new_intro">Những thay đổi quan trọng nhất trong phiên bản Navi Live này.</string>
+    <string name="settings_whats_new_guidance">Hướng dẫn đi bộ ổn định hơn và chỉ dẫn lộ trình chính xác hơn.</string>
+    <string name="settings_whats_new_search">Cải thiện tìm kiếm địa điểm lân cận và địa chỉ rõ ràng hơn trong kết quả.</string>
+    <string name="settings_whats_new_accessibility">Cải thiện trình đọc màn hình, ngôn ngữ, giọng nói và hỗ trợ âm thanh điều hướng.</string>
+    <string name="settings_whats_new_location">Khả năng xử lý vị trí đáng tin cậy hơn và độ ổn định tổng thể của ứng dụng.</string>
 </resources>

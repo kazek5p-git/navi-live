@@ -501,4 +501,11 @@
     <string name="diagnostics_event_tracking_stopped">Фоновое отслеживание остановлено.</string>
     <string name="diagnostics_event_navigation_fix">Образец GPS сохранён для шага %1$d из %2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Что нового</string>
+    <string name="settings_whats_new_version">Текущая версия</string>
+    <string name="settings_whats_new_intro">Наиболее важные изменения в этой версии Navi Live.</string>
+    <string name="settings_whats_new_guidance">Более стабильные подсказки для ходьбы и более точные инструкции по маршруту.</string>
+    <string name="settings_whats_new_search">Улучшен поиск мест поблизости и более четкие адреса в результатах.</string>
+    <string name="settings_whats_new_accessibility">Улучшенная программа чтения с экрана, поддержка языка, речи и звука навигации.</string>
+    <string name="settings_whats_new_location">Более надежная обработка местоположения и общая стабильность приложения.</string>
 </resources>

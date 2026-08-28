@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "رابط دعم PayPal موجود الآن في الحافظة.";
 "help.section.privacy" = "الخصوصية";
 "help.privacy.body" = "Navi Live يقوم بتخزين المفضلة وتفضيلات التوجيه على الجهاز. يستخدم البحث والترميز الجغرافي العكسي وإعداد المسار الخدمات عبر الإنترنت فقط عندما تطلبها.";
+"settings.whats_new.title" = "ما الجديد";
+"settings.whats_new.version" = "الإصدار الحالي";
+"settings.whats_new.intro" = "أهم التغييرات في هذا الإصدار Navi Live.";
+"settings.whats_new.guidance" = "توجيهات أكثر استقرارًا للمشي وتعليمات مسار أكثر دقة.";
+"settings.whats_new.search" = "تحسين البحث عن الأماكن القريبة وعناوين أكثر وضوحًا في النتائج.";
+"settings.whats_new.accessibility" = "دعم محسّن لقارئ الشاشة واللغة والكلام والملاحة.";
+"settings.whats_new.location" = "معالجة أكثر موثوقية للموقع واستقرار التطبيق بشكل عام.";

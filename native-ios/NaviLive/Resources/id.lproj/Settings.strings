@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "Tautan dukungan PayPal sekarang ada di clipboard.";
 "help.section.privacy" = "Privasi";
 "help.privacy.body" = "Navi Live menyimpan favorit dan preferensi panduan pada perangkat. Pencarian, geocoding balik, dan persiapan rute menggunakan layanan online hanya jika Anda memintanya.";
+"settings.whats_new.title" = "Yang baru";
+"settings.whats_new.version" = "Versi saat ini";
+"settings.whats_new.intro" = "Perubahan terpenting pada versi Navi Live ini.";
+"settings.whats_new.guidance" = "Panduan jalan kaki yang lebih stabil dan petunjuk rute yang lebih tepat.";
+"settings.whats_new.search" = "Peningkatan pencarian tempat terdekat dan hasil alamat yang lebih jelas.";
+"settings.whats_new.accessibility" = "Peningkatan pembaca layar, bahasa, ucapan, dan dukungan suara navigasi.";
+"settings.whats_new.location" = "Penanganan lokasi yang lebih andal dan stabilitas aplikasi secara keseluruhan.";

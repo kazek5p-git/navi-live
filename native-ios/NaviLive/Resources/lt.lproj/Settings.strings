@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "PayPal palaikymo nuoroda dabar yra mainų srityje.";
 "help.section.privacy" = "Privatumas";
 "help.privacy.body" = "Navi Live išsaugo mėgstamiausius ir nurodymų nuostatas įrenginyje. Paieška, atvirkštinis geokodavimas ir maršruto parengimas naudojasi internetinėmis paslaugomis tik tada, kai jų prašote.";
+"settings.whats_new.title" = "Kas naujo";
+"settings.whats_new.version" = "Dabartinė versija";
+"settings.whats_new.intro" = "Svarbiausi šios Navi Live versijos pakeitimai.";
+"settings.whats_new.guidance" = "Stabilesnis ėjimo nurodymas ir tikslesnės maršruto instrukcijos.";
+"settings.whats_new.search" = "Patobulinta netoliese esančių vietų paieška ir aiškesni adresai rezultatuose.";
+"settings.whats_new.accessibility" = "Patobulintas ekrano skaitytuvas, kalbos, kalbos ir navigacijos garso palaikymas.";
+"settings.whats_new.location" = "Patikimesnis vietos valdymas ir bendras programos stabilumas.";

@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "PayPal destek bağlantısı artık panoda.";
 "help.section.privacy" = "Gizlilik";
 "help.privacy.body" = "Navi Live, favorileri ve rehberlik tercihlerini cihazda saklar. Arama, ters coğrafi kodlama ve rota hazırlama çevrimiçi hizmetleri yalnızca siz istediğinizde kullanın.";
+"settings.whats_new.title" = "Yenilikler";
+"settings.whats_new.version" = "Güncel sürüm";
+"settings.whats_new.intro" = "Navi Live'nin bu sürümündeki en önemli değişiklikler.";
+"settings.whats_new.guidance" = "Daha istikrarlı yürüme rehberliği ve daha kesin rota talimatları.";
+"settings.whats_new.search" = "Yakınlardaki yer araması iyileştirildi ve sonuçlarda daha net adresler eklendi.";
+"settings.whats_new.accessibility" = "Geliştirilmiş ekran okuyucu, dil, konuşma ve gezinme ses desteği.";
+"settings.whats_new.location" = "Daha güvenilir konum yönetimi ve genel uygulama kararlılığı.";

@@ -166,6 +166,7 @@ private enum class BannerTone {
 
 private enum class SettingsDestination {
     Root,
+    WhatsNew,
     Guidance,
     LocalSearch,
     Sounds,
@@ -1536,6 +1537,7 @@ fun SettingsScreen(
 
     val title = when (destination) {
         SettingsDestination.Root -> stringResource(R.string.settings_title)
+        SettingsDestination.WhatsNew -> stringResource(R.string.settings_whats_new_title)
         SettingsDestination.Guidance -> stringResource(R.string.settings_group_guidance_title)
         SettingsDestination.LocalSearch -> stringResource(R.string.settings_group_local_search_title)
         SettingsDestination.Sounds -> stringResource(R.string.settings_group_sounds_title)
@@ -1583,6 +1585,11 @@ fun SettingsScreen(
                         onClick = { destination = SettingsDestination.Speech },
                     )
                     SettingsNavigationCard(
+                        title = stringResource(R.string.settings_whats_new_title),
+                        icon = Icons.Filled.Campaign,
+                        onClick = { destination = SettingsDestination.WhatsNew },
+                    )
+                    SettingsNavigationCard(
                         title = stringResource(R.string.settings_group_app_title),
                         icon = Icons.Filled.Settings,
                         onClick = { destination = SettingsDestination.App },
@@ -1597,6 +1604,9 @@ fun SettingsScreen(
                         icon = Icons.Filled.Info,
                         onClick = onOpenHelpPrivacy,
                     )
+                }
+                SettingsDestination.WhatsNew -> {
+                    WhatsNewCard(versionLabel = updateState.currentVersionLabel)
                 }
                 SettingsDestination.Guidance -> {
                     SettingsToggleCard(
@@ -1767,6 +1777,47 @@ fun SettingsScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun WhatsNewCard(versionLabel: String) {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            LabelValue(
+                label = stringResource(R.string.settings_whats_new_version),
+                value = versionLabel,
+            )
+            Text(
+                text = stringResource(R.string.settings_whats_new_intro),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            WhatsNewItem(stringResource(R.string.settings_whats_new_guidance))
+            WhatsNewItem(stringResource(R.string.settings_whats_new_search))
+            WhatsNewItem(stringResource(R.string.settings_whats_new_accessibility))
+            WhatsNewItem(stringResource(R.string.settings_whats_new_location))
+        }
+    }
+}
+
+@Composable
+private fun WhatsNewItem(text: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clearAndSetSemantics { contentDescription = text },
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Text(
+            text = "•",
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.clearAndSetSemantics { },
+        )
+        Text(text)
     }
 }
 

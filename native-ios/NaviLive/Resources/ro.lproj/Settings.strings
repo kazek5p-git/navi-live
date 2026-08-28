@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "Linkul de asistență PayPal este acum în clipboard.";
 "help.section.privacy" = "Confidențialitate";
 "help.privacy.body" = "Navi Live stochează favoritele și preferințele de ghidare pe dispozitiv. Căutarea, geocodarea inversă și pregătirea rutei utilizează serviciile online numai atunci când le solicitați.";
+"settings.whats_new.title" = "Noutăți";
+"settings.whats_new.version" = "Versiunea curentă";
+"settings.whats_new.intro" = "Cele mai importante modificări în această versiune a Navi Live.";
+"settings.whats_new.guidance" = "Îndrumare mai stabilă pentru mers pe jos și instrucțiuni de traseu mai precise.";
+"settings.whats_new.search" = "Căutare îmbunătățită a locațiilor din apropiere și adrese mai clare în rezultate.";
+"settings.whats_new.accessibility" = "Cititor de ecran îmbunătățit, suport pentru limbă, vorbire și sunet de navigare.";
+"settings.whats_new.location" = "Gestionare mai fiabilă a locației și stabilitate generală a aplicației.";

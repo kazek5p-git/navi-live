@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "PayPal atbalsta saite tagad ir starpliktuvē.";
 "help.section.privacy" = "Privātums";
 "help.privacy.body" = "Navi Live ierīcē saglabā izlases un norādījumu preferences. Meklēšana, reversā ģeokodēšana un maršruta sagatavošana izmanto tiešsaistes pakalpojumus tikai tad, kad tos lūdzat.";
+"settings.whats_new.title" = "Jaunumi";
+"settings.whats_new.version" = "Pašreizējā versija";
+"settings.whats_new.intro" = "Svarīgākās izmaiņas šajā Navi Live versijā.";
+"settings.whats_new.guidance" = "Stabilāka iešanas vadība un precīzākas maršruta norādes.";
+"settings.whats_new.search" = "Uzlabota tuvumā esošo vietu meklēšana un skaidrākas adreses rezultātos.";
+"settings.whats_new.accessibility" = "Uzlabots ekrāna lasītājs, valodas, runas un navigācijas skaņas atbalsts.";
+"settings.whats_new.location" = "Uzticamāka atrašanās vietas apstrāde un vispārēja lietotnes stabilitāte.";

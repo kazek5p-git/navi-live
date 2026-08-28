@@ -458,4 +458,11 @@
     <string name="diagnostics_event_tracking_stopped">フォアグラウンド追跡が停止しました。</string>
     <string name="diagnostics_event_navigation_fix">%2$d のステップ %1$d 用に保存された GPS サンプル。</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">新機能</string>
+    <string name="settings_whats_new_version">現在のバージョン</string>
+    <string name="settings_whats_new_intro">このバージョン Navi Live での最も重要な変更点。</string>
+    <string name="settings_whats_new_guidance">より安定した歩行案内とより正確なルート指示。</string>
+    <string name="settings_whats_new_search">近くの場所の検索が改善され、結果の住所がより明確になりました。</string>
+    <string name="settings_whats_new_accessibility">スクリーン リーダー、言語、音声、ナビゲーション サウンドのサポートが改善されました。</string>
+    <string name="settings_whats_new_location">より信頼性の高い位置情報処理とアプリ全体の安定性。</string>
 </resources>

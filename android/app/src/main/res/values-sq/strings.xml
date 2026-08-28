@@ -466,4 +466,11 @@
     <string name="diagnostics_event_tracking_stopped">Ndjekja në plan të parë u ndal.</string>
     <string name="diagnostics_event_navigation_fix">Mostra GPS e ruajtur për hapin %1$d nga %2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Çfarë ka të re</string>
+    <string name="settings_whats_new_version">Versioni aktual</string>
+    <string name="settings_whats_new_intro">Ndryshimet më të rëndësishme në këtë version të Navi Live.</string>
+    <string name="settings_whats_new_guidance">Udhëzime më të qëndrueshme në ecje dhe udhëzime më të sakta të rrugës.</string>
+    <string name="settings_whats_new_search">Kërkim i përmirësuar i vendeve në afërsi dhe adresa më të qarta në rezultate.</string>
+    <string name="settings_whats_new_accessibility">Mbështetje e përmirësuar e lexuesit të ekranit, gjuhës, të folurit dhe tingullit të navigimit.</string>
+    <string name="settings_whats_new_location">Trajtim më i besueshëm i vendndodhjes dhe stabilitet i përgjithshëm i aplikacionit.</string>
 </resources>

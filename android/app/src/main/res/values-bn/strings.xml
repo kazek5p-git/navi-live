@@ -466,4 +466,11 @@
     <string name="diagnostics_event_tracking_stopped">ফোরগ্রাউন্ড ট্র্যাকিং বন্ধ।</string>
     <string name="diagnostics_event_navigation_fix">জিপিএস নমুনা %2$d এর %1$d ধাপের জন্য সংরক্ষিত।</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">নতুন কি</string>
+    <string name="settings_whats_new_version">বর্তমান সংস্করণ</string>
+    <string name="settings_whats_new_intro">Navi Live এই সংস্করণে সবচেয়ে গুরুত্বপূর্ণ পরিবর্তন।</string>
+    <string name="settings_whats_new_guidance">আরও স্থিতিশীল হাঁটার নির্দেশিকা এবং আরও সুনির্দিষ্ট রুট নির্দেশাবলী।</string>
+    <string name="settings_whats_new_search">উন্নত কাছাকাছি স্থান অনুসন্ধান এবং ফলাফল পরিষ্কার ঠিকানা.</string>
+    <string name="settings_whats_new_accessibility">উন্নত স্ক্রিন রিডার, ভাষা, বক্তৃতা এবং নেভিগেশন সাউন্ড সমর্থন।</string>
+    <string name="settings_whats_new_location">আরও নির্ভরযোগ্য অবস্থান পরিচালনা এবং সামগ্রিক অ্যাপ স্থায়িত্ব।</string>
 </resources>

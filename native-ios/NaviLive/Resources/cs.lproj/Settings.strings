@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "Odkaz na podporu PayPal je nyní ve schránce.";
 "help.section.privacy" = "Soukromí";
 "help.privacy.body" = "Navi Live ukládá oblíbené položky a předvolby navádění do zařízení. Vyhledávání, zpětné geokódování a příprava trasy využívají online služby pouze tehdy, když o ně požádáte.";
+"settings.whats_new.title" = "Co je nového";
+"settings.whats_new.version" = "Aktuální verze";
+"settings.whats_new.intro" = "Nejdůležitější změny v této verzi Navi Live.";
+"settings.whats_new.guidance" = "Stabilnější vedení chůze a přesnější pokyny k trase.";
+"settings.whats_new.search" = "Vylepšené vyhledávání míst v okolí a přehlednější adresy ve výsledcích.";
+"settings.whats_new.accessibility" = "Vylepšená podpora čtečky obrazovky, jazyka, řeči a zvuku navigace.";
+"settings.whats_new.location" = "Spolehlivější zpracování polohy a celková stabilita aplikace.";

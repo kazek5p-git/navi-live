@@ -482,4 +482,11 @@
     <string name="route_step_continue_default">Kompli</string>
     <string name="route_step_cross_named_street">Aqsam %1$s.</string>
     <string name="diagnostics_event_route_problem_reported">Problema tar-rotta rrappurtata.</string>
+    <string name="settings_whats_new_title">X\'hemm ġdid</string>
+    <string name="settings_whats_new_version">Verżjoni kurrenti</string>
+    <string name="settings_whats_new_intro">L-aktar bidliet importanti f\'din il-verżjoni ta\' Navi Live.</string>
+    <string name="settings_whats_new_guidance">Gwida tal-mixi aktar stabbli u struzzjonijiet tar-rotta aktar preċiżi.</string>
+    <string name="settings_whats_new_search">Tiftix imtejjeb fil-post fil-qrib u indirizzi aktar ċari fir-riżultati.</string>
+    <string name="settings_whats_new_accessibility">Appoġġ imtejjeb għal screen reader, lingwa, diskors u ħoss tan-navigazzjoni.</string>
+    <string name="settings_whats_new_location">Immaniġġjar tal-post aktar affidabbli u stabbiltà ġenerali tal-app.</string>
 </resources>

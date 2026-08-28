@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "Liên kết hỗ trợ PayPal hiện có trong bảng nhớ tạm.";
 "help.section.privacy" = "Quyền riêng tư";
 "help.privacy.body" = "Navi Live lưu trữ các mục yêu thích và tùy chọn hướng dẫn trên thiết bị. Tìm kiếm, đảo ngược mã hóa địa lý và chuẩn bị lộ trình chỉ sử dụng các dịch vụ trực tuyến khi bạn yêu cầu.";
+"settings.whats_new.title" = "Có gì mới";
+"settings.whats_new.version" = "Phiên bản hiện tại";
+"settings.whats_new.intro" = "Những thay đổi quan trọng nhất trong phiên bản Navi Live này.";
+"settings.whats_new.guidance" = "Hướng dẫn đi bộ ổn định hơn và chỉ dẫn lộ trình chính xác hơn.";
+"settings.whats_new.search" = "Cải thiện tìm kiếm địa điểm lân cận và địa chỉ rõ ràng hơn trong kết quả.";
+"settings.whats_new.accessibility" = "Cải thiện trình đọc màn hình, ngôn ngữ, giọng nói và hỗ trợ âm thanh điều hướng.";
+"settings.whats_new.location" = "Khả năng xử lý vị trí đáng tin cậy hơn và độ ổn định tổng thể của ứng dụng.";

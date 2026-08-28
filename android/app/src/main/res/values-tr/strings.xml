@@ -464,4 +464,11 @@
     <string name="diagnostics_event_tracking_stopped">Ön planda izleme durduruldu.</string>
     <string name="diagnostics_event_navigation_fix">GPS örneği, %2$d\'un %1$d adımı için kaydedildi.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Yenilikler</string>
+    <string name="settings_whats_new_version">Güncel sürüm</string>
+    <string name="settings_whats_new_intro">Navi Live\'nin bu sürümündeki en önemli değişiklikler.</string>
+    <string name="settings_whats_new_guidance">Daha istikrarlı yürüme rehberliği ve daha kesin rota talimatları.</string>
+    <string name="settings_whats_new_search">Yakınlardaki yer araması iyileştirildi ve sonuçlarda daha net adresler eklendi.</string>
+    <string name="settings_whats_new_accessibility">Geliştirilmiş ekran okuyucu, dil, konuşma ve gezinme ses desteği.</string>
+    <string name="settings_whats_new_location">Daha güvenilir konum yönetimi ve genel uygulama kararlılığı.</string>
 </resources>

@@ -470,4 +470,11 @@
     <string name="diagnostics_event_tracking_stopped">Urmărirea primului plan a fost oprită.</string>
     <string name="diagnostics_event_navigation_fix">Eșantion GPS salvat pentru pasul %1$d din %2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Noutăți</string>
+    <string name="settings_whats_new_version">Versiunea curentă</string>
+    <string name="settings_whats_new_intro">Cele mai importante modificări în această versiune a Navi Live.</string>
+    <string name="settings_whats_new_guidance">Îndrumare mai stabilă pentru mers pe jos și instrucțiuni de traseu mai precise.</string>
+    <string name="settings_whats_new_search">Căutare îmbunătățită a locațiilor din apropiere și adrese mai clare în rezultate.</string>
+    <string name="settings_whats_new_accessibility">Cititor de ecran îmbunătățit, suport pentru limbă, vorbire și sunet de navigare.</string>
+    <string name="settings_whats_new_location">Gestionare mai fiabilă a locației și stabilitate generală a aplicației.</string>
 </resources>

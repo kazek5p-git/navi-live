@@ -99,3 +99,10 @@
 "support.amount.copy_success" = "Der PayPal-Support-Link befindet sich jetzt in der Zwischenablage.";
 "help.section.privacy" = "Datenschutz";
 "help.privacy.body" = "Navi Live speichert Favoriten und Führungseinstellungen auf dem Gerät. Suchen, umgekehrte Geokodierung und Routenvorbereitung nutzen Online-Dienste nur, wenn Sie danach fragen.";
+"settings.whats_new.title" = "Was ist neu";
+"settings.whats_new.version" = "Aktuelle Version";
+"settings.whats_new.intro" = "Die wichtigsten Änderungen in dieser Version von Navi Live.";
+"settings.whats_new.guidance" = "Stabilere Gehführung und präzisere Routenanweisungen.";
+"settings.whats_new.search" = "Verbesserte Suche nach Orten in der Nähe und klarere Adressen in den Ergebnissen.";
+"settings.whats_new.accessibility" = "Verbesserte Unterstützung für Bildschirmleser, Sprache, Sprache und Navigationssound.";
+"settings.whats_new.location" = "Zuverlässigere Standortverwaltung und allgemeine App-Stabilität.";

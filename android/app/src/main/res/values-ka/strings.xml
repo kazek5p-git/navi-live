@@ -464,4 +464,11 @@
     <string name="route_step_continue_default">გააგრძელეთ</string>
     <string name="route_step_cross_named_street">გადაკვეთეთ %1$s.</string>
     <string name="diagnostics_event_route_problem_reported">მარშრუტის პრობლემა შეტყობინებულია.</string>
+    <string name="settings_whats_new_title">რა არის ახალი</string>
+    <string name="settings_whats_new_version">მიმდინარე ვერსია</string>
+    <string name="settings_whats_new_intro">ყველაზე მნიშვნელოვანი ცვლილებები Navi Live ამ ვერსიაში.</string>
+    <string name="settings_whats_new_guidance">უფრო სტაბილური სიარულის მითითებები და უფრო ზუსტი მარშრუტის ინსტრუქციები.</string>
+    <string name="settings_whats_new_search">გაუმჯობესებულია ახლომდებარე ადგილების ძებნა და უფრო მკაფიო მისამართები შედეგებში.</string>
+    <string name="settings_whats_new_accessibility">გაუმჯობესებული ეკრანის წამკითხველი, ენის, მეტყველების და ნავიგაციის ხმის მხარდაჭერა.</string>
+    <string name="settings_whats_new_location">უფრო საიმედო მდებარეობის მართვა და აპლიკაციის საერთო სტაბილურობა.</string>
 </resources>

@@ -464,4 +464,11 @@
     <string name="route_step_continue_default">Fuert weider</string>
     <string name="route_step_cross_named_street">Iwwerquert %1$s.</string>
     <string name="diagnostics_event_route_problem_reported">E Problem mat der Streck gouf gemellt.</string>
+    <string name="settings_whats_new_title">Wat d\'nei</string>
+    <string name="settings_whats_new_version">Aktuell Versioun</string>
+    <string name="settings_whats_new_intro">Déi wichtegst Ännerungen an dëser Versioun vun Navi Live.</string>
+    <string name="settings_whats_new_guidance">Méi stabil Spadséier- Féierung a méi präziist Streck Uweisungen.</string>
+    <string name="settings_whats_new_search">Verbessert Emgéigend Plaz Sich a méi kloer Adressen an Resultater.</string>
+    <string name="settings_whats_new_accessibility">Verbesserte Écran Lieser, Sprooch, Ried an Navigatioun Sound Ënnerstëtzung.</string>
+    <string name="settings_whats_new_location">Méi zouverlässeg Standuert Ëmgank an allgemeng App Stabilitéit.</string>
 </resources>

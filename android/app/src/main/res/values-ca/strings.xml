@@ -472,4 +472,11 @@
     <string name="diagnostics_event_tracking_stopped">S\'ha aturat el seguiment en primer pla.</string>
     <string name="diagnostics_event_navigation_fix">Mostra de GPS desada per al pas %1$d de %2$d.</string>
     <string name="diagnostics_event_default">%1$s</string>
+    <string name="settings_whats_new_title">Novetats</string>
+    <string name="settings_whats_new_version">Versió actual</string>
+    <string name="settings_whats_new_intro">Els canvis més importants d\'aquesta versió del Navi Live.</string>
+    <string name="settings_whats_new_guidance">Guia a peu més estable i instruccions de ruta més precises.</string>
+    <string name="settings_whats_new_search">Cerca de llocs propers millorada i adreces més clares als resultats.</string>
+    <string name="settings_whats_new_accessibility">Lector de pantalla millorat, suport d\'idioma, veu i so de navegació.</string>
+    <string name="settings_whats_new_location">Gestió de la ubicació més fiable i estabilitat general de l\'aplicació.</string>
 </resources>
