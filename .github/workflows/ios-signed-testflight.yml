@@ -348,6 +348,15 @@ jobs:
             exit 1
           fi
 
+      - name: Assign build to TestFlight groups
+        if: ${{ github.event.inputs.upload_to_testflight == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export ASC_API_KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+          python3 scripts/Assign-NaviLive-TestFlight-Build.py \
+            --build-number "$CI_BUILD_NUMBER"
+
       - name: Cleanup keychain and private key
         if: always()
         shell: bash
