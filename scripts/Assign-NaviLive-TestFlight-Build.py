@@ -121,6 +121,31 @@ def assign_group(client: Any, build: dict[str, Any], group: dict[str, Any]) -> N
     print(f"Przypięto build {build['attributes'].get('version')} do grupy {group_name}.")
 
 
+def publish_what_to_test(
+    module: Any,
+    client: Any,
+    build: dict[str, Any],
+    source_path: Path,
+) -> None:
+    if not source_path.is_file():
+        raise RuntimeError(f"Nie znaleziono pliku Co testować: {source_path}")
+    what_to_test = module.load_sectioned_text(source_path)
+    module.validate_what_to_test_lengths(what_to_test)
+    localizations = module.get_beta_build_localizations(client, build["id"])
+    for locale in ("pl", "en-US"):
+        text = what_to_test.get(locale)
+        if not text:
+            raise RuntimeError(f"Brak sekcji {locale} w pliku Co testować.")
+        module.upsert_beta_build_localization(
+            client=client,
+            build_id=build["id"],
+            existing=localizations,
+            locale=locale,
+            whats_new=text,
+        )
+        print(f"Opublikowano Co testować dla języka {locale}.")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Przypina przetworzony build Navi Live do grup TestFlight."
@@ -128,6 +153,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--build-number", required=True)
     parser.add_argument("--internal-group-name", default="Internal Testing")
     parser.add_argument("--external-group-name", default="External Testing")
+    parser.add_argument(
+        "--what-to-test-file",
+        type=Path,
+        default=Path(__file__).resolve().parents[1]
+        / "native-ios"
+        / "AppStoreConnect"
+        / "TestFlight-what-to-test.txt",
+    )
     parser.add_argument("--timeout-seconds", type=int, default=900)
     parser.add_argument("--poll-seconds", type=int, default=20)
     return parser.parse_args()
@@ -163,16 +196,25 @@ def main() -> int:
     ).get("data", [])
     internal_group = find_group(groups, args.internal_group_name, internal=True)
     external_group = find_group(groups, args.external_group_name, internal=False)
+    what_to_test = module.load_sectioned_text(args.what_to_test_file)
+    module.validate_what_to_test_lengths(what_to_test)
 
     for group in (internal_group, external_group):
         assign_group(client, build, group)
         build = get_build_details(client, build["id"])
 
+    publish_what_to_test(
+        module=module,
+        client=client,
+        build=build,
+        source_path=args.what_to_test_file,
+    )
+
     final_group_ids = build_group_ids(build)
     expected_group_ids = {internal_group["id"], external_group["id"]}
     if not expected_group_ids.issubset(final_group_ids):
         raise RuntimeError("Nie udało się potwierdzić przypięcia buildu do obu grup TestFlight.")
-    print("Build jest przypięty do grupy wewnętrznej i zewnętrznej.")
+    print("Build jest przypięty do obu grup i ma opublikowane Co testować.")
     return 0
 
 
