@@ -56,6 +56,7 @@ TRANSLATION_ARTIFACT = re.compile(r"99177|99222|7079|9919")
 STRINGS_LINE = re.compile(
     r'^\s*"(?P<key>(?:\\.|[^"\\])*)"\s*=\s*"(?P<value>(?:\\.|[^"\\])*)";\s*$',
 )
+PLACEHOLDER = re.compile(r'%(?:\d+\$)?[sd@ifu]|%%')
 ANDROID_FALLBACK_PREFIXES = ("assistant_", "format_assistant_")
 IOS_FALLBACK_PREFIXES = ("assistant.",)
 RETIRED_IOS_KEYS = frozenset(
@@ -159,6 +160,11 @@ def validate_fallback_value(
 ) -> None:
     """Wykrywa wartości skopiowane z angielskiego w ważnych komunikatach."""
     if locale == "en" or not key.startswith(prefixes):
+        return
+    # Szablon zawierający wyłącznie placeholdery i interpunkcję jest wspólny
+    # dla języków i nie wymaga tłumaczenia.
+    translatable_part = PLACEHOLDER.sub("", base_value)
+    if not any(character.isalpha() for character in translatable_part):
         return
     if base_value.strip() and localized_value.strip() == base_value.strip():
         location = f"{platform} {locale}"
