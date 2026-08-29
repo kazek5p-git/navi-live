@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -54,6 +55,22 @@ IOS_PLACEHOLDER = re.compile(r"%(?:\d+\$)?[@dfisu]|%%")
 TRANSLATION_ARTIFACT = re.compile(r"99177|99222|7079|9919")
 STRINGS_LINE = re.compile(
     r'^\s*"(?P<key>(?:\\.|[^"\\])*)"\s*=\s*"(?P<value>(?:\\.|[^"\\])*)";\s*$',
+)
+ANDROID_FALLBACK_PREFIXES = ("assistant_", "format_assistant_")
+IOS_FALLBACK_PREFIXES = ("assistant.",)
+RETIRED_IOS_KEYS = frozenset(
+    {
+        "root.placeholder.onboarding",
+        "root.placeholder.home",
+        "root.placeholder.settings",
+        "navigation.placeholder.heading_title",
+        "navigation.placeholder.heading_message",
+        "navigation.placeholder.active_title",
+        "navigation.placeholder.active_message",
+        "navigation.placeholder.arrival_title",
+        "navigation.placeholder.arrival_message",
+        "navigation.placeholder.destination",
+    },
 )
 
 
@@ -130,7 +147,27 @@ def validate_artifacts(
     errors.append(f"{location} contains translation artifact {key}: {value}")
 
 
-def validate_android(repo: Path, errors: list[str]) -> None:
+def validate_fallback_value(
+    platform: str,
+    locale: str,
+    key: str,
+    base_value: str,
+    localized_value: str,
+    prefixes: tuple[str, ...],
+    warnings: list[str],
+    file_name: str | None = None,
+) -> None:
+    """Wykrywa wartości skopiowane z angielskiego w ważnych komunikatach."""
+    if locale == "en" or not key.startswith(prefixes):
+        return
+    if base_value.strip() and localized_value.strip() == base_value.strip():
+        location = f"{platform} {locale}"
+        if file_name:
+            location += f"/{file_name}"
+        warnings.append(f"{location} uses English fallback for {key}")
+
+
+def validate_android(repo: Path, errors: list[str], warnings: list[str]) -> None:
     res_dir = repo / "android" / "app" / "src" / "main" / "res"
     locale_config = (res_dir / "xml" / "locales_config.xml").read_text(encoding="utf-8")
 
@@ -173,6 +210,15 @@ def validate_android(repo: Path, errors: list[str]) -> None:
             validate_artifacts("Android", locale, key, value, errors)
             if key not in base_keys:
                 continue
+            validate_fallback_value(
+                "Android",
+                locale,
+                key,
+                base_values[key],
+                value,
+                ANDROID_FALLBACK_PREFIXES,
+                warnings,
+            )
             compare_placeholders(
                 "Android",
                 locale,
@@ -184,7 +230,7 @@ def validate_android(repo: Path, errors: list[str]) -> None:
             )
 
 
-def validate_ios(repo: Path, errors: list[str]) -> None:
+def validate_ios(repo: Path, errors: list[str], warnings: list[str]) -> None:
     resources_dir = repo / "native-ios" / "NaviLive" / "Resources"
     base_dir = resources_dir / "en.lproj"
     base_files = sorted(base_dir.glob("*.strings"))
@@ -203,6 +249,16 @@ def validate_ios(repo: Path, errors: list[str]) -> None:
 
             base_values = ios_strings(base_file)
             localized_values = ios_strings(localized_file)
+            retired_in_base = sorted(set(base_values) & RETIRED_IOS_KEYS)
+            retired_in_locale = sorted(set(localized_values) & RETIRED_IOS_KEYS)
+            if retired_in_base:
+                errors.append(
+                    f"iOS en/{base_file.name} contains retired keys: {retired_in_base}",
+                )
+            if retired_in_locale:
+                errors.append(
+                    f"iOS {locale}/{base_file.name} contains retired keys: {retired_in_locale}",
+                )
             missing = sorted(set(base_values) - set(localized_values))
             extra = sorted(set(localized_values) - set(base_values))
             if missing:
@@ -223,6 +279,16 @@ def validate_ios(repo: Path, errors: list[str]) -> None:
                     errors,
                     file_name=base_file.name,
                 )
+                validate_fallback_value(
+                    "iOS",
+                    locale,
+                    key,
+                    base_values[key],
+                    localized_values[key],
+                    IOS_FALLBACK_PREFIXES,
+                    warnings,
+                    file_name=base_file.name,
+                )
                 compare_placeholders(
                     "iOS",
                     locale,
@@ -236,10 +302,29 @@ def validate_ios(repo: Path, errors: list[str]) -> None:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Sprawdza kompletność i spójność lokalizacji Navi Live.",
+    )
+    parser.add_argument(
+        "--strict-fallbacks",
+        action="store_true",
+        help="traktuje angielskie fallbacki w komunikatach asystenta jako błędy",
+    )
+    args = parser.parse_args()
     repo = Path(__file__).resolve().parents[1]
     errors: list[str] = []
-    validate_android(repo, errors)
-    validate_ios(repo, errors)
+    warnings: list[str] = []
+    validate_android(repo, errors, warnings)
+    validate_ios(repo, errors, warnings)
+
+    if warnings:
+        print(f"OSTRZEŻENIA_FALLBACK={len(warnings)}")
+        for warning in warnings[:20]:
+            print(warning)
+        if len(warnings) > 20:
+            print(f"... pominięto {len(warnings) - 20} kolejnych ostrzeżeń; użyj --strict-fallbacks, aby wyświetlić pełną listę.")
+        if args.strict_fallbacks:
+            errors.extend(warnings)
 
     if errors:
         print("\n".join(errors))

@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Онбординг";
 "root.link.home" = "Головна";
 "root.link.settings" = "Налаштування";
-"root.placeholder.onboarding" = "Потік адаптації буде реалізовано на наступному етапі.";
-"root.placeholder.home" = "Головний екран для пішохідної навігації буде реалізовано на наступному етапі.";
-"root.placeholder.settings" = "Параметри, конфіденційність і доступність будуть реалізовані на наступному етапі.";
 "root.bootstrapping" = "Підготовка Navi Live до першого запуску.";

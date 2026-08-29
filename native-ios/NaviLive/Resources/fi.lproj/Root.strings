@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Käyttöönotto";
 "root.link.home" = "Etusivu";
 "root.link.settings" = "Asetukset";
-"root.placeholder.onboarding" = "Käyttöönottoprosessi toteutetaan seuraavassa vaiheessa.";
-"root.placeholder.home" = "Kävelynavigoinnin aloitusnäyttö otetaan käyttöön seuraavassa vaiheessa.";
-"root.placeholder.settings" = "Asetukset, yksityisyyden ja esteettömyyssäädöt otetaan käyttöön seuraavassa vaiheessa.";
 "root.bootstrapping" = "Valmistellaan Navi Live ensimmäistä käynnistystä varten.";

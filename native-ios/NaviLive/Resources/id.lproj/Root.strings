@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Orientasi";
 "root.link.home" = "Beranda";
 "root.link.settings" = "Pengaturan";
-"root.placeholder.onboarding" = "Alur orientasi akan diterapkan pada tahap berikutnya.";
-"root.placeholder.home" = "Layar beranda untuk navigasi berjalan kaki akan diimplementasikan pada tahap berikutnya.";
-"root.placeholder.settings" = "Pengaturan, privasi, dan kontrol aksesibilitas akan diterapkan pada tahap berikutnya.";
 "root.bootstrapping" = "Mempersiapkan Navi Live untuk peluncuran pertama.";

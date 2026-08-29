@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Onboarding";
 "root.link.home" = "Home";
 "root.link.settings" = "Settings";
-"root.placeholder.onboarding" = "Onboarding flow will be implemented in the next stage.";
-"root.placeholder.home" = "The home screen for walking navigation will be implemented in the next stage.";
-"root.placeholder.settings" = "Settings, privacy and accessibility controls will be implemented in the next stage.";
 "root.bootstrapping" = "Preparing Navi Live for the first launch.";

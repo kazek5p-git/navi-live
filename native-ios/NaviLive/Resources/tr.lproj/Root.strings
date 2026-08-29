@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Ekleme";
 "root.link.home" = "Ana Sayfa";
 "root.link.settings" = "Ayarlar";
-"root.placeholder.onboarding" = "Ekleme akışı bir sonraki aşamada uygulanacaktır.";
-"root.placeholder.home" = "Yaya navigasyonunun ana ekranı bir sonraki aşamada uygulanacaktır.";
-"root.placeholder.settings" = "Ayarlar, gizlilik ve erişilebilirlik kontrolleri bir sonraki aşamada uygulanacaktır.";
 "root.bootstrapping" = "Navi Live ilk fırlatma için hazırlanıyor.";

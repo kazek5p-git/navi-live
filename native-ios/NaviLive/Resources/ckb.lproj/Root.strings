@@ -6,7 +6,4 @@
 "root.link.onboarding" = "ئۆنبۆردکردن";
 "root.link.home" = "ماڵەوە";
 "root.link.settings" = "ڕێکخستنەکان";
-"root.placeholder.onboarding" = "ڕەوتی ئۆنبۆردکردن لە قۆناغی داهاتوودا جێبەجێ دەکرێت.";
-"root.placeholder.home" = "شاشەی سەرەکی بۆ گەشتکردن بە پێ لە قۆناغی داهاتوودا جێبەجێ دەکرێت.";
-"root.placeholder.settings" = "ڕێکخستنەکان، نهێنی و کۆنترۆڵەکانی دەستڕاگەیشتن لە قۆناغی داهاتوودا جێبەجێ دەکرێن.";
 "root.bootstrapping" = "ئامادەکاری Navi Live بۆ یەکەم هەڵدانی.";

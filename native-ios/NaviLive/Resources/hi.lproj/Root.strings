@@ -6,7 +6,4 @@
 "root.link.onboarding" = "ऑनबोर्डिंग";
 "root.link.home" = "होम";
 "root.link.settings" = "सेटिंग्स";
-"root.placeholder.onboarding" = "ऑनबोर्डिंग प्रवाह अगले चरण में लागू किया जाएगा।";
-"root.placeholder.home" = "वॉकिंग नेविगेशन के लिए होम स्क्रीन अगले चरण में लागू की जाएगी।";
-"root.placeholder.settings" = "सेटिंग्स, गोपनीयता और पहुंच नियंत्रण अगले चरण में लागू किए जाएंगे।";
 "root.bootstrapping" = "Navi Live को पहले लॉन्च के लिए तैयार किया जा रहा है।";

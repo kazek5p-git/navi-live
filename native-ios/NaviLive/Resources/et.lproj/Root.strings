@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Sisselülitamine";
 "root.link.home" = "Avaleht";
 "root.link.settings" = "Seaded";
-"root.placeholder.onboarding" = "Sisselülitamise voog rakendatakse järgmises etapis.";
-"root.placeholder.home" = "Järgmises etapis rakendatakse jalgsi navigeerimise avakuva.";
-"root.placeholder.settings" = "Seaded, privaatsus ja juurdepääsetavuse juhtelemendid rakendatakse järgmises etapis.";
 "root.bootstrapping" = "Navi Live ettevalmistamine esmaseks käivitamiseks.";

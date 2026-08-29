@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Ενσωμάτωση";
 "root.link.home" = "Αρχική σελίδα";
 "root.link.settings" = "Ρυθμίσεις";
-"root.placeholder.onboarding" = "Η ροή ενσωμάτωσης θα εφαρμοστεί στο επόμενο στάδιο.";
-"root.placeholder.home" = "Η αρχική οθόνη για πλοήγηση με τα πόδια θα υλοποιηθεί στο επόμενο στάδιο.";
-"root.placeholder.settings" = "Οι ρυθμίσεις, το απόρρητο και οι έλεγχοι προσβασιμότητας θα εφαρμοστούν στο επόμενο στάδιο.";
 "root.bootstrapping" = "Προετοιμασία Navi Live για την πρώτη κυκλοφορία.";

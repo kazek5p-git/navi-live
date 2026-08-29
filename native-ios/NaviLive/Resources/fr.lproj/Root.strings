@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Intégration";
 "root.link.home" = "Accueil";
 "root.link.settings" = "Paramètres";
-"root.placeholder.onboarding" = "Le flux d'intégration sera implémenté à l'étape suivante.";
-"root.placeholder.home" = "L'écran d'accueil pour la navigation à pied sera implémenté lors de la prochaine étape.";
-"root.placeholder.settings" = "Les contrôles de paramètres, de confidentialité et d'accessibilité seront mis en œuvre lors de la prochaine étape.";
 "root.bootstrapping" = "Préparation du Navi Live pour le premier lancement.";

@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Giới thiệu";
 "root.link.home" = "Trang chủ";
 "root.link.settings" = "Cài đặt";
-"root.placeholder.onboarding" = "Quy trình giới thiệu sẽ được triển khai trong giai đoạn tiếp theo.";
-"root.placeholder.home" = "Màn hình chính cho điều hướng đi bộ sẽ được triển khai trong giai đoạn tiếp theo.";
-"root.placeholder.settings" = "Cài đặt, kiểm soát quyền riêng tư và khả năng truy cập sẽ được triển khai trong giai đoạn tiếp theo.";
 "root.bootstrapping" = "Đang chuẩn bị Navi Live cho lần ra mắt đầu tiên.";

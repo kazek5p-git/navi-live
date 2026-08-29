@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Onboarding";
 "root.link.home" = "Početna";
 "root.link.settings" = "Postavke";
-"root.placeholder.onboarding" = "Tok integracije bit će implementiran u sljedećoj fazi.";
-"root.placeholder.home" = "Početni zaslon za pješačku navigaciju implementirat će se u sljedećoj fazi.";
-"root.placeholder.settings" = "Kontrole postavki, privatnosti i pristupačnosti bit će implementirane u sljedećoj fazi.";
 "root.bootstrapping" = "Priprema Navi Live za prvo lansiranje.";

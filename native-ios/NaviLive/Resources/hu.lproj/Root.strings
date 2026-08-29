@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Bevezetés";
 "root.link.home" = "Kezdőlap";
 "root.link.settings" = "Beállítások";
-"root.placeholder.onboarding" = "A bevezető folyamat a következő szakaszban kerül megvalósításra.";
-"root.placeholder.home" = "A gyalogos navigáció kezdőképernyője a következő szakaszban kerül megvalósításra.";
-"root.placeholder.settings" = "A beállításokat, az adatvédelmi és a kisegítő lehetőségeket a következő szakaszban hajtják végre.";
 "root.bootstrapping" = "Navi Live előkészítése az első indításra.";

@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Samouczek";
 "root.link.home" = "Start";
 "root.link.settings" = "Ustawienia";
-"root.placeholder.onboarding" = "Przepływ samouczka zostanie zaimplementowany w następnym etapie.";
-"root.placeholder.home" = "Ekran startowy nawigacji pieszej zostanie zaimplementowany w następnym etapie.";
-"root.placeholder.settings" = "Ustawienia, prywatność i kontrolki dostępności zostaną zaimplementowane w następnym etapie.";
 "root.bootstrapping" = "Przygotowywanie Navi Live do pierwszego uruchomienia.";

@@ -6,7 +6,4 @@
 "root.link.onboarding" = "入职流程";
 "root.link.home" = "首页";
 "root.link.settings" = "设置";
-"root.placeholder.onboarding" = "入职流程将在下一阶段实施。";
-"root.placeholder.home" = "下一阶段将实现步行导航主屏。";
-"root.placeholder.settings" = "设置、隐私和可访问性控制将在下一阶段实施。";
 "root.bootstrapping" = "正在准备 Navi Live 的首次发布。";

@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Ieslēgšanās";
 "root.link.home" = "Sākums";
 "root.link.settings" = "Iestatījumi";
-"root.placeholder.onboarding" = "Ieslēgšanās plūsma tiks ieviesta nākamajā posmā.";
-"root.placeholder.home" = "Nākamajā posmā tiks ieviests sākuma ekrāns navigācijai kājām.";
-"root.placeholder.settings" = "Iestatījumi, konfidencialitātes un pieejamības vadīklas tiks ieviestas nākamajā posmā.";
 "root.bootstrapping" = "Navi Live sagatavošana pirmajai palaišanai.";

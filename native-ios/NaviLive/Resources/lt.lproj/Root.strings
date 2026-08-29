@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Prisijungimas";
 "root.link.home" = "Pagrindinis";
 "root.link.settings" = "Nustatymai";
-"root.placeholder.onboarding" = "Priėmimo srautas bus įgyvendintas kitame etape.";
-"root.placeholder.home" = "Pradinis navigacijos pėsčiomis ekranas bus įdiegtas kitame etape.";
-"root.placeholder.settings" = "Nustatymai, privatumo ir pritaikymo neįgaliesiems valdikliai bus įdiegti kitame etape.";
 "root.bootstrapping" = "Navi Live paruošimas pirmajam paleidimui.";

@@ -157,6 +157,7 @@ def translate_texts(texts: list[str], target_locale: str) -> list[str]:
 
 def xml_escape(text: str) -> str:
     text = re.sub(r"\\+'", "'", text)
+    # AAPT interpretuje apostrof jako znak składniowy zasobu tekstowego.
     return html.escape(text, quote=False).replace("'", "\\'")
 
 
@@ -230,6 +231,11 @@ def parse_args() -> argparse.Namespace:
         help="Regenerate locale files from the base strings even when translations already exist.",
     )
     parser.add_argument(
+        "--translate-fallbacks",
+        action="store_true",
+        help="Tłumaczy tylko wartości asystenta, które nadal są dokładnym angielskim fallbackiem.",
+    )
+    parser.add_argument(
         "--exclude-locales",
         nargs="*",
         default=[],
@@ -259,9 +265,17 @@ def main() -> None:
             continue
 
         existing = read_existing_locale(locale)
-        items_to_translate = base_items if args.rewrite_existing else [
-            item for item in base_items if item["name"] not in existing
-        ]
+        if args.rewrite_existing:
+            items_to_translate = base_items
+        else:
+            items_to_translate = [
+                item for item in base_items
+                if item["name"] not in existing or (
+                    args.translate_fallbacks
+                    and item["name"].startswith(("assistant_", "format_assistant_"))
+                    and existing[item["name"]].strip() == item["text"].strip()
+                )
+            ]
         if not items_to_translate:
             print(f"skip {locale}", flush=True)
             continue

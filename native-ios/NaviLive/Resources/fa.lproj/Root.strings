@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Onboarding";
 "root.link.home" = "Home";
 "root.link.settings" = "تنظیمات";
-"root.placeholder.onboarding" = "جریان Onboarding در مرحله بعد اجرا می شود.";
-"root.placeholder.home" = "صفحه اصلی برای پیمایش پیاده روی در مرحله بعد اجرا می شود.";
-"root.placeholder.settings" = "تنظیمات، حریم خصوصی و کنترل های دسترسی در مرحله بعد اجرا می شود.";
 "root.bootstrapping" = "آماده سازی Navi Live برای اولین پرتاب.";

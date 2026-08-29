@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Onboarding";
 "root.link.home" = "Startseite";
 "root.link.settings" = "Einstellungen";
-"root.placeholder.onboarding" = "Der Onboarding-Ablauf wird in der nächsten Phase implementiert.";
-"root.placeholder.home" = "Der Startbildschirm für die Gehnavigation wird im nächsten Schritt implementiert.";
-"root.placeholder.settings" = "Einstellungen, Datenschutz und Zugänglichkeitskontrollen werden in der nächsten Phase implementiert.";
 "root.bootstrapping" = "Vorbereitung Navi Live für den ersten Start.";

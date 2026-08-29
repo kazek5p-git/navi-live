@@ -241,6 +241,11 @@ def parse_args() -> argparse.Namespace:
         help="Regenerate target .strings files even when translations already exist.",
     )
     parser.add_argument(
+        "--translate-fallbacks",
+        action="store_true",
+        help="Tłumaczy tylko wartości asystenta, które nadal są dokładnym angielskim fallbackiem.",
+    )
+    parser.add_argument(
         "--exclude-locales",
         nargs="*",
         default=[],
@@ -280,11 +285,17 @@ def main() -> None:
             base_entries = read_strings_file(base_file)
             target_file = target_dir / base_file.name
             existing = read_existing_strings(target_file)
-            entries_to_translate = (
-                base_entries
-                if args.rewrite_existing
-                else [entry for entry in base_entries if entry["key"] not in existing]
-            )
+            if args.rewrite_existing:
+                entries_to_translate = base_entries
+            else:
+                entries_to_translate = [
+                    entry for entry in base_entries
+                    if entry["key"] not in existing or (
+                        args.translate_fallbacks
+                        and entry["key"].startswith("assistant.")
+                        and existing[entry["key"]].strip() == entry["value"].strip()
+                    )
+                ]
             if not entries_to_translate:
                 continue
 

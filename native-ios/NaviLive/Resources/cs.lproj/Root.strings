@@ -6,7 +6,4 @@
 "root.link.onboarding" = "Onboarding";
 "root.link.home" = "Home";
 "root.link.settings" = "Nastavení";
-"root.placeholder.onboarding" = "Onboarding flow bude implementován v další fázi.";
-"root.placeholder.home" = "V další fázi bude implementována domovská obrazovka pro pěší navigaci.";
-"root.placeholder.settings" = "Nastavení, ochrana osobních údajů a ovládací prvky usnadnění budou implementovány v další fázi.";
 "root.bootstrapping" = "Příprava Navi Live na první spuštění.";
