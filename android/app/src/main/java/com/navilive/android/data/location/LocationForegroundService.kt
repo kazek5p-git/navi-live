@@ -101,6 +101,14 @@ class LocationForegroundService : Service() {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
                 val latest = result.lastLocation ?: return
+                if (
+                    !latest.latitude.isFinite() ||
+                    !latest.longitude.isFinite() ||
+                    !latest.accuracy.isFinite() ||
+                    latest.accuracy < 0f
+                ) {
+                    return
+                }
                 LocationTrackerStore.pushFix(
                     LocationFix(
                         point = GeoPoint(
@@ -109,6 +117,16 @@ class LocationForegroundService : Service() {
                         ),
                         accuracyMeters = latest.accuracy,
                         timestampMs = latest.time,
+                        courseDegrees = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && latest.hasBearing()) {
+                            latest.bearing.takeIf { it.isFinite() }?.toDouble()
+                        } else {
+                            null
+                        },
+                        speedMetersPerSecond = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && latest.hasSpeed()) {
+                            latest.speed.takeIf { it.isFinite() }?.toDouble()
+                        } else {
+                            null
+                        },
                     ),
                 )
                 maybeUseRadioLocation(latest.accuracy)

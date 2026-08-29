@@ -67,6 +67,8 @@ data class LocationFix(
     val point: GeoPoint,
     val accuracyMeters: Float,
     val timestampMs: Long,
+    val courseDegrees: Double? = null,
+    val speedMetersPerSecond: Double? = null,
 )
 
 data class LocationUiState(

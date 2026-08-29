@@ -4,6 +4,12 @@ import com.navilive.android.model.SharedProductRules
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
+internal data class HeadingAlignment(
+    val signedDeltaDegrees: Double,
+    val isAligned: Boolean,
+    val isAlmostAligned: Boolean,
+)
+
 internal object NavigationScenarioCore {
 
     fun maneuverAdvanceThresholdMeters(accuracyMeters: Float): Double {
@@ -48,6 +54,25 @@ internal object NavigationScenarioCore {
 
     fun maneuverPassThresholdMeters(accuracyMeters: Float): Double {
         return accuracyMeters.coerceIn(5f, 12f).toDouble()
+    }
+
+    fun arrivalThresholdMeters(accuracyMeters: Float): Double {
+        return accuracyMeters.coerceIn(
+            SharedProductRules.Navigation.arrivalAccuracyMinMeters,
+            SharedProductRules.Navigation.arrivalAccuracyMaxMeters,
+        ).toDouble() * SharedProductRules.Navigation.arrivalAccuracyMultiplier
+    }
+
+    fun shouldMarkArrived(
+        distanceToDestinationMeters: Double?,
+        remainingRouteMeters: Double?,
+        accuracyMeters: Float,
+    ): Boolean {
+        val nearestDistance = listOfNotNull(distanceToDestinationMeters, remainingRouteMeters)
+            .filter { it.isFinite() && it >= 0.0 }
+            .minOrNull()
+            ?: return false
+        return nearestDistance <= arrivalThresholdMeters(accuracyMeters)
     }
 
     fun hasPassedManeuverPoint(
@@ -104,5 +129,31 @@ internal object NavigationScenarioCore {
     ): Boolean {
         return !isRouteRecalculating &&
             elapsedSinceLastRecalculateMs >= SharedProductRules.Navigation.autoRecalculateCooldownMs
+    }
+
+    fun isFreshLocation(
+        timestampMs: Long?,
+        nowMs: Long,
+        maximumAgeMs: Long = SharedProductRules.Navigation.assistantFreshLocationMaxAgeMs,
+    ): Boolean {
+        val timestamp = timestampMs ?: return false
+        if (timestamp <= 0L) return false
+        val ageMs = nowMs - timestamp
+        return ageMs in -5_000L..maximumAgeMs
+    }
+
+    /** Oblicza najkrótszą korektę obrotu telefonu względem kierunku trasy. */
+    fun headingAlignment(
+        currentHeadingDegrees: Double,
+        routeBearingDegrees: Double,
+    ): HeadingAlignment? {
+        if (!currentHeadingDegrees.isFinite() || !routeBearingDegrees.isFinite()) return null
+        val signedDelta = ((routeBearingDegrees - currentHeadingDegrees + 540.0) % 360.0) - 180.0
+        val absoluteDelta = kotlin.math.abs(signedDelta)
+        return HeadingAlignment(
+            signedDeltaDegrees = signedDelta,
+            isAligned = absoluteDelta <= 15.0,
+            isAlmostAligned = absoluteDelta <= 35.0,
+        )
     }
 }

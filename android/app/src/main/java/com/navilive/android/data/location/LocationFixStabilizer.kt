@@ -19,8 +19,8 @@ internal class LocationFixStabilizer {
     }
 
     fun stabilize(rawFix: LocationFix): LocationFix? {
-        if (!rawFix.accuracyMeters.isFinite()) return null
-        val normalizedFix = rawFix.copy(accuracyMeters = rawFix.accuracyMeters.coerceAtLeast(0f))
+        if (!rawFix.accuracyMeters.isFinite() || rawFix.accuracyMeters < 0f) return null
+        val normalizedFix = rawFix
         val previous = stableFix
         if (previous == null) {
             stableFix = normalizedFix
@@ -70,6 +70,8 @@ internal class LocationFixStabilizer {
         val held = previous.copy(
             accuracyMeters = incoming.accuracyMeters,
             timestampMs = incoming.timestampMs,
+            courseDegrees = incoming.courseDegrees ?: previous.courseDegrees,
+            speedMetersPerSecond = incoming.speedMetersPerSecond ?: previous.speedMetersPerSecond,
         )
         stableFix = held
         return held
@@ -98,6 +100,8 @@ internal class LocationFixStabilizer {
                 latitude = previous.point.latitude + (incoming.point.latitude - previous.point.latitude) * alpha,
                 longitude = previous.point.longitude + (incoming.point.longitude - previous.point.longitude) * alpha,
             ),
+            courseDegrees = incoming.courseDegrees ?: previous.courseDegrees,
+            speedMetersPerSecond = incoming.speedMetersPerSecond ?: previous.speedMetersPerSecond,
         )
     }
 

@@ -11,6 +11,7 @@ import com.navilive.android.model.RouteStep
 import com.navilive.android.model.RouteSummary
 import com.navilive.android.model.SharedProductRules
 import com.navilive.android.ui.NavigationScenarioCore
+import com.navilive.android.ui.RouteProjectionCore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -21,7 +22,6 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
-import java.text.Normalizer
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.asin
@@ -605,7 +605,7 @@ class OpenStreetRoutingRepository(
         }.let(::deduplicateRouteAlerts)
         if (alerts.isEmpty()) return steps
 
-        val stepDistances = stepDistancesAlongRoute(steps, pathPoints, routeLengthMeters)
+        val stepDistances = stepDistancesAlongRoute(steps, pathPoints)
         val augmented = mutableListOf<RouteStep>()
         var alertIndex = 0
         var lastAlongMeters = stepDistances.firstOrNull() ?: 0.0
@@ -657,6 +657,30 @@ class OpenStreetRoutingRepository(
             }
             augmented += steps[stepIndex]
             lastAlongMeters = maxOf(lastAlongMeters, stepAlongMeters)
+        }
+
+        // Nie gub alertów, gdy ostatni krok routera nie ma punktu manewru
+        // albo kończy się przed końcowym fragmentem geometrii.
+        while (alertIndex < alerts.size) {
+            val alert = alerts[alertIndex]
+            val previousStep = augmented.lastOrNull { it.kind == RouteStepKind.Instruction }
+            val distanceFromPreviousRaw = alert.distanceAlongRouteMeters - lastAlongMeters
+            val alertRoad = normalizedRouteRoadName(alert.roadName)
+            val shouldSuppress = distanceFromPreviousRaw < CROSSING_DUPLICATE_PROXIMITY_METERS ||
+                (alert.isNamedStreetCrossing() && alertRoad != null &&
+                    normalizedRouteRoadName(previousStep?.roadName) == alertRoad)
+            if (!shouldSuppress && distanceFromPreviousRaw > 0.0) {
+                augmented += RouteStep(
+                    instruction = alert.instruction,
+                    distanceMeters = distanceFromPreviousRaw.roundToInt().coerceAtLeast(1),
+                    maneuverPoint = alert.point,
+                    kind = alert.kind,
+                    maneuverType = alert.maneuverType,
+                    roadName = alert.roadName,
+                )
+            }
+            lastAlongMeters = maxOf(lastAlongMeters, alert.distanceAlongRouteMeters)
+            alertIndex += 1
         }
         return augmented
     }
@@ -1020,19 +1044,8 @@ class OpenStreetRoutingRepository(
     private fun stepDistancesAlongRoute(
         steps: List<RouteStep>,
         pathPoints: List<GeoPoint>,
-        routeLengthMeters: Double,
     ): List<Double> {
-        val distances = mutableListOf<Double>()
-        var previous = 0.0
-        for ((index, step) in steps.withIndex()) {
-            val raw = step.maneuverPoint
-                ?.let { projectOntoRoute(pathPoints, it)?.distanceAlongRouteMeters }
-                ?: if (index == 0) 0.0 else routeLengthMeters
-            val normalized = raw.coerceIn(0.0, routeLengthMeters).coerceAtLeast(previous)
-            distances += normalized
-            previous = normalized
-        }
-        return distances
+        return RouteProjectionCore.stepDistancesAlongRoute(steps, pathPoints)
     }
 
     private fun routeBoundingBox(pathPoints: List<GeoPoint>, paddingMeters: Double): RouteBoundingBox {
@@ -2499,11 +2512,7 @@ class OpenStreetRoutingRepository(
     }
 
     private fun normalizeForSearch(text: String): String {
-        val normalized = Normalizer.normalize(text.lowercase(Locale.getDefault()), Normalizer.Form.NFD)
-        return normalized
-            .replace("\\p{Mn}+".toRegex(), "")
-            .replace("[^\\p{Alnum}]+".toRegex(), " ")
-            .trim()
+        return SearchTextCore.normalize(text)
     }
 
     private fun string(@StringRes resId: Int, vararg args: Any): String = appContext.getString(resId, *args)

@@ -17,6 +17,7 @@ object Routes {
     const val RouteSummaryPattern = "route_summary/{placeId}"
     const val HeadingAlignPattern = "heading_align/{placeId}"
     const val ActiveNavigationPattern = "active_navigation/{placeId}"
+    const val RouteAssistantPattern = "route_assistant/{placeId}"
     const val ArrivalPattern = "arrival/{placeId}"
 
     fun tutorial(entryMode: String): String = "tutorial/$entryMode"
@@ -24,5 +25,6 @@ object Routes {
     fun routeSummary(placeId: String): String = "route_summary/$placeId"
     fun headingAlign(placeId: String): String = "heading_align/$placeId"
     fun activeNavigation(placeId: String): String = "active_navigation/$placeId"
+    fun routeAssistant(placeId: String): String = "route_assistant/$placeId"
     fun arrival(placeId: String): String = "arrival/$placeId"
 }

@@ -31,12 +31,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.collect
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.navilive.android.R
+import com.navilive.android.data.location.HeadingTracker
 import com.navilive.android.data.location.LocationForegroundService
 import com.navilive.android.model.AppUpdatePhase
 import com.navilive.android.model.ShakeStrength
@@ -55,6 +57,7 @@ import com.navilive.android.ui.screens.OnboardingScreen
 import com.navilive.android.ui.screens.PermissionsScreen
 import com.navilive.android.ui.screens.PlaceDetailsScreen
 import com.navilive.android.ui.screens.RouteSummaryScreen
+import com.navilive.android.ui.screens.RouteAssistantScreen
 import com.navilive.android.ui.screens.SearchScreen
 import com.navilive.android.ui.screens.SettingsScreen
 import com.navilive.android.ui.screens.StartScreen
@@ -73,6 +76,31 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val headingTracker = remember(context) { HeadingTracker(context) }
+
+    DisposableEffect(headingTracker, lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> headingTracker.start()
+                Lifecycle.Event.ON_STOP -> headingTracker.stop()
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            headingTracker.start()
+        }
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            headingTracker.stop()
+        }
+    }
+
+    LaunchedEffect(headingTracker) {
+        headingTracker.headingDegrees.collect { degrees ->
+            viewModel.updateHeading(degrees)
+        }
+    }
 
     var hasLocationPermission by remember {
         mutableStateOf(checkLocationPermission(context))
@@ -403,15 +431,16 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
                     isFavorite = place.id in uiState.value.favoriteIds,
                     isLoadingRoute = uiState.value.isLoadingRoute,
                     onSaveFavorite = { viewModel.toggleFavorite(place.id) },
+                    onOpenAssistant = { navController.navigate(Routes.routeAssistant(place.id)) },
                     onStartRoute = {
-                        if (viewModel.beginPreparedRoute(place.id)) {
-                            navController.navigate(Routes.activeNavigation(place.id))
+                        if (viewModel.hasPreparedRoute(place.id)) {
+                            navController.navigate(Routes.headingAlign(place.id))
                         } else {
                             viewModel.startRoute(
                                 placeId = place.id,
-                                autoStartNavigation = true,
+                                autoStartNavigation = false,
                             ) {
-                                navController.navigate(Routes.activeNavigation(place.id))
+                                navController.navigate(Routes.headingAlign(place.id))
                             }
                         }
                     },
@@ -463,6 +492,7 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
                     accuracyMeters = uiState.value.locationState.latestFix?.accuracyMeters,
                     onPauseResume = viewModel::togglePauseNavigation,
                     onRepeatInstruction = viewModel::repeatCurrentInstruction,
+                    onOpenAssistant = { navController.navigate(Routes.routeAssistant(place.id)) },
                     onRecalculate = viewModel::recalculateRoute,
                     onReportProblem = viewModel::reportRouteProblem,
                     onArrived = {
@@ -473,6 +503,23 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
                         viewModel.stopNavigation()
                         navController.popBackStack(Routes.Start, false)
                     },
+                )
+            }
+        }
+
+        composable(
+            route = Routes.RouteAssistantPattern,
+            arguments = listOf(navArgument("placeId") { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val placeId = backStackEntry.arguments?.getString("placeId")
+            val place = viewModel.getPlace(placeId)
+            if (place == null) {
+                NotFoundScreen(onBack = { navController.popBackStack() })
+            } else {
+                RouteAssistantScreen(
+                    place = place,
+                    onAsk = viewModel::answerRouteAssistant,
+                    onBack = { navController.popBackStack() },
                 )
             }
         }
@@ -500,6 +547,7 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
                 currentLocation = uiState.value.currentLocationLabel,
                 accuracyMeters = uiState.value.locationState.latestFix?.accuracyMeters,
                 hasLocationPermission = uiState.value.locationState.hasPermission,
+                isForegroundTracking = uiState.value.locationState.isForegroundTracking,
                 quickFavorites = viewModel.getFavorites(),
                 onReadLocation = viewModel::announceCurrentLocation,
                 onSaveCurrentLocationAsFavorite = viewModel::saveCurrentLocationAsFavorite,

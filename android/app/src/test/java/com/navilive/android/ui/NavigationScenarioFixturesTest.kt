@@ -43,6 +43,54 @@ class NavigationScenarioFixturesTest {
     }
 
     @Test
+    fun arrivalUsesTheClosestReliableRouteSignal() {
+        assertTrue(
+            NavigationScenarioCore.shouldMarkArrived(
+                distanceToDestinationMeters = 19.0,
+                remainingRouteMeters = 100.0,
+                accuracyMeters = 10f,
+            ),
+        )
+        assertFalse(
+            NavigationScenarioCore.shouldMarkArrived(
+                distanceToDestinationMeters = 21.0,
+                remainingRouteMeters = 100.0,
+                accuracyMeters = 10f,
+            ),
+        )
+        assertTrue(
+            NavigationScenarioCore.shouldMarkArrived(
+                distanceToDestinationMeters = 100.0,
+                remainingRouteMeters = 19.0,
+                accuracyMeters = 10f,
+            ),
+        )
+    }
+
+    @Test
+    fun staleLocationIsNotTreatedAsLiveByTheAssistant() {
+        val nowMs = 1_000_000L
+        assertTrue(
+            NavigationScenarioCore.isFreshLocation(
+                timestampMs = nowMs - 15_000L,
+                nowMs = nowMs,
+            ),
+        )
+        assertFalse(
+            NavigationScenarioCore.isFreshLocation(
+                timestampMs = nowMs - 15_001L,
+                nowMs = nowMs,
+            ),
+        )
+        assertFalse(
+            NavigationScenarioCore.isFreshLocation(
+                timestampMs = null,
+                nowMs = nowMs,
+            ),
+        )
+    }
+
+    @Test
     fun countdownMilestonesMatchSharedFixtures() {
         val countdowns = loadScenarioCases().getJSONArray("countdowns")
         for (index in 0 until countdowns.length()) {

@@ -58,6 +58,11 @@ import androidx.compose.material.icons.filled.SurroundSound
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.Stop
 import com.navilive.android.guidance.NavigationSoundCue
+import com.navilive.android.data.routing.RouteAssistantCore
+import com.navilive.android.data.routing.RouteQualityAnalyzer
+import com.navilive.android.data.routing.RouteQualityIssue
+import com.navilive.android.data.routing.RouteQualityLevel
+import com.navilive.android.data.routing.RouteQualityReport
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -800,6 +805,7 @@ fun RouteSummaryScreen(
     isFavorite: Boolean,
     isLoadingRoute: Boolean,
     onSaveFavorite: () -> Unit,
+    onOpenAssistant: () -> Unit,
     onStartRoute: () -> Unit,
     onBack: () -> Unit,
 ) {
@@ -852,6 +858,10 @@ fun RouteSummaryScreen(
                 }
             }
 
+            if (!isLoadingRoute && summary.steps.isNotEmpty() && summary.pathPoints.size >= 2) {
+                RouteQualityCard(summary = summary)
+            }
+
             SecondaryActionButton(
                 label = if (isFavorite) {
                     stringResource(R.string.route_summary_favorite_saved)
@@ -860,6 +870,12 @@ fun RouteSummaryScreen(
                 },
                 icon = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.BookmarkAdd,
                 onClick = onSaveFavorite,
+            )
+
+            SecondaryActionButton(
+                label = stringResource(R.string.active_navigation_route_assistant),
+                icon = Icons.AutoMirrored.Filled.AssistantDirection,
+                onClick = onOpenAssistant,
             )
 
             PrimaryActionButton(
@@ -873,6 +889,54 @@ fun RouteSummaryScreen(
                 onClick = onStartRoute,
             )
         }
+    }
+}
+
+@Composable
+private fun RouteQualityCard(summary: RouteSummary) {
+    val report = remember(summary) {
+        RouteQualityAnalyzer.analyze(
+            steps = summary.steps,
+            pathPoints = summary.pathPoints,
+        )
+    }
+    val message = routeQualityMessage(report)
+    StatusCard(
+        title = stringResource(R.string.assistant_quick_quality),
+        message = message,
+        tone = if (report.level == RouteQualityLevel.Good) BannerTone.Info else BannerTone.Warning,
+    )
+}
+
+@Composable
+private fun routeQualityMessage(report: RouteQualityReport): String {
+    val details = buildList {
+        if (RouteQualityIssue.UnnamedTurn in report.issues) {
+            add(stringResource(R.string.assistant_quality_issue_unnamed_turns, report.unnamedTurnCount))
+        }
+        if (RouteQualityIssue.RepeatedInstruction in report.issues) {
+            add(stringResource(R.string.assistant_quality_issue_repeated_instruction, report.repeatedInstructionCount))
+        }
+        if (RouteQualityIssue.MissingManeuverData in report.issues) {
+            add(stringResource(R.string.assistant_quality_issue_missing_maneuver, report.missingManeuverDataCount))
+        }
+        if (RouteQualityIssue.CloseOppositeManeuvers in report.issues) {
+            add(stringResource(R.string.assistant_quality_issue_close_opposite, report.closeOppositeManeuverCount))
+        }
+        if (
+            RouteQualityIssue.IncompleteGeometry in report.issues ||
+            RouteQualityIssue.ManeuverGeometryMismatch in report.issues
+        ) {
+            add(stringResource(R.string.assistant_quality_issue_geometry))
+        }
+    }
+    return when (report.level) {
+        RouteQualityLevel.Good -> stringResource(R.string.assistant_quality_route_consistent)
+        RouteQualityLevel.Review,
+        RouteQualityLevel.InsufficientData -> listOf(
+            stringResource(R.string.assistant_quality_route_review),
+            details.joinToString(" "),
+        ).filter(String::isNotBlank).joinToString(" ")
     }
 }
 
@@ -967,6 +1031,7 @@ fun ActiveNavigationScreen(
     accuracyMeters: Float?,
     onPauseResume: () -> Unit,
     onRepeatInstruction: () -> Unit,
+    onOpenAssistant: () -> Unit,
     onRecalculate: () -> Unit,
     onReportProblem: () -> Unit,
     onArrived: () -> Unit,
@@ -1071,6 +1136,12 @@ fun ActiveNavigationScreen(
                 )
             }
 
+            SecondaryActionButton(
+                label = stringResource(R.string.active_navigation_route_assistant),
+                icon = Icons.AutoMirrored.Filled.AssistantDirection,
+                onClick = onOpenAssistant,
+            )
+
             OutlinedButton(
                 onClick = onArrived,
                 modifier = Modifier.fillMaxWidth(),
@@ -1088,6 +1159,137 @@ fun ActiveNavigationScreen(
         }
     }
 }
+
+@Composable
+fun RouteAssistantScreen(
+    place: Place,
+    onAsk: (String) -> String,
+    onBack: () -> Unit,
+) {
+    var question by remember { mutableStateOf("") }
+    var answer by remember { mutableStateOf("") }
+    val quickQuestions = listOf(
+        RouteAssistantQuickQuestion(
+            token = RouteAssistantCore.RepeatInstructionToken,
+            label = stringResource(R.string.common_repeat),
+        ),
+        RouteAssistantQuickQuestion(
+            token = RouteAssistantCore.CurrentInstructionToken,
+            label = stringResource(R.string.assistant_quick_current),
+        ),
+        RouteAssistantQuickQuestion(
+            token = RouteAssistantCore.CurrentLocationToken,
+            label = stringResource(R.string.current_position_current_address),
+        ),
+        RouteAssistantQuickQuestion(
+            token = RouteAssistantCore.NextInstructionToken,
+            label = stringResource(R.string.assistant_quick_next),
+        ),
+        RouteAssistantQuickQuestion(
+            token = RouteAssistantCore.RouteOverviewToken,
+            label = stringResource(R.string.assistant_quick_overview),
+        ),
+        RouteAssistantQuickQuestion(
+            token = RouteAssistantCore.ProgressToken,
+            label = stringResource(R.string.assistant_quick_progress),
+        ),
+        RouteAssistantQuickQuestion(
+            token = RouteAssistantCore.RouteStatusToken,
+            label = stringResource(R.string.assistant_quick_status),
+        ),
+        RouteAssistantQuickQuestion(
+            token = RouteAssistantCore.RouteQualityToken,
+            label = stringResource(R.string.assistant_quick_quality),
+        ),
+        RouteAssistantQuickQuestion(
+            token = RouteAssistantCore.PedestrianCrossingToken,
+            label = stringResource(R.string.assistant_quick_crossing),
+        ),
+    )
+
+    fun ask(value: String) {
+        val normalized = value.trim()
+        if (normalized.isEmpty()) return
+        question = normalized
+        answer = onAsk(normalized)
+    }
+
+    ScreenScaffold(
+        title = stringResource(R.string.assistant_title),
+        showBack = true,
+        onBack = onBack,
+    ) { modifier ->
+        Column(
+            modifier = modifier.verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            StatusCard(
+                title = stringResource(R.string.assistant_status_title),
+                message = stringResource(R.string.assistant_status_message, place.name),
+                tone = BannerTone.Info,
+            )
+
+            OutlinedTextField(
+                value = question,
+                onValueChange = { question = it },
+                label = { Text(stringResource(R.string.assistant_question_label)) },
+                placeholder = { Text(stringResource(R.string.assistant_question_placeholder)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            PrimaryActionButton(
+                label = stringResource(R.string.assistant_ask),
+                icon = Icons.AutoMirrored.Filled.AssistantDirection,
+                onClick = { ask(question) },
+            )
+
+            SectionHeading(stringResource(R.string.assistant_quick_title))
+            quickQuestions.forEach { quickQuestion ->
+                OutlinedButton(
+                    onClick = { ask(quickQuestion.token) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(quickQuestion.label)
+                }
+            }
+
+            if (answer.isNotBlank()) {
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        SectionHeading(stringResource(R.string.assistant_answer_title))
+                        Text(
+                            text = answer,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clearAndSetSemantics {
+                                    contentDescription = answer
+                                    liveRegion = LiveRegionMode.Polite
+                                },
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
+                }
+            }
+
+            Text(
+                text = stringResource(R.string.assistant_privacy_message),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+private data class RouteAssistantQuickQuestion(
+    val token: String,
+    val label: String,
+)
 
 @Composable
 private fun ActiveNavigationRouteStepsCard(
@@ -1161,6 +1363,7 @@ fun CurrentPositionScreen(
     currentLocation: String,
     accuracyMeters: Float?,
     hasLocationPermission: Boolean,
+    isForegroundTracking: Boolean,
     quickFavorites: List<Place>,
     onReadLocation: () -> Unit,
     onSaveCurrentLocationAsFavorite: (String) -> Unit,
@@ -1168,7 +1371,7 @@ fun CurrentPositionScreen(
     onPickFavorite: (String) -> Unit,
     onBack: () -> Unit,
 ) {
-    val status = currentPositionStatus(hasLocationPermission, accuracyMeters)
+    val status = currentPositionStatus(hasLocationPermission, isForegroundTracking, accuracyMeters)
     var showSaveDialog by remember { mutableStateOf(false) }
     var customFavoriteName by remember { mutableStateOf("") }
     val trimmedFavoriteName = customFavoriteName.trim()
@@ -3591,6 +3794,7 @@ private fun locationStatus(
 @Composable
 private fun currentPositionStatus(
     hasLocationPermission: Boolean,
+    isForegroundTracking: Boolean,
     accuracyMeters: Float?,
 ): StatusPresentation {
     return when {
@@ -3598,6 +3802,11 @@ private fun currentPositionStatus(
             title = stringResource(R.string.current_position_status_blocked_title),
             message = stringResource(R.string.current_position_status_blocked_message),
             tone = BannerTone.Warning,
+        )
+        !isForegroundTracking -> StatusPresentation(
+            title = stringResource(R.string.location_status_tracking_off_title),
+            message = stringResource(R.string.location_status_tracking_off_message),
+            tone = BannerTone.Info,
         )
         accuracyMeters == null -> StatusPresentation(
             title = stringResource(R.string.current_position_status_waiting_title),

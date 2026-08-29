@@ -86,6 +86,14 @@ class LocationFixStabilizerTest {
         assertEquals(later.point.longitude, stabilized?.point?.longitude ?: 0.0, 0.0000001)
     }
 
+    @Test
+    fun invalidNegativeAccuracyIsRejected() {
+        val stabilizer = LocationFixStabilizer()
+        val invalid = fix(latitude = 51.0, longitude = 19.0, accuracy = -1f, timestampMs = 1_000)
+
+        assertEquals(null, stabilizer.stabilize(invalid))
+    }
+
     private fun fix(latitude: Double, longitude: Double, accuracy: Float, timestampMs: Long): LocationFix {
         return LocationFix(
             point = GeoPoint(latitude = latitude, longitude = longitude),

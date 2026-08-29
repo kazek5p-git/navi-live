@@ -25,11 +25,17 @@ object LocationTrackerStore {
             latestGpsFix = null
             lastAppliedRadioTimestampMs = 0L
         }
-        _state.update { current -> current.copy(isTracking = enabled) }
+        _state.update { current ->
+            current.copy(
+                isTracking = enabled,
+                latestFix = if (enabled) current.latestFix else null,
+            )
+        }
     }
 
     @Synchronized
     fun pushFix(fix: LocationFix) {
+        if (!_state.value.isTracking) return
         latestGpsFix = fix
         val stabilizedFix = stabilizer.stabilize(fix) ?: return
         _state.update { current -> current.copy(latestFix = stabilizedFix) }
@@ -41,6 +47,7 @@ object LocationTrackerStore {
      */
     @Synchronized
     fun pushRadioEstimate(estimate: RadioLocationEstimate) {
+        if (!_state.value.isTracking) return
         if (estimate.timestampMs <= lastAppliedRadioTimestampMs) return
         val gpsFix = latestGpsFix ?: return
         val fusedFix = RadioLocationFusion.fuse(

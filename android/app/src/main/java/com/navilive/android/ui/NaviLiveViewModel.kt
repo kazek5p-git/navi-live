@@ -15,6 +15,11 @@ import com.navilive.android.data.FakeNaviLiveRepository
 import com.navilive.android.data.location.LocationTrackerStore
 import com.navilive.android.data.preferences.NaviLivePreferencesStore
 import com.navilive.android.data.routing.OpenStreetRoutingRepository
+import com.navilive.android.data.routing.RouteAssistantCore
+import com.navilive.android.data.routing.RouteAssistantGpsQuality
+import com.navilive.android.data.routing.RouteAssistantIntent
+import com.navilive.android.data.routing.RouteQualityAnalyzer
+import com.navilive.android.data.routing.RouteQualityRecommendation
 import com.navilive.android.data.telemetry.NavigationTelemetryLogger
 import com.navilive.android.data.update.GitHubUpdateRepository
 import com.navilive.android.guidance.GuidanceFeedbackEngine
@@ -41,6 +46,7 @@ import com.navilive.android.model.SpeechOutputMode
 import com.navilive.android.model.UpdateChannel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -58,18 +64,7 @@ private data class RouteSession(
     val pathPoints: List<GeoPoint>,
     val stepDistancesAlongRoute: List<Double>,
     val currentStepIndex: Int = 0,
-)
-
-private data class RouteProgressProjection(
-    val distanceAlongRouteMeters: Double,
-    val remainingRouteMeters: Double,
-    val lateralDistanceMeters: Double,
-)
-
-private data class SegmentProjection(
-    val ratio: Double,
-    val lengthMeters: Double,
-    val lateralDistanceMeters: Double,
+    val lastProjectedDistanceAlongRouteMeters: Double = 0.0,
 )
 
 private const val NearbyPoiCacheFreshMs = 24L * 60L * 60L * 1_000L
@@ -77,9 +72,13 @@ private const val NearbyPoiCacheMoveThresholdMeters = 800.0
 private const val NearbyPoiCacheAttemptThrottleMs = 2L * 60L * 1_000L
 private const val CustomFavoritePlaceIdPrefix = "custom-current-"
 private const val NavigationSpeechAfterSoundDelayMs = 500L
-private const val RouteProjectionBacktrackToleranceMeters = 25.0
-private const val RouteProjectionLookAheadToleranceMeters = 45.0
 private const val ApproachManeuverType = "approach"
+
+private data class QueuedNavigationSpeech(
+    val text: String,
+    val notBeforeUptimeMs: Long,
+    val generation: Long,
+)
 
 class NaviLiveViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -107,9 +106,9 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             arrowRotationDeg = 22f,
         ),
         HeadingState(
-            instruction = string(R.string.heading_instruction_almost_aligned),
+            instruction = string(R.string.heading_instruction_rotate_left),
             isAligned = false,
-            arrowRotationDeg = 7f,
+            arrowRotationDeg = -22f,
         ),
         HeadingState(
             instruction = string(R.string.heading_instruction_aligned),
@@ -118,13 +117,16 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         ),
     )
 
-    private var headingIndex = 0
+    private var currentHeadingDegrees: Double? = null
+    private var routeInitialBearingDegrees: Double? = null
     private var searchJob: Job? = null
     private var reverseGeocodeJob: Job? = null
     private var nearbyPoiCacheRefreshJob: Job? = null
     private var updateCheckJob: Job? = null
     private var updateDownloadJob: Job? = null
-    private var delayedNavigationSpeechJob: Job? = null
+    private val navigationSpeechQueue = Channel<QueuedNavigationSpeech>(Channel.UNLIMITED)
+    private var navigationSpeechWorker: Job? = null
+    private var navigationSpeechGeneration = 0L
     private val routeCache = mutableMapOf<String, RouteSummary>()
     private var lastReversePoint: GeoPoint? = null
     private var lastReverseTimestampMs: Long = 0L
@@ -343,13 +345,18 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             LocationTrackerStore.state.collect { trackerState ->
                 val fallbackLabel = trackerState.latestFix?.let(::formatCoordinateLabel)
+                if (trackerState.latestFix == null) {
+                    reverseGeocodeJob?.cancel()
+                    reverseGeocodeJob = null
+                    lastReversePoint = null
+                    lastReverseTimestampMs = 0L
+                }
                 _uiState.update { current ->
                     val previousCoordinateLabel = current.locationState.latestFix?.let(::formatCoordinateLabel)
                     current.copy(
                         currentLocationLabel = when {
-                            trackerState.latestFix == null && current.currentLocationLabel.isBlank() ->
+                            trackerState.latestFix == null ->
                                 string(R.string.current_position_status_waiting_message)
-                            trackerState.latestFix == null -> current.currentLocationLabel
                             current.currentLocationLabel.isBlank() -> fallbackLabel ?: current.currentLocationLabel
                             current.currentLocationLabel == previousCoordinateLabel -> fallbackLabel ?: current.currentLocationLabel
                             else -> current.currentLocationLabel
@@ -767,7 +774,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         onRouteReady: (() -> Unit)? = null,
     ) {
         val place = getPlace(placeId) ?: return
-        headingIndex = 0
+        routeInitialBearingDegrees = null
         isNavigationLive = false
         telemetryLogger.beginSession(destinationId = place.id, destinationName = place.name)
         telemetryLogger.log(
@@ -780,7 +787,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             current.copy(
                 lastRoutePlaceId = place.id,
                 statusMessage = string(R.string.format_preparing_route, place.name),
-                headingState = headingSequence[headingIndex],
+                headingState = headingStateFor(currentHeadingDegrees),
                 isLoadingRoute = true,
             )
         }
@@ -881,6 +888,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         announceRouteLoaded: Boolean = true,
     ) {
         val normalized = normalizeSummary(place, summary)
+        routeInitialBearingDegrees = RouteProjectionCore.initialBearingDegrees(normalized.pathPoints)
         activeRouteSession = RouteSession(
             destinationId = place.id,
             destinationName = place.name,
@@ -923,6 +931,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
                 isLoadingRoute = false,
                 isNavigationLive = keepNavigationLive,
                 statusMessage = statusMessage,
+                headingState = headingStateFor(currentHeadingDegrees),
                 activeNavigationState = buildActiveNavigationState(
                     session = activeRouteSession!!,
                     fix = current.locationState.latestFix,
@@ -935,14 +944,19 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun cycleHeadingInstruction() {
-        headingIndex = (headingIndex + 1) % headingSequence.size
+    fun updateHeading(degrees: Double?) {
+        currentHeadingDegrees = degrees?.takeIf { it.isFinite() }
         _uiState.update { current ->
-            current.copy(headingState = headingSequence[headingIndex])
+            current.copy(headingState = headingStateFor(currentHeadingDegrees))
         }
     }
 
+    fun cycleHeadingInstruction() {
+        updateHeading(currentHeadingDegrees)
+    }
+
     fun markHeadingAligned() {
+        if (!_uiState.value.headingState.isAligned) return
         vibrateDoubleIfEnabled()
         speakNow(string(R.string.spoken_heading_aligned))
         telemetryLogger.log(
@@ -952,10 +966,33 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         refreshDiagnosticsState()
         _uiState.update { current ->
             current.copy(
-                headingState = headingSequence.last(),
+                headingState = headingStateFor(currentHeadingDegrees),
                 statusMessage = string(R.string.status_heading_aligned),
             )
         }
+    }
+
+    private fun headingStateFor(headingDegrees: Double?): HeadingState {
+        val routeBearing = routeInitialBearingDegrees
+        val alignment = if (headingDegrees != null && routeBearing != null) {
+            NavigationScenarioCore.headingAlignment(
+                currentHeadingDegrees = headingDegrees,
+                routeBearingDegrees = routeBearing,
+            )
+        } else {
+            null
+        }
+        if (alignment == null) return headingSequence.first()
+        val instruction = when {
+            alignment.isAligned -> headingSequence.last().instruction
+            alignment.signedDeltaDegrees >= 0.0 -> headingSequence.first().instruction
+            else -> headingSequence.getOrElse(1) { headingSequence.first() }.instruction
+        }
+        return HeadingState(
+            instruction = instruction,
+            isAligned = alignment.isAligned,
+            arrowRotationDeg = alignment.signedDeltaDegrees.toFloat(),
+        )
     }
 
     fun beginActiveNavigation() {
@@ -995,6 +1032,232 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         _uiState.update { current ->
             current.copy(statusMessage = string(R.string.status_repeating_instruction))
         }
+    }
+
+    /** Zwraca krótką odpowiedź opartą wyłącznie na aktualnym stanie trasy i urządzenia. */
+    fun answerRouteAssistant(query: String): String {
+        val state = _uiState.value.activeNavigationState
+        val session = activeRouteSession
+        if (session == null) {
+            val answer = string(R.string.assistant_no_active_route)
+            return publishAssistantAnswer(answer)
+        }
+        val steps = state.routeSteps.ifEmpty { session.steps }
+        if (steps.isEmpty()) {
+            val answer = string(R.string.assistant_no_route_steps)
+            return publishAssistantAnswer(answer)
+        }
+
+        val match = RouteAssistantCore.matchFor(query)
+        if (!match.isConfident) {
+            val answer = string(R.string.assistant_help)
+            return publishAssistantAnswer(answer)
+        }
+
+        val currentIndex = state.currentStepIndex.coerceIn(steps.indices)
+        val hasLiveLocation = hasFreshLiveLocation()
+        if (RouteAssistantCore.requiresFreshLocation(match.intent) && !hasLiveLocation) {
+            val answer = string(R.string.assistant_gps_unavailable)
+            return publishAssistantAnswer(answer)
+        }
+        val answer = when (match.intent) {
+            RouteAssistantIntent.CurrentInstruction -> {
+                if (!hasLiveLocation) {
+                    string(R.string.assistant_gps_unavailable)
+                } else {
+                    val instruction = steps[currentIndex].instruction.ifBlank {
+                        string(R.string.generic_follow_route_guidance)
+                    }
+                    string(
+                        R.string.format_assistant_current,
+                        instruction,
+                        string(R.string.format_distance_meters, state.distanceToNextMeters),
+                    )
+                }
+            }
+            RouteAssistantIntent.RepeatInstruction -> navigationRepeatMessage()
+            RouteAssistantIntent.CurrentLocation -> assistantCurrentLocation(hasLiveLocation)
+            RouteAssistantIntent.NextInstruction -> {
+                val nextIndex = RouteAssistantCore.nextStepIndex(currentIndex, steps)
+                if (nextIndex == null) {
+                    string(R.string.assistant_no_next_step)
+                } else {
+                    val nextStep = steps[nextIndex]
+                    val distance = if (nextIndex == currentIndex + 1) {
+                        state.distanceToNextMeters
+                    } else {
+                        nextStep.distanceMeters
+                    }
+                    string(
+                        R.string.format_assistant_next,
+                        nextStep.instruction,
+                        string(R.string.format_distance_meters, distance),
+                    )
+                }
+            }
+            RouteAssistantIntent.RouteOverview -> {
+                val overview = RouteAssistantCore.overviewStepIndices(
+                    currentStepIndex = currentIndex,
+                    steps = steps,
+                ).mapIndexed { position, index ->
+                    val step = steps[index]
+                    string(
+                        R.string.format_assistant_overview_item,
+                        position + 1,
+                        step.instruction,
+                        string(R.string.format_distance_meters, step.distanceMeters),
+                    )
+                }.joinToString(separator = " ")
+                string(R.string.format_assistant_overview, overview)
+            }
+            RouteAssistantIntent.Progress -> {
+                string(
+                    R.string.format_assistant_progress,
+                    string(R.string.format_distance_meters, state.remainingDistanceMeters),
+                    state.progressLabel,
+                )
+            }
+            RouteAssistantIntent.RouteStatus -> assistantRouteStatus(state, hasLiveLocation)
+            RouteAssistantIntent.RouteQuality -> assistantRouteQuality(
+                state = state,
+                steps = steps,
+                pathPoints = session.pathPoints,
+                hasLiveLocation = hasLiveLocation,
+            )
+            RouteAssistantIntent.PedestrianCrossing -> {
+                val crossingIndex = RouteAssistantCore.nextPedestrianCrossingIndex(currentIndex, steps)
+                if (crossingIndex == null) {
+                    string(R.string.assistant_no_crossing)
+                } else {
+                    val crossing = steps[crossingIndex]
+                    val distance = if (crossingIndex == currentIndex + 1) {
+                        state.distanceToNextMeters
+                    } else {
+                        crossing.distanceMeters
+                    }
+                    string(
+                        R.string.format_assistant_crossing,
+                        crossing.instruction,
+                        string(R.string.format_distance_meters, distance),
+                    )
+                }
+            }
+            RouteAssistantIntent.Help -> string(R.string.assistant_help)
+        }
+
+        return publishAssistantAnswer(answer)
+    }
+
+    private fun publishAssistantAnswer(answer: String): String {
+        speakAssistantNow(answer)
+        _uiState.update { current -> current.copy(statusMessage = answer) }
+        return answer
+    }
+
+    private fun assistantRouteStatus(state: ActiveNavigationState, hasLiveLocation: Boolean): String {
+        if (!hasLiveLocation) return string(R.string.assistant_gps_unavailable)
+        val accuracy = _uiState.value.locationState.latestFix?.accuracyMeters?.roundToInt()
+            ?.let { string(R.string.format_assistant_gps_accuracy, it) }
+            ?: string(R.string.assistant_gps_unavailable)
+        return when {
+            state.isRecalculating -> string(R.string.assistant_status_recalculating, accuracy)
+            state.isOffRoute -> string(R.string.assistant_status_off_route, accuracy)
+            state.isPaused -> string(R.string.assistant_status_paused, accuracy)
+            else -> string(R.string.assistant_status_on_route, accuracy)
+        }
+    }
+
+    private fun assistantRouteQuality(
+        state: ActiveNavigationState,
+        steps: List<RouteStep>,
+        pathPoints: List<GeoPoint>,
+        hasLiveLocation: Boolean,
+    ): String {
+        val fix = _uiState.value.locationState.latestFix
+        val accuracy = fix?.accuracyMeters?.roundToInt()
+        val accuracyLabel = accuracy?.let { string(R.string.format_assistant_gps_accuracy, it) }
+            ?: string(R.string.assistant_gps_unavailable)
+        val routeReport = RouteQualityAnalyzer.analyze(steps = steps, pathPoints = pathPoints)
+        val routeAnswer = when (routeReport.recommendation) {
+            RouteQualityRecommendation.FollowCurrentGuidance ->
+                string(R.string.assistant_quality_route_consistent)
+            RouteQualityRecommendation.ReviewBeforeStarting,
+            RouteQualityRecommendation.WaitForCompleteData -> listOf(
+                string(R.string.assistant_quality_route_review),
+                assistantRouteQualityIssueDetails(routeReport),
+            ).filter(String::isNotBlank).joinToString(" ")
+        }
+        val gpsAnswer = if (!hasLiveLocation) {
+            string(R.string.assistant_quality_unavailable)
+        } else {
+            when {
+                state.isRecalculating -> string(R.string.assistant_quality_recalculating, accuracyLabel)
+                state.isOffRoute -> string(R.string.assistant_quality_off_route, accuracyLabel)
+                state.isPaused -> string(R.string.assistant_quality_paused)
+                else -> when (RouteAssistantCore.gpsQuality(fix?.accuracyMeters)) {
+                    RouteAssistantGpsQuality.Reliable ->
+                        string(R.string.assistant_quality_reliable, accuracyLabel)
+                    RouteAssistantGpsQuality.Limited ->
+                        string(R.string.assistant_quality_limited, accuracyLabel)
+                    RouteAssistantGpsQuality.Weak ->
+                        string(R.string.assistant_quality_weak, accuracyLabel)
+                    RouteAssistantGpsQuality.Unavailable ->
+                        string(R.string.assistant_quality_unavailable)
+                }
+            }
+        }
+        return "$gpsAnswer $routeAnswer"
+    }
+
+    private fun assistantCurrentLocation(hasLiveLocation: Boolean): String {
+        if (!hasLiveLocation) return string(R.string.assistant_gps_unavailable)
+        val fix = _uiState.value.locationState.latestFix
+        val detail = when {
+            fix?.accuracyMeters == null -> string(R.string.location_announcement_unavailable)
+            fix.accuracyMeters > SharedProductRules.Navigation.gpsWeakAccuracyMeters ->
+                string(R.string.location_announcement_approximate)
+            else -> string(R.string.location_announcement_ready)
+        }
+        val location = _uiState.value.currentLocationLabel.ifBlank {
+            string(R.string.location_announcement_unavailable)
+        }
+        return string(
+            R.string.format_current_position_announcement,
+            detail,
+            location,
+        )
+    }
+
+    private fun assistantRouteQualityIssueDetails(report: com.navilive.android.data.routing.RouteQualityReport): String {
+        return buildList {
+            if (com.navilive.android.data.routing.RouteQualityIssue.UnnamedTurn in report.issues) {
+                add(string(R.string.assistant_quality_issue_unnamed_turns, report.unnamedTurnCount))
+            }
+            if (com.navilive.android.data.routing.RouteQualityIssue.RepeatedInstruction in report.issues) {
+                add(string(R.string.assistant_quality_issue_repeated_instruction, report.repeatedInstructionCount))
+            }
+            if (com.navilive.android.data.routing.RouteQualityIssue.MissingManeuverData in report.issues) {
+                add(string(R.string.assistant_quality_issue_missing_maneuver, report.missingManeuverDataCount))
+            }
+            if (com.navilive.android.data.routing.RouteQualityIssue.CloseOppositeManeuvers in report.issues) {
+                add(string(R.string.assistant_quality_issue_close_opposite, report.closeOppositeManeuverCount))
+            }
+            if (
+                com.navilive.android.data.routing.RouteQualityIssue.IncompleteGeometry in report.issues ||
+                com.navilive.android.data.routing.RouteQualityIssue.ManeuverGeometryMismatch in report.issues
+            ) {
+                add(string(R.string.assistant_quality_issue_geometry))
+            }
+        }.joinToString(" ")
+    }
+
+    private fun hasFreshLiveLocation(): Boolean {
+        val locationState = _uiState.value.locationState
+        val fix = locationState.latestFix ?: return false
+        return locationState.isForegroundTracking && NavigationScenarioCore.isFreshLocation(
+            timestampMs = fix.timestampMs,
+            nowMs = System.currentTimeMillis(),
+        )
     }
 
     fun playLiveTrackingToggleSound(starting: Boolean) {
@@ -1069,7 +1332,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         val fix = _uiState.value.locationState.latestFix
         val currentStep = session.steps.getOrNull(session.currentStepIndex)
         val nextStep = session.steps.getOrNull(session.currentStepIndex + 1)
-        val deviationMeters = fix?.let { routeDeviationMeters(session.pathPoints, it.point) }
+        val deviationMeters = fix?.let { routeDeviationMeters(session, it) }
         val message = string(R.string.status_route_problem_reported)
 
         telemetryLogger.log(
@@ -1142,6 +1405,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         telemetryLogger.endSession(reason = "stopped")
         refreshDiagnosticsState()
         activeRouteSession = null
+        routeInitialBearingDegrees = null
         isNavigationLive = false
         isRouteRecalculating = false
         resetNavigationAnnouncementState()
@@ -1160,6 +1424,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         telemetryLogger.endSession(reason = "arrived")
         refreshDiagnosticsState()
         activeRouteSession = null
+        routeInitialBearingDegrees = null
         isNavigationLive = false
         isRouteRecalculating = false
         resetNavigationAnnouncementState()
@@ -1983,7 +2248,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         val currentState = _uiState.value.activeNavigationState
         if (currentState.isPaused) return
 
-        val deviationMeters = routeDeviationMeters(session.pathPoints, fix.point)
+        val deviationMeters = routeDeviationMeters(session, fix)
         val isApproachingRouteStart = session.steps
             .getOrNull(session.currentStepIndex)
             ?.maneuverType == ApproachManeuverType
@@ -1992,12 +2257,29 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             return
         }
 
+        val progressBeforeStepChange = routeProgressProjectionForStep(
+            session = session,
+            fix = fix,
+            currentStepIndex = session.currentStepIndex,
+        )
         val nextStepIndex = resolveStepIndex(session, fix)
-        val updatedSession = if (nextStepIndex != session.currentStepIndex) {
+        val candidateSession = if (nextStepIndex != session.currentStepIndex) {
             session.copy(currentStepIndex = nextStepIndex)
         } else {
             session
         }
+        val progressAfterStepChange = routeProgressProjectionForStep(
+            session = candidateSession,
+            fix = fix,
+            currentStepIndex = nextStepIndex,
+        ) ?: progressBeforeStepChange
+        val updatedProgress = maxOf(
+            session.lastProjectedDistanceAlongRouteMeters,
+            progressAfterStepChange?.distanceAlongRouteMeters ?: 0.0,
+        )
+        val updatedSession = candidateSession.copy(
+            lastProjectedDistanceAlongRouteMeters = updatedProgress,
+        )
         activeRouteSession = updatedSession
         val wasOffRoute = currentState.isOffRoute
         val updatedState = buildActiveNavigationState(
@@ -2096,7 +2378,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             }
             val nextIndex = index + 1
             val nextManeuver = session.steps.getOrNull(nextIndex)?.maneuverPoint ?: break
-            val projectedProgress = routeProgressProjectionForStep(session, fix.point, index)
+            val projectedProgress = routeProgressProjectionForStep(session, fix, index)
             val nextDistanceAlongRoute = session.stepDistancesAlongRoute.getOrNull(nextIndex)
             val hasPassedManeuver = projectedProgress != null &&
                 nextDistanceAlongRoute != null &&
@@ -2135,7 +2417,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         val nextStep = session.steps.getOrNull(currentIndex + 1)
         val routeEndPoint = session.routeEndPoint()
         val routeProgress = fix?.let {
-            routeProgressProjectionForStep(session, it.point, currentIndex)
+            routeProgressProjectionForStep(session, it, currentIndex)
                 ?: routeProgressProjection(session.pathPoints, it.point)
         }
         val remainingFromRoute = routeProgress?.remainingRouteMeters
@@ -2386,8 +2668,12 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun resetNavigationAnnouncementState() {
-        delayedNavigationSpeechJob?.cancel()
-        delayedNavigationSpeechJob = null
+        navigationSpeechGeneration += 1
+        navigationSpeechWorker?.cancel()
+        navigationSpeechWorker = null
+        while (navigationSpeechQueue.tryReceive().isSuccess) {
+            // Odrzuć komunikaty należące do zakończonej trasy.
+        }
         lastAnnouncedStepIndex = -1
         resetCountdownAnnouncementState()
         lastImmediateAnnouncedStepIndex = -1
@@ -2494,6 +2780,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         reverseGeocodeJob = viewModelScope.launch {
             try {
                 val readable = routingRepository.reverseGeocode(fix.point)
+                if (!isCurrentTrackedFix(fix)) return@launch
                 lastReversePoint = fix.point
                 lastReverseTimestampMs = System.currentTimeMillis()
                 _uiState.update { current ->
@@ -2502,6 +2789,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             } catch (error: CancellationException) {
                 throw error
             } catch (_: Exception) {
+                if (!isCurrentTrackedFix(fix)) return@launch
                 lastReversePoint = fix.point
                 lastReverseTimestampMs = System.currentTimeMillis()
                 _uiState.update { current ->
@@ -2511,21 +2799,45 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    private fun isCurrentTrackedFix(fix: LocationFix): Boolean {
+        val trackerState = LocationTrackerStore.state.value
+        return trackerState.isTracking && trackerState.latestFix == fix
+    }
+
     private fun speakNow(text: String) {
         feedbackEngine.speak(text)
     }
 
     private fun speakNavigationNow(text: String, delayAfterSoundMs: Long = 0L) {
-        delayedNavigationSpeechJob?.cancel()
-        delayedNavigationSpeechJob = null
-        if (delayAfterSoundMs <= 0L) {
-            feedbackEngine.speakNavigation(text)
-            return
+        if (text.isBlank()) return
+        navigationSpeechQueue.trySend(
+            QueuedNavigationSpeech(
+                text = text,
+                notBeforeUptimeMs = android.os.SystemClock.uptimeMillis() + delayAfterSoundMs.coerceAtLeast(0L),
+                generation = navigationSpeechGeneration,
+            ),
+        )
+        if (navigationSpeechWorker?.isActive == true) return
+        navigationSpeechWorker = viewModelScope.launch {
+            for (queued in navigationSpeechQueue) {
+                val remainingDelay = queued.notBeforeUptimeMs - android.os.SystemClock.uptimeMillis()
+                if (remainingDelay > 0L) delay(remainingDelay)
+                if (queued.generation == navigationSpeechGeneration) {
+                    feedbackEngine.speakNavigation(queued.text, flush = false)
+                }
+            }
         }
-        delayedNavigationSpeechJob = viewModelScope.launch {
-            delay(delayAfterSoundMs)
-            feedbackEngine.speakNavigation(text)
+    }
+
+    private fun speakAssistantNow(text: String) {
+        if (text.isBlank()) return
+        navigationSpeechGeneration += 1
+        navigationSpeechWorker?.cancel()
+        navigationSpeechWorker = null
+        while (navigationSpeechQueue.tryReceive().isSuccess) {
+            // Jawna prośba użytkownika ma pierwszeństwo przed oczekującymi wskazówkami.
         }
+        feedbackEngine.speakNavigation(text, flush = true)
     }
 
     private fun playSoundCueIfEnabled(cue: NavigationSoundCue): Long {
@@ -2571,15 +2883,23 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun shouldMarkArrived(session: RouteSession, fix: LocationFix): Boolean {
-        val routeEndPoint = session.routeEndPoint() ?: return false
-        val distanceToEnd = distanceMeters(fix.point, routeEndPoint)
-        val remainingOnRoute = routeProgressProjection(session.pathPoints, fix.point)
-            ?.remainingRouteMeters
-            ?: Double.MAX_VALUE
-        val arrivalThreshold = fix.accuracyMeters
-            .coerceIn(8f, 18f)
-            .toDouble() * 2.0
-        return minOf(distanceToEnd, remainingOnRoute) <= arrivalThreshold
+        val distanceToEnd = session.routeEndPoint()?.let { distanceMeters(fix.point, it) }
+        val remainingOnRoute = routeProgressProjectionForStep(
+            session = session,
+            fix = fix,
+            currentStepIndex = session.currentStepIndex,
+        )?.remainingRouteMeters
+            ?: routeProgressProjection(
+                pathPoints = session.pathPoints,
+                point = fix.point,
+                fix = fix,
+                monotonicFloorMeters = session.lastProjectedDistanceAlongRouteMeters,
+            )?.remainingRouteMeters
+        return NavigationScenarioCore.shouldMarkArrived(
+            distanceToDestinationMeters = distanceToEnd,
+            remainingRouteMeters = remainingOnRoute,
+            accuracyMeters = fix.accuracyMeters,
+        )
     }
 
     private fun RouteSession.routeEndPoint(): GeoPoint? {
@@ -2590,33 +2910,16 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         steps: List<RouteStep>,
         pathPoints: List<GeoPoint>,
     ): List<Double> {
-        if (steps.isEmpty()) return emptyList()
-        val routeLength = routeLengthMeters(pathPoints)
-        var previousDistance = 0.0
-        return steps.mapIndexed { index, step ->
-            val rawDistance = step.maneuverPoint
-                ?.let { routeProgressProjection(pathPoints, it)?.distanceAlongRouteMeters }
-                ?: if (index == 0) 0.0 else routeLength
-            val normalized = rawDistance
-                .coerceIn(0.0, routeLength)
-                .coerceAtLeast(previousDistance)
-            previousDistance = normalized
-            normalized
-        }
+        return RouteProjectionCore.stepDistancesAlongRoute(steps, pathPoints)
     }
 
     private fun routeLengthMeters(pathPoints: List<GeoPoint>): Double {
-        if (pathPoints.size < 2) return 0.0
-        var length = 0.0
-        for (index in 0 until pathPoints.lastIndex) {
-            length += distanceMeters(pathPoints[index], pathPoints[index + 1])
-        }
-        return length
+        return RouteProjectionCore.routeLengthMeters(pathPoints)
     }
 
     private fun routeProgressProjectionForStep(
         session: RouteSession,
-        point: GeoPoint,
+        fix: LocationFix,
         currentStepIndex: Int,
     ): RouteProgressProjection? {
         val routeLength = routeLengthMeters(session.pathPoints)
@@ -2626,11 +2929,25 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         val nextAlong = session.stepDistancesAlongRoute
             .getOrNull(currentStepIndex + 1)
             ?: routeLength
+        val minimumAlong = maxOf(
+            (currentAlong - SharedProductRules.Navigation.routeProjectionBacktrackToleranceMeters)
+                .coerceAtLeast(0.0),
+            (session.lastProjectedDistanceAlongRouteMeters -
+                SharedProductRules.Navigation.routeProjectionBacktrackToleranceMeters)
+                .coerceAtLeast(0.0),
+        )
+        val maximumAlong = maxOf(
+            nextAlong + SharedProductRules.Navigation.routeProjectionLookAheadToleranceMeters,
+            session.lastProjectedDistanceAlongRouteMeters +
+                SharedProductRules.Navigation.routeProjectionBacktrackToleranceMeters,
+        ).coerceAtMost(routeLength)
         return routeProgressProjection(
             pathPoints = session.pathPoints,
-            point = point,
-            minimumDistanceAlongRouteMeters = (currentAlong - RouteProjectionBacktrackToleranceMeters).coerceAtLeast(0.0),
-            maximumDistanceAlongRouteMeters = (nextAlong + RouteProjectionLookAheadToleranceMeters).coerceAtMost(routeLength),
+            point = fix.point,
+            minimumDistanceAlongRouteMeters = minimumAlong,
+            maximumDistanceAlongRouteMeters = maximumAlong,
+            fix = fix,
+            monotonicFloorMeters = session.lastProjectedDistanceAlongRouteMeters,
         )
     }
 
@@ -2639,107 +2956,41 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         point: GeoPoint,
         minimumDistanceAlongRouteMeters: Double = 0.0,
         maximumDistanceAlongRouteMeters: Double = Double.POSITIVE_INFINITY,
+        fix: LocationFix? = null,
+        monotonicFloorMeters: Double? = null,
     ): RouteProgressProjection? {
-        if (pathPoints.size < 2) return null
-        val segmentProjections = pathPoints.zipWithNext { start, end ->
-            projectOntoSegment(
-                point = point,
-                start = start,
-                end = end,
-            )
-        }
-        val routeLength = segmentProjections.sumOf { it.lengthMeters }
-        if (routeLength <= 0.0) return null
-
-        var distanceBeforeSegment = 0.0
-        var best: RouteProgressProjection? = null
-        for (projection in segmentProjections) {
-            val distanceAlongRoute = distanceBeforeSegment + projection.lengthMeters * projection.ratio
-            if (
-                distanceAlongRoute < minimumDistanceAlongRouteMeters ||
-                distanceAlongRoute > maximumDistanceAlongRouteMeters
-            ) {
-                distanceBeforeSegment += projection.lengthMeters
-                continue
-            }
-            val candidate = RouteProgressProjection(
-                distanceAlongRouteMeters = distanceAlongRoute,
-                remainingRouteMeters = (routeLength - distanceAlongRoute).coerceAtLeast(0.0),
-                lateralDistanceMeters = projection.lateralDistanceMeters,
-            )
-            val currentBest = best
-            if (currentBest == null || candidate.lateralDistanceMeters < currentBest.lateralDistanceMeters) {
-                best = candidate
-            }
-            distanceBeforeSegment += projection.lengthMeters
-        }
-        return best
-    }
-
-    private fun routeDeviationMeters(pathPoints: List<GeoPoint>, point: GeoPoint): Int? {
-        if (pathPoints.size < 3) return null
-        var minimumMeters = Double.MAX_VALUE
-        for (index in 0 until pathPoints.lastIndex) {
-            val candidate = pointToSegmentDistanceMeters(
-                point = point,
-                start = pathPoints[index],
-                end = pathPoints[index + 1],
-            )
-            if (candidate < minimumMeters) {
-                minimumMeters = candidate
-            }
-        }
-        return minimumMeters.roundToInt()
-    }
-
-    private fun pointToSegmentDistanceMeters(
-        point: GeoPoint,
-        start: GeoPoint,
-        end: GeoPoint,
-    ): Double {
-        return projectOntoSegment(
+        return RouteProjectionCore.project(
+            pathPoints = pathPoints,
             point = point,
-            start = start,
-            end = end,
-        ).lateralDistanceMeters
+            minimumDistanceAlongRouteMeters = minimumDistanceAlongRouteMeters,
+            maximumDistanceAlongRouteMeters = maximumDistanceAlongRouteMeters,
+            preferredCourseDegrees = fix?.courseDegrees,
+            speedMetersPerSecond = fix?.speedMetersPerSecond,
+            accuracyMeters = fix?.accuracyMeters?.toDouble(),
+            monotonicFloorMeters = monotonicFloorMeters,
+        )
     }
 
-    private fun projectOntoSegment(
-        point: GeoPoint,
-        start: GeoPoint,
-        end: GeoPoint,
-    ): SegmentProjection {
-        val latitudeReference = Math.toRadians((point.latitude + start.latitude + end.latitude) / 3.0)
-        val earthRadius = 6_371_000.0
-
-        fun project(geoPoint: GeoPoint): Pair<Double, Double> {
-            val x = Math.toRadians(geoPoint.longitude) * earthRadius * kotlin.math.cos(latitudeReference)
-            val y = Math.toRadians(geoPoint.latitude) * earthRadius
-            return x to y
-        }
-
-        val (px, py) = project(point)
-        val (sx, sy) = project(start)
-        val (ex, ey) = project(end)
-        val dx = ex - sx
-        val dy = ey - sy
-        if (dx == 0.0 && dy == 0.0) {
-            return SegmentProjection(
-                ratio = 0.0,
-                lengthMeters = 0.0,
-                lateralDistanceMeters = kotlin.math.hypot(px - sx, py - sy),
-            )
-        }
-
-        val t = (((px - sx) * dx) + ((py - sy) * dy)) / ((dx * dx) + (dy * dy))
-        val clamped = t.coerceIn(0.0, 1.0)
-        val nearestX = sx + (clamped * dx)
-        val nearestY = sy + (clamped * dy)
-        return SegmentProjection(
-            ratio = clamped,
-            lengthMeters = kotlin.math.hypot(dx, dy),
-            lateralDistanceMeters = kotlin.math.hypot(px - nearestX, py - nearestY),
-        )
+    private fun routeDeviationMeters(session: RouteSession, fix: LocationFix): Int? {
+        if (session.pathPoints.size < 2) return null
+        val routeLength = routeLengthMeters(session.pathPoints)
+        if (routeLength <= 0.0) return null
+        val minimumAlong = (
+            session.lastProjectedDistanceAlongRouteMeters -
+                SharedProductRules.Navigation.routeProjectionBacktrackToleranceMeters
+            ).coerceAtLeast(0.0)
+        val maximumAlong = (
+            session.lastProjectedDistanceAlongRouteMeters +
+                SharedProductRules.Navigation.routeProjectionDeviationLookAheadMeters
+            ).coerceAtMost(routeLength)
+        return routeProgressProjection(
+            pathPoints = session.pathPoints,
+            point = fix.point,
+            minimumDistanceAlongRouteMeters = minimumAlong,
+            maximumDistanceAlongRouteMeters = maximumAlong,
+            fix = fix,
+            monotonicFloorMeters = session.lastProjectedDistanceAlongRouteMeters,
+        )?.lateralDistanceMeters?.roundToInt()
     }
 
     private fun distanceMeters(a: GeoPoint, b: GeoPoint): Double {
@@ -2758,7 +3009,8 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     }
 
     override fun onCleared() {
-        delayedNavigationSpeechJob?.cancel()
+        navigationSpeechQueue.close()
+        navigationSpeechWorker?.cancel()
         feedbackEngine.shutdown()
     }
 }
