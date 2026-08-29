@@ -19,11 +19,11 @@ Settings include speech, vibration, tutorial, help, and privacy options. The app
 ### What to Test
 
 ```text
-Check spoken walking guidance on a short walking route. Walk a route with several turns and street crossings. Verify that the app announces real turns at the right moment, does not advance too early to the next step, and does not replace a turn with a misleading pedestrian-crossing message.
+Check route assistant localization. Switch the app to several available languages and verify that turn, crossing, distance, error, and status messages use the selected language without untranslated fragments.
 
-Check street-crossing and pedestrian-crossing prompts. On a route with named streets, verify that “cross ...” is spoken only when the route really crosses that street, and that side crossings or bike-path crossings do not hide maneuvers.
+Check real walking guidance. Walk a short route with several turns and crossings. Verify that the app announces only route-relevant maneuvers, gives the correct direction and street name, does not invent or duplicate turns, and does not skip the final maneuver.
 
-Check repeating guidance, VoiceOver step list, search, route building, active navigation, favorites, and speech or sound settings.
+Check location stability, off-route behavior, the VoiceOver step list, search, route building, active navigation, favorites, and speech or sound settings.
 ```
 
 ### Beta App Review Notes

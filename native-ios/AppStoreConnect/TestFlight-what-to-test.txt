@@ -1,33 +1,33 @@
 POLSKI
 
-Sprawdź komunikaty prowadzenia na krótkiej trasie pieszej.
-Przejdź trasę z kilkoma skrętami i przejściami przez ulice. Zwróć uwagę, czy aplikacja mówi realny skręt w odpowiednim miejscu, czy nie przeskakuje za wcześnie do następnego kroku oraz czy nie zastępuje skrętu mylącym komunikatem o przejściu dla pieszych.
+Sprawdź lokalizację komunikatów asystenta trasy.
+Przełącz język aplikacji na kilka dostępnych języków i sprawdź wyszukiwanie, podsumowanie trasy oraz aktywne prowadzenie. Zwróć uwagę, czy komunikaty o skrętach, przejściach, odległościach, błędach i statusach są w wybranym języku oraz nie zawierają nieprzetłumaczonych fragmentów.
 
-Sprawdź komunikaty o przecznicach i przejściach.
-Na trasie z nazwanymi ulicami sprawdź, czy komunikat „przejdź przez ...” pojawia się tylko wtedy, gdy faktycznie trzeba przeciąć ulicę, a boczne przejścia i ścieżki rowerowe nie przykrywają manewrów.
+Sprawdź rzeczywiste wskazówki piesze.
+Przejdź krótką trasę z kilkoma skrętami i przejściami. Sprawdź, czy aplikacja zapowiada tylko manewry wynikające z trasy, podaje właściwy kierunek i nazwę ulicy, nie tworzy fikcyjnych skrętów, nie dubluje komunikatów i nie pomija końcowego manewru.
 
-Sprawdź powtarzanie wskazówki.
-Podczas aktywnej nawigacji użyj potrząśnięcia lub przycisku powtórzenia i sprawdź, czy najpierw czytany jest bieżący krok, a dopiero potem następny.
+Sprawdź stabilność pozycji i zejście z trasy.
+Zwróć uwagę, czy chwilowe skoki GPS nie powodują fałszywych komunikatów, przedwczesnej zmiany kroku ani niepotrzebnego przeliczania. Po celowym odejściu od trasy sprawdź, czy aplikacja szybko i logicznie wyznacza dalsze prowadzenie.
 
-Sprawdź listę kroków trasy z VoiceOver.
-Podczas aktywnej nawigacji przejdź listę kroków i rotor instrukcji. Sprawdź, czy aktualny krok jest oznaczany poprawnie, a fokus VoiceOver nie przeskakuje nieoczekiwanie po zmianie kroku.
+Sprawdź VoiceOver i listę kroków.
+Podczas aktywnej nawigacji przejdź listę kroków i rotor instrukcji. Sprawdź, czy aktualny krok jest oznaczany poprawnie, komunikaty nie są powtarzane, a fokus VoiceOver nie przeskakuje nieoczekiwanie po zmianie kroku.
 
-Sprawdź regresje.
-Wyszukiwanie, budowanie trasy, aktywna nawigacja, ulubione oraz ustawienia mowy i dźwięków powinny działać jak wcześniej.
+Sprawdź wyszukiwanie i regresje.
+Sprawdź wyniki wyszukiwania, budowanie trasy, aktywną nawigację, ulubione oraz ustawienia mowy i dźwięków. Zgłoś, jeśli wynik nie zawiera adresu albo aplikacja pokazuje punkt wyraźnie oddalony mimo bliższych wyników.
 
 ENGLISH
 
-Check spoken walking guidance on a short walking route.
-Walk a route with several turns and street crossings. Verify that the app announces real turns at the right moment, does not advance too early to the next step, and does not replace a turn with a misleading pedestrian-crossing message.
+Check route assistant localization.
+Switch the app to several available languages and check search, the route summary, and active guidance. Verify that turn, crossing, distance, error, and status messages use the selected language and contain no untranslated fragments.
 
-Check street-crossing and pedestrian-crossing prompts.
-On a route with named streets, verify that “cross ...” is spoken only when the route really crosses that street, and that side crossings or bike-path crossings do not hide maneuvers.
+Check real walking guidance.
+Walk a short route with several turns and crossings. Verify that the app announces only route-relevant maneuvers, gives the correct direction and street name, does not invent or duplicate turns, and does not skip the final maneuver.
 
-Check repeating guidance.
-During active navigation, use shake or the repeat action and verify that the current step is spoken first, followed by the next step.
+Check location stability and off-route behavior.
+Verify that brief GPS jumps do not cause false announcements, premature step changes, or unnecessary recalculation. After deliberately leaving the route, check that the app quickly and logically provides continued guidance.
 
-Check the route step list with VoiceOver.
-During active navigation, move through the step list and the instructions rotor. Verify that the current step is marked correctly and VoiceOver focus does not jump unexpectedly after the current step changes.
+Check VoiceOver and the route step list.
+During active navigation, move through the step list and the instructions rotor. Verify that the current step is marked correctly, messages are not duplicated, and VoiceOver focus does not jump unexpectedly after the current step changes.
 
-Check regressions.
-Search, route building, active navigation, favorites, and speech or sound settings should keep working as before.
+Check search and regressions.
+Check search results, route building, active navigation, favorites, and speech or sound settings. Report results without an address or a clearly distant result when closer places are available.
