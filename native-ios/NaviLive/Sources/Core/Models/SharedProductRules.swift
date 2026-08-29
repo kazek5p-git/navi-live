@@ -28,9 +28,21 @@ enum SharedProductRules {
     static let immediateInstructionThresholdMaxMeters: Int = 8
 
     static let guidanceLeadMeters: Int = 7
+    static let gpsReliableAccuracyMeters: Double = 20.0
     static let gpsWeakAccuracyMeters: Double = 75
+    static let arrivalAccuracyMinMeters: Double = 8.0
+    static let arrivalAccuracyMaxMeters: Double = 18.0
+    static let arrivalAccuracyMultiplier: Double = 2.0
+    static let assistantFreshLocationMaxAgeMs: Int = 15000
 
     static let autoRecalculateCooldownMs: Int = 6000
+
+    static let routeProjectionBacktrackToleranceMeters: Double = 18.0
+    static let routeProjectionLookAheadToleranceMeters: Double = 30.0
+    static let routeProjectionDeviationLookAheadMeters: Double = 120.0
+    static let routeProjectionCourseUseMinimumSpeedMetersPerSecond: Double = 0.8
+    static let routeProjectionCourseMaximumAccuracyMeters: Double = 35.0
+    static let routeProjectionCourseMismatchPenaltyMeters: Double = 18.0
 
     static let locationStabilizationStaleResetMs: Int = 20000
     static let locationStabilizationMaxUsableAccuracyMeters: Double = 100.0

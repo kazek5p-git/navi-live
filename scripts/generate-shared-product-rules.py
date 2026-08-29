@@ -41,6 +41,7 @@ def escape_for_code_string(value: str) -> str:
 def render_android(rules: dict) -> str:
     navigation = rules["navigation"]
     stabilization = navigation["locationStabilization"]
+    projection = navigation["routeProjection"]
     search = rules["search"]
     scoring = search["scoring"]
     address = rules["address"]
@@ -90,9 +91,21 @@ object SharedProductRules {{
         const val immediateInstructionThresholdMaxMeters: Int = {navigation['immediateInstruction']['thresholdMaxMeters']}
 
         const val guidanceLeadMeters: Int = {navigation['guidanceLeadMeters']}
+        const val gpsReliableAccuracyMeters: Float = {navigation['gpsReliableAccuracyMeters']}f
         const val gpsWeakAccuracyMeters: Float = {navigation['gpsWeakAccuracyMeters']}f
+        const val arrivalAccuracyMinMeters: Float = {navigation['arrival']['accuracyMinMeters']}f
+        const val arrivalAccuracyMaxMeters: Float = {navigation['arrival']['accuracyMaxMeters']}f
+        const val arrivalAccuracyMultiplier: Double = {navigation['arrival']['multiplier']}
+        const val assistantFreshLocationMaxAgeMs: Long = {navigation['assistantFreshLocationMaxAgeMs']}L
 
         const val autoRecalculateCooldownMs: Long = {navigation['autoRecalculateCooldownMs']}L
+
+        const val routeProjectionBacktrackToleranceMeters: Double = {projection['backtrackToleranceMeters']}
+        const val routeProjectionLookAheadToleranceMeters: Double = {projection['lookAheadToleranceMeters']}
+        const val routeProjectionDeviationLookAheadMeters: Double = {projection['deviationLookAheadMeters']}
+        const val routeProjectionCourseUseMinimumSpeedMetersPerSecond: Double = {projection['courseUseMinimumSpeedMetersPerSecond']}
+        const val routeProjectionCourseMaximumAccuracyMeters: Float = {projection['courseMaximumAccuracyMeters']}f
+        const val routeProjectionCourseMismatchPenaltyMeters: Double = {projection['courseMismatchPenaltyMeters']}
 
         const val locationStabilizationStaleResetMs: Long = {stabilization['staleResetMs']}L
         const val locationStabilizationMaxUsableAccuracyMeters: Float = {stabilization['maxUsableAccuracyMeters']}f
@@ -167,6 +180,7 @@ object SharedProductRules {{
 def render_ios(rules: dict) -> str:
     navigation = rules["navigation"]
     stabilization = navigation["locationStabilization"]
+    projection = navigation["routeProjection"]
     search = rules["search"]
     scoring = search["scoring"]
     address = rules["address"]
@@ -213,9 +227,21 @@ enum SharedProductRules {{
     static let immediateInstructionThresholdMaxMeters: Int = {navigation['immediateInstruction']['thresholdMaxMeters']}
 
     static let guidanceLeadMeters: Int = {navigation['guidanceLeadMeters']}
+    static let gpsReliableAccuracyMeters: Double = {navigation['gpsReliableAccuracyMeters']}
     static let gpsWeakAccuracyMeters: Double = {navigation['gpsWeakAccuracyMeters']}
+    static let arrivalAccuracyMinMeters: Double = {navigation['arrival']['accuracyMinMeters']}
+    static let arrivalAccuracyMaxMeters: Double = {navigation['arrival']['accuracyMaxMeters']}
+    static let arrivalAccuracyMultiplier: Double = {navigation['arrival']['multiplier']}
+    static let assistantFreshLocationMaxAgeMs: Int = {navigation['assistantFreshLocationMaxAgeMs']}
 
     static let autoRecalculateCooldownMs: Int = {navigation['autoRecalculateCooldownMs']}
+
+    static let routeProjectionBacktrackToleranceMeters: Double = {projection['backtrackToleranceMeters']}
+    static let routeProjectionLookAheadToleranceMeters: Double = {projection['lookAheadToleranceMeters']}
+    static let routeProjectionDeviationLookAheadMeters: Double = {projection['deviationLookAheadMeters']}
+    static let routeProjectionCourseUseMinimumSpeedMetersPerSecond: Double = {projection['courseUseMinimumSpeedMetersPerSecond']}
+    static let routeProjectionCourseMaximumAccuracyMeters: Double = {projection['courseMaximumAccuracyMeters']}
+    static let routeProjectionCourseMismatchPenaltyMeters: Double = {projection['courseMismatchPenaltyMeters']}
 
     static let locationStabilizationStaleResetMs: Int = {stabilization['staleResetMs']}
     static let locationStabilizationMaxUsableAccuracyMeters: Double = {stabilization['maxUsableAccuracyMeters']}

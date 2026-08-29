@@ -20,8 +20,23 @@
       "thresholdMaxMeters": 8
     },
     "guidanceLeadMeters": 7,
+    "gpsReliableAccuracyMeters": 20.0,
     "gpsWeakAccuracyMeters": 75,
+    "arrival": {
+      "accuracyMinMeters": 8.0,
+      "accuracyMaxMeters": 18.0,
+      "multiplier": 2.0
+    },
+    "assistantFreshLocationMaxAgeMs": 15000,
     "autoRecalculateCooldownMs": 6000,
+    "routeProjection": {
+      "backtrackToleranceMeters": 18.0,
+      "lookAheadToleranceMeters": 30.0,
+      "deviationLookAheadMeters": 120.0,
+      "courseUseMinimumSpeedMetersPerSecond": 0.8,
+      "courseMaximumAccuracyMeters": 35.0,
+      "courseMismatchPenaltyMeters": 18.0
+    },
     "locationStabilization": {
       "staleResetMs": 20000,
       "maxUsableAccuracyMeters": 100.0,

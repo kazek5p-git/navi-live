@@ -31,9 +31,21 @@ object SharedProductRules {
         const val immediateInstructionThresholdMaxMeters: Int = 8
 
         const val guidanceLeadMeters: Int = 7
+        const val gpsReliableAccuracyMeters: Float = 20.0f
         const val gpsWeakAccuracyMeters: Float = 75f
+        const val arrivalAccuracyMinMeters: Float = 8.0f
+        const val arrivalAccuracyMaxMeters: Float = 18.0f
+        const val arrivalAccuracyMultiplier: Double = 2.0
+        const val assistantFreshLocationMaxAgeMs: Long = 15000L
 
         const val autoRecalculateCooldownMs: Long = 6000L
+
+        const val routeProjectionBacktrackToleranceMeters: Double = 18.0
+        const val routeProjectionLookAheadToleranceMeters: Double = 30.0
+        const val routeProjectionDeviationLookAheadMeters: Double = 120.0
+        const val routeProjectionCourseUseMinimumSpeedMetersPerSecond: Double = 0.8
+        const val routeProjectionCourseMaximumAccuracyMeters: Float = 35.0f
+        const val routeProjectionCourseMismatchPenaltyMeters: Double = 18.0
 
         const val locationStabilizationStaleResetMs: Long = 20000L
         const val locationStabilizationMaxUsableAccuracyMeters: Float = 100.0f
