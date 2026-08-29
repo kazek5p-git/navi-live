@@ -12,18 +12,6 @@ struct LiveNavigationUpdate {
   let hasArrived: Bool
 }
 
-private struct RouteProgressProjection {
-  let distanceAlongRouteMeters: Double
-  let remainingRouteMeters: Double
-  let lateralDistanceMeters: Double
-}
-
-private struct SegmentProjection {
-  let ratio: Double
-  let lengthMeters: Double
-  let lateralDistanceMeters: Double
-}
-
 final class LiveNavigationEngine {
   private struct RouteSession {
     let destination: Place
@@ -31,11 +19,10 @@ final class LiveNavigationEngine {
     let pathPoints: [GeoPoint]
     let stepDistancesAlongRoute: [Double]
     var currentStepIndex: Int
+    var lastProjectedDistanceAlongRouteMeters: Double
   }
 
   private static let approachManeuverType = "approach"
-  private static let routeProjectionBacktrackToleranceMeters = 25.0
-  private static let routeProjectionLookAheadToleranceMeters = 45.0
 
   private var session: RouteSession?
   private var lastAutoRecalculateAt: Date = .distantPast
@@ -58,18 +45,17 @@ final class LiveNavigationEngine {
         ]
       : summary.steps
 
-    let routeLength = routeLengthMeters(summary.pathPoints)
     let stepDistances = stepDistancesAlongRoute(
       steps: normalizedSteps,
-      pathPoints: summary.pathPoints,
-      routeLengthMeters: routeLength
+      pathPoints: summary.pathPoints
     )
     session = RouteSession(
       destination: destination,
       steps: normalizedSteps,
       pathPoints: summary.pathPoints,
       stepDistancesAlongRoute: stepDistances,
-      currentStepIndex: 0
+      currentStepIndex: 0,
+      lastProjectedDistanceAlongRouteMeters: 0
     )
 
     return buildState(
@@ -101,15 +87,24 @@ final class LiveNavigationEngine {
   ) -> LiveNavigationUpdate? {
     guard var session else { return nil }
 
-    let deviation = routeDeviationMeters(pathPoints: session.pathPoints, point: fix.point)
+    let deviation = routeDeviationMeters(session: session, fix: fix)
     let isOffRoute = NavigationScenarioCore.shouldTriggerOffRoute(
       deviationMeters: deviation,
       accuracyMeters: fix.accuracyMeters
     )
-    let distanceToDestination = session.destination.point.map { Int(fix.point.distance(to: $0).rounded()) } ?? 0
-    let arrivedThreshold = max(12, Int(fix.accuracyMeters.rounded()))
+    let distanceToDestination = session.destination.point.map { fix.point.distance(to: $0) }
+    let routeProgressForArrival = routeProgressProjection(
+      session: session,
+      point: fix.point,
+      currentStepIndex: session.currentStepIndex,
+      fix: fix
+    )
 
-    if distanceToDestination > 0 && distanceToDestination <= arrivedThreshold {
+    if NavigationScenarioCore.shouldMarkArrived(
+      distanceToDestinationMeters: distanceToDestination,
+      remainingRouteMeters: routeProgressForArrival?.remainingRouteMeters,
+      accuracyMeters: fix.accuracyMeters
+    ) {
       let state = buildState(
         currentStepIndex: session.currentStepIndex,
         fix: fix,
@@ -158,9 +153,25 @@ final class LiveNavigationEngine {
       )
     }
 
+    let progressBeforeStepChange = routeProgressProjection(
+      session: session,
+      point: fix.point,
+      currentStepIndex: session.currentStepIndex,
+      fix: fix
+    )
     let nextStepIndex = resolveStepIndex(session: session, fix: fix)
     let stepChanged = nextStepIndex != session.currentStepIndex
     session.currentStepIndex = nextStepIndex
+    let progressAfterStepChange = routeProgressProjection(
+      session: session,
+      point: fix.point,
+      currentStepIndex: nextStepIndex,
+      fix: fix
+    ) ?? progressBeforeStepChange
+    session.lastProjectedDistanceAlongRouteMeters = max(
+      session.lastProjectedDistanceAlongRouteMeters,
+      progressAfterStepChange?.distanceAlongRouteMeters ?? 0
+    )
     self.session = session
 
     let state = buildState(
@@ -213,7 +224,12 @@ final class LiveNavigationEngine {
         break
       }
       guard let nextManeuver = session.steps[safe: index + 1]?.maneuverPoint else { break }
-      let projectedProgress = routeProgressProjection(session: session, point: fix.point, currentStepIndex: index)
+      let projectedProgress = routeProgressProjection(
+        session: session,
+        point: fix.point,
+        currentStepIndex: index,
+        fix: fix
+      )
       let nextDistanceAlongRoute = session.stepDistancesAlongRoute[safe: index + 1] ?? .greatestFiniteMagnitude
       let hasPassedManeuver = projectedProgress != nil &&
         NavigationScenarioCore.hasPassedManeuverPoint(
@@ -254,7 +270,12 @@ final class LiveNavigationEngine {
     let currentStep = session.steps[safeIndex]
     let nextStep = safeIndex < session.steps.count - 1 ? session.steps[safeIndex + 1] : nil
     let routeProgress = fix.flatMap {
-      routeProgressProjection(session: session, point: $0.point, currentStepIndex: safeIndex) ??
+      routeProgressProjection(
+        session: session,
+        point: $0.point,
+        currentStepIndex: safeIndex,
+        fix: $0
+      ) ??
         routeProgressProjection(pathPoints: session.pathPoints, point: $0.point)
     }
 
@@ -315,52 +336,71 @@ final class LiveNavigationEngine {
     return step.maneuverType?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() != "arrive"
   }
 
-  private func routeDeviationMeters(pathPoints: [GeoPoint], point: GeoPoint) -> Int? {
-    guard pathPoints.count >= 3 else { return nil }
-    return routeProgressProjection(pathPoints: pathPoints, point: point)
+  private func routeDeviationMeters(session: RouteSession, fix: LocationFix) -> Int? {
+    guard session.pathPoints.count >= 2 else { return nil }
+    let routeLength = routeLengthMeters(session.pathPoints)
+    guard routeLength > 0 else { return nil }
+    let minimumAlong = max(
+      session.lastProjectedDistanceAlongRouteMeters -
+        SharedProductRules.Navigation.routeProjectionBacktrackToleranceMeters,
+      0
+    )
+    let maximumAlong = min(
+      session.lastProjectedDistanceAlongRouteMeters +
+        SharedProductRules.Navigation.routeProjectionDeviationLookAheadMeters,
+      routeLength
+    )
+    return routeProgressProjection(
+      pathPoints: session.pathPoints,
+      point: fix.point,
+      minimumDistanceAlongRouteMeters: minimumAlong,
+      maximumDistanceAlongRouteMeters: maximumAlong,
+      fix: fix,
+      monotonicFloorMeters: session.lastProjectedDistanceAlongRouteMeters
+    )
       .map { Int($0.lateralDistanceMeters.rounded()) }
   }
 
   private func routeLengthMeters(_ pathPoints: [GeoPoint]) -> Double {
-    guard pathPoints.count >= 2 else { return 0 }
-    var length = 0.0
-    for index in 0..<(pathPoints.count - 1) {
-      length += pathPoints[index].distance(to: pathPoints[index + 1])
-    }
-    return length
+    RouteProjectionCore.routeLengthMeters(pathPoints)
   }
 
   private func stepDistancesAlongRoute(
     steps: [RouteStep],
-    pathPoints: [GeoPoint],
-    routeLengthMeters: Double
+    pathPoints: [GeoPoint]
   ) -> [Double] {
-    var distances: [Double] = []
-    var previous = 0.0
-    for (index, step) in steps.enumerated() {
-      let raw = step.maneuverPoint
-        .flatMap { routeProgressProjection(pathPoints: pathPoints, point: $0)?.distanceAlongRouteMeters } ??
-        (index == 0 ? 0 : routeLengthMeters)
-      let normalized = min(max(raw, previous), routeLengthMeters)
-      distances.append(normalized)
-      previous = normalized
-    }
-    return distances
+    RouteProjectionCore.stepDistancesAlongRoute(steps: steps, pathPoints: pathPoints)
   }
 
   private func routeProgressProjection(
     session: RouteSession,
     point: GeoPoint,
-    currentStepIndex: Int
+    currentStepIndex: Int,
+    fix: LocationFix
   ) -> RouteProgressProjection? {
     let routeLength = routeLengthMeters(session.pathPoints)
     let currentAlong = session.stepDistancesAlongRoute[safe: currentStepIndex] ?? 0
     let nextAlong = session.stepDistancesAlongRoute[safe: currentStepIndex + 1] ?? routeLength
+    let backtrackTolerance = SharedProductRules.Navigation.routeProjectionBacktrackToleranceMeters
+    let lookAheadTolerance = SharedProductRules.Navigation.routeProjectionLookAheadToleranceMeters
+    let minimumAlong = max(
+      max(currentAlong - backtrackTolerance, 0),
+      max(session.lastProjectedDistanceAlongRouteMeters - backtrackTolerance, 0)
+    )
+    let maximumAlong = min(
+      max(
+        nextAlong + lookAheadTolerance,
+        session.lastProjectedDistanceAlongRouteMeters + backtrackTolerance
+      ),
+      routeLength
+    )
     return routeProgressProjection(
       pathPoints: session.pathPoints,
       point: point,
-      minimumDistanceAlongRouteMeters: max(currentAlong - Self.routeProjectionBacktrackToleranceMeters, 0),
-      maximumDistanceAlongRouteMeters: min(nextAlong + Self.routeProjectionLookAheadToleranceMeters, routeLength)
+      minimumDistanceAlongRouteMeters: minimumAlong,
+      maximumDistanceAlongRouteMeters: maximumAlong,
+      fix: fix,
+      monotonicFloorMeters: session.lastProjectedDistanceAlongRouteMeters
     )
   }
 
@@ -368,72 +408,19 @@ final class LiveNavigationEngine {
     pathPoints: [GeoPoint],
     point: GeoPoint,
     minimumDistanceAlongRouteMeters: Double = 0,
-    maximumDistanceAlongRouteMeters: Double = .greatestFiniteMagnitude
+    maximumDistanceAlongRouteMeters: Double = .greatestFiniteMagnitude,
+    fix: LocationFix? = nil,
+    monotonicFloorMeters: Double? = nil
   ) -> RouteProgressProjection? {
-    guard pathPoints.count >= 2 else { return nil }
-    var bestProjection: RouteProgressProjection?
-    var distanceBeforeSegment = 0.0
-    let totalLength = routeLengthMeters(pathPoints)
-    for index in 0..<(pathPoints.count - 1) {
-      let segmentProjection = projectOntoSegment(
-        point: point,
-        start: pathPoints[index],
-        end: pathPoints[index + 1]
-      )
-      let distanceAlongRoute = distanceBeforeSegment + segmentProjection.lengthMeters * segmentProjection.ratio
-      if distanceAlongRoute < minimumDistanceAlongRouteMeters ||
-        distanceAlongRoute > maximumDistanceAlongRouteMeters {
-        distanceBeforeSegment += segmentProjection.lengthMeters
-        continue
-      }
-      let projection = RouteProgressProjection(
-        distanceAlongRouteMeters: distanceAlongRoute,
-        remainingRouteMeters: max(totalLength - distanceAlongRoute, 0),
-        lateralDistanceMeters: segmentProjection.lateralDistanceMeters
-      )
-      if bestProjection == nil || projection.lateralDistanceMeters < bestProjection!.lateralDistanceMeters {
-        bestProjection = projection
-      }
-      distanceBeforeSegment += segmentProjection.lengthMeters
-    }
-    return bestProjection
-  }
-
-  private func projectOntoSegment(point: GeoPoint, start: GeoPoint, end: GeoPoint) -> SegmentProjection {
-    let latitudeReference = ((point.latitude + start.latitude + end.latitude) / 3.0) * .pi / 180.0
-    let earthRadius = 6_371_000.0
-
-    func project(_ geoPoint: GeoPoint) -> (x: Double, y: Double) {
-      let x = geoPoint.longitude * .pi / 180.0 * earthRadius * cos(latitudeReference)
-      let y = geoPoint.latitude * .pi / 180.0 * earthRadius
-      return (x, y)
-    }
-
-    let pointProjection = project(point)
-    let startProjection = project(start)
-    let endProjection = project(end)
-    let dx = endProjection.x - startProjection.x
-    let dy = endProjection.y - startProjection.y
-    let lengthSquared = (dx * dx) + (dy * dy)
-
-    guard lengthSquared > 0 else {
-      return SegmentProjection(
-        ratio: 0,
-        lengthMeters: 0,
-        lateralDistanceMeters: hypot(pointProjection.x - startProjection.x, pointProjection.y - startProjection.y)
-      )
-    }
-
-    let ratio = min(
-      max((((pointProjection.x - startProjection.x) * dx) + ((pointProjection.y - startProjection.y) * dy)) / lengthSquared, 0),
-      1
-    )
-    let nearestX = startProjection.x + (ratio * dx)
-    let nearestY = startProjection.y + (ratio * dy)
-    return SegmentProjection(
-      ratio: ratio,
-      lengthMeters: sqrt(lengthSquared),
-      lateralDistanceMeters: hypot(pointProjection.x - nearestX, pointProjection.y - nearestY)
+    return RouteProjectionCore.project(
+      pathPoints: pathPoints,
+      point: point,
+      minimumDistanceAlongRouteMeters: minimumDistanceAlongRouteMeters,
+      maximumDistanceAlongRouteMeters: maximumDistanceAlongRouteMeters,
+      preferredCourseDegrees: fix?.courseDegrees,
+      speedMetersPerSecond: fix?.speedMetersPerSecond,
+      accuracyMeters: fix?.accuracyMeters,
+      monotonicFloorMeters: monotonicFloorMeters
     )
   }
 }

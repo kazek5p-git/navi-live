@@ -129,6 +129,7 @@ struct LocationFix: Codable, Hashable, Sendable {
   var accuracyMeters: Double
   var timestamp: Date
   var courseDegrees: Double?
+  var speedMetersPerSecond: Double? = nil
 }
 
 enum GuidanceSpeechMode: String, CaseIterable, Codable, Sendable {
@@ -293,6 +294,7 @@ enum AppRoute: Hashable {
   case routeSummary(placeID: String)
   case headingAlign(placeID: String)
   case activeNavigation(placeID: String)
+  case routeAssistant(placeID: String)
   case arrival(placeID: String)
   case currentPosition
   case favorites

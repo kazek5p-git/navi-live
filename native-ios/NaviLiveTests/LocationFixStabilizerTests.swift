@@ -83,6 +83,13 @@ final class LocationFixStabilizerTests: XCTestCase {
     XCTAssertEqual(stabilized.point.longitude, later.point.longitude, accuracy: 0.0000001)
   }
 
+  func testInvalidNegativeAccuracyIsRejected() {
+    let stabilizer = LocationFixStabilizer()
+    let invalid = fix(latitude: 51.0, longitude: 19.0, accuracy: -1, timestamp: 1)
+
+    XCTAssertNil(stabilizer.stabilize(invalid))
+  }
+
   private func fix(latitude: Double, longitude: Double, accuracy: Double, timestamp: TimeInterval) -> LocationFix {
     LocationFix(
       point: GeoPoint(latitude: latitude, longitude: longitude),

@@ -51,7 +51,12 @@ final class VoiceOverAnnouncer: NSObject {
       return
     }
 
-    speakWithSynthesizer(message, settings: settings, usesNavigationAudioSession: false)
+    speakWithSynthesizer(
+      message,
+      settings: settings,
+      usesNavigationAudioSession: false,
+      interruptExistingSpeech: true
+    )
   }
 
   func announceNavigation(_ message: String, settings: AppSettings) {
@@ -64,7 +69,12 @@ final class VoiceOverAnnouncer: NSObject {
       return
     }
 
-    speakWithSynthesizer(message, settings: settings, usesNavigationAudioSession: true)
+    speakWithSynthesizer(
+      message,
+      settings: settings,
+      usesNavigationAudioSession: true,
+      interruptExistingSpeech: false
+    )
   }
 
   func previewSynthesizer(_ message: String, settings: AppSettings) {
@@ -72,7 +82,12 @@ final class VoiceOverAnnouncer: NSObject {
       return
     }
 
-    speakWithSynthesizer(message, settings: settings, usesNavigationAudioSession: false)
+    speakWithSynthesizer(
+      message,
+      settings: settings,
+      usesNavigationAudioSession: false,
+      interruptExistingSpeech: true
+    )
   }
 
   func stopSpeech() {
@@ -83,7 +98,8 @@ final class VoiceOverAnnouncer: NSObject {
   private func speakWithSynthesizer(
     _ message: String,
     settings: AppSettings,
-    usesNavigationAudioSession: Bool
+    usesNavigationAudioSession: Bool,
+    interruptExistingSpeech: Bool
   ) {
     if usesNavigationAudioSession {
       prepareNavigationAudioSession()
@@ -98,7 +114,9 @@ final class VoiceOverAnnouncer: NSObject {
     } else {
       utterance.voice = AVSpeechSynthesisVoice(language: L10n.currentLocale.identifier)
     }
-    synthesizer.stopSpeaking(at: .immediate)
+    if interruptExistingSpeech {
+      synthesizer.stopSpeaking(at: .immediate)
+    }
     synthesizer.speak(utterance)
   }
 
@@ -599,13 +617,17 @@ private extension Data {
 extension VoiceOverAnnouncer: AVSpeechSynthesizerDelegate {
   nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
     Task { @MainActor in
-      deactivateNavigationAudioSession()
+      if !synthesizer.isSpeaking {
+        deactivateNavigationAudioSession()
+      }
     }
   }
 
   nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
     Task { @MainActor in
-      deactivateNavigationAudioSession()
+      if !synthesizer.isSpeaking {
+        deactivateNavigationAudioSession()
+      }
     }
   }
 }

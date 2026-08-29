@@ -54,6 +54,13 @@
 		F3CA6CDB6CA634195135B2A3 /* NavigationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE495BDC236816C4F38298E9 /* NavigationModels.swift */; };
 		F446865BA390E50B01331593 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FF1A7D99536D87D5114AC33 /* AppModel.swift */; };
 		F6FAC519C86491E2A1FAF8C4 /* NavigationScenarioCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83A2223D0BBECFF001224B2 /* NavigationScenarioCore.swift */; };
+		A1B2C3D4E5F60718293A4B5C /* RouteAssistantCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B2C3D4E5F60718293A4B5C /* RouteAssistantCore.swift */; };
+		A1B2C3D4E5F60718293A4B5D /* RouteProjectionCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B2C3D4E5F60718293A4B5D /* RouteProjectionCore.swift */; };
+		A1B2C3D4E5F60718293A4B5E /* RouteAssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B2C3D4E5F60718293A4B5E /* RouteAssistantView.swift */; };
+		A1B2C3D4E5F60718293A4B61 /* RouteQualityAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B2C3D4E5F60718293A4B61 /* RouteQualityAnalyzer.swift */; };
+		A1B2C3D4E5F60718293A4B5F /* RouteAssistantCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B2C3D4E5F60718293A4B5F /* RouteAssistantCoreTests.swift */; };
+		A1B2C3D4E5F60718293A4B60 /* RouteProjectionCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B2C3D4E5F60718293A4B60 /* RouteProjectionCoreTests.swift */; };
+		A1B2C3D4E5F60718293A4B62 /* RouteQualityAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B2C3D4E5F60718293A4B62 /* RouteQualityAnalyzerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -333,6 +340,13 @@
 		FDA48CD3F0B229A22166DE8F /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/General.strings; sourceTree = "<group>"; };
 		FDA5AF61DB8DC3ECA1955853 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		FF57FF48036574BD3E6F8EC4 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Onboarding.strings; sourceTree = "<group>"; };
+		B1B2C3D4E5F60718293A4B5C /* RouteAssistantCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteAssistantCore.swift; sourceTree = "<group>"; };
+		B1B2C3D4E5F60718293A4B5D /* RouteProjectionCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteProjectionCore.swift; sourceTree = "<group>"; };
+		B1B2C3D4E5F60718293A4B5E /* RouteAssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteAssistantView.swift; sourceTree = "<group>"; };
+		B1B2C3D4E5F60718293A4B61 /* RouteQualityAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteQualityAnalyzer.swift; sourceTree = "<group>"; };
+		B1B2C3D4E5F60718293A4B5F /* RouteAssistantCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteAssistantCoreTests.swift; sourceTree = "<group>"; };
+		B1B2C3D4E5F60718293A4B60 /* RouteProjectionCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteProjectionCoreTests.swift; sourceTree = "<group>"; };
+		B1B2C3D4E5F60718293A4B62 /* RouteQualityAnalyzerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteQualityAnalyzerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -359,6 +373,7 @@
 				E7714BB9FBA3D087F812E80B /* ArrivalView.swift */,
 				19F51C1F15A4DA573A439496 /* HeadingAlignView.swift */,
 				C1265EB8C59C572255AA4444 /* PlaceDetailsView.swift */,
+				B1B2C3D4E5F60718293A4B5E /* RouteAssistantView.swift */,
 				F59862EB3C6B4C6605F10AF6 /* RouteSummaryView.swift */,
 			);
 			path = Route;
@@ -394,6 +409,9 @@
 			children = (
 				F0ACFACB54A6D05F75F03E2C /* LocationFixStabilizerTests.swift */,
 				A6981838B8E9CFD597F9FE77 /* NavigationParityFixturesTests.swift */,
+				B1B2C3D4E5F60718293A4B5C /* RouteAssistantCoreTests.swift */,
+				B1B2C3D4E5F60718293A4B5D /* RouteProjectionCoreTests.swift */,
+				B1B2C3D4E5F60718293A4B62 /* RouteQualityAnalyzerTests.swift */,
 				740DDF7EBC5C0DDC1ADE3E02 /* NaviLiveScaffoldTests.swift */,
 			);
 			path = NaviLiveTests;
@@ -465,6 +483,16 @@
 			path = Navigation;
 			sourceTree = "<group>";
 		};
+		D1B2C3D4E5F60718293A4B5C /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				B1B2C3D4E5F60718293A4B5C /* RouteAssistantCore.swift */,
+				B1B2C3D4E5F60718293A4B5D /* RouteProjectionCore.swift */,
+				B1B2C3D4E5F60718293A4B61 /* RouteQualityAnalyzer.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
 		83E5EDD1C10D0029BCF0B037 /* Accessibility */ = {
 			isa = PBXGroup;
 			children = (
@@ -504,6 +532,7 @@
 				2770CF8840EF05128E49201A /* Formatting */,
 				4F6EA81A9EC7BD756B0A346F /* Localization */,
 				C2D1954323661D8D59513F96 /* Models */,
+				D1B2C3D4E5F60718293A4B5C /* Navigation */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -746,6 +775,9 @@
 				680EB5C34143C14B0F5E3748 /* NavigationInstructionCore.swift in Sources */,
 				F3CA6CDB6CA634195135B2A3 /* NavigationModels.swift in Sources */,
 				F6FAC519C86491E2A1FAF8C4 /* NavigationScenarioCore.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5C /* RouteAssistantCore.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5D /* RouteProjectionCore.swift in Sources */,
+				A1B2C3D4E5F60718293A4B61 /* RouteQualityAnalyzer.swift in Sources */,
 				976FD8FE37FAEC8610B23532 /* NearbyPOICacheStore.swift in Sources */,
 				E90BEE4063A3AD625655713A /* OnboardingView.swift in Sources */,
 				E5B22FA289EC760B736BDF21 /* PermissionsView.swift in Sources */,
@@ -753,6 +785,7 @@
 				0FCFDC0BC235516045218C29 /* RootView.swift in Sources */,
 				C0F891719ECF722511C7FE90 /* RouteIssueDiagnosticLogger.swift in Sources */,
 				6092E7375B8B0A0F33C3D683 /* RouteSummaryView.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5E /* RouteAssistantView.swift in Sources */,
 				44A28EDCBB964523F9477D78 /* SearchView.swift in Sources */,
 				07414C96AC90CD5FA9147476 /* SettingsStore.swift in Sources */,
 				825B6557DE5D7AF04E5184D0 /* SettingsView.swift in Sources */,
@@ -769,6 +802,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				846F937CFB3EF92C2B57D703 /* LocationFixStabilizerTests.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5F /* RouteAssistantCoreTests.swift in Sources */,
+				A1B2C3D4E5F60718293A4B60 /* RouteProjectionCoreTests.swift in Sources */,
+				A1B2C3D4E5F60718293A4B62 /* RouteQualityAnalyzerTests.swift in Sources */,
 				7B92354262AE925006E48256 /* NaviLiveScaffoldTests.swift in Sources */,
 				32A90C346FF25B8463B97AF2 /* NavigationParityFixturesTests.swift in Sources */,
 			);

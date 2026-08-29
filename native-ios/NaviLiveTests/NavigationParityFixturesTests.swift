@@ -218,6 +218,49 @@ final class NavigationParityFixturesTests: XCTestCase {
     }
   }
 
+  func testArrivalUsesTheClosestReliableRouteSignal() {
+    XCTAssertTrue(
+      NavigationScenarioCore.shouldMarkArrived(
+        distanceToDestinationMeters: 19,
+        remainingRouteMeters: 100,
+        accuracyMeters: 10
+      )
+    )
+    XCTAssertFalse(
+      NavigationScenarioCore.shouldMarkArrived(
+        distanceToDestinationMeters: 21,
+        remainingRouteMeters: 100,
+        accuracyMeters: 10
+      )
+    )
+    XCTAssertTrue(
+      NavigationScenarioCore.shouldMarkArrived(
+        distanceToDestinationMeters: 100,
+        remainingRouteMeters: 19,
+        accuracyMeters: 10
+      )
+    )
+  }
+
+  func testStaleLocationIsNotTreatedAsLiveByTheAssistant() {
+    let now = Date(timeIntervalSince1970: 1_000)
+    XCTAssertTrue(
+      NavigationScenarioCore.isFreshLocation(
+        timestamp: now.addingTimeInterval(-15),
+        now: now
+      )
+    )
+    XCTAssertFalse(
+      NavigationScenarioCore.isFreshLocation(
+        timestamp: now.addingTimeInterval(-15.001),
+        now: now
+      )
+    )
+    XCTAssertFalse(
+      NavigationScenarioCore.isFreshLocation(timestamp: nil, now: now)
+    )
+  }
+
   func testNavigationCountdownMilestonesMatchSharedFixtures() throws {
     let fixtures = try SharedParityFixtureLoader.load()
     for entry in fixtures.scenarioCases.countdowns {

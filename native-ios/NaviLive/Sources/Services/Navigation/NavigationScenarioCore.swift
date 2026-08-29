@@ -1,5 +1,11 @@
 import Foundation
 
+struct HeadingAlignment: Equatable {
+  let signedDeltaDegrees: Double
+  let isAligned: Bool
+  let isAlmostAligned: Bool
+}
+
 enum NavigationScenarioCore {
   static func maneuverAdvanceThresholdMeters(accuracyMeters: Double) -> Double {
     min(
@@ -42,6 +48,27 @@ enum NavigationScenarioCore {
 
   static func maneuverPassThresholdMeters(accuracyMeters: Double) -> Double {
     min(max(accuracyMeters, 5), 12)
+  }
+
+  static func arrivalThresholdMeters(accuracyMeters: Double) -> Double {
+    min(
+      max(accuracyMeters, SharedProductRules.Navigation.arrivalAccuracyMinMeters),
+      SharedProductRules.Navigation.arrivalAccuracyMaxMeters
+    ) * SharedProductRules.Navigation.arrivalAccuracyMultiplier
+  }
+
+  static func shouldMarkArrived(
+    distanceToDestinationMeters: Double?,
+    remainingRouteMeters: Double?,
+    accuracyMeters: Double
+  ) -> Bool {
+    let validDistances: [Double] = [distanceToDestinationMeters, remainingRouteMeters]
+      .compactMap { value in
+        guard let value, value.isFinite, value >= 0 else { return nil }
+        return value
+      }
+    let nearestDistance = validDistances.min() ?? .greatestFiniteMagnitude
+    return nearestDistance <= arrivalThresholdMeters(accuracyMeters: accuracyMeters)
   }
 
   static func hasPassedManeuverPoint(
@@ -94,5 +121,30 @@ enum NavigationScenarioCore {
   ) -> Bool {
     !isRouteRecalculating &&
       elapsedSinceLastRecalculateMs >= SharedProductRules.Navigation.autoRecalculateCooldownMs
+  }
+
+  static func isFreshLocation(
+    timestamp: Date?,
+    now: Date,
+    maximumAge: TimeInterval = TimeInterval(SharedProductRules.Navigation.assistantFreshLocationMaxAgeMs) / 1000.0
+  ) -> Bool {
+    guard let timestamp else { return false }
+    let age = now.timeIntervalSince(timestamp)
+    return (-5.0...maximumAge).contains(age)
+  }
+
+  /// Oblicza najkrótszą korektę obrotu telefonu względem kierunku trasy.
+  static func headingAlignment(
+    currentHeadingDegrees: Double,
+    routeBearingDegrees: Double
+  ) -> HeadingAlignment? {
+    guard currentHeadingDegrees.isFinite, routeBearingDegrees.isFinite else { return nil }
+    let signedDelta = ((routeBearingDegrees - currentHeadingDegrees + 540).truncatingRemainder(dividingBy: 360)) - 180
+    let absoluteDelta = abs(signedDelta)
+    return HeadingAlignment(
+      signedDeltaDegrees: signedDelta,
+      isAligned: absoluteDelta <= 15,
+      isAlmostAligned: absoluteDelta <= 35
+    )
   }
 }

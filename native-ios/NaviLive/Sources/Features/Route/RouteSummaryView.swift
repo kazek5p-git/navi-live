@@ -68,13 +68,14 @@ struct RouteSummaryView: View {
               }
             }
 
+            RouteQualitySummaryView(summary: summary)
+
             Section {
               PrimaryActionButton(
                 title: L10n.text("route.action.start_guidance", table: .navigation),
                 systemImage: "location.fill"
               ) {
-                model.beginActiveNavigation()
-                model.openActiveNavigation(placeID)
+                model.openHeadingAlign(placeID)
               }
 
               SecondaryActionButton(
@@ -82,6 +83,13 @@ struct RouteSummaryView: View {
                 systemImage: "arrow.clockwise"
               ) {
                 Task { await model.prepareRoute(for: placeID) }
+              }
+
+              SecondaryActionButton(
+                title: L10n.text("active.action.route_assistant", table: .navigation),
+                systemImage: "sparkles"
+              ) {
+                model.openRouteAssistant(placeID)
               }
             }
           } else if model.isRouting {
@@ -122,6 +130,77 @@ struct RouteSummaryView: View {
           message: L10n.text("route.unavailable.message", table: .navigation)
         )
       }
+    }
+  }
+}
+
+private struct RouteQualitySummaryView: View {
+  let summary: RouteSummary
+
+  var body: some View {
+    let report = RouteQualityAnalyzer.analyze(
+      steps: summary.steps,
+      pathPoints: summary.pathPoints
+    )
+    Section {
+      StatusCard(
+        title: L10n.text("assistant.quick.quality", table: .navigation),
+        message: routeQualityMessage(report),
+        tone: report.level == .good ? .info : .warning
+      )
+    }
+  }
+
+  private func routeQualityMessage(_ report: RouteQualityReport) -> String {
+    var details: [String] = []
+    if report.issues.contains(.unnamedTurn) {
+      details.append(
+        L10n.text(
+          "assistant.quality.issue.unnamed_turns",
+          table: .navigation,
+          report.unnamedTurnCount
+        )
+      )
+    }
+    if report.issues.contains(.repeatedInstruction) {
+      details.append(
+        L10n.text(
+          "assistant.quality.issue.repeated_instruction",
+          table: .navigation,
+          report.repeatedInstructionCount
+        )
+      )
+    }
+    if report.issues.contains(.missingManeuverData) {
+      details.append(
+        L10n.text(
+          "assistant.quality.issue.missing_maneuver",
+          table: .navigation,
+          report.missingManeuverDataCount
+        )
+      )
+    }
+    if report.issues.contains(.closeOppositeManeuvers) {
+      details.append(
+        L10n.text(
+          "assistant.quality.issue.close_opposite",
+          table: .navigation,
+          report.closeOppositeManeuverCount
+        )
+      )
+    }
+    if report.issues.contains(.incompleteGeometry) || report.issues.contains(.maneuverGeometryMismatch) {
+      details.append(L10n.text("assistant.quality.issue.geometry", table: .navigation))
+    }
+
+    switch report.recommendation {
+    case .followCurrentGuidance:
+      return L10n.text("assistant.quality.route.consistent", table: .navigation)
+    case .reviewBeforeStarting, .waitForCompleteData:
+      return ([
+        L10n.text("assistant.quality.route.review", table: .navigation),
+        details.joined(separator: " ")
+      ]).filter { !$0.isEmpty }.joined(separator: " ")
     }
   }
 }

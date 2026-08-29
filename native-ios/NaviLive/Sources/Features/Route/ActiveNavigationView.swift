@@ -38,6 +38,9 @@ struct ActiveNavigationView: View {
         .accessibilityAction(named: Text(L10n.text("active.action.next_instruction", table: .navigation))) {
           model.announceNextInstruction()
         }
+        .accessibilityAction(named: Text(L10n.text("active.action.route_assistant", table: .navigation))) {
+          model.openRouteAssistant(placeID)
+        }
         .accessibilityAction(
           named: Text(
             state.isPaused
@@ -135,6 +138,13 @@ struct ActiveNavigationView: View {
           systemImage: state.isPaused ? "play.fill" : "pause.fill"
         ) {
           model.togglePauseNavigation()
+        }
+
+        SecondaryActionButton(
+          title: L10n.text("active.action.route_assistant", table: .navigation),
+          systemImage: "sparkles"
+        ) {
+          model.openRouteAssistant(placeID)
         }
 
         SecondaryActionButton(

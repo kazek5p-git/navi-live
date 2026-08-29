@@ -48,40 +48,31 @@ final class AppModel: ObservableObject {
   private let pathMonitorQueue = DispatchQueue(label: "NaviLive.NearbyPOICache.Network")
   private var currentNetworkPath: NWPath?
   private var nearbyPOICacheRefreshTask: Task<Void, Never>?
-  private var delayedAnnouncementTask: Task<Void, Never>?
+  private struct QueuedSpeech {
+    let message: String
+    let delayAfterSound: TimeInterval
+    let isNavigation: Bool
+    let generation: UInt64
+  }
+
+  private var speechQueue: [QueuedSpeech] = []
+  private var speechQueueTask: Task<Void, Never>?
+  private var speechQueueGeneration: UInt64 = 0
   private var lastNearbyPOICacheAttemptAt: Date?
+  private var lastReverseGeocodedPoint: GeoPoint?
+  private var lastReverseGeocodedAt: Date?
   private var isNavigationLive = false
   private var lastCountdownAnnouncementStepIndex = -1
   private var lastCountdownMilestoneMeters: Int?
   private var lastCountdownCadenceMode: AnnouncementCadenceMode?
   private var lastImmediateAnnouncementStepIndex = -1
-  private var headingIndex = 0
-  private static func localizedHeadingSequence() -> [HeadingState] {
-    [
-      HeadingState(
-        instruction: L10n.text("heading.instruction.rotate_right", table: .navigation),
-        isAligned: false,
-        arrowRotationDegrees: 22
-      ),
-      HeadingState(
-        instruction: L10n.text("heading.instruction.almost_aligned", table: .navigation),
-        isAligned: false,
-        arrowRotationDegrees: 7
-      ),
-      HeadingState(
-        instruction: L10n.text("heading.instruction.aligned", table: .navigation),
-        isAligned: true,
-        arrowRotationDegrees: 0
-      )
-    ]
-  }
-
-  private var headingSequence: [HeadingState] {
-    Self.localizedHeadingSequence()
-  }
+  private var currentHeadingDegrees: Double? = nil
+  private var routeInitialBearingDegrees: Double? = nil
   private static let nearbyPOICacheFreshInterval: TimeInterval = 24 * 60 * 60
   private static let nearbyPOICacheMoveThresholdMeters: Double = 800
   private static let nearbyPOICacheAttemptThrottle: TimeInterval = 2 * 60
+  private static let reverseGeocodeMoveThresholdMeters: Double = 35
+  private static let reverseGeocodeThrottle: TimeInterval = 25
   private static let speechAfterSoundDelay: TimeInterval = 0.5
 
   convenience init() {
@@ -109,7 +100,11 @@ final class AppModel: ObservableObject {
     L10n.selectedLanguageCode = snapshot.settings.languageCode
     favorites = snapshot.favorites
     lastRoutePlaceID = snapshot.lastRoutePlaceID
-    headingState = Self.localizedHeadingSequence().first ?? HeadingState()
+    headingState = HeadingState(
+      instruction: L10n.text("heading.instruction.rotate_right", table: .navigation),
+      isAligned: false,
+      arrowRotationDegrees: 22
+    )
     activeNavigationState = ActiveNavigationState()
     hasCompletedOnboarding = snapshot.hasCompletedOnboarding
     favorites.forEach { knownPlaces[$0.id] = $0 }
@@ -139,7 +134,7 @@ final class AppModel: ObservableObject {
     refreshLaunchState()
     if hasLocationPermission {
       locationService.startUpdates()
-      await loadCurrentAddress()
+      await loadCurrentAddress(force: true)
     } else {
       currentLocationDescription = L10n.text("home.location.unavailable", table: .home)
     }
@@ -302,7 +297,7 @@ final class AppModel: ObservableObject {
     return L10n.text("current.position.unknown", table: .home)
   }
 
-  func loadCurrentAddress() async {
+  func loadCurrentAddress(force: Bool = false) async {
     guard locationService.isUpdating else {
       currentLocationDescription = L10n.text("home.location.tracking_stopped", table: .home)
       return
@@ -313,18 +308,31 @@ final class AppModel: ObservableObject {
       return
     }
 
+    let now = Date()
+    let movedEnough = lastReverseGeocodedPoint.map {
+      $0.distance(to: fix.point) >= Self.reverseGeocodeMoveThresholdMeters
+    } ?? true
+    let staleEnough = lastReverseGeocodedAt.map {
+      now.timeIntervalSince($0) >= Self.reverseGeocodeThrottle
+    } ?? true
+    guard force || movedEnough || staleEnough else { return }
+    lastReverseGeocodedPoint = fix.point
+    lastReverseGeocodedAt = now
+
     do {
       let address = try await navigationAPI.reverseGeocode(point: fix.point)
       guard locationService.isUpdating else {
         currentLocationDescription = L10n.text("home.location.tracking_stopped", table: .home)
         return
       }
+      guard locationService.latestFix == fix else { return }
       currentLocationDescription = address
     } catch {
       guard locationService.isUpdating else {
         currentLocationDescription = L10n.text("home.location.tracking_stopped", table: .home)
         return
       }
+      guard locationService.latestFix == fix else { return }
       currentLocationDescription = L10n.text("home.location.fallback", table: .home)
     }
   }
@@ -365,6 +373,7 @@ final class AppModel: ObservableObject {
       return
     }
 
+    resetSpeechQueue(stopCurrentSpeech: true)
     isRouting = true
     defer { isRouting = false }
 
@@ -378,8 +387,8 @@ final class AppModel: ObservableObject {
       selectedRouteSummary = summary
       lastRoutePlaceID = place.id
       settingsStore.setLastRoutePlaceID(place.id)
-      headingIndex = 0
-      headingState = headingSequence[headingIndex]
+      routeInitialBearingDegrees = RouteProjectionCore.initialBearingDegrees(pathPoints: summary.pathPoints)
+      headingState = headingStateFor(currentHeadingDegrees)
       activeNavigationState = liveNavigationEngine.loadRoute(
         destination: place,
         summary: summary,
@@ -398,16 +407,48 @@ final class AppModel: ObservableObject {
     }
   }
 
+  func updateHeading(_ degrees: Double?) {
+    currentHeadingDegrees = degrees?.isFinite == true ? degrees : nil
+    headingState = headingStateFor(currentHeadingDegrees)
+  }
+
   func cycleHeadingInstruction() {
-    headingIndex = (headingIndex + 1) % headingSequence.count
-    headingState = headingSequence[headingIndex]
+    updateHeading(currentHeadingDegrees)
   }
 
   func markHeadingAligned() {
-    headingIndex = headingSequence.count - 1
-    headingState = headingSequence[headingIndex]
+    guard headingState.isAligned else { return }
     statusMessage = L10n.text("heading.status.aligned", table: .navigation)
     announceSuccess(message: L10n.text("heading.instruction.aligned", table: .navigation))
+  }
+
+  private func headingStateFor(_ headingDegrees: Double?) -> HeadingState {
+    guard let headingDegrees,
+          let routeBearing = routeInitialBearingDegrees,
+          let alignment = NavigationScenarioCore.headingAlignment(
+            currentHeadingDegrees: headingDegrees,
+            routeBearingDegrees: routeBearing
+          ) else {
+      return HeadingState(
+        instruction: L10n.text("heading.instruction.rotate_right", table: .navigation),
+        isAligned: false,
+        arrowRotationDegrees: 22
+      )
+    }
+
+    let instruction: String
+    if alignment.isAligned {
+      instruction = L10n.text("heading.instruction.aligned", table: .navigation)
+    } else if alignment.signedDeltaDegrees >= 0 {
+      instruction = L10n.text("heading.instruction.rotate_right", table: .navigation)
+    } else {
+      instruction = L10n.text("heading.instruction.rotate_left", table: .navigation)
+    }
+    return HeadingState(
+      instruction: instruction,
+      isAligned: alignment.isAligned,
+      arrowRotationDegrees: alignment.signedDeltaDegrees
+    )
   }
 
   func beginActiveNavigation() {
@@ -434,6 +475,239 @@ final class AppModel: ObservableObject {
     let message = navigationRepeatMessage()
     statusMessage = L10n.text("active.status.repeating", table: .navigation)
     announceNavigationPrompt(message)
+  }
+
+  /// Tworzy lokalną odpowiedź na podstawie aktualnego stanu prowadzenia.
+  func answerRouteAssistant(for query: String) -> String {
+    let steps = selectedRouteSummary?.steps ?? []
+    guard !steps.isEmpty || liveNavigationEngine.currentDestination != nil else {
+      let answer = L10n.text("assistant.no_active_route", table: .navigation)
+      announceRouteAssistantAnswer(answer)
+      return answer
+    }
+
+    guard !steps.isEmpty else {
+      let answer = L10n.text("assistant.no_route_steps", table: .navigation)
+      announceRouteAssistantAnswer(answer)
+      return answer
+    }
+
+    let match = RouteAssistantCore.match(for: query)
+    guard match.isConfident else {
+      let answer = L10n.text("assistant.help", table: .navigation)
+      announceRouteAssistantAnswer(answer)
+      return answer
+    }
+
+    let currentIndex = min(max(activeNavigationState.currentStepIndex, 0), steps.count - 1)
+    let hasLiveLocation = hasFreshLiveLocation()
+    if RouteAssistantCore.requiresFreshLocation(for: match.intent) && !hasLiveLocation {
+      let answer = L10n.text("assistant.gps.unavailable", table: .navigation)
+      announceRouteAssistantAnswer(answer)
+      return answer
+    }
+    let answer: String
+    switch match.intent {
+    case .currentInstruction:
+      if !hasLiveLocation {
+        answer = L10n.text("assistant.gps.unavailable", table: .navigation)
+      } else {
+        let instruction = steps[currentIndex].instruction.isEmpty
+          ? L10n.text("route.follow_default", table: .navigation)
+          : steps[currentIndex].instruction
+        answer = L10n.text(
+          "assistant.answer.current",
+          table: .navigation,
+          instruction,
+          AppFormatters.distance(activeNavigationState.distanceToNextMeters)
+        )
+      }
+    case .repeatInstruction:
+      answer = navigationRepeatMessage()
+    case .currentLocation:
+      if !hasLiveLocation {
+        answer = L10n.text("assistant.gps.unavailable", table: .navigation)
+      } else {
+        let location = currentLocationDescription
+          .trimmingCharacters(in: .whitespacesAndNewlines)
+        let address = location.isEmpty
+          ? L10n.text("current.position.unknown", table: .home)
+          : location
+        let title = L10n.text("current.title", table: .home)
+        let accuracy = AppFormatters.accuracy(locationService.latestFix?.accuracyMeters)
+        answer = "\(title): \(address). \(accuracy)"
+      }
+    case .nextInstruction:
+      guard let nextIndex = RouteAssistantCore.nextStepIndex(currentStepIndex: currentIndex, steps: steps) else {
+        answer = L10n.text("assistant.no_next_step", table: .navigation)
+        break
+      }
+      let nextStep = steps[nextIndex]
+      let distance = nextIndex == currentIndex + 1
+        ? activeNavigationState.distanceToNextMeters
+        : nextStep.distanceMeters
+      answer = L10n.text(
+        "assistant.answer.next",
+        table: .navigation,
+        nextStep.instruction,
+        AppFormatters.distance(distance)
+      )
+    case .routeOverview:
+      let overview = RouteAssistantCore.overviewStepIndices(
+        currentStepIndex: currentIndex,
+        steps: steps
+      ).enumerated().map { position, index in
+        let step = steps[index]
+        return L10n.text(
+          "assistant.answer.overview.item",
+          table: .navigation,
+          position + 1,
+          step.instruction,
+          AppFormatters.distance(step.distanceMeters)
+        )
+      }.joined(separator: " ")
+      answer = L10n.text("assistant.answer.overview", table: .navigation, overview)
+    case .progress:
+      answer = L10n.text(
+        "assistant.answer.progress",
+        table: .navigation,
+        AppFormatters.distance(activeNavigationState.remainingDistanceMeters),
+        activeNavigationState.progressLabel
+      )
+    case .routeStatus:
+      if !hasLiveLocation {
+        answer = L10n.text("assistant.gps.unavailable", table: .navigation)
+      } else if activeNavigationState.isRecalculating {
+        let accuracy = AppFormatters.accuracy(locationService.latestFix?.accuracyMeters)
+        answer = L10n.text("assistant.status.recalculating", table: .navigation, accuracy)
+      } else if activeNavigationState.isOffRoute {
+        let accuracy = AppFormatters.accuracy(locationService.latestFix?.accuracyMeters)
+        answer = L10n.text("assistant.status.off_route", table: .navigation, accuracy)
+      } else if activeNavigationState.isPaused {
+        let accuracy = AppFormatters.accuracy(locationService.latestFix?.accuracyMeters)
+        answer = L10n.text("assistant.status.paused", table: .navigation, accuracy)
+      } else {
+        let accuracy = AppFormatters.accuracy(locationService.latestFix?.accuracyMeters)
+        answer = L10n.text("assistant.status.on_route", table: .navigation, accuracy)
+      }
+    case .routeQuality:
+      answer = routeQualityAssistantAnswer(
+        hasLiveLocation: hasLiveLocation,
+        steps: steps,
+        pathPoints: selectedRouteSummary?.pathPoints ?? []
+      )
+    case .pedestrianCrossing:
+      guard let crossingIndex = RouteAssistantCore.nextPedestrianCrossingIndex(
+        currentStepIndex: currentIndex,
+        steps: steps
+      ) else {
+        answer = L10n.text("assistant.no_crossing", table: .navigation)
+        break
+      }
+      let crossing = steps[crossingIndex]
+      let distance = crossingIndex == currentIndex + 1
+        ? activeNavigationState.distanceToNextMeters
+        : crossing.distanceMeters
+      answer = L10n.text(
+        "assistant.answer.crossing",
+        table: .navigation,
+        crossing.instruction,
+        AppFormatters.distance(distance)
+      )
+    case .help:
+      answer = L10n.text("assistant.help", table: .navigation)
+    }
+
+    announceRouteAssistantAnswer(answer)
+    return answer
+  }
+
+  private func announceRouteAssistantAnswer(_ answer: String) {
+    statusMessage = answer
+    resetSpeechQueue(stopCurrentSpeech: true)
+    announcer.announceNavigation(answer, settings: settings)
+  }
+
+  private func routeQualityAssistantAnswer(
+    hasLiveLocation: Bool,
+    steps: [RouteStep],
+    pathPoints: [GeoPoint]
+  ) -> String {
+    let report = RouteQualityAnalyzer.analyze(steps: steps, pathPoints: pathPoints)
+    let routeAnswer: String
+    if report.recommendation != .followCurrentGuidance {
+      let details = report.issues.compactMap { issue -> String? in
+        switch issue {
+        case .unnamedTurn:
+          return L10n.text(
+            "assistant.quality.issue.unnamed_turns",
+            table: .navigation,
+            report.unnamedTurnCount
+          )
+        case .repeatedInstruction:
+          return L10n.text(
+            "assistant.quality.issue.repeated_instruction",
+            table: .navigation,
+            report.repeatedInstructionCount
+          )
+        case .missingManeuverData:
+          return L10n.text(
+            "assistant.quality.issue.missing_maneuver",
+            table: .navigation,
+            report.missingManeuverDataCount
+          )
+        case .closeOppositeManeuvers:
+          return L10n.text(
+            "assistant.quality.issue.close_opposite",
+            table: .navigation,
+            report.closeOppositeManeuverCount
+          )
+        case .maneuverGeometryMismatch:
+          return L10n.text("assistant.quality.issue.geometry", table: .navigation)
+        case .incompleteGeometry:
+          return L10n.text("assistant.quality.issue.geometry", table: .navigation)
+        }
+      }.joined(separator: " ")
+      routeAnswer = [
+        L10n.text("assistant.quality.route.review", table: .navigation),
+        details
+      ].filter { !$0.isEmpty }.joined(separator: " ")
+    } else {
+      routeAnswer = L10n.text("assistant.quality.route.consistent", table: .navigation)
+    }
+    let accuracy = AppFormatters.accuracy(locationService.latestFix?.accuracyMeters)
+    let gpsAnswer: String
+    if !hasLiveLocation {
+      gpsAnswer = L10n.text("assistant.quality.unavailable", table: .navigation)
+    } else if activeNavigationState.isRecalculating {
+      gpsAnswer = L10n.text("assistant.quality.recalculating", table: .navigation, accuracy)
+    } else if activeNavigationState.isOffRoute {
+      gpsAnswer = L10n.text("assistant.quality.off_route", table: .navigation, accuracy)
+    } else if activeNavigationState.isPaused {
+      gpsAnswer = L10n.text("assistant.quality.paused", table: .navigation)
+    } else {
+      switch RouteAssistantCore.gpsQuality(accuracyMeters: locationService.latestFix?.accuracyMeters) {
+      case .reliable:
+        gpsAnswer = L10n.text("assistant.quality.reliable", table: .navigation, accuracy)
+      case .limited:
+        gpsAnswer = L10n.text("assistant.quality.limited", table: .navigation, accuracy)
+      case .weak:
+        gpsAnswer = L10n.text("assistant.quality.weak", table: .navigation, accuracy)
+      case .unavailable:
+        gpsAnswer = L10n.text("assistant.quality.unavailable", table: .navigation)
+      }
+    }
+    return "\(gpsAnswer) \(routeAnswer)"
+  }
+
+  private func hasFreshLiveLocation() -> Bool {
+    guard locationService.isUpdating, let fix = locationService.latestFix else {
+      return false
+    }
+    return NavigationScenarioCore.isFreshLocation(
+      timestamp: fix.timestamp,
+      now: Date()
+    )
   }
 
   private func navigationRepeatMessage() -> String {
@@ -591,12 +865,10 @@ final class AppModel: ObservableObject {
     resetCountdownAnnouncementState()
     lastImmediateAnnouncementStepIndex = -1
     locationService.finishActiveNavigation()
-    delayedAnnouncementTask?.cancel()
-    delayedAnnouncementTask = nil
-    announcer.stopSpeech()
+    resetSpeechQueue(stopCurrentSpeech: true)
     liveNavigationEngine.reset()
-    headingIndex = 0
-    headingState = headingSequence[headingIndex]
+    routeInitialBearingDegrees = nil
+    headingState = headingStateFor(currentHeadingDegrees)
     activeNavigationState = ActiveNavigationState()
     selectedRouteSummary = nil
     statusMessage = L10n.text("active.status.stopped", table: .navigation)
@@ -609,6 +881,8 @@ final class AppModel: ObservableObject {
     resetCountdownAnnouncementState()
     lastImmediateAnnouncementStepIndex = -1
     locationService.finishActiveNavigation()
+    resetSpeechQueue(stopCurrentSpeech: true)
+    routeInitialBearingDegrees = nil
     activeNavigationState.isPaused = false
     activeNavigationState.isOffRoute = false
     activeNavigationState.isRecalculating = false
@@ -639,6 +913,10 @@ final class AppModel: ObservableObject {
     path.append(.activeNavigation(placeID: placeID))
   }
 
+  func openRouteAssistant(_ placeID: String) {
+    path.append(.routeAssistant(placeID: placeID))
+  }
+
   func openCurrentPosition() {
     currentPositionStatusMessage = ""
     currentPositionStatusIsWarning = false
@@ -663,12 +941,7 @@ final class AppModel: ObservableObject {
     settings.languageCode = normalized
     L10n.selectedLanguageCode = normalized
     settingsStore.updateSettings { $0.languageCode = normalized }
-    let localizedHeadingSequence = headingSequence
-    headingState = (
-      localizedHeadingSequence.indices.contains(headingIndex)
-        ? localizedHeadingSequence[headingIndex]
-        : (localizedHeadingSequence.first ?? HeadingState())
-    )
+    headingState = headingStateFor(currentHeadingDegrees)
     statusMessage = L10n.text("settings.language.updated", table: .settings)
   }
 
@@ -857,8 +1130,16 @@ final class AppModel: ObservableObject {
         guard let self else { return }
         self.isLiveTracking = isUpdating
         if !isUpdating {
+          self.lastReverseGeocodedPoint = nil
+          self.lastReverseGeocodedAt = nil
           self.currentLocationDescription = L10n.text("home.location.tracking_stopped", table: .home)
         }
+      }
+      .store(in: &cancellables)
+
+    locationService.$headingDegrees
+      .sink { [weak self] heading in
+        self?.updateHeading(heading)
       }
       .store(in: &cancellables)
   }
@@ -1001,6 +1282,7 @@ final class AppModel: ObservableObject {
       return
     }
 
+    resetSpeechQueue(stopCurrentSpeech: true)
     isRouting = true
     activeNavigationState.isRecalculating = true
     statusMessage = L10n.text("active.status.recalculating", table: .navigation)
@@ -1156,38 +1438,64 @@ final class AppModel: ObservableObject {
   }
 
   private func announceNavigationSpeech(_ message: String, delayAfterSound: TimeInterval) {
-    scheduleSpeech(delayAfterSound: delayAfterSound) { [weak self] in
-      guard let self else { return }
-      self.announcer.announceNavigation(message, settings: self.settings)
-    }
+    enqueueSpeech(message, delayAfterSound: delayAfterSound, isNavigation: true)
   }
 
   private func announceSpeech(_ message: String, delayAfterSound: TimeInterval) {
-    scheduleSpeech(delayAfterSound: delayAfterSound) { [weak self] in
-      guard let self else { return }
-      self.announcer.announce(message, settings: self.settings)
+    enqueueSpeech(message, delayAfterSound: delayAfterSound, isNavigation: false)
+  }
+
+  private func enqueueSpeech(
+    _ message: String,
+    delayAfterSound: TimeInterval,
+    isNavigation: Bool
+  ) {
+    guard !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+    speechQueue.append(
+      QueuedSpeech(
+        message: message,
+        delayAfterSound: max(delayAfterSound, 0),
+        isNavigation: isNavigation,
+        generation: speechQueueGeneration
+      )
+    )
+    startSpeechQueueIfNeeded()
+  }
+
+  private func startSpeechQueueIfNeeded() {
+    guard speechQueueTask == nil else { return }
+    speechQueueTask = Task { [weak self] in
+      await self?.runSpeechQueue()
     }
   }
 
-  private func scheduleSpeech(delayAfterSound: TimeInterval, action: @escaping @MainActor () -> Void) {
-    delayedAnnouncementTask?.cancel()
-    delayedAnnouncementTask = nil
-    guard delayAfterSound > 0 else {
-      action()
-      return
+  private func runSpeechQueue() async {
+    while !speechQueue.isEmpty {
+      let queued = speechQueue.removeFirst()
+      if queued.delayAfterSound > 0 {
+        do {
+          try await Task.sleep(nanoseconds: UInt64(queued.delayAfterSound * 1_000_000_000))
+        } catch {
+          return
+        }
+      }
+      guard !Task.isCancelled, queued.generation == speechQueueGeneration else { continue }
+      if queued.isNavigation {
+        announcer.announceNavigation(queued.message, settings: settings)
+      } else {
+        announcer.announce(queued.message, settings: settings)
+      }
     }
+    speechQueueTask = nil
+  }
 
-    delayedAnnouncementTask = Task { [weak self] in
-      do {
-        try await Task.sleep(nanoseconds: UInt64(delayAfterSound * 1_000_000_000))
-      } catch {
-        return
-      }
-      guard !Task.isCancelled else { return }
-      await MainActor.run {
-        guard self != nil else { return }
-        action()
-      }
+  private func resetSpeechQueue(stopCurrentSpeech: Bool) {
+    speechQueueGeneration &+= 1
+    speechQueue.removeAll()
+    speechQueueTask?.cancel()
+    speechQueueTask = nil
+    if stopCurrentSpeech {
+      announcer.stopSpeech()
     }
   }
 

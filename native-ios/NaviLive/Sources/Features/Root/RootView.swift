@@ -72,6 +72,8 @@ private struct RootNavigationView: View {
             HeadingAlignView(model: model, placeID: placeID)
           case .activeNavigation(let placeID):
             ActiveNavigationView(model: model, placeID: placeID)
+          case .routeAssistant(let placeID):
+            RouteAssistantView(model: model, placeID: placeID)
           case .arrival(let placeID):
             ArrivalView(model: model, placeID: placeID)
           case .currentPosition:

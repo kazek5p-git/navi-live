@@ -49,6 +49,8 @@ final class LocationService: NSObject, ObservableObject {
     manager.stopUpdatingLocation()
     manager.stopUpdatingHeading()
     stabilizer.reset()
+    latestFix = nil
+    headingDegrees = nil
     allowsBackgroundGuidance = false
     updateBackgroundLocationAccess()
     isUpdating = false
@@ -86,12 +88,17 @@ extension LocationService: CLLocationManagerDelegate {
 
   nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
     guard let location = locations.last else { return }
+    guard CLLocationCoordinate2DIsValid(location.coordinate),
+          location.horizontalAccuracy.isFinite,
+          location.horizontalAccuracy >= 0 else { return }
     Task { @MainActor in
+      guard isUpdating else { return }
       let rawFix = LocationFix(
         point: GeoPoint(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude),
-        accuracyMeters: max(0, location.horizontalAccuracy),
+        accuracyMeters: location.horizontalAccuracy,
         timestamp: location.timestamp,
-        courseDegrees: location.course >= 0 ? location.course : nil
+        courseDegrees: location.course >= 0 ? location.course : nil,
+        speedMetersPerSecond: location.speed >= 0 ? location.speed : nil
       )
       guard let stabilizedFix = stabilizer.stabilize(rawFix) else { return }
       latestFix = stabilizedFix
@@ -100,6 +107,7 @@ extension LocationService: CLLocationManagerDelegate {
 
   nonisolated func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
     Task { @MainActor in
+      guard isUpdating else { return }
       headingDegrees = newHeading.trueHeading >= 0 ? newHeading.trueHeading : newHeading.magneticHeading
     }
   }
@@ -113,13 +121,8 @@ final class LocationFixStabilizer {
   }
 
   func stabilize(_ rawFix: LocationFix) -> LocationFix? {
-    guard rawFix.accuracyMeters.isFinite else { return nil }
-    let normalizedFix = LocationFix(
-      point: rawFix.point,
-      accuracyMeters: max(0, rawFix.accuracyMeters),
-      timestamp: rawFix.timestamp,
-      courseDegrees: rawFix.courseDegrees
-    )
+    guard rawFix.accuracyMeters.isFinite, rawFix.accuracyMeters >= 0 else { return nil }
+    let normalizedFix = rawFix
     guard let previous = stableFix else {
       stableFix = normalizedFix
       return normalizedFix
@@ -167,7 +170,8 @@ final class LocationFixStabilizer {
       point: previous.point,
       accuracyMeters: incoming.accuracyMeters,
       timestamp: incoming.timestamp,
-      courseDegrees: incoming.courseDegrees ?? previous.courseDegrees
+      courseDegrees: incoming.courseDegrees ?? previous.courseDegrees,
+      speedMetersPerSecond: incoming.speedMetersPerSecond ?? previous.speedMetersPerSecond
     )
     stableFix = held
     return held
@@ -197,7 +201,8 @@ final class LocationFixStabilizer {
       point: point,
       accuracyMeters: incoming.accuracyMeters,
       timestamp: incoming.timestamp,
-      courseDegrees: incoming.courseDegrees ?? previous.courseDegrees
+      courseDegrees: incoming.courseDegrees ?? previous.courseDegrees,
+      speedMetersPerSecond: incoming.speedMetersPerSecond ?? previous.speedMetersPerSecond
     )
   }
 }

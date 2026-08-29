@@ -723,10 +723,6 @@ actor NavigationAPIClient {
   }
 
   private func humanInstruction(for step: OSRMStep, inferredRoadName: String? = nil) -> String {
-    if let instruction = step.maneuver.instruction, !instruction.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-      return instruction
-    }
-
     let explicitRoadName = step.name.trimmingCharacters(in: .whitespacesAndNewlines)
     let inferredRoadName = inferredRoadName?
       .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
@@ -879,8 +875,7 @@ actor NavigationAPIClient {
 
     let stepDistances = stepDistancesAlongRoute(
       steps: steps,
-      pathPoints: pathPoints,
-      routeLengthMeters: routeLength
+      pathPoints: pathPoints
     )
     var augmented: [RouteStep] = [steps[0]]
     var alertIndex = 0
@@ -928,6 +923,32 @@ actor NavigationAPIClient {
       }
       augmented.append(steps[stepIndex])
       lastAlongMeters = max(lastAlongMeters, stepAlongMeters)
+    }
+
+    // Nie gub alertów, gdy ostatni krok routera nie ma punktu manewru
+    // albo kończy się przed końcowym fragmentem geometrii.
+    while alertIndex < alerts.count {
+      let alert = alerts[alertIndex]
+      let previousStep = augmented.last(where: { $0.kind == .instruction })
+      let distanceFromPreviousRaw = alert.distanceAlongRouteMeters - lastAlongMeters
+      let alertRoad = normalizedRouteRoadName(alert.roadName)
+      let shouldSuppress = distanceFromPreviousRaw < crossingDuplicateProximityMeters ||
+        (isNamedStreetCrossing(alert) && alertRoad != nil &&
+          normalizedRouteRoadName(previousStep?.roadName) == alertRoad)
+      if !shouldSuppress, distanceFromPreviousRaw > 0 {
+        augmented.append(
+          RouteStep(
+            instruction: alert.instruction,
+            distanceMeters: max(Int(distanceFromPreviousRaw.rounded()), 1),
+            maneuverPoint: alert.point,
+            kind: alert.kind,
+            maneuverType: alert.maneuverType,
+            roadName: alert.roadName
+          )
+        )
+      }
+      lastAlongMeters = max(lastAlongMeters, alert.distanceAlongRouteMeters)
+      alertIndex += 1
     }
     return augmented
   }
@@ -1158,20 +1179,9 @@ actor NavigationAPIClient {
 
   private func stepDistancesAlongRoute(
     steps: [RouteStep],
-    pathPoints: [GeoPoint],
-    routeLengthMeters: Double
+    pathPoints: [GeoPoint]
   ) -> [Double] {
-    var distances: [Double] = []
-    var previous = 0.0
-    for (index, step) in steps.enumerated() {
-      let raw = step.maneuverPoint
-        .flatMap { projectOntoRoute(pathPoints: pathPoints, point: $0)?.distanceAlongRouteMeters } ??
-        (index == 0 ? 0 : routeLengthMeters)
-      let normalized = min(max(raw, previous), routeLengthMeters)
-      distances.append(normalized)
-      previous = normalized
-    }
-    return distances
+    RouteProjectionCore.stepDistancesAlongRoute(steps: steps, pathPoints: pathPoints)
   }
 
   private func routeBoundingBox(pathPoints: [GeoPoint], paddingMeters: Double) -> RouteBoundingBox {
