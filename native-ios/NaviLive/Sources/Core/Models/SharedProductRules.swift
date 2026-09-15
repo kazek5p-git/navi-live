@@ -33,6 +33,10 @@ enum SharedProductRules {
     static let arrivalAccuracyMinMeters: Double = 8.0
     static let arrivalAccuracyMaxMeters: Double = 18.0
     static let arrivalAccuracyMultiplier: Double = 2.0
+    static let speechAfterSoundDelayMs: Int = 500
+    static let stepConfirmationRequiredFixes: Int = 2
+    static let offRouteConfirmationRequiredFixes: Int = 3
+    static let offRouteRecoveryRequiredFixes: Int = 2
     static let assistantFreshLocationMaxAgeMs: Int = 15000
 
     static let autoRecalculateCooldownMs: Int = 6000
@@ -43,12 +47,15 @@ enum SharedProductRules {
     static let routeProjectionCourseUseMinimumSpeedMetersPerSecond: Double = 0.8
     static let routeProjectionCourseMaximumAccuracyMeters: Double = 35.0
     static let routeProjectionCourseMismatchPenaltyMeters: Double = 18.0
+    static let routeProjectionSegmentContinuityPenaltyMeters: Double = 2.5
+    static let routeProjectionSegmentHysteresisMeters: Double = 3.0
 
     static let locationStabilizationStaleResetMs: Int = 20000
     static let locationStabilizationMaxUsableAccuracyMeters: Double = 100.0
     static let locationStabilizationStationaryDistanceMeters: Double = 4.0
     static let locationStabilizationStationaryAccuracyMultiplier: Double = 0.45
     static let locationStabilizationStationaryMaxDistanceMeters: Double = 12.0
+    static let locationStabilizationMovingSpeedMetersPerSecond: Double = 0.7
     static let locationStabilizationMaxWalkingSpeedMetersPerSecond: Double = 4.2
     static let locationStabilizationJumpDistanceMinMeters: Double = 25.0
     static let locationStabilizationJumpAccuracyMultiplier: Double = 1.25

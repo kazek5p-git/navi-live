@@ -36,6 +36,10 @@ object SharedProductRules {
         const val arrivalAccuracyMinMeters: Float = 8.0f
         const val arrivalAccuracyMaxMeters: Float = 18.0f
         const val arrivalAccuracyMultiplier: Double = 2.0
+        const val speechAfterSoundDelayMs: Long = 500L
+        const val stepConfirmationRequiredFixes: Int = 2
+        const val offRouteConfirmationRequiredFixes: Int = 3
+        const val offRouteRecoveryRequiredFixes: Int = 2
         const val assistantFreshLocationMaxAgeMs: Long = 15000L
 
         const val autoRecalculateCooldownMs: Long = 6000L
@@ -46,12 +50,15 @@ object SharedProductRules {
         const val routeProjectionCourseUseMinimumSpeedMetersPerSecond: Double = 0.8
         const val routeProjectionCourseMaximumAccuracyMeters: Float = 35.0f
         const val routeProjectionCourseMismatchPenaltyMeters: Double = 18.0
+        const val routeProjectionSegmentContinuityPenaltyMeters: Double = 2.5
+        const val routeProjectionSegmentHysteresisMeters: Double = 3.0
 
         const val locationStabilizationStaleResetMs: Long = 20000L
         const val locationStabilizationMaxUsableAccuracyMeters: Float = 100.0f
         const val locationStabilizationStationaryDistanceMeters: Double = 4.0
         const val locationStabilizationStationaryAccuracyMultiplier: Double = 0.45
         const val locationStabilizationStationaryMaxDistanceMeters: Double = 12.0
+        const val locationStabilizationMovingSpeedMetersPerSecond: Double = 0.7
         const val locationStabilizationMaxWalkingSpeedMetersPerSecond: Double = 4.2
         const val locationStabilizationJumpDistanceMinMeters: Double = 25.0
         const val locationStabilizationJumpAccuracyMultiplier: Double = 1.25

@@ -265,12 +265,16 @@ struct AppSettings: Codable, Hashable, Sendable {
 struct PersistedSnapshot: Codable, Sendable {
   var favorites: [Place] = []
   var lastRoutePlaceID: String?
+  var lastRoutePlace: Place? = nil
+  var lastRouteSummary: RouteSummary? = nil
   var settings: AppSettings = .init()
   var hasCompletedOnboarding: Bool = false
 
   enum CodingKeys: String, CodingKey {
     case favorites
     case lastRoutePlaceID
+    case lastRoutePlace
+    case lastRouteSummary
     case settings
     case hasCompletedOnboarding
   }
@@ -281,6 +285,8 @@ struct PersistedSnapshot: Codable, Sendable {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     favorites = try container.decodeIfPresent([Place].self, forKey: .favorites) ?? []
     lastRoutePlaceID = try container.decodeIfPresent(String.self, forKey: .lastRoutePlaceID)
+    lastRoutePlace = try container.decodeIfPresent(Place.self, forKey: .lastRoutePlace)
+    lastRouteSummary = try container.decodeIfPresent(RouteSummary.self, forKey: .lastRouteSummary)
     settings = try container.decodeIfPresent(AppSettings.self, forKey: .settings) ?? .init()
     hasCompletedOnboarding = try container.decodeIfPresent(Bool.self, forKey: .hasCompletedOnboarding) ?? false
   }

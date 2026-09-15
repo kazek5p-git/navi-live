@@ -27,6 +27,10 @@
       "accuracyMaxMeters": 18.0,
       "multiplier": 2.0
     },
+    "speechAfterSoundDelayMs": 500,
+    "stepConfirmationRequiredFixes": 2,
+    "offRouteConfirmationRequiredFixes": 3,
+    "offRouteRecoveryRequiredFixes": 2,
     "assistantFreshLocationMaxAgeMs": 15000,
     "autoRecalculateCooldownMs": 6000,
     "routeProjection": {
@@ -35,7 +39,9 @@
       "deviationLookAheadMeters": 120.0,
       "courseUseMinimumSpeedMetersPerSecond": 0.8,
       "courseMaximumAccuracyMeters": 35.0,
-      "courseMismatchPenaltyMeters": 18.0
+      "courseMismatchPenaltyMeters": 18.0,
+      "segmentContinuityPenaltyMeters": 2.5,
+      "segmentHysteresisMeters": 3.0
     },
     "locationStabilization": {
       "staleResetMs": 20000,
@@ -43,6 +49,7 @@
       "stationaryDistanceMeters": 4.0,
       "stationaryAccuracyMultiplier": 0.45,
       "stationaryMaxDistanceMeters": 12.0,
+      "movingSpeedMetersPerSecond": 0.7,
       "maxWalkingSpeedMetersPerSecond": 4.2,
       "jumpDistanceMinMeters": 25.0,
       "jumpAccuracyMultiplier": 1.25,

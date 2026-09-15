@@ -38,7 +38,7 @@ enum NavigationInstructionCore {
       return NavigationInstructionDescriptor(strategy: .departNamed, roadName: normalizedRoad, normalizedModifier: nil)
     case "arrive":
       return NavigationInstructionDescriptor(strategy: .arrive, roadName: nil, normalizedModifier: nil)
-    case "turn":
+    case "turn", "end of road":
       return turnDescriptor(normalizedRoad: normalizedRoad, normalizedModifier: normalizedModifier)
     case "new name", "continue":
       return NavigationInstructionDescriptor(

@@ -60,6 +60,23 @@ enum AddressFormattingCore {
     return trimmed.range(of: SharedProductRules.Address.houseNumberPattern, options: .regularExpression) != nil
   }
 
+  static func ensureAddress(_ address: String, placeName: String, fallback: String) -> String {
+    if !address.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+       !isUnhelpfulAddress(address, placeName: placeName) {
+      return address.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    return fallback
+  }
+
+  static func isUnhelpfulAddress(_ address: String, placeName: String) -> Bool {
+    let normalizedAddress = normalizeForComparison(address)
+    guard !normalizedAddress.isEmpty else { return true }
+    let normalizedName = normalizeForComparison(placeName)
+    let nameTail = placeName.split(separator: ":", maxSplits: 1).last.map(String.init) ?? placeName
+    let normalizedNameTail = normalizeForComparison(nameTail)
+    return normalizedAddress == normalizedName || normalizedAddress == normalizedNameTail
+  }
+
   private static func firstNonBlank(_ address: [String: String], keys: [String]) -> String {
     keys.compactMap { cleanAddressValue(address[$0]) }.first ?? ""
   }
@@ -108,5 +125,11 @@ enum AddressFormattingCore {
       return trimmed
     }
     return "\(trimmed[streetRange]) \(trimmed[numberRange])"
+  }
+
+  private static func normalizeForComparison(_ value: String) -> String {
+    value.trimmingCharacters(in: .whitespacesAndNewlines)
+      .lowercased()
+      .replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression)
   }
 }

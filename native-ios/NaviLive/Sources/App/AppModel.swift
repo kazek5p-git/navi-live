@@ -31,6 +31,7 @@ final class AppModel: ObservableObject {
   @Published var isRouting = false
   @Published var hasCompletedOnboarding: Bool
   @Published var isLiveTracking = false
+  @Published private(set) var isNavigationActive = false
   @Published var nearbyPOICacheState = NearbyPOICacheState()
 
   let locationService: LocationService
@@ -73,7 +74,6 @@ final class AppModel: ObservableObject {
   private static let nearbyPOICacheAttemptThrottle: TimeInterval = 2 * 60
   private static let reverseGeocodeMoveThresholdMeters: Double = 35
   private static let reverseGeocodeThrottle: TimeInterval = 25
-  private static let speechAfterSoundDelay: TimeInterval = 0.5
 
   convenience init() {
     self.init(
@@ -99,7 +99,7 @@ final class AppModel: ObservableObject {
     settings = snapshot.settings
     L10n.selectedLanguageCode = snapshot.settings.languageCode
     favorites = snapshot.favorites
-    lastRoutePlaceID = snapshot.lastRoutePlaceID
+    lastRoutePlaceID = snapshot.lastRoutePlaceID ?? snapshot.lastRoutePlace?.id
     headingState = HeadingState(
       instruction: L10n.text("heading.instruction.rotate_right", table: .navigation),
       isAligned: false,
@@ -108,6 +108,21 @@ final class AppModel: ObservableObject {
     activeNavigationState = ActiveNavigationState()
     hasCompletedOnboarding = snapshot.hasCompletedOnboarding
     favorites.forEach { knownPlaces[$0.id] = $0 }
+    if let lastRoutePlace = snapshot.lastRoutePlace {
+      knownPlaces[lastRoutePlace.id] = lastRoutePlace
+    }
+    if let lastRoutePlace = snapshot.lastRoutePlace,
+       let lastRouteSummary = snapshot.lastRouteSummary {
+      selectedRouteSummary = lastRouteSummary
+      routeInitialBearingDegrees = RouteProjectionCore.initialBearingDegrees(
+        pathPoints: lastRouteSummary.pathPoints
+      )
+      activeNavigationState = liveNavigationEngine.loadRoute(
+        destination: lastRoutePlace,
+        summary: lastRouteSummary,
+        fix: nil
+      )
+    }
 
     startNetworkMonitor()
     bindLocation()
@@ -386,7 +401,7 @@ final class AppModel: ObservableObject {
       )
       selectedRouteSummary = summary
       lastRoutePlaceID = place.id
-      settingsStore.setLastRoutePlaceID(place.id)
+      settingsStore.setLastRoute(place: place, summary: summary)
       routeInitialBearingDegrees = RouteProjectionCore.initialBearingDegrees(pathPoints: summary.pathPoints)
       headingState = headingStateFor(currentHeadingDegrees)
       activeNavigationState = liveNavigationEngine.loadRoute(
@@ -395,6 +410,7 @@ final class AppModel: ObservableObject {
         fix: locationService.latestFix
       )
       isNavigationLive = false
+      isNavigationActive = false
       resetCountdownAnnouncementState()
       lastImmediateAnnouncementStepIndex = -1
       statusMessage = L10n.text("route.status.ready", table: .navigation)
@@ -455,6 +471,7 @@ final class AppModel: ObservableObject {
     guard liveNavigationEngine.currentDestination != nil else { return }
     locationService.prepareForActiveNavigation()
     isNavigationLive = true
+    isNavigationActive = true
     updateHeadphoneRemoteControl()
     resetCountdownAnnouncementState()
     lastImmediateAnnouncementStepIndex = -1
@@ -861,6 +878,7 @@ final class AppModel: ObservableObject {
 
   func stopNavigation() {
     isNavigationLive = false
+    isNavigationActive = false
     updateHeadphoneRemoteControl()
     resetCountdownAnnouncementState()
     lastImmediateAnnouncementStepIndex = -1
@@ -877,6 +895,7 @@ final class AppModel: ObservableObject {
   func markArrived() {
     guard let destination = liveNavigationEngine.currentDestination else { return }
     isNavigationLive = false
+    isNavigationActive = false
     updateHeadphoneRemoteControl()
     resetCountdownAnnouncementState()
     lastImmediateAnnouncementStepIndex = -1
@@ -973,6 +992,7 @@ final class AppModel: ObservableObject {
 
   func onShakeGestureDetected() {
     guard settings.shakeGestureEnabled else { return }
+    guard isNavigationLive else { return }
     guard selectedRouteSummary != nil || !activeNavigationState.currentInstruction.isEmpty else { return }
     repeatCurrentInstruction()
   }
@@ -1298,6 +1318,7 @@ final class AppModel: ObservableObject {
         includeJunctionAlerts: settings.junctionAlerts
       )
       selectedRouteSummary = summary
+      settingsStore.setLastRoute(place: place, summary: summary)
       activeNavigationState = liveNavigationEngine.loadRoute(
         destination: place,
         summary: summary,
@@ -1512,7 +1533,7 @@ final class AppModel: ObservableObject {
   private func playSoundCueIfEnabled(_ cue: NavigationSoundCue) -> TimeInterval {
     guard settings.soundCuesEnabled else { return 0.0 }
     let queuedStartDelay = announcer.playSoundCue(cue, volume: settings.soundCueVolume, theme: settings.soundCueTheme)
-    return queuedStartDelay + Self.speechAfterSoundDelay
+    return NavigationScenarioCore.speechDelayAfterSound(soundPlaybackDelay: queuedStartDelay)
   }
 
   private func soundCue(for stepKind: RouteStepKind?, defaultCue: NavigationSoundCue) -> NavigationSoundCue {

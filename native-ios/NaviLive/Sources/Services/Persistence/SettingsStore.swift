@@ -30,8 +30,10 @@ final class SettingsStore: ObservableObject {
     save()
   }
 
-  func setLastRoutePlaceID(_ placeID: String?) {
-    snapshot.lastRoutePlaceID = placeID
+  func setLastRoute(place: Place?, summary: RouteSummary?) {
+    snapshot.lastRoutePlaceID = place?.id
+    snapshot.lastRoutePlace = place
+    snapshot.lastRouteSummary = summary
     save()
   }
 

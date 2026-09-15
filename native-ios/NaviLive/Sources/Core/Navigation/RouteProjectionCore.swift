@@ -5,6 +5,16 @@ struct RouteProgressProjection {
   let remainingRouteMeters: Double
   let lateralDistanceMeters: Double
   let segmentBearingDegrees: Double
+  let segmentIndex: Int
+}
+
+struct RoutePolylineIntersection {
+  let point: GeoPoint
+  let distanceAlongRouteMeters: Double
+  let routeSegmentIndex: Int
+  let otherSegmentIndex: Int
+  /// Kąt między geometriami w zakresie od 0 do 90 stopni.
+  let crossingAngleDegrees: Double
 }
 
 /// Wybiera stabilny odcinek trasy zamiast przypadkowego odcinka przy skrzyżowaniu.
@@ -19,7 +29,8 @@ enum RouteProjectionCore {
     preferredCourseDegrees: Double? = nil,
     speedMetersPerSecond: Double? = nil,
     accuracyMeters: Double? = nil,
-    monotonicFloorMeters: Double? = nil
+    monotonicFloorMeters: Double? = nil,
+    preferredSegmentIndex: Int? = nil
   ) -> RouteProgressProjection? {
     guard pathPoints.count >= 2 else { return nil }
     guard minimumDistanceAlongRouteMeters.isFinite,
@@ -48,7 +59,8 @@ enum RouteProjectionCore {
 
     var distanceBeforeSegment = 0.0
     var best: Candidate?
-    for segment in segments {
+    let validPreferredSegmentIndex = preferredSegmentIndex.flatMap { segments.indices.contains($0) ? $0 : nil }
+    for (segmentIndex, segment) in segments.enumerated() {
       let distanceAlongRoute = distanceBeforeSegment + segment.lengthMeters * segment.ratio
       if distanceAlongRoute < minimumDistanceAlongRouteMeters - projectionBoundaryToleranceMeters ||
         distanceAlongRoute > upperBound + projectionBoundaryToleranceMeters {
@@ -70,11 +82,24 @@ enum RouteProjectionCore {
       } else {
         coursePenalty = 0
       }
+      let segmentContinuityPenalty: Double
+      if let validPreferredSegmentIndex {
+        if segmentIndex == validPreferredSegmentIndex {
+          segmentContinuityPenalty = 0
+        } else {
+          segmentContinuityPenalty = Double(min(abs(segmentIndex - validPreferredSegmentIndex), 4)) *
+            SharedProductRules.Navigation.routeProjectionSegmentContinuityPenaltyMeters +
+            SharedProductRules.Navigation.routeProjectionSegmentHysteresisMeters
+        }
+      } else {
+        segmentContinuityPenalty = 0
+      }
       let candidate = Candidate(
         distanceAlongRouteMeters: boundedDistanceAlongRoute,
         lateralDistanceMeters: segment.lateralDistanceMeters,
         segmentBearingDegrees: segment.bearingDegrees,
-        score: segment.lateralDistanceMeters + coursePenalty
+        segmentIndex: segmentIndex,
+        score: segment.lateralDistanceMeters + coursePenalty + segmentContinuityPenalty
       )
       let scoreDifference = best.map { candidate.score - $0.score }
       if best == nil ||
@@ -95,8 +120,104 @@ enum RouteProjectionCore {
       distanceAlongRouteMeters: monotonicDistance,
       remainingRouteMeters: max(routeLength - monotonicDistance, 0),
       lateralDistanceMeters: selected.lateralDistanceMeters,
-      segmentBearingDegrees: selected.segmentBearingDegrees
+      segmentBearingDegrees: selected.segmentBearingDegrees,
+      segmentIndex: selected.segmentIndex
     )
+  }
+
+  /// Zwraca miejsca, w których dwie polilinie rzeczywiście się przecinają.
+  /// Odcinki równoległe lub nakładające się nie są uznawane za skrzyżowanie.
+  static func polylineIntersections(
+    routePoints: [GeoPoint],
+    otherPoints: [GeoPoint],
+    endpointToleranceMeters: Double = 2
+  ) -> [RoutePolylineIntersection] {
+    guard routePoints.count >= 2,
+          otherPoints.count >= 2,
+          endpointToleranceMeters.isFinite,
+          endpointToleranceMeters >= 0 else {
+      return []
+    }
+
+    let allPoints = routePoints + otherPoints
+    let referenceLatitude = allPoints.map(\.latitude).reduce(0, +) / Double(allPoints.count) * .pi / 180
+    let referenceLongitude = allPoints.map(\.longitude).reduce(0, +) / Double(allPoints.count) * .pi / 180
+    let earthRadius = 6_371_000.0
+    let routePlanar = routePoints.map {
+      planarPoint($0, referenceLatitude: referenceLatitude, referenceLongitude: referenceLongitude, earthRadius: earthRadius)
+    }
+    let otherPlanar = otherPoints.map {
+      planarPoint($0, referenceLatitude: referenceLatitude, referenceLongitude: referenceLongitude, earthRadius: earthRadius)
+    }
+    let routeSegmentLengths = zip(routePoints, routePoints.dropFirst()).map { $0.0.distance(to: $0.1) }
+    var routeDistances = [0.0]
+    for length in routeSegmentLengths {
+      routeDistances.append((routeDistances.last ?? 0) + length)
+    }
+
+    var intersections: [RoutePolylineIntersection] = []
+    for routeIndex in 0..<(routePlanar.count - 1) {
+      let routeStart = routePlanar[routeIndex]
+      let routeEnd = routePlanar[routeIndex + 1]
+      let routeVector = routeEnd - routeStart
+      let routeLengthSquared = routeVector.lengthSquared
+      guard routeLengthSquared > 0 else { continue }
+
+      for otherIndex in 0..<(otherPlanar.count - 1) {
+        let otherStart = otherPlanar[otherIndex]
+        let otherEnd = otherPlanar[otherIndex + 1]
+        let otherVector = otherEnd - otherStart
+        let otherLengthSquared = otherVector.lengthSquared
+        guard otherLengthSquared > 0 else { continue }
+
+        let denominator = cross(routeVector, otherVector)
+        guard abs(denominator) > 1e-9 else { continue }
+        let relativeStart = otherStart - routeStart
+        let routeRatio = cross(relativeStart, otherVector) / denominator
+        let otherRatio = cross(relativeStart, routeVector) / denominator
+        let routeTolerance = endpointToleranceMeters / sqrt(routeLengthSquared)
+        let otherTolerance = endpointToleranceMeters / sqrt(otherLengthSquared)
+        guard routeRatio >= -routeTolerance,
+              routeRatio <= 1 + routeTolerance,
+              otherRatio >= -otherTolerance,
+              otherRatio <= 1 + otherTolerance else {
+          continue
+        }
+
+        let boundedRouteRatio = min(max(routeRatio, 0), 1)
+        let boundedOtherRatio = min(max(otherRatio, 0), 1)
+        let routePoint = routeStart + routeVector * boundedRouteRatio
+        let otherPoint = otherStart + otherVector * boundedOtherRatio
+        guard (routePoint - otherPoint).length <= endpointToleranceMeters else { continue }
+
+        let routeDistance = routeDistances[routeIndex] +
+          routeSegmentLengths[routeIndex] * boundedRouteRatio
+        intersections.append(
+          RoutePolylineIntersection(
+            point: geoPoint(
+              routePoint,
+              referenceLatitude: referenceLatitude,
+              referenceLongitude: referenceLongitude,
+              earthRadius: earthRadius
+            ),
+            distanceAlongRouteMeters: routeDistance,
+            routeSegmentIndex: routeIndex,
+            otherSegmentIndex: otherIndex,
+            crossingAngleDegrees: undirectedAngleDegrees(routeVector, otherVector)
+          )
+        )
+      }
+    }
+
+    var deduplicated: [RoutePolylineIntersection] = []
+    for candidate in intersections.sorted(by: { $0.distanceAlongRouteMeters < $1.distanceAlongRouteMeters }) {
+      if !deduplicated.contains(where: {
+        abs($0.distanceAlongRouteMeters - candidate.distanceAlongRouteMeters) <= endpointToleranceMeters
+      }) {
+        deduplicated.append(candidate)
+      }
+    }
+    return deduplicated
   }
 
   static func routeLengthMeters(_ pathPoints: [GeoPoint]) -> Double {
@@ -204,7 +325,28 @@ enum RouteProjectionCore {
     let distanceAlongRouteMeters: Double
     let lateralDistanceMeters: Double
     let segmentBearingDegrees: Double
+    let segmentIndex: Int
     let score: Double
+  }
+
+  private struct PlanarPoint {
+    let x: Double
+    let y: Double
+
+    static func +(lhs: PlanarPoint, rhs: PlanarPoint) -> PlanarPoint {
+      PlanarPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+    }
+
+    static func -(lhs: PlanarPoint, rhs: PlanarPoint) -> PlanarPoint {
+      PlanarPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
+    }
+
+    static func *(lhs: PlanarPoint, rhs: Double) -> PlanarPoint {
+      PlanarPoint(x: lhs.x * rhs, y: lhs.y * rhs)
+    }
+
+    var lengthSquared: Double { x * x + y * y }
+    var length: Double { sqrt(lengthSquared) }
   }
 
   private struct SegmentProjection {
@@ -259,6 +401,41 @@ enum RouteProjectionCore {
 
   private static func directedBearingDifference(_ left: Double, _ right: Double) -> Double {
     abs(((left - right + 540) .truncatingRemainder(dividingBy: 360)) - 180)
+  }
+
+  private static func planarPoint(
+    _ point: GeoPoint,
+    referenceLatitude: Double,
+    referenceLongitude: Double,
+    earthRadius: Double
+  ) -> PlanarPoint {
+    PlanarPoint(
+      x: (point.longitude * .pi / 180 - referenceLongitude) * earthRadius * cos(referenceLatitude),
+      y: (point.latitude * .pi / 180 - referenceLatitude) * earthRadius
+    )
+  }
+
+  private static func geoPoint(
+    _ point: PlanarPoint,
+    referenceLatitude: Double,
+    referenceLongitude: Double,
+    earthRadius: Double
+  ) -> GeoPoint {
+    GeoPoint(
+      latitude: (referenceLatitude + point.y / earthRadius) * 180 / .pi,
+      longitude: (referenceLongitude + point.x / (earthRadius * cos(referenceLatitude))) * 180 / .pi
+    )
+  }
+
+  private static func cross(_ left: PlanarPoint, _ right: PlanarPoint) -> Double {
+    left.x * right.y - left.y * right.x
+  }
+
+  private static func undirectedAngleDegrees(_ left: PlanarPoint, _ right: PlanarPoint) -> Double {
+    let leftBearing = atan2(left.x, left.y) * 180 / .pi
+    let rightBearing = atan2(right.x, right.y) * 180 / .pi
+    let directed = abs(((leftBearing - rightBearing + 540).truncatingRemainder(dividingBy: 360)) - 180)
+    return min(directed, 180 - directed)
   }
 
   private static func stepTimelineWeight(_ step: RouteStep) -> Double {

@@ -71,6 +71,22 @@ class LocationFixStabilizerTest {
     }
 
     @Test
+    fun reportedWalkingMovementIsNotHeldAsStationaryJitter() {
+        val stabilizer = LocationFixStabilizer()
+        val first = fix(latitude = 51.0, longitude = 19.0, accuracy = 8f, timestampMs = 1_000)
+        val movement = first.copy(
+            point = first.point.movedNorth(meters = 3.0),
+            timestampMs = 2_000,
+            speedMetersPerSecond = 1.2,
+        )
+
+        stabilizer.stabilize(first)
+        val stabilized = stabilizer.stabilize(movement)
+
+        assertTrue(stabilized!!.point.latitude > first.point.latitude)
+    }
+
+    @Test
     fun staleFixResetsStabilization() {
         val stabilizer = LocationFixStabilizer()
         val first = fix(latitude = 51.0, longitude = 19.0, accuracy = 5f, timestampMs = 1_000)

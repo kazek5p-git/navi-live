@@ -65,13 +65,13 @@ private data class RouteSession(
     val stepDistancesAlongRoute: List<Double>,
     val currentStepIndex: Int = 0,
     val lastProjectedDistanceAlongRouteMeters: Double = 0.0,
+    val preferredSegmentIndex: Int? = null,
 )
 
 private const val NearbyPoiCacheFreshMs = 24L * 60L * 60L * 1_000L
 private const val NearbyPoiCacheMoveThresholdMeters = 800.0
 private const val NearbyPoiCacheAttemptThrottleMs = 2L * 60L * 1_000L
 private const val CustomFavoritePlaceIdPrefix = "custom-current-"
-private const val NavigationSpeechAfterSoundDelayMs = 500L
 private const val ApproachManeuverType = "approach"
 
 private data class QueuedNavigationSpeech(
@@ -140,10 +140,15 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     private var lastCountdownMilestoneMeters: Int? = null
     private var lastCountdownCadenceMode: AnnouncementCadenceMode? = null
     private var lastImmediateAnnouncedStepIndex = -1
+    private var pendingStepIndex: Int? = null
+    private var pendingStepFixes = 0
+    private var consecutiveOffRouteFixes = 0
+    private var consecutiveOnRouteFixes = 0
     private var lastTrackingState: Boolean? = null
     private var lastTelemetryFixPoint: GeoPoint? = null
     private var lastTelemetryFixTimestampMs: Long = 0L
     private var hasPerformedStartupUpdateCheck = false
+    private var hasRestoredPersistedRoute = false
 
     private val _uiState = MutableStateFlow(
         NaviLiveUiState(
@@ -180,7 +185,14 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
                     }
                 val sanitizedFavoriteIds = (persisted.favoriteIds - retiredDemoPlaceIds) +
                     sanitizedCustomFavoritePlaces.map { it.id }.toSet()
-                val sanitizedLastRoutePlaceId = persisted.lastRoutePlaceId?.takeUnless { it in retiredDemoPlaceIds }
+                val sanitizedLastRoutePlace = persisted.lastRoutePlace?.takeUnless { place ->
+                    place.id in retiredDemoPlaceIds || place.id in seedPlaceIds
+                }
+                val sanitizedLastRoutePlaceId = (sanitizedLastRoutePlace?.id ?: persisted.lastRoutePlaceId)
+                    ?.takeUnless { it in retiredDemoPlaceIds }
+                val sanitizedLastRouteSummary = sanitizedLastRoutePlace
+                    ?.takeIf { it.id == sanitizedLastRoutePlaceId }
+                    ?.let { persisted.lastRouteSummary }
                 val sanitizedDownloadedUpdate = sanitizePersistedDownloadedUpdate(
                     currentVersionLabel = currentVersionLabel,
                     apkPath = persisted.downloadedUpdateApkPath,
@@ -194,6 +206,15 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
                 }
                 if (sanitizedLastRoutePlaceId != persisted.lastRoutePlaceId) {
                     preferencesStore.setLastRoutePlaceId(sanitizedLastRoutePlaceId)
+                }
+                if (
+                    sanitizedLastRoutePlace != persisted.lastRoutePlace ||
+                    sanitizedLastRouteSummary != persisted.lastRouteSummary
+                ) {
+                    preferencesStore.setLastRoute(
+                        place = sanitizedLastRoutePlace,
+                        summary = sanitizedLastRouteSummary,
+                    )
                 }
                 if (
                     sanitizedDownloadedUpdate.apkPath != persisted.downloadedUpdateApkPath ||
@@ -222,7 +243,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
                 _uiState.update { current ->
                     val mergedPlaces = mergeById(
                         mergeById(seedPlaces, current.places),
-                        sanitizedCustomFavoritePlaces,
+                        sanitizedCustomFavoritePlaces + listOfNotNull(sanitizedLastRoutePlace),
                     )
                     current.copy(
                         places = mergedPlaces,
@@ -263,6 +284,23 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
                         hasCompletedOnboarding = persisted.hasCompletedOnboarding,
                         isPreferencesLoaded = true,
                     )
+                }
+                if (!hasRestoredPersistedRoute) {
+                    hasRestoredPersistedRoute = true
+                    if (sanitizedLastRoutePlace != null && sanitizedLastRouteSummary != null) {
+                        val normalizedSummary = normalizeSummary(sanitizedLastRoutePlace, sanitizedLastRouteSummary)
+                        routeCache[sanitizedLastRoutePlace.id] = normalizedSummary
+                        applyRouteSummary(
+                            place = sanitizedLastRoutePlace,
+                            summary = normalizedSummary,
+                            spokenMessage = "",
+                            statusMessage = string(
+                                R.string.format_route_ready,
+                                sanitizedLastRoutePlace.name,
+                            ),
+                            announceRouteLoaded = false,
+                        )
+                    }
                 }
             }
         }
@@ -792,7 +830,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             )
         }
         viewModelScope.launch {
-            preferencesStore.setLastRoutePlaceId(place.id)
+            preferencesStore.setLastRoute(place = place, summary = null)
         }
 
         val currentPoint = _uiState.value.locationState.latestFix?.point
@@ -888,6 +926,9 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         announceRouteLoaded: Boolean = true,
     ) {
         val normalized = normalizeSummary(place, summary)
+        viewModelScope.launch {
+            preferencesStore.setLastRoute(place = place, summary = normalized)
+        }
         routeInitialBearingDegrees = RouteProjectionCore.initialBearingDegrees(normalized.pathPoints)
         activeRouteSession = RouteSession(
             destinationId = place.id,
@@ -2252,8 +2293,33 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         val isApproachingRouteStart = session.steps
             .getOrNull(session.currentStepIndex)
             ?.maneuverType == ApproachManeuverType
-        if (!isApproachingRouteStart && NavigationScenarioCore.shouldTriggerOffRoute(deviationMeters, fix.accuracyMeters)) {
-            handleOffRoute(session, fix, requireNotNull(deviationMeters))
+        val measurementIsOffRoute = !isApproachingRouteStart &&
+            NavigationScenarioCore.shouldTriggerOffRoute(deviationMeters, fix.accuracyMeters)
+        val routeStatusDecision = NavigationScenarioCore.confirmRouteStatus(
+            currentlyOffRoute = currentState.isOffRoute,
+            measurementIsOffRoute = measurementIsOffRoute,
+            consecutiveOffRouteFixes = consecutiveOffRouteFixes,
+            consecutiveOnRouteFixes = consecutiveOnRouteFixes,
+        )
+        consecutiveOffRouteFixes = routeStatusDecision.consecutiveOffRouteFixes
+        consecutiveOnRouteFixes = routeStatusDecision.consecutiveOnRouteFixes
+        if (routeStatusDecision.offRouteConfirmed && deviationMeters != null) {
+            handleOffRoute(session, fix, deviationMeters)
+            return
+        }
+        if (currentState.isOffRoute && !routeStatusDecision.recoveryConfirmed) {
+            _uiState.update { current ->
+                current.copy(
+                    activeNavigationState = buildActiveNavigationState(
+                        session = session,
+                        fix = fix,
+                        previous = current.activeNavigationState,
+                        isOffRoute = true,
+                        isRecalculating = current.activeNavigationState.isRecalculating,
+                        offRouteDistanceMeters = deviationMeters,
+                    ),
+                )
+            }
             return
         }
 
@@ -2262,7 +2328,16 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             fix = fix,
             currentStepIndex = session.currentStepIndex,
         )
-        val nextStepIndex = resolveStepIndex(session, fix)
+        val candidateStepIndex = resolveStepIndex(session, fix)
+        val stepConfirmation = NavigationScenarioCore.confirmStepCandidate(
+            currentStepIndex = session.currentStepIndex,
+            candidateStepIndex = candidateStepIndex,
+            pendingStepIndex = pendingStepIndex,
+            consecutiveFixes = pendingStepFixes,
+        )
+        pendingStepIndex = stepConfirmation.pendingStepIndex
+        pendingStepFixes = stepConfirmation.consecutiveFixes
+        val nextStepIndex = stepConfirmation.confirmedStepIndex ?: session.currentStepIndex
         val candidateSession = if (nextStepIndex != session.currentStepIndex) {
             session.copy(currentStepIndex = nextStepIndex)
         } else {
@@ -2279,6 +2354,9 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         )
         val updatedSession = candidateSession.copy(
             lastProjectedDistanceAlongRouteMeters = updatedProgress,
+            preferredSegmentIndex = progressAfterStepChange?.segmentIndex
+                ?: progressBeforeStepChange?.segmentIndex
+                ?: session.preferredSegmentIndex,
         )
         activeRouteSession = updatedSession
         val wasOffRoute = currentState.isOffRoute
@@ -2418,7 +2496,11 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         val routeEndPoint = session.routeEndPoint()
         val routeProgress = fix?.let {
             routeProgressProjectionForStep(session, it, currentIndex)
-                ?: routeProgressProjection(session.pathPoints, it.point)
+                ?: routeProgressProjection(
+                    pathPoints = session.pathPoints,
+                    point = it.point,
+                    preferredSegmentIndex = session.preferredSegmentIndex,
+                )
         }
         val remainingFromRoute = routeProgress?.remainingRouteMeters
         val rawDistanceToNext = when {
@@ -2439,11 +2521,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
                 distanceMeters(fix.point, routeEndPoint).roundToInt().coerceAtLeast(0)
             else -> currentStep.distanceMeters.coerceAtLeast(1)
         }
-        val distanceToNext = if (currentStep.maneuverType == ApproachManeuverType) {
-            rawDistanceToNext
-        } else {
-            adjustedGuidanceDistanceToNext(rawDistanceToNext, nextStep)
-        }
+        val distanceToNext = rawDistanceToNext
         val remainingFromSteps = session.steps.drop(currentIndex).sumOf { it.distanceMeters }
         val remainingFromDestination = if (fix != null && routeEndPoint != null) {
             distanceMeters(fix.point, routeEndPoint).roundToInt()
@@ -2466,16 +2544,6 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             isRecalculating = isRecalculating,
             offRouteDistanceMeters = offRouteDistanceMeters,
         )
-    }
-
-    private fun adjustedGuidanceDistanceToNext(rawDistanceMeters: Int, upcomingStep: RouteStep?): Int {
-        if (!shouldApplyGuidanceLead(upcomingStep)) return rawDistanceMeters
-        return (rawDistanceMeters - SharedProductRules.Navigation.guidanceLeadMeters).coerceAtLeast(0)
-    }
-
-    private fun shouldApplyGuidanceLead(step: RouteStep?): Boolean {
-        if (step == null || step.kind == RouteStepKind.PedestrianCrossing) return false
-        return !step.maneuverType.equals("arrive", ignoreCase = true)
     }
 
     private fun announceStepChange(session: RouteSession) {
@@ -2677,6 +2745,10 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         lastAnnouncedStepIndex = -1
         resetCountdownAnnouncementState()
         lastImmediateAnnouncedStepIndex = -1
+        pendingStepIndex = null
+        pendingStepFixes = 0
+        consecutiveOffRouteFixes = 0
+        consecutiveOnRouteFixes = 0
     }
 
     private fun resetCountdownAnnouncementState() {
@@ -2844,7 +2916,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         val settings = _uiState.value.settingsState
         if (!settings.soundCuesEnabled) return 0L
         val queuedStartDelayMs = feedbackEngine.playSoundCue(cue, settings.soundCueVolumePercent, settings.soundCueTheme)
-        return queuedStartDelayMs + NavigationSpeechAfterSoundDelayMs
+        return NavigationScenarioCore.speechDelayAfterSound(queuedStartDelayMs)
     }
 
     private fun soundCueThemeLabel(theme: SoundCueTheme): String {
@@ -2894,6 +2966,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
                 point = fix.point,
                 fix = fix,
                 monotonicFloorMeters = session.lastProjectedDistanceAlongRouteMeters,
+                preferredSegmentIndex = session.preferredSegmentIndex,
             )?.remainingRouteMeters
         return NavigationScenarioCore.shouldMarkArrived(
             distanceToDestinationMeters = distanceToEnd,
@@ -2948,6 +3021,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             maximumDistanceAlongRouteMeters = maximumAlong,
             fix = fix,
             monotonicFloorMeters = session.lastProjectedDistanceAlongRouteMeters,
+            preferredSegmentIndex = session.preferredSegmentIndex,
         )
     }
 
@@ -2958,6 +3032,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         maximumDistanceAlongRouteMeters: Double = Double.POSITIVE_INFINITY,
         fix: LocationFix? = null,
         monotonicFloorMeters: Double? = null,
+        preferredSegmentIndex: Int? = null,
     ): RouteProgressProjection? {
         return RouteProjectionCore.project(
             pathPoints = pathPoints,
@@ -2968,6 +3043,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             speedMetersPerSecond = fix?.speedMetersPerSecond,
             accuracyMeters = fix?.accuracyMeters?.toDouble(),
             monotonicFloorMeters = monotonicFloorMeters,
+            preferredSegmentIndex = preferredSegmentIndex,
         )
     }
 
@@ -2990,6 +3066,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             maximumDistanceAlongRouteMeters = maximumAlong,
             fix = fix,
             monotonicFloorMeters = session.lastProjectedDistanceAlongRouteMeters,
+            preferredSegmentIndex = session.preferredSegmentIndex,
         )?.lateralDistanceMeters?.roundToInt()
     }
 

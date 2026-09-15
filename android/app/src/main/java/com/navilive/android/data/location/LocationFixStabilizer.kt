@@ -39,7 +39,7 @@ internal class LocationFixStabilizer {
         }
 
         val distanceMeters = distanceMeters(previous.point, normalizedFix.point)
-        if (distanceMeters <= stationaryThresholdMeters(previous, normalizedFix)) {
+        if (!isMoving(normalizedFix) && distanceMeters <= stationaryThresholdMeters(previous, normalizedFix)) {
             return holdPreviousPoint(previous, normalizedFix)
         }
 
@@ -87,6 +87,13 @@ internal class LocationFixStabilizer {
             ),
             SharedProductRules.Navigation.locationStabilizationStationaryMaxDistanceMeters,
         )
+    }
+
+    private fun isMoving(incoming: LocationFix): Boolean {
+        return incoming.speedMetersPerSecond
+            ?.takeIf { it.isFinite() }
+            ?.let { it >= SharedProductRules.Navigation.locationStabilizationMovingSpeedMetersPerSecond }
+            ?: false
     }
 
     private fun smooth(previous: LocationFix, incoming: LocationFix): LocationFix {

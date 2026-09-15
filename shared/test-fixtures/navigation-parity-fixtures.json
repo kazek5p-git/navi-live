@@ -103,6 +103,13 @@
       "modifier": "slight left",
       "roadName": "Mostowa",
       "expectedParity": "TurnNamed|Mostowa|slight left"
+    },
+    {
+      "name": "end_of_road_named_right_uses_turn_named",
+      "maneuverType": "end of road",
+      "modifier": "right",
+      "roadName": "Pilczycka",
+      "expectedParity": "TurnNamed|Pilczycka|right"
     }
   ],
   "scenarioCases": {

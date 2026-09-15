@@ -34,6 +34,9 @@ struct RootView: View {
     .onReceive(model.$activeNavigationState) { _ in
       configureShakeGestureMonitor()
     }
+    .onReceive(model.$isNavigationActive) { _ in
+      configureShakeGestureMonitor()
+    }
     .onDisappear {
       shakeGestureMonitor.stop()
     }
@@ -42,7 +45,9 @@ struct RootView: View {
   private func configureShakeGestureMonitor() {
     let settings = model.settings
     shakeGestureMonitor.configure(
-      isEnabled: settings.shakeGestureEnabled && !model.activeNavigationState.currentInstruction.isEmpty,
+      isEnabled: model.isNavigationActive &&
+        settings.shakeGestureEnabled &&
+        !model.activeNavigationState.currentInstruction.isEmpty,
       strength: settings.shakeStrength
     ) {
       model.onShakeGestureDetected()

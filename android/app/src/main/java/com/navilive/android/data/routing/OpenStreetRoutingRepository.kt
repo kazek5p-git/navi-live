@@ -12,6 +12,7 @@ import com.navilive.android.model.RouteSummary
 import com.navilive.android.model.SharedProductRules
 import com.navilive.android.ui.NavigationScenarioCore
 import com.navilive.android.ui.RouteProjectionCore
+import com.navilive.android.ui.RoutePolylineIntersection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -57,6 +58,17 @@ class OpenStreetRoutingRepository(
         BusStop,
         TramStop,
         Other,
+    }
+
+    private fun PlaceKind.toSearchPlaceKind(): SearchPlaceKind {
+        return when (this) {
+            PlaceKind.Shop -> SearchPlaceKind.Shop
+            PlaceKind.ParcelLocker -> SearchPlaceKind.ParcelLocker
+            PlaceKind.RailStation -> SearchPlaceKind.RailStation
+            PlaceKind.BusStop -> SearchPlaceKind.BusStop
+            PlaceKind.TramStop -> SearchPlaceKind.TramStop
+            PlaceKind.Other -> SearchPlaceKind.Other
+        }
     }
 
     private data class SearchIntent(
@@ -161,6 +173,7 @@ class OpenStreetRoutingRepository(
     private companion object {
         const val LOCAL_POI_TOTAL_TIMEOUT_MS = 3_500L
         const val LOCAL_POI_REQUEST_TIMEOUT_MS = 1_800
+        const val SEARCH_REQUEST_TIMEOUT_MS = 1_800
         const val POI_CACHE_REFRESH_REQUEST_TIMEOUT_MS = 5_000
         const val ADDRESS_LOOKUP_TIMEOUT_MS = 5_000
         const val CHAIN_LOCATOR_TIMEOUT_MS = 4_000
@@ -172,8 +185,6 @@ class OpenStreetRoutingRepository(
         const val CROSSING_DUPLICATE_PROXIMITY_METERS = 3.0
         const val CROSSING_TURN_PROXIMITY_METERS = 35.0
         const val CROSSING_NODE_LATERAL_LIMIT_METERS = 1.5
-        const val CROSSING_WAY_LATERAL_LIMIT_METERS = 2.5
-        const val CROSSING_WAY_ALIGNMENT_TOLERANCE_DEGREES = 30.0
         const val ROUTE_ALERT_DEDUPLICATE_METERS = 18.0
         const val STREET_CROSSING_DEDUPLICATE_METERS = 25.0
         const val STREET_CROSSING_LATERAL_LIMIT_METERS = 4.0
@@ -183,7 +194,6 @@ class OpenStreetRoutingRepository(
         const val ROUTE_START_APPROACH_THRESHOLD_METERS = 18.0
         const val MIN_INFERRED_ROAD_STEP_DISTANCE_METERS = 45
         const val APPROACH_MANEUVER_TYPE = "approach"
-        const val MINIMUM_USEFUL_SEARCH_RESULTS = 3
         const val OFFICIAL_CHAIN_SCORE = 3_000
         const val POI_CACHE_REFRESH_LIMIT = 350
         const val ZABKA_LOCATOR_URL = "https://www.zabka.pl/app/uploads/locator-store-data.json"
@@ -210,106 +220,152 @@ class OpenStreetRoutingRepository(
             val searchRadiusMeters = normalizedSearchRadiusKm * 1_000
             val intent = searchIntent(query)
             val combined = linkedMapOf<String, SearchCandidate>()
-            if (currentPoint != null && isZabkaQuery(intent)) {
-                queryOfficialZabkaCandidates(
-                    query = query,
-                    currentPoint = currentPoint,
-                    searchRadiusMeters = searchRadiusMeters,
-                ).forEach { candidate ->
-                    combined[candidate.place.id] = candidate
+            val initialCandidates = coroutineScope {
+                val official = if (currentPoint != null && isZabkaQuery(intent)) {
+                    async(Dispatchers.IO) {
+                        queryOfficialZabkaCandidates(
+                            query = query,
+                            currentPoint = currentPoint,
+                            searchRadiusMeters = searchRadiusMeters,
+                        )
+                    }
+                } else {
+                    null
                 }
-            }
-            if (currentPoint != null) {
-                queryCachedPoiCandidates(
-                    query = query,
-                    currentPoint = currentPoint,
-                    searchRadiusMeters = searchRadiusMeters,
-                    intent = intent,
-                    resultLimit = normalizedResultLimit,
-                ).forEach { candidate ->
-                    combined[candidate.place.id] = candidate
+                val cached = if (currentPoint != null) {
+                    async(Dispatchers.IO) {
+                        queryCachedPoiCandidates(
+                            query = query,
+                            currentPoint = currentPoint,
+                            searchRadiusMeters = searchRadiusMeters,
+                            intent = intent,
+                            resultLimit = normalizedResultLimit,
+                        )
+                    }
+                } else {
+                    null
                 }
-            }
-            if (currentPoint != null && combined.size < MINIMUM_USEFUL_SEARCH_RESULTS) {
-                runCatching {
-                    queryLocalPoiCandidates(
-                        query = query,
-                        currentPoint = currentPoint,
-                        searchRadiusMeters = searchRadiusMeters,
-                        intent = intent,
-                        resultLimit = normalizedResultLimit,
-                    )
-                }.getOrDefault(emptyList()).forEach { candidate ->
-                    combined[candidate.place.id] = candidate
+                val local = if (currentPoint != null) {
+                    async(Dispatchers.IO) {
+                        runCatching {
+                            queryLocalPoiCandidates(
+                                query = query,
+                                currentPoint = currentPoint,
+                                searchRadiusMeters = searchRadiusMeters,
+                                intent = intent,
+                                resultLimit = normalizedResultLimit,
+                            )
+                        }.getOrDefault(emptyList())
+                    }
+                } else {
+                    null
                 }
-            }
-            val shouldUseTextSearchFallback = true
-            if ((combined.size < MINIMUM_USEFUL_SEARCH_RESULTS || currentPoint == null || !intent.isCategoryOnly) && shouldUseTextSearchFallback) {
-                nearbyTextSearchRadiiKm(
-                    normalizedSearchRadiusKm = normalizedSearchRadiusKm,
-                    currentPoint = currentPoint,
-                    intent = intent,
-                ).forEach { radiusKm ->
-                    val nearby = querySearchCandidates(
-                        query = query,
-                        currentPoint = currentPoint,
-                        nearbyOnly = true,
-                        searchRadiusKm = radiusKm,
-                        intent = intent,
-                        resultLimit = normalizedResultLimit,
-                    )
-                    nearby.forEach { candidate ->
-                        putSearchCandidate(combined, candidate)
+                val nearbyRadiusKm = currentPoint?.let {
+                    if (intent.isCategoryOnly) {
+                        normalizedSearchRadiusKm
+                    } else {
+                        SharedProductRules.Search.minimumRadiusKm
                     }
                 }
-                if (currentPoint != null &&
-                    combined.size < MINIMUM_USEFUL_SEARCH_RESULTS &&
+                val nearbyText = if (nearbyRadiusKm != null) {
+                    async(Dispatchers.IO) {
+                        querySearchCandidatesSafely(
+                            query = query,
+                            currentPoint = currentPoint,
+                            nearbyOnly = true,
+                            searchRadiusKm = nearbyRadiusKm,
+                            intent = intent,
+                            resultLimit = normalizedResultLimit,
+                        )
+                    }
+                } else {
+                    null
+                }
+                buildList {
+                    official?.await()?.let(::addAll)
+                    cached?.await()?.let(::addAll)
+                    local?.await()?.let(::addAll)
+                    nearbyText?.await()?.let(::addAll)
+                }
+            }
+            initialCandidates.forEach { candidate ->
+                putSearchCandidate(combined, candidate)
+            }
+
+            val nearbyRadii = nearbyTextSearchRadiiKm(
+                normalizedSearchRadiusKm = normalizedSearchRadiusKm,
+                currentPoint = currentPoint,
+                intent = intent,
+            )
+            val initialNearbyRadius = currentPoint?.let {
+                if (intent.isCategoryOnly) normalizedSearchRadiusKm
+                else SharedProductRules.Search.minimumRadiusKm
+            }
+            if (currentPoint != null && combined.size < normalizedResultLimit) {
+                nearbyRadii
+                    .filterNot { it == initialNearbyRadius }
+                    .forEach { radiusKm ->
+                        querySearchCandidatesSafely(
+                            query = query,
+                            currentPoint = currentPoint,
+                            nearbyOnly = true,
+                            searchRadiusKm = radiusKm,
+                            intent = intent,
+                            resultLimit = normalizedResultLimit,
+                        ).forEach { candidate ->
+                            putSearchCandidate(combined, candidate)
+                        }
+                    }
+                if (combined.size < normalizedResultLimit &&
                     intent.wantsAnyCategory &&
                     !intent.isCategoryOnly &&
                     intent.nameSearchTerms.isNotEmpty()
                 ) {
                     val simplifiedQuery = intent.nameSearchTerms.joinToString(" ")
                     if (simplifiedQuery.isNotBlank() && !simplifiedQuery.equals(query, ignoreCase = true)) {
-                        runCatching {
-                            querySearchCandidates(
-                                query = simplifiedQuery,
-                                currentPoint = currentPoint,
-                                nearbyOnly = true,
-                                searchRadiusKm = SharedProductRules.Search.minimumRadiusKm,
-                                intent = intent,
-                                resultLimit = normalizedResultLimit,
-                            )
-                        }.getOrDefault(emptyList()).forEach { candidate ->
+                        querySearchCandidatesSafely(
+                            query = simplifiedQuery,
+                            currentPoint = currentPoint,
+                            nearbyOnly = true,
+                            searchRadiusKm = SharedProductRules.Search.minimumRadiusKm,
+                            intent = intent,
+                            resultLimit = normalizedResultLimit,
+                        ).forEach { candidate ->
                             putSearchCandidate(combined, candidate)
                         }
                     }
                 }
-                if (currentPoint != null && intent.isCategoryOnly) {
+                if (intent.isCategoryOnly) {
                     val expansionQueries = when {
                         intent.wantsShop -> shopCategoryExpansionQueries()
                         intent.wantsParcelLocker -> parcelLockerCategoryExpansionQueries()
                         intent.wantsTransitStop -> transitStopCategoryExpansionQueries()
                         else -> emptyList()
                     }
-                    expansionQueries.forEach { expandedQuery ->
-                        runCatching {
-                            querySearchCandidates(
-                                query = expandedQuery,
-                                currentPoint = currentPoint,
-                                nearbyOnly = true,
-                                searchRadiusKm = normalizedSearchRadiusKm,
-                                intent = intent,
-                                resultLimit = normalizedResultLimit,
-                            )
-                        }.getOrDefault(emptyList()).forEach { candidate ->
+                    val expansionCandidates = coroutineScope {
+                        expansionQueries.map { expandedQuery ->
+                            async(Dispatchers.IO) {
+                                querySearchCandidatesSafely(
+                                    query = expandedQuery,
+                                    currentPoint = currentPoint,
+                                    nearbyOnly = true,
+                                    searchRadiusKm = normalizedSearchRadiusKm,
+                                    intent = intent,
+                                    resultLimit = normalizedResultLimit,
+                                )
+                            }
+                        }.map { it.await() }
+                    }
+                    expansionCandidates.forEach { candidatesForQuery ->
+                        candidatesForQuery.forEach { candidate ->
                             putSearchCandidate(combined, candidate)
                         }
                     }
                 }
             }
-            val includeGlobalFallback = (currentPoint == null || combined.isEmpty()) && shouldUseTextSearchFallback
+            val includeGlobalFallback = currentPoint == null || combined.isEmpty()
             if (includeGlobalFallback) {
-                querySearchCandidates(
+                querySearchCandidatesSafely(
                     query = query,
                     currentPoint = currentPoint,
                     nearbyOnly = false,
@@ -357,12 +413,7 @@ class OpenStreetRoutingRepository(
     ): RouteSummary {
         return withContext(Dispatchers.IO) {
             val coordinateString = "${from.longitude},${from.latitude};${to.longitude},${to.latitude}"
-            val root = routingEndpoints(coordinateString)
-                .firstNotNullOfOrNull { endpoint ->
-                    runCatching {
-                        JSONObject(requestText(endpoint, timeoutMs = ROUTE_REQUEST_TIMEOUT_MS))
-                    }.getOrNull()
-                } ?: throw IllegalStateException("Routing service returned no route response.")
+            val root = fetchRouteResponse(coordinateString)
             val routes = root.optJSONArray("routes")
             if (routes == null || routes.length() == 0) {
                 throw IllegalStateException("Routing service returned no routes.")
@@ -380,18 +431,30 @@ class OpenStreetRoutingRepository(
                 ?.optJSONObject(0)
                 ?.optJSONArray("steps")
             val pathPoints = parsePath(route.optJSONObject("geometry"))
-            val namedRouteWays = queryNamedRouteWays(pathPoints)
+            val (namedRouteWays, pedestrianCrossings) = coroutineScope {
+                val namedWaysDeferred = async(Dispatchers.IO) {
+                    queryNamedRouteWays(pathPoints)
+                }
+                val crossingsDeferred = async(Dispatchers.IO) {
+                    if (includePedestrianCrossings) {
+                        runCatching { queryPedestrianCrossings(pathPoints, routeLengthMeters(pathPoints)) }
+                            .getOrDefault(emptyList())
+                    } else {
+                        emptyList()
+                    }
+                }
+                namedWaysDeferred.await() to crossingsDeferred.await()
+            }
             val baseSteps = stepsWithStartApproach(
                 from = from,
                 pathPoints = pathPoints,
-                steps = normalizePotentialStreetCrossingSteps(
-                    simplifyRouteSteps(parseSteps(steps, namedRouteWays)),
-                ),
+                steps = simplifyRouteSteps(parseSteps(steps, namedRouteWays)),
             )
             val parsedSteps = addRouteAlertSteps(
                 steps = baseSteps,
                 pathPoints = pathPoints,
                 namedRouteWays = namedRouteWays,
+                pedestrianCrossings = pedestrianCrossings,
                 includePedestrianCrossings = includePedestrianCrossings,
                 includeJunctionAlerts = includeJunctionAlerts,
             )
@@ -419,11 +482,49 @@ class OpenStreetRoutingRepository(
         )
     }
 
+    private fun fetchRouteResponse(coordinateString: String): JSONObject {
+        var firstValidResponse: JSONObject? = null
+        var lastError: Exception? = null
+        for (endpoint in routingEndpoints(coordinateString)) {
+            try {
+                val response = JSONObject(requestText(endpoint, timeoutMs = ROUTE_REQUEST_TIMEOUT_MS))
+                val routes = response.optJSONArray("routes")
+                if (routes == null || routes.length() == 0) {
+                    lastError = IllegalStateException("Routing service returned no routes.")
+                    continue
+                }
+                if (firstValidResponse == null) {
+                    firstValidResponse = response
+                }
+                if (hasNamedRouteSteps(response)) {
+                    return response
+                }
+            } catch (error: Exception) {
+                lastError = error
+            }
+        }
+        return firstValidResponse ?: throw (lastError ?: IllegalStateException("Routing service returned no route response."))
+    }
+
+    private fun hasNamedRouteSteps(root: JSONObject): Boolean {
+        val route = root.optJSONArray("routes")?.optJSONObject(0) ?: return false
+        val legs = route.optJSONArray("legs") ?: return false
+        for (legIndex in 0 until legs.length()) {
+            val steps = legs.optJSONObject(legIndex)?.optJSONArray("steps") ?: continue
+            for (stepIndex in 0 until steps.length()) {
+                if (steps.optJSONObject(stepIndex)?.optString("name")?.trim().orEmpty().isNotEmpty()) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     suspend fun reverseGeocode(point: GeoPoint): String = withContext(Dispatchers.IO) {
         val endpoint =
             "https://nominatim.openstreetmap.org/reverse?format=jsonv2" +
                 "&lat=${point.latitude}&lon=${point.longitude}&zoom=18&addressdetails=1"
-        val response = requestText(endpoint)
+        val response = requestText(endpoint, timeoutMs = SEARCH_REQUEST_TIMEOUT_MS)
         val root = JSONObject(response)
         val displayName = root.optString("display_name")
         formatAddress(root.optJSONObject("address"), displayName).ifBlank {
@@ -536,35 +637,6 @@ class OpenStreetRoutingRepository(
         return simplified.ifEmpty { steps }
     }
 
-    private fun normalizePotentialStreetCrossingSteps(steps: List<RouteStep>): List<RouteStep> {
-        if (steps.size < 3) return steps
-        return steps.mapIndexed { index, step ->
-            val roadName = step.roadName?.trim().orEmpty()
-            if (!isPotentialStreetCrossingStep(step, steps.getOrNull(index - 1), steps.getOrNull(index + 1), roadName)) {
-                step
-            } else {
-                step.copy(instruction = string(R.string.route_step_cross_named_street, roadName))
-            }
-        }
-    }
-
-    private fun isPotentialStreetCrossingStep(
-        step: RouteStep,
-        previous: RouteStep?,
-        next: RouteStep?,
-        roadName: String,
-    ): Boolean {
-        if (roadName.isBlank()) return false
-        if (step.kind != RouteStepKind.Instruction) return false
-        if (!step.isTurnLikeManeuver()) return false
-        if (step.distanceMeters !in 1..25) return false
-        val normalizedRoad = normalizedRouteRoadName(roadName)
-        if (normalizedRoad == null) return false
-        val previousRoad = normalizedRouteRoadName(previous?.roadName)
-        val nextRoad = normalizedRouteRoadName(next?.roadName)
-        return previousRoad != normalizedRoad && nextRoad != normalizedRoad
-    }
-
     private fun normalizedRouteRoadName(value: String?): String? = value
         ?.trim()
         ?.lowercase(Locale.ROOT)
@@ -589,6 +661,7 @@ class OpenStreetRoutingRepository(
         steps: List<RouteStep>,
         pathPoints: List<GeoPoint>,
         namedRouteWays: List<NamedRouteWay>,
+        pedestrianCrossings: List<RouteAlertCandidate>,
         includePedestrianCrossings: Boolean,
         includeJunctionAlerts: Boolean,
     ): List<RouteStep> {
@@ -597,7 +670,7 @@ class OpenStreetRoutingRepository(
         val routeLengthMeters = routeLengthMeters(pathPoints)
         val alerts = buildList {
             if (includePedestrianCrossings) {
-                addAll(runCatching { queryPedestrianCrossings(pathPoints, routeLengthMeters) }.getOrDefault(emptyList()))
+                addAll(pedestrianCrossings)
             }
             if (includeJunctionAlerts) {
                 addAll(queryRouteStreetCrossings(pathPoints, namedRouteWays, routeLengthMeters))
@@ -786,14 +859,35 @@ class OpenStreetRoutingRepository(
         val candidates = mutableListOf<RouteAlertCandidate>()
         for (index in 0 until elements.length()) {
             val item = elements.optJSONObject(index) ?: continue
+            val tags = item.optJSONObject("tags")?.toStringMap().orEmpty()
+            if (!PedestrianCrossingCore.isPedestrianCrossing(tags)) continue
             val point = overpassPoint(item) ?: continue
-            val projection = projectOntoRoute(pathPoints, point) ?: continue
-            if (!isPedestrianCrossingOnRoute(item, projection)) continue
-            if (projection.distanceAlongRouteMeters < 20.0) continue
-            if (projection.distanceAlongRouteMeters > routeLengthMeters - 20.0) continue
+            val crossingGeometry = parseOverpassGeometry(item.optJSONArray("geometry"))
+            val intersection = if (crossingGeometry.size >= 2) {
+                RouteProjectionCore.polylineIntersections(
+                    routePoints = pathPoints,
+                    otherPoints = crossingGeometry,
+                    endpointToleranceMeters = CROSSING_NODE_LATERAL_LIMIT_METERS,
+                ).firstOrNull()
+            } else {
+                val projection = projectOntoRoute(pathPoints, point)
+                if (projection != null && projection.lateralDistanceMeters <= CROSSING_NODE_LATERAL_LIMIT_METERS) {
+                    RoutePolylineIntersection(
+                        point = point,
+                        distanceAlongRouteMeters = projection.distanceAlongRouteMeters,
+                        routeSegmentIndex = 0,
+                        otherSegmentIndex = 0,
+                        crossingAngleDegrees = 90.0,
+                    )
+                } else {
+                    null
+                }
+            } ?: continue
+            if (intersection.distanceAlongRouteMeters < 20.0) continue
+            if (intersection.distanceAlongRouteMeters > routeLengthMeters - 20.0) continue
             candidates += RouteAlertCandidate(
-                point = point,
-                distanceAlongRouteMeters = projection.distanceAlongRouteMeters,
+                point = intersection.point,
+                distanceAlongRouteMeters = intersection.distanceAlongRouteMeters,
                 instruction = string(R.string.route_step_crossing),
                 kind = RouteStepKind.PedestrianCrossing,
             )
@@ -819,28 +913,36 @@ class OpenStreetRoutingRepository(
         for (way in namedRouteWays) {
             if (!isStreetCrossingWay(way.highway)) continue
             val normalizedName = normalizedRouteRoadName(way.name) ?: continue
-            way.geometry.forEachIndexed { index, point ->
-                val projection = projectOntoRoute(pathPoints, point) ?: return@forEachIndexed
-                if (projection.lateralDistanceMeters > STREET_CROSSING_LATERAL_LIMIT_METERS) return@forEachIndexed
-                if (projection.distanceAlongRouteMeters < 20.0) return@forEachIndexed
-                if (projection.distanceAlongRouteMeters > routeLengthMeters - 20.0) return@forEachIndexed
-                val wayBearing = localWayBearingDegrees(way.geometry, index) ?: return@forEachIndexed
-                val bearingDifference = undirectedBearingDifference(
-                    projection.segmentBearingDegrees,
-                    wayBearing,
-                )
-                if (bearingDifference < STREET_CROSSING_MIN_BEARING_DIFFERENCE_DEGREES) return@forEachIndexed
+            val intersections = RouteProjectionCore.polylineIntersections(
+                routePoints = pathPoints,
+                otherPoints = way.geometry,
+                endpointToleranceMeters = STREET_CROSSING_LATERAL_LIMIT_METERS,
+            )
+            intersections.forEach { intersection ->
+                if (!NavigationScenarioCore.isMeaningfulCrossing(
+                        crossingAngleDegrees = intersection.crossingAngleDegrees,
+                        minimumBearingDifferenceDegrees = STREET_CROSSING_MIN_BEARING_DIFFERENCE_DEGREES,
+                    )
+                ) {
+                    return@forEach
+                }
+                if (intersection.distanceAlongRouteMeters < 20.0 ||
+                    intersection.distanceAlongRouteMeters > routeLengthMeters - 20.0
+                ) {
+                    return@forEach
+                }
                 if (
                     candidates.any {
                         normalizedRouteRoadName(it.roadName) == normalizedName &&
-                            abs(it.distanceAlongRouteMeters - projection.distanceAlongRouteMeters) < STREET_CROSSING_DEDUPLICATE_METERS
+                            abs(it.distanceAlongRouteMeters - intersection.distanceAlongRouteMeters) <
+                                STREET_CROSSING_DEDUPLICATE_METERS
                     }
                 ) {
-                    return@forEachIndexed
+                    return@forEach
                 }
                 candidates += RouteAlertCandidate(
-                    point = point,
-                    distanceAlongRouteMeters = projection.distanceAlongRouteMeters,
+                    point = intersection.point,
+                    distanceAlongRouteMeters = intersection.distanceAlongRouteMeters,
                     instruction = string(R.string.route_step_cross_named_street, way.name),
                     kind = RouteStepKind.Instruction,
                     roadName = way.name,
@@ -869,25 +971,6 @@ class OpenStreetRoutingRepository(
             "https://overpass.kumi.systems/api/interpreter?data=$encoded",
             "https://overpass.osm.ch/api/interpreter?data=$encoded",
         )
-    }
-
-    private fun isPedestrianCrossingOnRoute(
-        item: JSONObject,
-        routeProjection: RouteProjection,
-    ): Boolean {
-        val crossingGeometry = parseOverpassGeometry(item.optJSONArray("geometry"))
-        if (crossingGeometry.size < 2) {
-            return routeProjection.lateralDistanceMeters <= CROSSING_NODE_LATERAL_LIMIT_METERS
-        }
-        if (routeProjection.lateralDistanceMeters > CROSSING_WAY_LATERAL_LIMIT_METERS) {
-            return false
-        }
-        val crossingBearing = bearingDegrees(crossingGeometry.first(), crossingGeometry.last())
-        val bearingDifference = undirectedBearingDifference(
-            routeProjection.segmentBearingDegrees,
-            crossingBearing,
-        )
-        return bearingDifference <= CROSSING_WAY_ALIGNMENT_TOLERANCE_DEGREES
     }
 
     private fun queryNamedRouteWays(pathPoints: List<GeoPoint>): List<NamedRouteWay> {
@@ -969,16 +1052,6 @@ class OpenStreetRoutingRepository(
             "service",
             "pedestrian",
         )
-    }
-
-    private fun localWayBearingDegrees(points: List<GeoPoint>, index: Int): Double? {
-        if (points.size < 2) return null
-        val previousIndex = (index - 1).coerceAtLeast(0)
-        val nextIndex = (index + 1).coerceAtMost(points.lastIndex)
-        val start = points[previousIndex]
-        val end = points[nextIndex]
-        if (start == end) return null
-        return bearingDegrees(start, end)
     }
 
     private fun inferRoadNameForStep(
@@ -1137,11 +1210,6 @@ class OpenStreetRoutingRepository(
     private fun normalizedBearingDegrees(radians: Double): Double {
         val degrees = Math.toDegrees(radians)
         return (degrees + 360.0) % 360.0
-    }
-
-    private fun undirectedBearingDifference(left: Double, right: Double): Double {
-        val directed = abs(((left - right + 540.0) % 360.0) - 180.0)
-        return minOf(directed, 180.0 - directed)
     }
 
     private fun routeLengthMeters(pathPoints: List<GeoPoint>): Double {
@@ -1320,22 +1388,40 @@ class OpenStreetRoutingRepository(
 
         val needsNearbyAddress = candidatesAfterLookup.filter(::needsNearbyAddressEnrichment)
         if (needsNearbyAddress.isEmpty()) {
-            return candidatesAfterLookup.map { it.place }
+            return candidatesAfterLookup.map { ensureSearchAddress(it.place) }
         }
 
         val nearbyAddresses = lookupNearbyAddressCandidates(needsNearbyAddress.map { it.place })
         if (nearbyAddresses.isEmpty()) {
-            return candidatesAfterLookup.map { it.place }
+            return candidatesAfterLookup.map { ensureSearchAddress(it.place) }
         }
 
         return candidatesAfterLookup.map { candidate ->
             val nearbyAddress = nearestNearbyAddress(candidate.place, nearbyAddresses)
             if (nearbyAddress != null) {
-                candidate.place.copy(address = nearbyAddress.address)
+                ensureSearchAddress(candidate.place.copy(address = nearbyAddress.address))
             } else {
-                candidate.place
+                ensureSearchAddress(candidate.place)
             }
         }
+    }
+
+    private fun ensureSearchAddress(place: Place): Place {
+        return place.copy(
+            address = ensureSearchAddress(
+                address = place.address,
+                placeName = place.name,
+                point = place.point,
+            ),
+        )
+    }
+
+    private fun ensureSearchAddress(address: String, placeName: String, point: GeoPoint?): String {
+        return AddressFormattingCore.ensureAddress(
+            address = address,
+            placeName = placeName,
+            fallback = point?.let(::coordinateAddress) ?: string(R.string.generic_unknown_place),
+        )
     }
 
     private fun needsSearchAddressEnrichment(place: Place): Boolean {
@@ -1343,9 +1429,7 @@ class OpenStreetRoutingRepository(
     }
 
     private fun needsNearbyAddressEnrichment(candidate: SearchCandidate): Boolean {
-        return candidate.kind == PlaceKind.Shop &&
-            candidate.place.point != null &&
-            needsSearchAddressEnrichment(candidate.place)
+        return candidate.place.point != null && needsSearchAddressEnrichment(candidate.place)
     }
 
     private suspend fun lookupNearbyAddressCandidates(places: List<Place>): List<NearbyAddressCandidate> {
@@ -1458,12 +1542,7 @@ class OpenStreetRoutingRepository(
     }
 
     private fun isUnhelpfulSearchAddress(address: String, placeName: String): Boolean {
-        val normalizedAddress = normalizeForSearch(address)
-        if (normalizedAddress.isBlank()) return true
-        val normalizedName = normalizeForSearch(placeName)
-        val normalizedNameTail = normalizeForSearch(placeName.substringAfter(':').trim())
-        return normalizedAddress == normalizedName ||
-            normalizedAddress == normalizedNameTail
+        return AddressFormattingCore.isUnhelpfulAddress(address, placeName)
     }
 
     private fun hasPreciseStreetNumber(address: String): Boolean {
@@ -1493,7 +1572,9 @@ class OpenStreetRoutingRepository(
             if (distance > searchRadiusMeters) continue
             val street = store.optString("street")
             val town = store.optString("town")
-            val address = officialChainAddress(street, town).ifBlank { street.ifBlank { town } }
+            val address = officialChainAddress(street, town).ifBlank {
+                coordinateAddress(point)
+            }
             val place = Place(
                 id = "zabka_official_${store.optString("storeId").ifBlank { index.toString() }}",
                 name = "\u017Babka",
@@ -1572,7 +1653,7 @@ class OpenStreetRoutingRepository(
                 val kind = overpassKind(tags)
                 if (!shouldKeepLocalPoi(tags, kind, intent)) continue
                 val name = overpassName(tags, kind)
-                val address = overpassAddress(tags, name)
+                val address = overpassAddress(tags, coordinateAddress(point))
                 val place = Place(
                     id = "overpass_${item.optString("type")}_${item.optLong("id")}",
                     name = labelForKind(name, kind),
@@ -1728,7 +1809,7 @@ class OpenStreetRoutingRepository(
         if (kind == PlaceKind.Other) return null
         val name = overpassName(tags, kind).trim()
         if (name.isBlank()) return null
-        val address = overpassAddress(tags, name)
+        val address = overpassAddress(tags, coordinateAddress(point))
         val searchableText = normalizeForSearch(
             (
                 searchableNameParts(tags) +
@@ -1767,6 +1848,9 @@ class OpenStreetRoutingRepository(
         kind: PlaceKind,
         intent: SearchIntent,
     ): Boolean {
+        if (intent.wantsRailStation && !intent.wantsTransitStop && kind != PlaceKind.RailStation) {
+            return false
+        }
         if (intent.isCategoryOnly) {
             return when {
                 intent.wantsShop -> kind == PlaceKind.Shop
@@ -2129,16 +2213,21 @@ class OpenStreetRoutingRepository(
     }
 
     private fun shouldKeepLocalPoi(tags: Map<String, String>, kind: PlaceKind, intent: SearchIntent): Boolean {
-        if (intent.wantsShop && kind == PlaceKind.Shop) return true
-        if (intent.wantsParcelLocker && kind == PlaceKind.ParcelLocker) return true
-        if (intent.wantsRailStation && (kind == PlaceKind.RailStation || kind == PlaceKind.BusStop || kind == PlaceKind.TramStop)) {
-            return true
-        }
         val normalizedName = normalizeForSearch(searchableNameParts(tags).joinToString(" "))
-        if (intent.wantsTransitStop && (kind == PlaceKind.BusStop || kind == PlaceKind.TramStop)) {
-            return intent.nameSearchTerms.isEmpty() || intent.nameSearchTerms.all { normalizedName.contains(it) }
+        if (intent.wantsRailStation && !intent.wantsTransitStop) {
+            if (kind != PlaceKind.RailStation) return false
+            return SearchResultCore.localNameMatches(normalizedName, intent.nameSearchTerms)
         }
-        return intent.nameSearchTerms.all { normalizedName.contains(it) }
+        if (intent.wantsShop && kind == PlaceKind.Shop) {
+            return SearchResultCore.localNameMatches(normalizedName, intent.nameSearchTerms)
+        }
+        if (intent.wantsParcelLocker && kind == PlaceKind.ParcelLocker) {
+            return SearchResultCore.localNameMatches(normalizedName, intent.nameSearchTerms)
+        }
+        if (intent.wantsTransitStop && (kind == PlaceKind.BusStop || kind == PlaceKind.TramStop)) {
+            return SearchResultCore.localNameMatches(normalizedName, intent.nameSearchTerms)
+        }
+        return SearchResultCore.localNameMatches(normalizedName, intent.nameSearchTerms)
     }
 
     private fun searchableNameParts(tags: Map<String, String>): List<String> {
@@ -2186,7 +2275,7 @@ class OpenStreetRoutingRepository(
             searchRadiusKm = searchRadiusKm,
             resultLimit = resultLimit,
         )
-        val response = requestText(endpoint)
+        val response = requestText(endpoint, timeoutMs = SEARCH_REQUEST_TIMEOUT_MS)
         val array = JSONArray(response)
         val candidates = mutableListOf<SearchCandidate>()
         val maxDistanceMeters = currentPoint?.let { searchRadiusKm * 1_000 }
@@ -2194,12 +2283,29 @@ class OpenStreetRoutingRepository(
             val item = array.getJSONObject(index)
             val latitude = item.optString("lat").toDoubleOrNull() ?: continue
             val longitude = item.optString("lon").toDoubleOrNull() ?: continue
-            val displayName = item.optString("display_name").ifBlank { string(R.string.generic_unknown_place) }
-            val rawAddress = formatAddress(item.optJSONObject("address"), displayName)
             val kind = nominatimKind(item)
+            if (intent.wantsRailStation &&
+                !SearchResultCore.shouldKeepForRailQuery(
+                    kind = kind.toSearchPlaceKind(),
+                    wantsTransitStop = intent.wantsTransitStop,
+                )
+            ) {
+                continue
+            }
+            val displayName = item.optString("display_name")
+                .trim()
+                .ifBlank { string(R.string.generic_unknown_place) }
             val label = candidateName(item, displayName, kind)
-            val address = removeDuplicatedAddressPrefix(rawAddress, label)
             val point = GeoPoint(latitude, longitude)
+            val rawAddress = formatAddress(
+                item.optJSONObject("address"),
+                fallbackSearchAddress(point, displayName, label),
+            )
+            val address = ensureSearchAddress(
+                address = removeDuplicatedAddressPrefix(rawAddress, label),
+                placeName = label,
+                point = point,
+            )
             val distance = if (currentPoint == null) {
                 0
             } else {
@@ -2214,7 +2320,7 @@ class OpenStreetRoutingRepository(
                 NavigationScenarioCore.distanceBasedEtaMinutes(distance)
             }
             val place = Place(
-                id = "nominatim_${latitude}_$longitude",
+                id = nominatimPlaceId(item, point),
                 name = label,
                 address = address,
                 walkDistanceMeters = distance,
@@ -2233,6 +2339,26 @@ class OpenStreetRoutingRepository(
             )
         }
         return candidates
+    }
+
+    private fun querySearchCandidatesSafely(
+        query: String,
+        currentPoint: GeoPoint?,
+        nearbyOnly: Boolean,
+        searchRadiusKm: Int,
+        intent: SearchIntent,
+        resultLimit: Int,
+    ): List<SearchCandidate> {
+        return runCatching {
+            querySearchCandidates(
+                query = query,
+                currentPoint = currentPoint,
+                nearbyOnly = nearbyOnly,
+                searchRadiusKm = searchRadiusKm,
+                intent = intent,
+                resultLimit = resultLimit,
+            )
+        }.getOrDefault(emptyList())
     }
 
     private fun buildSearchEndpoint(
@@ -2292,6 +2418,34 @@ class OpenStreetRoutingRepository(
         return String.format(Locale.US, "%.6f", value)
     }
 
+    private fun coordinateAddress(point: GeoPoint): String {
+        return string(
+            R.string.format_coordinates_label,
+            formatCoordinate(point.latitude),
+            formatCoordinate(point.longitude),
+        )
+    }
+
+    private fun fallbackSearchAddress(point: GeoPoint, displayName: String, placeName: String): String {
+        val parts = displayName.split(',')
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+        val normalizedName = normalizeForSearch(placeName)
+        val usefulParts = parts.filterIndexed { index, part ->
+            index != 0 || normalizeForSearch(part) != normalizedName
+        }
+        return usefulParts.joinToString(", ").ifBlank { coordinateAddress(point) }
+    }
+
+    private fun nominatimPlaceId(item: JSONObject, point: GeoPoint): String {
+        val type = item.optString("osm_type").lowercase(Locale.ROOT)
+        val osmId = item.optLong("osm_id", -1L)
+        if (type in setOf("node", "way", "relation") && osmId > 0L) {
+            return "nominatim_${type}_$osmId"
+        }
+        return "nominatim_${formatCoordinate(point.latitude)}_${formatCoordinate(point.longitude)}"
+    }
+
     private fun formatAddress(address: JSONObject?, fallback: String): String {
         return AddressFormattingCore.formatAddress(address?.toStringMap(), fallback)
     }
@@ -2343,17 +2497,13 @@ class OpenStreetRoutingRepository(
     }
 
     private fun nominatimKind(item: JSONObject): PlaceKind {
-        val category = item.optString("category")
-        val type = item.optString("type")
-        return when {
-            category == "shop" -> PlaceKind.Shop
-            category == "amenity" && type == "parcel_locker" -> PlaceKind.ParcelLocker
-            category == "railway" && (type == "station" || type == "halt") -> PlaceKind.RailStation
-            category == "public_transport" && type == "station" -> PlaceKind.RailStation
-            category == "highway" && type == "bus_stop" -> PlaceKind.BusStop
-            category == "public_transport" && (type == "platform" || type == "stop_position") -> PlaceKind.BusStop
-            category == "railway" && type == "tram_stop" -> PlaceKind.TramStop
-            else -> PlaceKind.Other
+        return when (SearchResultCore.kindFromNominatim(item.optString("category"), item.optString("type"))) {
+            SearchPlaceKind.Shop -> PlaceKind.Shop
+            SearchPlaceKind.ParcelLocker -> PlaceKind.ParcelLocker
+            SearchPlaceKind.RailStation -> PlaceKind.RailStation
+            SearchPlaceKind.BusStop -> PlaceKind.BusStop
+            SearchPlaceKind.TramStop -> PlaceKind.TramStop
+            SearchPlaceKind.Other -> PlaceKind.Other
         }
     }
 
@@ -2482,29 +2632,37 @@ class OpenStreetRoutingRepository(
         candidate: SearchCandidate,
         existing: SearchCandidate,
     ): Boolean {
-        return when {
-            candidate.score != existing.score -> candidate.score > existing.score
-            candidate.isNearbyCandidate != existing.isNearbyCandidate -> candidate.isNearbyCandidate
-            candidate.distanceMeters != existing.distanceMeters -> {
-                val candidateDistance = if (candidate.distanceMeters > 0) candidate.distanceMeters else Int.MAX_VALUE
-                val existingDistance = if (existing.distanceMeters > 0) existing.distanceMeters else Int.MAX_VALUE
-                candidateDistance < existingDistance
-            }
-            else -> candidate.importance > existing.importance
-        }
+        return SearchResultCore.isBetterDuplicate(
+            left = SearchRankingValues(
+                score = candidate.score,
+                distanceMeters = candidate.distanceMeters,
+                importance = candidate.importance,
+                isNearbyCandidate = candidate.isNearbyCandidate,
+            ),
+            right = SearchRankingValues(
+                score = existing.score,
+                distanceMeters = existing.distanceMeters,
+                importance = existing.importance,
+                isNearbyCandidate = existing.isNearbyCandidate,
+            ),
+        )
     }
 
     private fun compareSearchCandidates(left: SearchCandidate, right: SearchCandidate): Int {
-        val leftDistance = sortableDistance(left.distanceMeters)
-        val rightDistance = sortableDistance(right.distanceMeters)
-        val scoreDifference = left.score - right.score
-        if (kotlin.math.abs(scoreDifference) <= SharedProductRules.Search.nearbyBonus && leftDistance != rightDistance) {
-            return leftDistance.compareTo(rightDistance)
-        }
-        if (scoreDifference != 0) return -scoreDifference
-        if (left.isNearbyCandidate != right.isNearbyCandidate) return if (left.isNearbyCandidate) -1 else 1
-        if (leftDistance != rightDistance) return leftDistance.compareTo(rightDistance)
-        return -left.importance.compareTo(right.importance)
+        return SearchResultCore.compareForDisplay(
+            left = SearchRankingValues(
+                score = left.score,
+                distanceMeters = left.distanceMeters,
+                importance = left.importance,
+                isNearbyCandidate = left.isNearbyCandidate,
+            ),
+            right = SearchRankingValues(
+                score = right.score,
+                distanceMeters = right.distanceMeters,
+                importance = right.importance,
+                isNearbyCandidate = right.isNearbyCandidate,
+            ),
+        )
     }
 
     private fun sortableDistance(distanceMeters: Int): Int {

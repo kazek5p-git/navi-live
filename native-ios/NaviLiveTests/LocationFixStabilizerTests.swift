@@ -66,6 +66,23 @@ final class LocationFixStabilizerTests: XCTestCase {
     XCTAssertNotEqual(latitude, movement.point.latitude, accuracy: 0.0000001)
   }
 
+  func testReportedWalkingMovementIsNotHeldAsStationaryJitter() throws {
+    let stabilizer = LocationFixStabilizer()
+    let first = fix(latitude: 51.0, longitude: 19.0, accuracy: 8, timestamp: 1)
+    let movement = LocationFix(
+      point: first.point.movedNorth(meters: 3),
+      accuracyMeters: first.accuracyMeters,
+      timestamp: Date(timeIntervalSince1970: 2),
+      courseDegrees: nil,
+      speedMetersPerSecond: 1.2
+    )
+
+    _ = stabilizer.stabilize(first)
+    let stabilized = try XCTUnwrap(stabilizer.stabilize(movement))
+
+    XCTAssertGreaterThan(stabilized.point.latitude, first.point.latitude)
+  }
+
   func testStaleFixResetsStabilization() throws {
     let stabilizer = LocationFixStabilizer()
     let first = fix(latitude: 51.0, longitude: 19.0, accuracy: 5, timestamp: 1)

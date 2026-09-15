@@ -10,6 +10,19 @@ internal data class HeadingAlignment(
     val isAlmostAligned: Boolean,
 )
 
+internal data class StepConfirmationDecision(
+    val confirmedStepIndex: Int?,
+    val pendingStepIndex: Int?,
+    val consecutiveFixes: Int,
+)
+
+internal data class RouteStatusConfirmationDecision(
+    val offRouteConfirmed: Boolean,
+    val recoveryConfirmed: Boolean,
+    val consecutiveOffRouteFixes: Int,
+    val consecutiveOnRouteFixes: Int,
+)
+
 internal object NavigationScenarioCore {
 
     fun maneuverAdvanceThresholdMeters(accuracyMeters: Float): Double {
@@ -117,6 +130,99 @@ internal object NavigationScenarioCore {
 
     fun shouldAdvanceStep(distanceToManeuverMeters: Double, accuracyMeters: Float): Boolean {
         return distanceToManeuverMeters <= maneuverAdvanceThresholdMeters(accuracyMeters)
+    }
+
+    /** Dodaje pół sekundy po zakończeniu dźwięku, zanim rozpocznie się mowa. */
+    fun speechDelayAfterSound(soundPlaybackDelayMs: Long): Long {
+        return soundPlaybackDelayMs.coerceAtLeast(0L) +
+            SharedProductRules.Navigation.speechAfterSoundDelayMs
+    }
+
+    /** Odrzuca geometrię biegnącą równolegle lub prawie równolegle do trasy. */
+    fun isMeaningfulCrossing(
+        crossingAngleDegrees: Double,
+        minimumBearingDifferenceDegrees: Double,
+    ): Boolean {
+        return crossingAngleDegrees.isFinite() &&
+            minimumBearingDifferenceDegrees.isFinite() &&
+            minimumBearingDifferenceDegrees in 0.0..90.0 &&
+            crossingAngleDegrees in 0.0..90.0 &&
+            crossingAngleDegrees >= minimumBearingDifferenceDegrees
+    }
+
+    /** Wymaga dwóch kolejnych pomiarów wskazujących ten sam następny krok. */
+    fun confirmStepCandidate(
+        currentStepIndex: Int,
+        candidateStepIndex: Int,
+        pendingStepIndex: Int?,
+        consecutiveFixes: Int,
+    ): StepConfirmationDecision {
+        if (candidateStepIndex <= currentStepIndex) {
+            return StepConfirmationDecision(
+                confirmedStepIndex = null,
+                pendingStepIndex = null,
+                consecutiveFixes = 0,
+            )
+        }
+
+        val nextFixes = if (pendingStepIndex == candidateStepIndex) {
+            consecutiveFixes + 1
+        } else {
+            1
+        }
+        return if (nextFixes >= SharedProductRules.Navigation.stepConfirmationRequiredFixes) {
+            StepConfirmationDecision(
+                confirmedStepIndex = candidateStepIndex,
+                pendingStepIndex = null,
+                consecutiveFixes = 0,
+            )
+        } else {
+            StepConfirmationDecision(
+                confirmedStepIndex = null,
+                pendingStepIndex = candidateStepIndex,
+                consecutiveFixes = nextFixes,
+            )
+        }
+    }
+
+    /** Odfiltrowuje pojedyncze skoki GPS poza trasę i pojedyncze powroty. */
+    fun confirmRouteStatus(
+        currentlyOffRoute: Boolean,
+        measurementIsOffRoute: Boolean,
+        consecutiveOffRouteFixes: Int,
+        consecutiveOnRouteFixes: Int,
+    ): RouteStatusConfirmationDecision {
+        if (!currentlyOffRoute) {
+            val nextOffRouteFixes = if (measurementIsOffRoute) {
+                consecutiveOffRouteFixes + 1
+            } else {
+                0
+            }
+            return RouteStatusConfirmationDecision(
+                offRouteConfirmed = measurementIsOffRoute &&
+                    nextOffRouteFixes >= SharedProductRules.Navigation.offRouteConfirmationRequiredFixes,
+                recoveryConfirmed = false,
+                consecutiveOffRouteFixes = nextOffRouteFixes,
+                consecutiveOnRouteFixes = 0,
+            )
+        }
+
+        val nextOnRouteFixes = if (measurementIsOffRoute) {
+            0
+        } else {
+            consecutiveOnRouteFixes + 1
+        }
+        return RouteStatusConfirmationDecision(
+            offRouteConfirmed = measurementIsOffRoute,
+            recoveryConfirmed = !measurementIsOffRoute &&
+                nextOnRouteFixes >= SharedProductRules.Navigation.offRouteRecoveryRequiredFixes,
+            consecutiveOffRouteFixes = if (measurementIsOffRoute) {
+                SharedProductRules.Navigation.offRouteConfirmationRequiredFixes
+            } else {
+                0
+            },
+            consecutiveOnRouteFixes = nextOnRouteFixes,
+        )
     }
 
     fun shouldTriggerOffRoute(deviationMeters: Int?, accuracyMeters: Float): Boolean {

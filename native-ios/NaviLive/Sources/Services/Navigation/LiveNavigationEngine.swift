@@ -20,18 +20,24 @@ final class LiveNavigationEngine {
     let stepDistancesAlongRoute: [Double]
     var currentStepIndex: Int
     var lastProjectedDistanceAlongRouteMeters: Double
+    var preferredSegmentIndex: Int?
   }
 
   private static let approachManeuverType = "approach"
 
   private var session: RouteSession?
   private var lastAutoRecalculateAt: Date = .distantPast
+  private var pendingStepIndex: Int?
+  private var pendingStepFixes = 0
+  private var consecutiveOffRouteFixes = 0
+  private var consecutiveOnRouteFixes = 0
 
   var currentDestination: Place? {
     session?.destination
   }
 
   func loadRoute(destination: Place, summary: RouteSummary, fix: LocationFix?) -> ActiveNavigationState {
+    resetConfirmationState()
     let normalizedSteps = summary.steps.isEmpty
       ? [
           RouteStep(
@@ -55,7 +61,8 @@ final class LiveNavigationEngine {
       pathPoints: summary.pathPoints,
       stepDistancesAlongRoute: stepDistances,
       currentStepIndex: 0,
-      lastProjectedDistanceAlongRouteMeters: 0
+      lastProjectedDistanceAlongRouteMeters: 0,
+      preferredSegmentIndex: nil
     )
 
     return buildState(
@@ -88,10 +95,19 @@ final class LiveNavigationEngine {
     guard var session else { return nil }
 
     let deviation = routeDeviationMeters(session: session, fix: fix)
-    let isOffRoute = NavigationScenarioCore.shouldTriggerOffRoute(
+    let isApproachingRouteStart = session.steps[safe: session.currentStepIndex]?.maneuverType == Self.approachManeuverType
+    let measurementIsOffRoute = !isApproachingRouteStart && NavigationScenarioCore.shouldTriggerOffRoute(
       deviationMeters: deviation,
       accuracyMeters: fix.accuracyMeters
     )
+    let routeStatusDecision = NavigationScenarioCore.confirmRouteStatus(
+      currentlyOffRoute: previous.isOffRoute,
+      measurementIsOffRoute: measurementIsOffRoute,
+      consecutiveOffRouteFixes: consecutiveOffRouteFixes,
+      consecutiveOnRouteFixes: consecutiveOnRouteFixes
+    )
+    consecutiveOffRouteFixes = routeStatusDecision.consecutiveOffRouteFixes
+    consecutiveOnRouteFixes = routeStatusDecision.consecutiveOnRouteFixes
     let distanceToDestination = session.destination.point.map { fix.point.distance(to: $0) }
     let routeProgressForArrival = routeProgressProjection(
       session: session,
@@ -126,8 +142,7 @@ final class LiveNavigationEngine {
       )
     }
 
-    let isApproachingRouteStart = session.steps[safe: session.currentStepIndex]?.maneuverType == Self.approachManeuverType
-    if !isApproachingRouteStart, isOffRoute, let deviation {
+    if routeStatusDecision.offRouteConfirmed, let deviation {
       let state = buildState(
         currentStepIndex: session.currentStepIndex,
         fix: fix,
@@ -153,13 +168,44 @@ final class LiveNavigationEngine {
       )
     }
 
+    if previous.isOffRoute, !routeStatusDecision.recoveryConfirmed {
+      let state = buildState(
+        currentStepIndex: session.currentStepIndex,
+        fix: fix,
+        previous: previous,
+        isOffRoute: true,
+        isRecalculating: previous.isRecalculating,
+        offRouteDistanceMeters: deviation
+      )
+      return LiveNavigationUpdate(
+        state: state,
+        currentStepIndex: session.currentStepIndex,
+        upcomingInstruction: session.steps[safe: session.currentStepIndex + 1]?.instruction,
+        currentStepKind: session.steps[safe: session.currentStepIndex]?.kind ?? .instruction,
+        upcomingStepKind: session.steps[safe: session.currentStepIndex + 1]?.kind,
+        stepChanged: false,
+        offRouteTriggered: false,
+        shouldAutoRecalculate: false,
+        hasArrived: false
+      )
+    }
+
     let progressBeforeStepChange = routeProgressProjection(
       session: session,
       point: fix.point,
       currentStepIndex: session.currentStepIndex,
       fix: fix
     )
-    let nextStepIndex = resolveStepIndex(session: session, fix: fix)
+    let candidateStepIndex = resolveStepIndex(session: session, fix: fix)
+    let stepConfirmation = NavigationScenarioCore.confirmStepCandidate(
+      currentStepIndex: session.currentStepIndex,
+      candidateStepIndex: candidateStepIndex,
+      pendingStepIndex: pendingStepIndex,
+      consecutiveFixes: pendingStepFixes
+    )
+    pendingStepIndex = stepConfirmation.pendingStepIndex
+    pendingStepFixes = stepConfirmation.consecutiveFixes
+    let nextStepIndex = stepConfirmation.confirmedStepIndex ?? session.currentStepIndex
     let stepChanged = nextStepIndex != session.currentStepIndex
     session.currentStepIndex = nextStepIndex
     let progressAfterStepChange = routeProgressProjection(
@@ -172,6 +218,9 @@ final class LiveNavigationEngine {
       session.lastProjectedDistanceAlongRouteMeters,
       progressAfterStepChange?.distanceAlongRouteMeters ?? 0
     )
+    session.preferredSegmentIndex = progressAfterStepChange?.segmentIndex ??
+      progressBeforeStepChange?.segmentIndex ??
+      session.preferredSegmentIndex
     self.session = session
 
     let state = buildState(
@@ -199,6 +248,14 @@ final class LiveNavigationEngine {
   func reset() {
     session = nil
     lastAutoRecalculateAt = .distantPast
+    resetConfirmationState()
+  }
+
+  private func resetConfirmationState() {
+    pendingStepIndex = nil
+    pendingStepFixes = 0
+    consecutiveOffRouteFixes = 0
+    consecutiveOnRouteFixes = 0
   }
 
   private func shouldAutoRecalculate(now: Date) -> Bool {
@@ -276,7 +333,11 @@ final class LiveNavigationEngine {
         currentStepIndex: safeIndex,
         fix: $0
       ) ??
-        routeProgressProjection(pathPoints: session.pathPoints, point: $0.point)
+        routeProgressProjection(
+          pathPoints: session.pathPoints,
+          point: $0.point,
+          preferredSegmentIndex: session.preferredSegmentIndex
+        )
     }
 
     let rawDistanceToNext: Int = {
@@ -300,9 +361,7 @@ final class LiveNavigationEngine {
       }
       return max(currentStep.distanceMeters, 1)
     }()
-    let distanceToNext = currentStep.maneuverType == Self.approachManeuverType
-      ? rawDistanceToNext
-      : adjustedGuidanceDistanceToNext(rawDistanceToNext, upcomingStep: nextStep)
+    let distanceToNext = rawDistanceToNext
 
     let remainingFromSteps = session.steps.dropFirst(safeIndex).reduce(0) { $0 + $1.distanceMeters }
     let remainingFromDestination = {
@@ -326,16 +385,6 @@ final class LiveNavigationEngine {
     )
   }
 
-  private func adjustedGuidanceDistanceToNext(_ rawDistanceMeters: Int, upcomingStep: RouteStep?) -> Int {
-    guard shouldApplyGuidanceLead(to: upcomingStep) else { return rawDistanceMeters }
-    return max(rawDistanceMeters - SharedProductRules.Navigation.guidanceLeadMeters, 0)
-  }
-
-  private func shouldApplyGuidanceLead(to step: RouteStep?) -> Bool {
-    guard let step, step.kind != .pedestrianCrossing else { return false }
-    return step.maneuverType?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() != "arrive"
-  }
-
   private func routeDeviationMeters(session: RouteSession, fix: LocationFix) -> Int? {
     guard session.pathPoints.count >= 2 else { return nil }
     let routeLength = routeLengthMeters(session.pathPoints)
@@ -352,11 +401,12 @@ final class LiveNavigationEngine {
     )
     return routeProgressProjection(
       pathPoints: session.pathPoints,
-      point: fix.point,
-      minimumDistanceAlongRouteMeters: minimumAlong,
-      maximumDistanceAlongRouteMeters: maximumAlong,
-      fix: fix,
-      monotonicFloorMeters: session.lastProjectedDistanceAlongRouteMeters
+        point: fix.point,
+        minimumDistanceAlongRouteMeters: minimumAlong,
+        maximumDistanceAlongRouteMeters: maximumAlong,
+        fix: fix,
+        monotonicFloorMeters: session.lastProjectedDistanceAlongRouteMeters,
+        preferredSegmentIndex: session.preferredSegmentIndex
     )
       .map { Int($0.lateralDistanceMeters.rounded()) }
   }
@@ -400,7 +450,8 @@ final class LiveNavigationEngine {
       minimumDistanceAlongRouteMeters: minimumAlong,
       maximumDistanceAlongRouteMeters: maximumAlong,
       fix: fix,
-      monotonicFloorMeters: session.lastProjectedDistanceAlongRouteMeters
+      monotonicFloorMeters: session.lastProjectedDistanceAlongRouteMeters,
+      preferredSegmentIndex: session.preferredSegmentIndex
     )
   }
 
@@ -410,7 +461,8 @@ final class LiveNavigationEngine {
     minimumDistanceAlongRouteMeters: Double = 0,
     maximumDistanceAlongRouteMeters: Double = .greatestFiniteMagnitude,
     fix: LocationFix? = nil,
-    monotonicFloorMeters: Double? = nil
+    monotonicFloorMeters: Double? = nil,
+    preferredSegmentIndex: Int? = nil
   ) -> RouteProgressProjection? {
     return RouteProjectionCore.project(
       pathPoints: pathPoints,
@@ -420,7 +472,8 @@ final class LiveNavigationEngine {
       preferredCourseDegrees: fix?.courseDegrees,
       speedMetersPerSecond: fix?.speedMetersPerSecond,
       accuracyMeters: fix?.accuracyMeters,
-      monotonicFloorMeters: monotonicFloorMeters
+      monotonicFloorMeters: monotonicFloorMeters,
+      preferredSegmentIndex: preferredSegmentIndex
     )
   }
 }

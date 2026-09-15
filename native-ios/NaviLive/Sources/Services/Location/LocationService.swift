@@ -140,7 +140,8 @@ final class LocationFixStabilizer {
     }
 
     let distanceMeters = previous.point.distance(to: normalizedFix.point)
-    if distanceMeters <= stationaryThresholdMeters(previous: previous, incoming: normalizedFix) {
+    if !isMoving(incoming: normalizedFix),
+       distanceMeters <= stationaryThresholdMeters(previous: previous, incoming: normalizedFix) {
       return holdPreviousPoint(previous, incoming: normalizedFix)
     }
 
@@ -187,6 +188,11 @@ final class LocationFixStabilizer {
       ),
       SharedProductRules.Navigation.locationStabilizationStationaryMaxDistanceMeters
     )
+  }
+
+  private func isMoving(incoming: LocationFix) -> Bool {
+    guard let speed = incoming.speedMetersPerSecond, speed.isFinite else { return false }
+    return speed >= SharedProductRules.Navigation.locationStabilizationMovingSpeedMetersPerSecond
   }
 
   private func smooth(previous: LocationFix, incoming: LocationFix) -> LocationFix {

@@ -6,6 +6,19 @@ struct HeadingAlignment: Equatable {
   let isAlmostAligned: Bool
 }
 
+struct StepConfirmationDecision: Equatable {
+  let confirmedStepIndex: Int?
+  let pendingStepIndex: Int?
+  let consecutiveFixes: Int
+}
+
+struct RouteStatusConfirmationDecision: Equatable {
+  let offRouteConfirmed: Bool
+  let recoveryConfirmed: Bool
+  let consecutiveOffRouteFixes: Int
+  let consecutiveOnRouteFixes: Int
+}
+
 enum NavigationScenarioCore {
   static func maneuverAdvanceThresholdMeters(accuracyMeters: Double) -> Double {
     min(
@@ -108,6 +121,84 @@ enum NavigationScenarioCore {
 
   static func shouldAdvanceStep(distanceToManeuverMeters: Double, accuracyMeters: Double) -> Bool {
     distanceToManeuverMeters <= maneuverAdvanceThresholdMeters(accuracyMeters: accuracyMeters)
+  }
+
+  /// Dodaje pół sekundy po zakończeniu dźwięku, zanim rozpocznie się mowa.
+  static func speechDelayAfterSound(soundPlaybackDelay: TimeInterval) -> TimeInterval {
+    max(soundPlaybackDelay, 0) +
+      TimeInterval(SharedProductRules.Navigation.speechAfterSoundDelayMs) / 1000.0
+  }
+
+  /// Odrzuca geometrię biegnącą równolegle lub prawie równolegle do trasy.
+  static func isMeaningfulCrossing(
+    crossingAngleDegrees: Double,
+    minimumBearingDifferenceDegrees: Double
+  ) -> Bool {
+    crossingAngleDegrees.isFinite &&
+      minimumBearingDifferenceDegrees.isFinite &&
+      (0...90).contains(minimumBearingDifferenceDegrees) &&
+      (0...90).contains(crossingAngleDegrees) &&
+      crossingAngleDegrees >= minimumBearingDifferenceDegrees
+  }
+
+  /// Wymaga dwóch kolejnych pomiarów wskazujących ten sam następny krok.
+  static func confirmStepCandidate(
+    currentStepIndex: Int,
+    candidateStepIndex: Int,
+    pendingStepIndex: Int?,
+    consecutiveFixes: Int
+  ) -> StepConfirmationDecision {
+    guard candidateStepIndex > currentStepIndex else {
+      return StepConfirmationDecision(
+        confirmedStepIndex: nil,
+        pendingStepIndex: nil,
+        consecutiveFixes: 0
+      )
+    }
+
+    let nextFixes = pendingStepIndex == candidateStepIndex ? consecutiveFixes + 1 : 1
+    if nextFixes >= SharedProductRules.Navigation.stepConfirmationRequiredFixes {
+      return StepConfirmationDecision(
+        confirmedStepIndex: candidateStepIndex,
+        pendingStepIndex: nil,
+        consecutiveFixes: 0
+      )
+    }
+    return StepConfirmationDecision(
+      confirmedStepIndex: nil,
+      pendingStepIndex: candidateStepIndex,
+      consecutiveFixes: nextFixes
+    )
+  }
+
+  /// Odfiltrowuje pojedyncze skoki GPS poza trasę i pojedyncze powroty.
+  static func confirmRouteStatus(
+    currentlyOffRoute: Bool,
+    measurementIsOffRoute: Bool,
+    consecutiveOffRouteFixes: Int,
+    consecutiveOnRouteFixes: Int
+  ) -> RouteStatusConfirmationDecision {
+    guard currentlyOffRoute else {
+      let nextOffRouteFixes = measurementIsOffRoute ? consecutiveOffRouteFixes + 1 : 0
+      return RouteStatusConfirmationDecision(
+        offRouteConfirmed: measurementIsOffRoute &&
+          nextOffRouteFixes >= SharedProductRules.Navigation.offRouteConfirmationRequiredFixes,
+        recoveryConfirmed: false,
+        consecutiveOffRouteFixes: nextOffRouteFixes,
+        consecutiveOnRouteFixes: 0
+      )
+    }
+
+    let nextOnRouteFixes = measurementIsOffRoute ? 0 : consecutiveOnRouteFixes + 1
+    return RouteStatusConfirmationDecision(
+      offRouteConfirmed: measurementIsOffRoute,
+      recoveryConfirmed: !measurementIsOffRoute &&
+        nextOnRouteFixes >= SharedProductRules.Navigation.offRouteRecoveryRequiredFixes,
+      consecutiveOffRouteFixes: measurementIsOffRoute
+        ? SharedProductRules.Navigation.offRouteConfirmationRequiredFixes
+        : 0,
+      consecutiveOnRouteFixes: nextOnRouteFixes
+    )
   }
 
   static func shouldTriggerOffRoute(deviationMeters: Int?, accuracyMeters: Double) -> Bool {

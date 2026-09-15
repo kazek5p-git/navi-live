@@ -174,21 +174,12 @@ actor NavigationAPIClient {
     let distanceMeters: Int
     let importance: Double
     let isNearbyCandidate: Bool
-    let kind: PlaceKind
+    let kind: SearchPlaceKind
   }
 
   private struct NearbyAddressCandidate {
     let address: String
     let point: GeoPoint
-  }
-
-  private enum PlaceKind {
-    case shop
-    case parcelLocker
-    case railStation
-    case busStop
-    case tramStop
-    case other
   }
 
   private struct SearchIntent {
@@ -213,6 +204,7 @@ actor NavigationAPIClient {
   private let poiCacheStore: NearbyPOICacheStore
   private let localPOITotalTimeout: TimeInterval = 3.5
   private let localPOIRequestTimeout: TimeInterval = 1.8
+  private let searchRequestTimeout: TimeInterval = 1.8
   private let poiCacheRefreshRequestTimeout: TimeInterval = 5
   private let addressLookupTimeout: TimeInterval = 5
   private let nearbyAddressLookupRadiusMeters = 80
@@ -223,8 +215,6 @@ actor NavigationAPIClient {
   private let crossingDuplicateProximityMeters = 3.0
   private let crossingTurnProximityMeters = 35.0
   private let crossingNodeLateralLimitMeters = 1.5
-  private let crossingWayLateralLimitMeters = 2.5
-  private let crossingWayAlignmentToleranceDegrees = 30.0
   private let routeAlertDeduplicateMeters = 18.0
   private let streetCrossingDeduplicateMeters = 25.0
   private let streetCrossingLateralLimitMeters = 4.0
@@ -234,7 +224,6 @@ actor NavigationAPIClient {
   private let routeStartApproachThresholdMeters = 18.0
   private let minimumInferredRoadStepDistanceMeters = 45
   private let approachManeuverType = "approach"
-  private let minimumUsefulSearchResults = 3
   private let officialChainScore = 3_000
   private let poiCacheRefreshLimit = 350
   private let zabkaLocatorURL = URL(string: "https://www.zabka.pl/app/uploads/locator-store-data.json")!
@@ -274,78 +263,94 @@ actor NavigationAPIClient {
     let intent = searchIntent(for: query)
     var combinedByID: [String: SearchCandidate] = [:]
 
-    if let location, isZabkaQuery(intent) {
-      let officialCandidates = await officialZabkaCandidates(
-        query: query,
-        near: location,
-        searchRadiusMeters: searchRadiusMeters
-      )
-      officialCandidates.forEach { candidate in
-        combinedByID[candidate.place.id] = candidate
-      }
+    let initialNearbyRadius: Int? = location.map { _ in
+      intent.isCategoryOnly
+        ? normalizedSearchRadiusKilometers
+        : SharedProductRules.Search.minimumRadiusKm
+    }
+    async let officialCandidates = officialZabkaCandidatesIfNeeded(
+      query: query,
+      location: location,
+      searchRadiusMeters: searchRadiusMeters,
+      intent: intent
+    )
+    async let cachedCandidates = cachedPOICandidatesIfNeeded(
+      location: location,
+      searchRadiusMeters: searchRadiusMeters,
+      intent: intent,
+      resultLimit: normalizedResultLimit,
+      query: query
+    )
+    async let localCandidates = localPOICandidatesIfNeeded(
+      query: query,
+      location: location,
+      searchRadiusMeters: searchRadiusMeters,
+      intent: intent,
+      resultLimit: normalizedResultLimit
+    )
+    async let nearbyCandidates = fetchNearbySearchCandidatesIfLocationAvailable(
+      query: query,
+      near: location,
+      nearbyOnly: true,
+      searchRadiusKilometers: initialNearbyRadius,
+      intent: intent,
+      resultLimit: normalizedResultLimit
+    )
+
+    let initialCandidates = await [
+      officialCandidates,
+      cachedCandidates,
+      localCandidates,
+      nearbyCandidates
+    ].flatMap { $0 }
+    initialCandidates.forEach { candidate in
+      putSearchCandidate(&combinedByID, candidate)
     }
 
-    if let location {
-      let cachedCandidates = await cachedPOICandidates(
-        query: query,
-        near: location,
-        searchRadiusMeters: searchRadiusMeters,
-        intent: intent,
-        resultLimit: normalizedResultLimit
-      )
-      cachedCandidates.forEach { candidate in
-        combinedByID[candidate.place.id] = candidate
-      }
-    }
-
-    if let location,
-       combinedByID.count < minimumUsefulSearchResults,
-       let localCandidates = try? await fetchLocalPOICandidates(
-        query: query,
-        near: location,
-        searchRadiusMeters: searchRadiusMeters,
-        intent: intent,
-        resultLimit: normalizedResultLimit
-       ) {
-      localCandidates.forEach { candidate in
-        combinedByID[candidate.place.id] = candidate
-      }
-    }
-
-    let shouldUseTextSearchFallback = true
-    if (combinedByID.count < minimumUsefulSearchResults || location == nil || !intent.isCategoryOnly) && shouldUseTextSearchFallback {
-      for radiusKilometers in nearbyTextSearchRadiiKilometers(
+    if location != nil && combinedByID.count < normalizedResultLimit {
+      let fallbackRadii = nearbyTextSearchRadiiKilometers(
         normalizedSearchRadiusKilometers: normalizedSearchRadiusKilometers,
         location: location,
         intent: intent
-      ) {
-        let nearbyCandidates = try await fetchSearchCandidates(
-          query: query,
-          near: location,
-          nearbyOnly: true,
-          searchRadiusKilometers: radiusKilometers,
-          intent: intent,
-          resultLimit: normalizedResultLimit
-        )
-        nearbyCandidates.forEach { candidate in
-          putSearchCandidate(&combinedByID, candidate)
+      ).filter { $0 != initialNearbyRadius }
+      let fallbackCandidates = await withTaskGroup(of: [SearchCandidate].self, returning: [[SearchCandidate]].self) { group in
+        for radiusKilometers in fallbackRadii {
+          group.addTask { [self] in
+            await self.fetchSearchCandidatesSafely(
+              query: query,
+              near: location,
+              nearbyOnly: true,
+              searchRadiusKilometers: radiusKilometers,
+              intent: intent,
+              resultLimit: normalizedResultLimit
+            )
+          }
         }
+        var results: [[SearchCandidate]] = []
+        for await result in group {
+          results.append(result)
+        }
+        return results
       }
+      fallbackCandidates.flatMap { $0 }.forEach { candidate in
+        putSearchCandidate(&combinedByID, candidate)
+      }
+
       if location != nil,
-         combinedByID.count < minimumUsefulSearchResults,
+         combinedByID.count < normalizedResultLimit,
          intent.wantsAnyCategory,
          !intent.isCategoryOnly,
          !intent.nameSearchTerms.isEmpty {
         let simplifiedQuery = intent.nameSearchTerms.joined(separator: " ")
-        if !simplifiedQuery.isEmpty && simplifiedQuery.caseInsensitiveCompare(query) != .orderedSame,
-           let simplifiedCandidates = try? await fetchSearchCandidates(
+        if !simplifiedQuery.isEmpty && simplifiedQuery.caseInsensitiveCompare(query) != .orderedSame {
+          let simplifiedCandidates = await fetchSearchCandidatesSafely(
             query: simplifiedQuery,
             near: location,
             nearbyOnly: true,
             searchRadiusKilometers: SharedProductRules.Search.minimumRadiusKm,
             intent: intent,
             resultLimit: normalizedResultLimit
-           ) {
+          )
           simplifiedCandidates.forEach { candidate in
             putSearchCandidate(&combinedByID, candidate)
           }
@@ -362,26 +367,33 @@ actor NavigationAPIClient {
         } else {
           expansionQueries = []
         }
-        for expandedQuery in expansionQueries {
-          guard let expandedCandidates = try? await fetchSearchCandidates(
-            query: expandedQuery,
-            near: location,
-            nearbyOnly: true,
-            searchRadiusKilometers: normalizedSearchRadiusKilometers,
-            intent: intent,
-            resultLimit: normalizedResultLimit
-          ) else {
-            continue
+        let expansionCandidates = await withTaskGroup(of: [SearchCandidate].self, returning: [[SearchCandidate]].self) { group in
+          for expandedQuery in expansionQueries {
+            group.addTask { [self] in
+              await self.fetchSearchCandidatesSafely(
+                query: expandedQuery,
+                near: location,
+                nearbyOnly: true,
+                searchRadiusKilometers: normalizedSearchRadiusKilometers,
+                intent: intent,
+                resultLimit: normalizedResultLimit
+              )
+            }
           }
-          expandedCandidates.forEach { candidate in
-            putSearchCandidate(&combinedByID, candidate)
+          var results: [[SearchCandidate]] = []
+          for await result in group {
+            results.append(result)
           }
+          return results
+        }
+        expansionCandidates.flatMap { $0 }.forEach { candidate in
+          putSearchCandidate(&combinedByID, candidate)
         }
       }
     }
 
-    if (location == nil || combinedByID.isEmpty) && shouldUseTextSearchFallback {
-      let globalCandidates = try await fetchSearchCandidates(
+    if location == nil || combinedByID.isEmpty {
+      let globalCandidates = await fetchSearchCandidatesSafely(
         query: query,
         near: location,
         nearbyOnly: false,
@@ -389,7 +401,7 @@ actor NavigationAPIClient {
         intent: intent,
         resultLimit: normalizedResultLimit
       )
-      for candidate in globalCandidates {
+      globalCandidates.forEach { candidate in
         putSearchCandidate(&combinedByID, candidate)
       }
     }
@@ -399,6 +411,91 @@ actor NavigationAPIClient {
       .prefix(normalizedResultLimit)
       .map { $0 }
     return await enrichedSearchResultAddresses(sortedCandidates)
+  }
+
+  private func officialZabkaCandidatesIfNeeded(
+    query: String,
+    location: GeoPoint?,
+    searchRadiusMeters: Int,
+    intent: SearchIntent
+  ) async -> [SearchCandidate] {
+    guard let location, isZabkaQuery(intent) else { return [] }
+    return await officialZabkaCandidates(
+      query: query,
+      near: location,
+      searchRadiusMeters: searchRadiusMeters
+    )
+  }
+
+  private func cachedPOICandidatesIfNeeded(
+    location: GeoPoint?,
+    searchRadiusMeters: Int,
+    intent: SearchIntent,
+    resultLimit: Int,
+    query: String
+  ) async -> [SearchCandidate] {
+    guard let location else { return [] }
+    return await cachedPOICandidates(
+      query: query,
+      near: location,
+      searchRadiusMeters: searchRadiusMeters,
+      intent: intent,
+      resultLimit: resultLimit
+    )
+  }
+
+  private func localPOICandidatesIfNeeded(
+    query: String,
+    location: GeoPoint?,
+    searchRadiusMeters: Int,
+    intent: SearchIntent,
+    resultLimit: Int
+  ) async -> [SearchCandidate] {
+    guard let location else { return [] }
+    return (try? await fetchLocalPOICandidates(
+      query: query,
+      near: location,
+      searchRadiusMeters: searchRadiusMeters,
+      intent: intent,
+      resultLimit: resultLimit
+    )) ?? []
+  }
+
+  private func fetchSearchCandidatesSafely(
+    query: String,
+    near location: GeoPoint?,
+    nearbyOnly: Bool,
+    searchRadiusKilometers: Int,
+    intent: SearchIntent,
+    resultLimit: Int
+  ) async -> [SearchCandidate] {
+    (try? await fetchSearchCandidates(
+      query: query,
+      near: location,
+      nearbyOnly: nearbyOnly,
+      searchRadiusKilometers: searchRadiusKilometers,
+      intent: intent,
+      resultLimit: resultLimit
+    )) ?? []
+  }
+
+  private func fetchNearbySearchCandidatesIfLocationAvailable(
+    query: String,
+    near location: GeoPoint?,
+    nearbyOnly: Bool,
+    searchRadiusKilometers: Int?,
+    intent: SearchIntent,
+    resultLimit: Int
+  ) async -> [SearchCandidate] {
+    guard location != nil, let searchRadiusKilometers else { return [] }
+    return await fetchSearchCandidatesSafely(
+      query: query,
+      near: location,
+      nearbyOnly: nearbyOnly,
+      searchRadiusKilometers: searchRadiusKilometers,
+      intent: intent,
+      resultLimit: resultLimit
+    )
   }
 
   func nearbyPOICacheState() async -> NearbyPOICacheState {
@@ -435,6 +532,7 @@ actor NavigationAPIClient {
     }
 
     var request = URLRequest(url: url)
+    request.timeoutInterval = addressLookupTimeout
     request.setValue("NaviLive/0.1 (iOS native client)", forHTTPHeaderField: "User-Agent")
     request.setValue(L10n.acceptLanguageTag, forHTTPHeaderField: "Accept-Language")
 
@@ -465,7 +563,14 @@ actor NavigationAPIClient {
       guard coordinate.count >= 2 else { return nil }
       return GeoPoint(latitude: coordinate[1], longitude: coordinate[0])
     }
-    let namedRouteWays = await fetchNamedRouteWays(pathPoints: points)
+    async let namedRouteWaysTask = fetchNamedRouteWays(pathPoints: points)
+    async let pedestrianCrossingsTask = fetchPedestrianCrossingsIfNeeded(
+      pathPoints: points,
+      routeLengthMeters: routeLengthMeters(pathPoints: points),
+      enabled: includePedestrianCrossings
+    )
+    let namedRouteWays = await namedRouteWaysTask
+    let pedestrianCrossings = await pedestrianCrossingsTask
 
     let baseSteps = route.legs.flatMap(\.steps).map { step in
       let maneuverPoint = step.maneuver.location.count >= 2
@@ -494,13 +599,14 @@ actor NavigationAPIClient {
       )
     }
 
-    let simplifiedSteps = normalizePotentialStreetCrossingSteps(simplifyRouteSteps(baseSteps))
+    let simplifiedSteps = simplifyRouteSteps(baseSteps)
     let baseRouteSteps = routeStepsWithStartApproach(start: start, pathPoints: points, steps: simplifiedSteps)
 
-    let steps = await routeStepsAddingRouteAlerts(
+    let steps = routeStepsAddingRouteAlerts(
       steps: baseRouteSteps,
       pathPoints: points,
       namedRouteWays: namedRouteWays,
+      pedestrianCrossings: pedestrianCrossings,
       includePedestrianCrossings: includePedestrianCrossings,
       includeJunctionAlerts: includeJunctionAlerts
     )
@@ -537,6 +643,7 @@ actor NavigationAPIClient {
   }
 
   private func fetchRouteResponse(coordinateString: String) async throws -> OSRMResponse {
+    var firstValidResponse: OSRMResponse?
     var lastError: Error?
     for url in routeURLs(coordinateString: coordinateString) {
       do {
@@ -548,12 +655,29 @@ actor NavigationAPIClient {
         guard let http = response as? HTTPURLResponse, 200..<300 ~= http.statusCode else {
           throw NavigationAPIError.badResponse
         }
-        return try JSONDecoder().decode(OSRMResponse.self, from: data)
+        let decoded = try JSONDecoder().decode(OSRMResponse.self, from: data)
+        guard !decoded.routes.isEmpty else {
+          lastError = NavigationAPIError.noRoute
+          continue
+        }
+        if firstValidResponse == nil {
+          firstValidResponse = decoded
+        }
+        if hasNamedRouteSteps(decoded) {
+          return decoded
+        }
       } catch {
         lastError = error
       }
     }
+    if let firstValidResponse { return firstValidResponse }
     throw lastError ?? NavigationAPIError.noRoute
+  }
+
+  private func hasNamedRouteSteps(_ response: OSRMResponse) -> Bool {
+    response.routes.first?.legs
+      .flatMap(\.steps)
+      .contains { !$0.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty } ?? false
   }
 
   private func routeURLs(coordinateString: String) -> [URL] {
@@ -637,16 +761,6 @@ actor NavigationAPIClient {
       "service",
       "pedestrian"
     ].contains(highway)
-  }
-
-  private func localWayBearingDegrees(points: [GeoPoint], index: Int) -> Double? {
-    guard points.count >= 2 else { return nil }
-    let previousIndex = max(index - 1, 0)
-    let nextIndex = min(index + 1, points.count - 1)
-    let start = points[previousIndex]
-    let end = points[nextIndex]
-    guard start != end else { return nil }
-    return bearingDegrees(from: start, to: end)
   }
 
   private func inferredRoadName(
@@ -793,39 +907,6 @@ actor NavigationAPIClient {
     return simplified.isEmpty ? steps : simplified
   }
 
-  private func normalizePotentialStreetCrossingSteps(_ steps: [RouteStep]) -> [RouteStep] {
-    guard steps.count >= 3 else { return steps }
-    return steps.enumerated().map { index, step in
-      let roadName = step.roadName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-      guard isPotentialStreetCrossingStep(
-        step,
-        previous: index > 0 ? steps[index - 1] : nil,
-        next: index < steps.count - 1 ? steps[index + 1] : nil,
-        roadName: roadName
-      ) else {
-        return step
-      }
-      var updated = step
-      updated.instruction = L10n.text("navigation.step.cross_street", table: .navigation, roadName)
-      return updated
-    }
-  }
-
-  private func isPotentialStreetCrossingStep(
-    _ step: RouteStep,
-    previous: RouteStep?,
-    next: RouteStep?,
-    roadName: String
-  ) -> Bool {
-    guard !roadName.isEmpty else { return false }
-    guard step.kind == .instruction else { return false }
-    guard RouteStepSimplificationCore.isTurnLikeManeuver(step) else { return false }
-    guard (1...25).contains(step.distanceMeters) else { return false }
-    guard let normalizedRoad = normalizedRouteRoadName(roadName) else { return false }
-    return normalizedRouteRoadName(previous?.roadName) != normalizedRoad &&
-      normalizedRouteRoadName(next?.roadName) != normalizedRoad
-  }
-
   private func normalizedRouteRoadName(_ value: String?) -> String? {
     let normalized = value?
       .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -854,14 +935,15 @@ actor NavigationAPIClient {
     steps: [RouteStep],
     pathPoints: [GeoPoint],
     namedRouteWays: [NamedRouteWay],
+    pedestrianCrossings: [RouteAlertCandidate],
     includePedestrianCrossings: Bool,
     includeJunctionAlerts: Bool
-  ) async -> [RouteStep] {
+  ) -> [RouteStep] {
     guard !steps.isEmpty, pathPoints.count >= 2 else { return steps }
     let routeLength = routeLengthMeters(pathPoints: pathPoints)
     var alerts: [RouteAlertCandidate] = []
     if includePedestrianCrossings {
-      alerts += (try? await fetchPedestrianCrossings(pathPoints: pathPoints, routeLengthMeters: routeLength)) ?? []
+      alerts += pedestrianCrossings
     }
     if includeJunctionAlerts {
       alerts += routeStreetCrossings(
@@ -1034,6 +1116,18 @@ actor NavigationAPIClient {
     alert.maneuverType == streetCrossingManeuverType && alert.roadName?.isEmpty == false
   }
 
+  private func fetchPedestrianCrossingsIfNeeded(
+    pathPoints: [GeoPoint],
+    routeLengthMeters: Double,
+    enabled: Bool
+  ) async -> [RouteAlertCandidate] {
+    guard enabled else { return [] }
+    return (try? await fetchPedestrianCrossings(
+      pathPoints: pathPoints,
+      routeLengthMeters: routeLengthMeters
+    )) ?? []
+  }
+
   private func fetchPedestrianCrossings(
     pathPoints: [GeoPoint],
     routeLengthMeters routeLength: Double
@@ -1063,16 +1157,36 @@ actor NavigationAPIClient {
     }
 
     let candidates = decoded.elements.compactMap { item -> RouteAlertCandidate? in
-      guard let point = overpassPoint(for: item),
-            let projection = projectOntoRoute(pathPoints: pathPoints, point: point) else {
+      guard PedestrianCrossingCore.isPedestrianCrossing(tags: item.tags ?? [:]) else { return nil }
+      guard let point = overpassPoint(for: item) else { return nil }
+      let crossingGeometry = item.geometry?.map { GeoPoint(latitude: $0.lat, longitude: $0.lon) } ?? []
+      let intersection: RoutePolylineIntersection?
+      if crossingGeometry.count >= 2 {
+        intersection = RouteProjectionCore.polylineIntersections(
+          routePoints: pathPoints,
+          otherPoints: crossingGeometry,
+          endpointToleranceMeters: crossingNodeLateralLimitMeters
+        ).first
+      } else if let projection = projectOntoRoute(pathPoints: pathPoints, point: point),
+                projection.lateralDistanceMeters <= crossingNodeLateralLimitMeters {
+        intersection = RoutePolylineIntersection(
+          point: point,
+          distanceAlongRouteMeters: projection.distanceAlongRouteMeters,
+          routeSegmentIndex: 0,
+          otherSegmentIndex: 0,
+          crossingAngleDegrees: 90
+        )
+      } else {
+        intersection = nil
+      }
+      guard let intersection,
+            intersection.distanceAlongRouteMeters >= 20,
+            intersection.distanceAlongRouteMeters <= routeLength - 20 else {
         return nil
       }
-      guard isPedestrianCrossingOnRoute(item: item, routeProjection: projection) else { return nil }
-      guard projection.distanceAlongRouteMeters >= 20 else { return nil }
-      guard projection.distanceAlongRouteMeters <= routeLength - 20 else { return nil }
       return RouteAlertCandidate(
-        point: point,
-        distanceAlongRouteMeters: projection.distanceAlongRouteMeters,
+        point: intersection.point,
+        distanceAlongRouteMeters: intersection.distanceAlongRouteMeters,
         instruction: L10n.text("navigation.step.crossing", table: .navigation),
         kind: .pedestrianCrossing,
         roadName: nil,
@@ -1103,27 +1217,28 @@ actor NavigationAPIClient {
             let normalizedName = normalizedRouteRoadName(way.name) else {
         continue
       }
-      for (index, point) in way.geometry.enumerated() {
-        guard let projection = projectOntoRoute(pathPoints: pathPoints, point: point) else { continue }
-        guard projection.lateralDistanceMeters <= streetCrossingLateralLimitMeters else { continue }
-        guard projection.distanceAlongRouteMeters >= 20 else { continue }
-        guard projection.distanceAlongRouteMeters <= routeLength - 20 else { continue }
-        guard let wayBearing = localWayBearingDegrees(points: way.geometry, index: index) else { continue }
-        let bearingDifference = undirectedBearingDifference(
-          projection.segmentBearingDegrees,
-          wayBearing
-        )
-        guard bearingDifference >= streetCrossingMinimumBearingDifferenceDegrees else { continue }
+      let intersections = RouteProjectionCore.polylineIntersections(
+        routePoints: pathPoints,
+        otherPoints: way.geometry,
+        endpointToleranceMeters: streetCrossingLateralLimitMeters
+      )
+      for intersection in intersections {
+        guard NavigationScenarioCore.isMeaningfulCrossing(
+          crossingAngleDegrees: intersection.crossingAngleDegrees,
+          minimumBearingDifferenceDegrees: streetCrossingMinimumBearingDifferenceDegrees
+        ) else { continue }
+        guard intersection.distanceAlongRouteMeters >= 20,
+              intersection.distanceAlongRouteMeters <= routeLength - 20 else { continue }
         if candidates.contains(where: {
           normalizedRouteRoadName($0.roadName) == normalizedName &&
-            abs($0.distanceAlongRouteMeters - projection.distanceAlongRouteMeters) < streetCrossingDeduplicateMeters
+            abs($0.distanceAlongRouteMeters - intersection.distanceAlongRouteMeters) < streetCrossingDeduplicateMeters
         }) {
           continue
         }
         candidates.append(
           RouteAlertCandidate(
-            point: point,
-            distanceAlongRouteMeters: projection.distanceAlongRouteMeters,
+            point: intersection.point,
+            distanceAlongRouteMeters: intersection.distanceAlongRouteMeters,
             instruction: L10n.text("navigation.step.cross_street", table: .navigation, way.name),
             kind: .instruction,
             roadName: way.name,
@@ -1156,25 +1271,6 @@ actor NavigationAPIClient {
       components.queryItems = [.init(name: "data", value: query)]
       return components.url
     }
-  }
-
-  private func isPedestrianCrossingOnRoute(
-    item: OverpassElementDTO,
-    routeProjection: RouteProjection
-  ) -> Bool {
-    let crossingGeometry = item.geometry?.map { GeoPoint(latitude: $0.lat, longitude: $0.lon) } ?? []
-    guard crossingGeometry.count >= 2 else {
-      return routeProjection.lateralDistanceMeters <= crossingNodeLateralLimitMeters
-    }
-    guard routeProjection.lateralDistanceMeters <= crossingWayLateralLimitMeters else {
-      return false
-    }
-    let crossingBearing = bearingDegrees(from: crossingGeometry.first!, to: crossingGeometry.last!)
-    let bearingDifference = undirectedBearingDifference(
-      routeProjection.segmentBearingDegrees,
-      crossingBearing
-    )
-    return bearingDifference <= crossingWayAlignmentToleranceDegrees
   }
 
   private func stepDistancesAlongRoute(
@@ -1273,21 +1369,9 @@ actor NavigationAPIClient {
     )
   }
 
-  private func bearingDegrees(from start: GeoPoint, to end: GeoPoint) -> Double {
-    let latitudeReference = ((start.latitude + end.latitude) / 2.0) * .pi / 180.0
-    let dx = (end.longitude - start.longitude) * .pi / 180.0 * cos(latitudeReference)
-    let dy = (end.latitude - start.latitude) * .pi / 180.0
-    return normalizedBearingDegrees(radians: atan2(dx, dy))
-  }
-
   private func normalizedBearingDegrees(radians: Double) -> Double {
     let degrees = radians * 180.0 / .pi
     return degrees >= 0 ? degrees : degrees + 360.0
-  }
-
-  private func undirectedBearingDifference(_ left: Double, _ right: Double) -> Double {
-    let directed = abs((left - right + 540).truncatingRemainder(dividingBy: 360) - 180)
-    return min(directed, 180 - directed)
   }
 
   private func routeLengthMeters(pathPoints: [GeoPoint]) -> Double {
@@ -1461,10 +1545,15 @@ actor NavigationAPIClient {
     let kind = overpassKind(tags: tags)
     guard shouldKeepLocalPOI(tags: tags, kind: kind, intent: intent) else { return nil }
     let name = overpassName(tags: tags, kind: kind)
+    let label = labelForKind(name, kind: kind)
     let place = Place(
       id: "overpass-\(item.type)-\(item.id)",
-      name: labelForKind(name, kind: kind),
-      address: overpassAddress(tags: tags, fallback: name),
+      name: label,
+      address: normalizedSearchAddress(
+        overpassAddress(tags: tags, fallback: coordinateAddress(point)),
+        placeName: label,
+        point: point
+      ),
       walkDistanceMeters: distance,
       walkEtaMinutes: distance > 0 ? NavigationScenarioCore.distanceBasedEtaMinutes(distanceMeters: distance) : 0,
       point: point,
@@ -1499,7 +1588,11 @@ actor NavigationAPIClient {
       let place = Place(
         id: record.id,
         name: labelForKind(record.name, kind: kind),
-        address: record.address,
+        address: normalizedSearchAddress(
+          record.address,
+          placeName: labelForKind(record.name, kind: kind),
+          point: record.point
+        ),
         walkDistanceMeters: distance,
         walkEtaMinutes: distance > 0 ? NavigationScenarioCore.distanceBasedEtaMinutes(distanceMeters: distance) : 0,
         point: record.point,
@@ -1609,7 +1702,7 @@ actor NavigationAPIClient {
     guard kind != .other else { return nil }
     let name = overpassName(tags: tags, kind: kind).trimmingCharacters(in: .whitespacesAndNewlines)
     guard !name.isEmpty else { return nil }
-    let address = overpassAddress(tags: tags, fallback: name)
+    let address = overpassAddress(tags: tags, fallback: coordinateAddress(point))
     var searchableParts = searchableNameParts(tags: tags)
     searchableParts.append(name)
     searchableParts.append(address)
@@ -1630,7 +1723,7 @@ actor NavigationAPIClient {
     )
   }
 
-  private func cachedPOIMatches(record: NearbyPOICacheRecord, kind: PlaceKind, intent: SearchIntent) -> Bool {
+  private func cachedPOIMatches(record: NearbyPOICacheRecord, kind: SearchPlaceKind, intent: SearchIntent) -> Bool {
     if intent.isCategoryOnly {
       if intent.wantsShop { return kind == .shop }
       if intent.wantsParcelLocker { return kind == .parcelLocker }
@@ -1643,7 +1736,7 @@ actor NavigationAPIClient {
     return terms.allSatisfy { record.searchableText.contains($0) }
   }
 
-  private func cacheKind(_ kind: PlaceKind) -> String {
+  private func cacheKind(_ kind: SearchPlaceKind) -> String {
     switch kind {
     case .shop: return "shop"
     case .parcelLocker: return "parcel_locker"
@@ -1654,7 +1747,7 @@ actor NavigationAPIClient {
     }
   }
 
-  private func kindFromCacheKind(_ kind: String) -> PlaceKind {
+  private func kindFromCacheKind(_ kind: String) -> SearchPlaceKind {
     switch kind {
     case "shop": return .shop
     case "parcel_locker": return .parcelLocker
@@ -1960,7 +2053,7 @@ actor NavigationAPIClient {
     return geometry.isEmpty ? nil : geometry[geometry.count / 2]
   }
 
-  private func overpassName(tags: [String: String], kind: PlaceKind) -> String {
+  private func overpassName(tags: [String: String], kind: SearchPlaceKind) -> String {
     if let name = searchableNameParts(tags: tags).first(where: { !$0.isEmpty }) {
       return name
     }
@@ -1998,15 +2091,37 @@ actor NavigationAPIClient {
     return parts.isEmpty ? fallback : parts.joined(separator: ", ")
   }
 
-  private func shouldKeepLocalPOI(tags: [String: String], kind: PlaceKind, intent: SearchIntent) -> Bool {
-    if intent.wantsShop && kind == .shop { return true }
-    if intent.wantsParcelLocker && kind == .parcelLocker { return true }
-    if intent.wantsRailStation && (kind == .railStation || kind == .busStop || kind == .tramStop) { return true }
+  private func shouldKeepLocalPOI(tags: [String: String], kind: SearchPlaceKind, intent: SearchIntent) -> Bool {
     let normalizedName = normalizeForSearch(searchableNameParts(tags: tags).joined(separator: " "))
-    if intent.wantsTransitStop && (kind == .busStop || kind == .tramStop) {
-      return intent.nameSearchTerms.isEmpty || intent.nameSearchTerms.allSatisfy { normalizedName.contains($0) }
+    if intent.wantsShop && kind == .shop {
+      return SearchResultCore.localNameMatches(
+        normalizedName: normalizedName,
+        nameSearchTerms: intent.nameSearchTerms
+      )
     }
-    return !intent.nameSearchTerms.isEmpty && intent.nameSearchTerms.allSatisfy { normalizedName.contains($0) }
+    if intent.wantsParcelLocker && kind == .parcelLocker {
+      return SearchResultCore.localNameMatches(
+        normalizedName: normalizedName,
+        nameSearchTerms: intent.nameSearchTerms
+      )
+    }
+    if intent.wantsRailStation && !intent.wantsTransitStop {
+      guard kind == .railStation else { return false }
+      return SearchResultCore.localNameMatches(
+        normalizedName: normalizedName,
+        nameSearchTerms: intent.nameSearchTerms
+      )
+    }
+    if intent.wantsTransitStop && (kind == .busStop || kind == .tramStop) {
+      return SearchResultCore.localNameMatches(
+        normalizedName: normalizedName,
+        nameSearchTerms: intent.nameSearchTerms
+      )
+    }
+    return SearchResultCore.localNameMatches(
+      normalizedName: normalizedName,
+      nameSearchTerms: intent.nameSearchTerms
+    )
   }
 
   private func searchableNameParts(tags: [String: String]) -> [String] {
@@ -2015,7 +2130,7 @@ actor NavigationAPIClient {
     }
   }
 
-  private func overpassKind(tags: [String: String]) -> PlaceKind {
+  private func overpassKind(tags: [String: String]) -> SearchPlaceKind {
     let shop = tags["shop"] ?? ""
     let amenity = tags["amenity"] ?? ""
     let railway = tags["railway"] ?? ""
@@ -2048,6 +2163,7 @@ actor NavigationAPIClient {
     }
 
     var request = URLRequest(url: url)
+    request.timeoutInterval = searchRequestTimeout
     request.setValue("NaviLive/0.1 (iOS native client)", forHTTPHeaderField: "User-Agent")
     request.setValue(L10n.acceptLanguageTag, forHTTPHeaderField: "Accept-Language")
 
@@ -2061,19 +2177,41 @@ actor NavigationAPIClient {
       searchRadiusKilometers * 1_000
     }
     return decoded.compactMap { item -> SearchCandidate? in
-      let point = GeoPoint(latitude: Double(item.lat) ?? 0, longitude: Double(item.lon) ?? 0)
+      guard let latitude = Double(item.lat),
+            let longitude = Double(item.lon),
+            latitude.isFinite,
+            longitude.isFinite,
+            (-90...90).contains(latitude),
+            (-180...180).contains(longitude) else {
+        return nil
+      }
+      let point = GeoPoint(latitude: latitude, longitude: longitude)
       let distance = location.map { Int($0.distance(to: point).rounded()) } ?? 0
       if let maxDistanceMeters, distance > maxDistanceMeters {
         return nil
       }
       let displayName = item.displayName.trimmingCharacters(in: .whitespacesAndNewlines)
       let kind = nominatimKind(for: item)
+      if intent.wantsRailStation &&
+          !SearchResultCore.shouldKeepForRailQuery(
+            kind: kind,
+            wantsTransitStop: intent.wantsTransitStop
+          ) {
+        return nil
+      }
       let label = candidateName(for: item, fallback: displayName, kind: kind)
-      let rawAddress = formattedAddress(from: item.address, fallback: displayName)
+      let rawAddress = formattedAddress(
+        from: item.address,
+        fallback: fallbackSearchAddress(point: point, displayName: displayName, placeName: label)
+      )
       let place = Place(
-        id: "nominatim-\(item.placeID ?? Int.random(in: 1000...9999))",
+        id: nominatimPlaceID(for: item, point: point),
         name: label,
-        address: removeDuplicatedAddressPrefix(rawAddress, placeName: label),
+        address: normalizedSearchAddress(
+          removeDuplicatedAddressPrefix(rawAddress, placeName: label),
+          placeName: label,
+          point: point
+        ),
         walkDistanceMeters: distance,
         walkEtaMinutes: distance > 0 ? NavigationScenarioCore.distanceBasedEtaMinutes(distanceMeters: distance) : 0,
         point: point
@@ -2123,7 +2261,7 @@ actor NavigationAPIClient {
     return components.url
   }
 
-  private func candidateName(for item: SearchResultDTO, fallback: String, kind: PlaceKind) -> String {
+  private func candidateName(for item: SearchResultDTO, fallback: String, kind: SearchPlaceKind) -> String {
     if let explicitName = item.name?.trimmingCharacters(in: .whitespacesAndNewlines), !explicitName.isEmpty {
       return labelForKind(explicitName, kind: kind)
     }
@@ -2210,21 +2348,36 @@ actor NavigationAPIClient {
 
     let placesNeedingNearbyAddress = candidatesAfterLookup.filter(needsNearbyAddressEnrichment(_:)).map(\.place)
     guard !placesNeedingNearbyAddress.isEmpty else {
-      return candidatesAfterLookup.map(\.place)
+      return candidatesAfterLookup.map { normalizedSearchPlace($0.place) }
     }
     let nearbyAddresses = await lookupNearbyAddressCandidates(for: placesNeedingNearbyAddress)
     guard !nearbyAddresses.isEmpty else {
-      return candidatesAfterLookup.map(\.place)
+      return candidatesAfterLookup.map { normalizedSearchPlace($0.place) }
     }
 
     return candidatesAfterLookup.map { candidate in
       guard let nearbyAddress = nearestNearbyAddress(for: candidate.place, in: nearbyAddresses) else {
-        return candidate.place
+        return normalizedSearchPlace(candidate.place)
       }
       var enriched = candidate.place
-      enriched.address = nearbyAddress.address
-      return enriched
+      enriched.address = normalizedSearchAddress(
+        nearbyAddress.address,
+        placeName: enriched.name,
+        point: enriched.point ?? nearbyAddress.point
+      )
+      return normalizedSearchPlace(enriched)
     }
+  }
+
+  private func normalizedSearchPlace(_ place: Place) -> Place {
+    guard let point = place.point else { return place }
+    var normalized = place
+    normalized.address = normalizedSearchAddress(
+      place.address,
+      placeName: place.name,
+      point: point
+    )
+    return normalized
   }
 
   private func needsSearchAddressEnrichment(_ place: Place) -> Bool {
@@ -2332,9 +2485,10 @@ actor NavigationAPIClient {
 
   private func osmLookupID(fromPlaceID placeID: String) -> String? {
     let normalizedID = placeID.replacingOccurrences(of: "_", with: "-")
-    guard normalizedID.hasPrefix("overpass-") else { return nil }
     let parts = normalizedID.split(separator: "-")
-    guard parts.count == 3, Int64(parts[2]) != nil else { return nil }
+    guard parts.count == 3,
+          (parts[0] == "overpass" || parts[0] == "nominatim"),
+          Int64(parts[2]) != nil else { return nil }
     let prefix: String
     switch parts[1] {
     case "node": prefix = "N"
@@ -2358,12 +2512,7 @@ actor NavigationAPIClient {
   }
 
   private func isUnhelpfulSearchAddress(_ address: String, placeName: String) -> Bool {
-    let normalizedAddress = normalizeForSearch(address)
-    guard !normalizedAddress.isEmpty else { return true }
-    let normalizedName = normalizeForSearch(placeName)
-    let nameTail = placeName.split(separator: ":", maxSplits: 1).last.map(String.init) ?? placeName
-    let normalizedNameTail = normalizeForSearch(nameTail)
-    return normalizedAddress == normalizedName || normalizedAddress == normalizedNameTail
+    AddressFormattingCore.isUnhelpfulAddress(address, placeName: placeName)
   }
 
   private func hasPreciseStreetNumber(_ address: String) -> Bool {
@@ -2409,20 +2558,14 @@ actor NavigationAPIClient {
     ["przystanek", "przystanek autobusowy", "przystanek tramwajowy", "bus stop", "tram stop"]
   }
 
-  private func nominatimKind(for item: SearchResultDTO) -> PlaceKind {
-    let category = item.category ?? ""
-    let type = item.type ?? ""
-    if category == "shop" { return .shop }
-    if category == "amenity" && type == "parcel_locker" { return .parcelLocker }
-    if category == "railway" && (type == "station" || type == "halt") { return .railStation }
-    if category == "public_transport" && type == "station" { return .railStation }
-    if category == "highway" && type == "bus_stop" { return .busStop }
-    if category == "public_transport" && (type == "platform" || type == "stop_position") { return .busStop }
-    if category == "railway" && type == "tram_stop" { return .tramStop }
-    return .other
+  private func nominatimKind(for item: SearchResultDTO) -> SearchPlaceKind {
+    SearchResultCore.kindFromNominatim(
+      category: item.category ?? "",
+      type: item.type ?? ""
+    )
   }
 
-  private func categoryAffinityScore(intent: SearchIntent, kind: PlaceKind) -> Int {
+  private func categoryAffinityScore(intent: SearchIntent, kind: SearchPlaceKind) -> Int {
     var score = 0
     if intent.wantsShop && kind == .shop {
       score += SharedProductRules.Search.categoryMatchScore
@@ -2448,7 +2591,7 @@ actor NavigationAPIClient {
     return score
   }
 
-  private func labelForKind(_ name: String, kind: PlaceKind) -> String {
+  private func labelForKind(_ name: String, kind: SearchPlaceKind) -> String {
     let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
     switch kind {
     case .railStation:
@@ -2470,6 +2613,45 @@ actor NavigationAPIClient {
 
   private func formattedAddress(from address: [String: String]?, fallback: String) -> String {
     AddressFormattingCore.formatAddress(address, fallback: fallback)
+  }
+
+  private func coordinateAddress(_ point: GeoPoint) -> String {
+    let label = L10n.text("place.label.coordinates", table: .home)
+    return "\(label): \(formatCoordinate(point.latitude)), \(formatCoordinate(point.longitude))"
+  }
+
+  private func fallbackSearchAddress(point: GeoPoint, displayName: String, placeName: String) -> String {
+    let parts = displayName
+      .split(separator: ",")
+      .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+      .filter { !$0.isEmpty }
+    let normalizedName = normalizeForSearch(placeName)
+    let usefulParts = parts.enumerated().compactMap { index, part -> String? in
+      if index == 0 && normalizeForSearch(part) == normalizedName { return nil }
+      return part
+    }
+    return usefulParts.isEmpty ? coordinateAddress(point) : usefulParts.joined(separator: ", ")
+  }
+
+  private func normalizedSearchAddress(_ address: String, placeName: String, point: GeoPoint) -> String {
+    AddressFormattingCore.ensureAddress(
+      address,
+      placeName: placeName,
+      fallback: coordinateAddress(point)
+    )
+  }
+
+  private func nominatimPlaceID(for item: SearchResultDTO, point: GeoPoint) -> String {
+    if let osmType = item.osmType?.lowercased(),
+       ["node", "way", "relation"].contains(osmType),
+       let osmID = item.osmID,
+       osmID > 0 {
+      return "nominatim-\(osmType)-\(osmID)"
+    }
+    if let placeID = item.placeID {
+      return "nominatim-place-\(placeID)"
+    }
+    return "nominatim-coordinate-\(formatCoordinate(point.latitude))-\(formatCoordinate(point.longitude))"
   }
 
   private func removeDuplicatedAddressPrefix(_ address: String, placeName: String) -> String {
@@ -2552,31 +2734,37 @@ actor NavigationAPIClient {
   }
 
   private func isBetterSearchCandidate(_ candidate: SearchCandidate, than existing: SearchCandidate) -> Bool {
-    if candidate.score != existing.score { return candidate.score > existing.score }
-    if candidate.isNearbyCandidate != existing.isNearbyCandidate { return candidate.isNearbyCandidate && !existing.isNearbyCandidate }
-    if candidate.distanceMeters != existing.distanceMeters {
-      let candidateDistance = candidate.distanceMeters > 0 ? candidate.distanceMeters : Int.max
-      let existingDistance = existing.distanceMeters > 0 ? existing.distanceMeters : Int.max
-      return candidateDistance < existingDistance
-    }
-    return candidate.importance > existing.importance
+    SearchResultCore.isBetterDuplicate(
+      SearchRankingValues(
+        score: candidate.score,
+        distanceMeters: candidate.distanceMeters,
+        importance: candidate.importance,
+        isNearbyCandidate: candidate.isNearbyCandidate
+      ),
+      SearchRankingValues(
+        score: existing.score,
+        distanceMeters: existing.distanceMeters,
+        importance: existing.importance,
+        isNearbyCandidate: existing.isNearbyCandidate
+      )
+    )
   }
 
   private func compareSearchCandidates(_ left: SearchCandidate, _ right: SearchCandidate) -> Bool {
-    let leftDistance = sortableDistance(left.distanceMeters)
-    let rightDistance = sortableDistance(right.distanceMeters)
-    let scoreDifference = left.score - right.score
-    if abs(scoreDifference) <= SharedProductRules.Search.nearbyBonus, leftDistance != rightDistance {
-      return leftDistance < rightDistance
-    }
-    if scoreDifference != 0 { return scoreDifference > 0 }
-    if left.isNearbyCandidate != right.isNearbyCandidate { return left.isNearbyCandidate && !right.isNearbyCandidate }
-    if leftDistance != rightDistance { return leftDistance < rightDistance }
-    return left.importance > right.importance
-  }
-
-  private func sortableDistance(_ distanceMeters: Int) -> Int {
-    distanceMeters > 0 ? distanceMeters : Int.max
+    SearchResultCore.compareForDisplay(
+      SearchRankingValues(
+        score: left.score,
+        distanceMeters: left.distanceMeters,
+        importance: left.importance,
+        isNearbyCandidate: left.isNearbyCandidate
+      ),
+      SearchRankingValues(
+        score: right.score,
+        distanceMeters: right.distanceMeters,
+        importance: right.importance,
+        isNearbyCandidate: right.isNearbyCandidate
+      )
+    )
   }
 
   private func searchViewBox(around location: GeoPoint, radiusKilometers: Double) -> String {

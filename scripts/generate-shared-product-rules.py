@@ -96,6 +96,10 @@ object SharedProductRules {{
         const val arrivalAccuracyMinMeters: Float = {navigation['arrival']['accuracyMinMeters']}f
         const val arrivalAccuracyMaxMeters: Float = {navigation['arrival']['accuracyMaxMeters']}f
         const val arrivalAccuracyMultiplier: Double = {navigation['arrival']['multiplier']}
+        const val speechAfterSoundDelayMs: Long = {navigation['speechAfterSoundDelayMs']}L
+        const val stepConfirmationRequiredFixes: Int = {navigation['stepConfirmationRequiredFixes']}
+        const val offRouteConfirmationRequiredFixes: Int = {navigation['offRouteConfirmationRequiredFixes']}
+        const val offRouteRecoveryRequiredFixes: Int = {navigation['offRouteRecoveryRequiredFixes']}
         const val assistantFreshLocationMaxAgeMs: Long = {navigation['assistantFreshLocationMaxAgeMs']}L
 
         const val autoRecalculateCooldownMs: Long = {navigation['autoRecalculateCooldownMs']}L
@@ -106,12 +110,15 @@ object SharedProductRules {{
         const val routeProjectionCourseUseMinimumSpeedMetersPerSecond: Double = {projection['courseUseMinimumSpeedMetersPerSecond']}
         const val routeProjectionCourseMaximumAccuracyMeters: Float = {projection['courseMaximumAccuracyMeters']}f
         const val routeProjectionCourseMismatchPenaltyMeters: Double = {projection['courseMismatchPenaltyMeters']}
+        const val routeProjectionSegmentContinuityPenaltyMeters: Double = {projection['segmentContinuityPenaltyMeters']}
+        const val routeProjectionSegmentHysteresisMeters: Double = {projection['segmentHysteresisMeters']}
 
         const val locationStabilizationStaleResetMs: Long = {stabilization['staleResetMs']}L
         const val locationStabilizationMaxUsableAccuracyMeters: Float = {stabilization['maxUsableAccuracyMeters']}f
         const val locationStabilizationStationaryDistanceMeters: Double = {stabilization['stationaryDistanceMeters']}
         const val locationStabilizationStationaryAccuracyMultiplier: Double = {stabilization['stationaryAccuracyMultiplier']}
         const val locationStabilizationStationaryMaxDistanceMeters: Double = {stabilization['stationaryMaxDistanceMeters']}
+        const val locationStabilizationMovingSpeedMetersPerSecond: Double = {stabilization['movingSpeedMetersPerSecond']}
         const val locationStabilizationMaxWalkingSpeedMetersPerSecond: Double = {stabilization['maxWalkingSpeedMetersPerSecond']}
         const val locationStabilizationJumpDistanceMinMeters: Double = {stabilization['jumpDistanceMinMeters']}
         const val locationStabilizationJumpAccuracyMultiplier: Double = {stabilization['jumpAccuracyMultiplier']}
@@ -232,6 +239,10 @@ enum SharedProductRules {{
     static let arrivalAccuracyMinMeters: Double = {navigation['arrival']['accuracyMinMeters']}
     static let arrivalAccuracyMaxMeters: Double = {navigation['arrival']['accuracyMaxMeters']}
     static let arrivalAccuracyMultiplier: Double = {navigation['arrival']['multiplier']}
+    static let speechAfterSoundDelayMs: Int = {navigation['speechAfterSoundDelayMs']}
+    static let stepConfirmationRequiredFixes: Int = {navigation['stepConfirmationRequiredFixes']}
+    static let offRouteConfirmationRequiredFixes: Int = {navigation['offRouteConfirmationRequiredFixes']}
+    static let offRouteRecoveryRequiredFixes: Int = {navigation['offRouteRecoveryRequiredFixes']}
     static let assistantFreshLocationMaxAgeMs: Int = {navigation['assistantFreshLocationMaxAgeMs']}
 
     static let autoRecalculateCooldownMs: Int = {navigation['autoRecalculateCooldownMs']}
@@ -242,12 +253,15 @@ enum SharedProductRules {{
     static let routeProjectionCourseUseMinimumSpeedMetersPerSecond: Double = {projection['courseUseMinimumSpeedMetersPerSecond']}
     static let routeProjectionCourseMaximumAccuracyMeters: Double = {projection['courseMaximumAccuracyMeters']}
     static let routeProjectionCourseMismatchPenaltyMeters: Double = {projection['courseMismatchPenaltyMeters']}
+    static let routeProjectionSegmentContinuityPenaltyMeters: Double = {projection['segmentContinuityPenaltyMeters']}
+    static let routeProjectionSegmentHysteresisMeters: Double = {projection['segmentHysteresisMeters']}
 
     static let locationStabilizationStaleResetMs: Int = {stabilization['staleResetMs']}
     static let locationStabilizationMaxUsableAccuracyMeters: Double = {stabilization['maxUsableAccuracyMeters']}
     static let locationStabilizationStationaryDistanceMeters: Double = {stabilization['stationaryDistanceMeters']}
     static let locationStabilizationStationaryAccuracyMultiplier: Double = {stabilization['stationaryAccuracyMultiplier']}
     static let locationStabilizationStationaryMaxDistanceMeters: Double = {stabilization['stationaryMaxDistanceMeters']}
+    static let locationStabilizationMovingSpeedMetersPerSecond: Double = {stabilization['movingSpeedMetersPerSecond']}
     static let locationStabilizationMaxWalkingSpeedMetersPerSecond: Double = {stabilization['maxWalkingSpeedMetersPerSecond']}
     static let locationStabilizationJumpDistanceMinMeters: Double = {stabilization['jumpDistanceMinMeters']}
     static let locationStabilizationJumpAccuracyMultiplier: Double = {stabilization['jumpAccuracyMultiplier']}

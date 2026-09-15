@@ -47,7 +47,7 @@ internal object NavigationInstructionCore {
             "arrive" -> NavigationInstructionDescriptor(
                 strategy = NavigationInstructionDescriptor.Strategy.Arrive,
             )
-            "turn" -> turnDescriptor(normalizedRoad, normalizedModifier)
+            "turn", "end of road" -> turnDescriptor(normalizedRoad, normalizedModifier)
             "new name", "continue" -> NavigationInstructionDescriptor(
                 strategy = NavigationInstructionDescriptor.Strategy.ContinueNamed,
                 roadName = normalizedRoad,

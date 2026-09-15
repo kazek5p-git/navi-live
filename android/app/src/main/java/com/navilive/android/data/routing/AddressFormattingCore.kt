@@ -53,6 +53,22 @@ internal object AddressFormattingCore {
         return SharedProductRules.Address.houseNumberPattern.matches(trimmed)
     }
 
+    fun ensureAddress(address: String, placeName: String, fallback: String): String {
+        return if (address.isNotBlank() && !isUnhelpfulAddress(address, placeName)) {
+            address.trim()
+        } else {
+            fallback
+        }
+    }
+
+    fun isUnhelpfulAddress(address: String, placeName: String): Boolean {
+        val normalizedAddress = normalizeForComparison(address)
+        if (normalizedAddress.isBlank()) return true
+        val normalizedName = normalizeForComparison(placeName)
+        val normalizedNameTail = normalizeForComparison(placeName.substringAfter(':').trim())
+        return normalizedAddress == normalizedName || normalizedAddress == normalizedNameTail
+    }
+
     private fun firstNonBlankFromKeys(address: Map<String, String>, keys: List<String>): String? {
         return keys.firstNotNullOfOrNull { key ->
             cleanAddressValue(address[key])
@@ -101,6 +117,10 @@ internal object AddressFormattingCore {
         } else {
             trimmed
         }
+    }
+
+    private fun normalizeForComparison(value: String): String {
+        return value.trim().lowercase().replace(Regex("\\s+"), " ")
     }
 
 }

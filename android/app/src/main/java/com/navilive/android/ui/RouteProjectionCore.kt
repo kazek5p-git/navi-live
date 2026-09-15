@@ -4,9 +4,11 @@ import com.navilive.android.model.GeoPoint
 import com.navilive.android.model.RouteStep
 import com.navilive.android.model.SharedProductRules
 import kotlin.math.asin
+import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.hypot
+import kotlin.math.min
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -15,6 +17,16 @@ internal data class RouteProgressProjection(
     val remainingRouteMeters: Double,
     val lateralDistanceMeters: Double,
     val segmentBearingDegrees: Double,
+    val segmentIndex: Int,
+)
+
+internal data class RoutePolylineIntersection(
+    val point: GeoPoint,
+    val distanceAlongRouteMeters: Double,
+    val routeSegmentIndex: Int,
+    val otherSegmentIndex: Int,
+    /** Kąt między geometriami w zakresie 0..90 stopni. */
+    val crossingAngleDegrees: Double,
 )
 
 /** Wybiera stabilny odcinek trasy zamiast przypadkowego odcinka przy skrzyżowaniu. */
@@ -30,6 +42,7 @@ internal object RouteProjectionCore {
         speedMetersPerSecond: Double? = null,
         accuracyMeters: Double? = null,
         monotonicFloorMeters: Double? = null,
+        preferredSegmentIndex: Int? = null,
     ): RouteProgressProjection? {
         if (pathPoints.size < 2) return null
         if (!minimumDistanceAlongRouteMeters.isFinite() ||
@@ -58,7 +71,8 @@ internal object RouteProjectionCore {
 
         var distanceBeforeSegment = 0.0
         var best: Candidate? = null
-        for (segment in segments) {
+        val validPreferredSegmentIndex = preferredSegmentIndex?.takeIf { it in segments.indices }
+        for ((segmentIndex, segment) in segments.withIndex()) {
             val distanceAlongRoute = distanceBeforeSegment + segment.lengthMeters * segment.ratio
             if (distanceAlongRoute < minimumDistanceAlongRouteMeters - PROJECTION_BOUNDARY_TOLERANCE_METERS ||
                 distanceAlongRoute > upperBound + PROJECTION_BOUNDARY_TOLERANCE_METERS
@@ -78,11 +92,21 @@ internal object RouteProjectionCore {
                 )
                 difference / 180.0 * SharedProductRules.Navigation.routeProjectionCourseMismatchPenaltyMeters
             } ?: 0.0
+            val segmentContinuityPenalty = validPreferredSegmentIndex?.let { preferredIndex ->
+                if (segmentIndex == preferredIndex) {
+                    0.0
+                } else {
+                    min(abs(segmentIndex - preferredIndex), 4) *
+                        SharedProductRules.Navigation.routeProjectionSegmentContinuityPenaltyMeters +
+                        SharedProductRules.Navigation.routeProjectionSegmentHysteresisMeters
+                }
+            } ?: 0.0
             val candidate = Candidate(
                 distanceAlongRouteMeters = boundedDistanceAlongRoute,
                 lateralDistanceMeters = segment.lateralDistanceMeters,
                 segmentBearingDegrees = segment.bearingDegrees,
-                score = segment.lateralDistanceMeters + coursePenalty,
+                segmentIndex = segmentIndex,
+                score = segment.lateralDistanceMeters + coursePenalty + segmentContinuityPenalty,
             )
             val currentBest = best
             val scoreDifference = currentBest?.let { candidate.score - it.score }
@@ -107,7 +131,105 @@ internal object RouteProjectionCore {
             remainingRouteMeters = (routeLength - monotonicDistance).coerceAtLeast(0.0),
             lateralDistanceMeters = selected.lateralDistanceMeters,
             segmentBearingDegrees = selected.segmentBearingDegrees,
+            segmentIndex = selected.segmentIndex,
         )
+    }
+
+    /** Zwraca miejsca, w których dwie polilinie rzeczywiście się przecinają lub nakładają. */
+    fun polylineIntersections(
+        routePoints: List<GeoPoint>,
+        otherPoints: List<GeoPoint>,
+        endpointToleranceMeters: Double = 2.0,
+    ): List<RoutePolylineIntersection> {
+        if (routePoints.size < 2 ||
+            otherPoints.size < 2 ||
+            !endpointToleranceMeters.isFinite() ||
+            endpointToleranceMeters < 0.0
+        ) {
+            return emptyList()
+        }
+
+        val referenceLatitude = Math.toRadians(
+            (routePoints + otherPoints).map { it.latitude }.average(),
+        )
+        val referenceLongitude = Math.toRadians(
+            (routePoints + otherPoints).map { it.longitude }.average(),
+        )
+        val earthRadius = 6_371_000.0
+        val routePlanar = routePoints.map { planarPoint(it, referenceLatitude, referenceLongitude, earthRadius) }
+        val otherPlanar = otherPoints.map { planarPoint(it, referenceLatitude, referenceLongitude, earthRadius) }
+        val routeSegmentLengths = routePoints.zipWithNext { start, end -> distanceMeters(start, end) }
+        val routeDistances = buildList {
+            var distance = 0.0
+            add(distance)
+            routeSegmentLengths.forEach {
+                distance += it
+                add(distance)
+            }
+        }
+        val intersections = mutableListOf<RoutePolylineIntersection>()
+        for (routeIndex in 0 until routePlanar.lastIndex) {
+            val routeStart = routePlanar[routeIndex]
+            val routeEnd = routePlanar[routeIndex + 1]
+            val routeVector = routeEnd - routeStart
+            val routeLengthSquared = routeVector.lengthSquared()
+            if (routeLengthSquared <= 0.0) continue
+            for (otherIndex in 0 until otherPlanar.lastIndex) {
+                val otherStart = otherPlanar[otherIndex]
+                val otherEnd = otherPlanar[otherIndex + 1]
+                val otherVector = otherEnd - otherStart
+                val otherLengthSquared = otherVector.lengthSquared()
+                if (otherLengthSquared <= 0.0) continue
+
+                val denominator = cross(routeVector, otherVector)
+                val relativeStart = otherStart - routeStart
+                val routeRatio: Double
+                val otherRatio: Double
+                if (abs(denominator) > 1e-9) {
+                    routeRatio = cross(relativeStart, otherVector) / denominator
+                    otherRatio = cross(relativeStart, routeVector) / denominator
+                    val routeTolerance = endpointToleranceMeters / sqrt(routeLengthSquared)
+                    val otherTolerance = endpointToleranceMeters / sqrt(otherLengthSquared)
+                    if (routeRatio !in -routeTolerance..(1.0 + routeTolerance) ||
+                        otherRatio !in -otherTolerance..(1.0 + otherTolerance)
+                    ) {
+                        continue
+                    }
+                } else {
+                    // Równoległa albo nakładająca się geometria nie jest przecięciem.
+                    // To odrzuca między innymi biegnące obok trasy ścieżki rowerowe.
+                    continue
+                }
+
+                val boundedRouteRatio = routeRatio.coerceIn(0.0, 1.0)
+                val boundedOtherRatio = otherRatio.coerceIn(0.0, 1.0)
+                val routePoint = routeStart + routeVector * boundedRouteRatio
+                val otherPoint = otherStart + otherVector * boundedOtherRatio
+                if ((routePoint - otherPoint).length() > endpointToleranceMeters) continue
+                val routeDistance = routeDistances[routeIndex] +
+                    routeSegmentLengths[routeIndex] * boundedRouteRatio
+                val point = geoPoint(routePoint, referenceLatitude, referenceLongitude, earthRadius)
+                intersections += RoutePolylineIntersection(
+                    point = point,
+                    distanceAlongRouteMeters = routeDistance,
+                    routeSegmentIndex = routeIndex,
+                    otherSegmentIndex = otherIndex,
+                    crossingAngleDegrees = undirectedAngleDegrees(routeVector, otherVector),
+                )
+            }
+        }
+
+        return intersections
+            .sortedBy { it.distanceAlongRouteMeters }
+            .fold(mutableListOf()) { result, candidate ->
+                if (result.none {
+                        abs(it.distanceAlongRouteMeters - candidate.distanceAlongRouteMeters) <= endpointToleranceMeters
+                    }
+                ) {
+                    result += candidate
+                }
+                result
+            }
     }
 
     fun routeLengthMeters(pathPoints: List<GeoPoint>): Double {
@@ -218,8 +340,17 @@ internal object RouteProjectionCore {
         val distanceAlongRouteMeters: Double,
         val lateralDistanceMeters: Double,
         val segmentBearingDegrees: Double,
+        val segmentIndex: Int,
         val score: Double,
     )
+
+    private data class PlanarPoint(val x: Double, val y: Double) {
+        operator fun plus(other: PlanarPoint) = PlanarPoint(x + other.x, y + other.y)
+        operator fun minus(other: PlanarPoint) = PlanarPoint(x - other.x, y - other.y)
+        operator fun times(value: Double) = PlanarPoint(x * value, y * value)
+        fun lengthSquared(): Double = x * x + y * y
+        fun length(): Double = sqrt(lengthSquared())
+    }
 
     private data class SegmentProjection(
         val ratio: Double,
@@ -276,6 +407,39 @@ internal object RouteProjectionCore {
 
     private fun directedBearingDifference(left: Double, right: Double): Double {
         return kotlin.math.abs(((left - right + 540.0) % 360.0) - 180.0)
+    }
+
+    private fun planarPoint(
+        point: GeoPoint,
+        referenceLatitude: Double,
+        referenceLongitude: Double,
+        earthRadius: Double,
+    ): PlanarPoint {
+        return PlanarPoint(
+            x = (Math.toRadians(point.longitude) - referenceLongitude) * earthRadius * cos(referenceLatitude),
+            y = (Math.toRadians(point.latitude) - referenceLatitude) * earthRadius,
+        )
+    }
+
+    private fun geoPoint(
+        point: PlanarPoint,
+        referenceLatitude: Double,
+        referenceLongitude: Double,
+        earthRadius: Double,
+    ): GeoPoint {
+        return GeoPoint(
+            latitude = Math.toDegrees(referenceLatitude + point.y / earthRadius),
+            longitude = Math.toDegrees(referenceLongitude + point.x / (earthRadius * cos(referenceLatitude))),
+        )
+    }
+
+    private fun cross(left: PlanarPoint, right: PlanarPoint): Double = left.x * right.y - left.y * right.x
+
+    private fun undirectedAngleDegrees(left: PlanarPoint, right: PlanarPoint): Double {
+        val leftBearing = Math.toDegrees(atan2(left.x, left.y))
+        val rightBearing = Math.toDegrees(atan2(right.x, right.y))
+        val directed = abs(((leftBearing - rightBearing + 540.0) % 360.0) - 180.0)
+        return min(directed, 180.0 - directed)
     }
 
     private fun normalizedBearingDegrees(radians: Double): Double {
