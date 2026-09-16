@@ -21,7 +21,20 @@ enum L10n {
   }
 
   static func text(_ key: String, table: StringTable = .general) -> String {
-    NSLocalizedString(key, tableName: table.rawValue, bundle: AppLanguage.bundle(for: selectedLanguageCode), comment: "")
+    let selectedBundle = AppLanguage.bundle(for: selectedLanguageCode)
+    let localized = selectedBundle.localizedString(
+      forKey: key,
+      value: nil,
+      table: table.rawValue
+    )
+    guard localized == key else { return localized }
+
+    // Nowe elementy mogą być jeszcze nieobecne w starszym pliku językowym.
+    return AppLanguage.bundle(for: "en").localizedString(
+      forKey: key,
+      value: key,
+      table: table.rawValue
+    )
   }
 
   static func text(_ key: String, table: StringTable = .general, _ args: CVarArg...) -> String {

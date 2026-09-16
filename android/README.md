@@ -11,6 +11,7 @@ This directory contains the first working Android implementation for `Navi Live`
 - Reverse geocoding for a readable current address
 - TTS + haptic feedback in navigation events
 - Persistent favorites, settings and last route via DataStore
+- Backup and restore of settings, favorites, custom places, last route and onboarding state
 - Full route steps from OSRM with live step progression
 - Automatic off-route detection with optional auto-recalculation
 - Stricter pedestrian crossing filtering so nearby side crossings do not take priority over real maneuvers
@@ -111,3 +112,7 @@ Current Android MVP now follows the local `NAVILIVE_UX_BLUEPRINT.md` more closel
 - Android source packages and the Gradle `namespace` now use `com.navilive.android`.
 - `applicationId` intentionally stays `com.navilive.app`, so current users keep the existing install, updater path and app data during upgrades.
 - Preferences now migrate automatically from the legacy `navilive_preferences` DataStore file into the current `navi_live_preferences` store on first launch after upgrade.
+- Settings > Backup and restore provides one local restore point and a JSON file export/import flow through the Android system document picker.
+- The JSON backup format is shared with iOS (`schemaVersion` 1), so a backup can be moved between the two platforms.
+- Backup files contain settings and personal navigation data only; cached nearby places, diagnostics, downloaded APKs and secrets are excluded.
+- Imports validate the app name, schema version, file size and data types. A partial file changes only the fields that it contains.

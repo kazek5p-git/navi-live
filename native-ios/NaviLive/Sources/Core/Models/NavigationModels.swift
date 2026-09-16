@@ -39,6 +39,27 @@ struct Place: Identifiable, Codable, Hashable, Sendable {
 enum RouteStepKind: String, Codable, Hashable, Sendable {
   case instruction
   case pedestrianCrossing
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.singleValueContainer()
+    let rawValue = try container.decode(String.self)
+    switch rawValue.replacingOccurrences(of: "_", with: "").lowercased() {
+    case "instruction":
+      self = .instruction
+    case "pedestriancrossing":
+      self = .pedestrianCrossing
+    default:
+      throw DecodingError.dataCorruptedError(
+        in: container,
+        debugDescription: "Nieznany rodzaj kroku trasy: \(rawValue)"
+      )
+    }
+  }
+
+  func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    try container.encode(rawValue)
+  }
 }
 
 struct RouteStep: Identifiable, Codable, Hashable, Sendable {
@@ -295,6 +316,7 @@ struct PersistedSnapshot: Codable, Sendable {
   var lastRouteSummary: RouteSummary? = nil
   var settings: AppSettings = .init()
   var hasCompletedOnboarding: Bool = false
+  var localRestorePointData: Data? = nil
 
   enum CodingKeys: String, CodingKey {
     case favorites
@@ -303,6 +325,7 @@ struct PersistedSnapshot: Codable, Sendable {
     case lastRouteSummary
     case settings
     case hasCompletedOnboarding
+    case localRestorePointData
   }
 
   init() {}
@@ -315,6 +338,7 @@ struct PersistedSnapshot: Codable, Sendable {
     lastRouteSummary = try container.decodeIfPresent(RouteSummary.self, forKey: .lastRouteSummary)
     settings = try container.decodeIfPresent(AppSettings.self, forKey: .settings) ?? .init()
     hasCompletedOnboarding = try container.decodeIfPresent(Bool.self, forKey: .hasCompletedOnboarding) ?? false
+    localRestorePointData = try container.decodeIfPresent(Data.self, forKey: .localRestorePointData)
   }
 }
 

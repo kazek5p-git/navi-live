@@ -21,6 +21,14 @@
 7. When prep is complete and upload was requested, launch `C:\Users\Kazek\Desktop\skrypty_ios\NaviLive TestFlight GUI.lnk` as the final step.
 8. Before using desktop TestFlight or Android scripts, confirm they point to `C:\Users\Kazek\Documents\navi-live`, not the old `Desktop\Tymczasowe\navilive` workspace.
 
+## Weryfikacja kopii zapasowej
+
+1. W Ustawieniach otwórz Kopię zapasową i przywracanie, zapisz lokalny punkt przywracania i potwierdź, że czytnik ekranu ogłosił jego zapisanie.
+2. Wyeksportuj kopię JSON, zaimportuj ją na tej samej platformie i sprawdź ustawienia, ulubione, własne punkty oraz ostatnią trasę.
+3. Zaimportuj ten sam plik na drugiej platformie i sprawdź, czy identyfikator syntezatora z jednej platformy nie jest stosowany na drugiej.
+4. Sprawdź pusty, uszkodzony i zbyt duży plik; aplikacja ma pokazać błąd i pozostawić istniejące dane bez zmian.
+5. Sprawdź częściowy plik JSON; pola nieobecne w pliku muszą zachować bieżące wartości.
+
 ## Workflow
 
 1. Prepare metadata, `What to Test`, and version/build consistency first.

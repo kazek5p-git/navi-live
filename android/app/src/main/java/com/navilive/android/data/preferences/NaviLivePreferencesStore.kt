@@ -56,6 +56,7 @@ data class PersistedNaviLiveState(
     val settingsState: SettingsState,
     val downloadedUpdateApkPath: String?,
     val downloadedUpdateVersionLabel: String?,
+    val localRestorePointJson: String?,
 )
 
 class NaviLivePreferencesStore(
@@ -114,6 +115,59 @@ class NaviLivePreferencesStore(
             } else {
                 prefs[Keys.LastRouteSummaryJson] = NavigationPersistenceCodec.encodeRouteSummary(summary)
             }
+        }
+    }
+
+    internal suspend fun restoreBackup(
+        settingsState: SettingsState?,
+        favoriteIds: Set<String>?,
+        customFavoritePlaces: List<Place>?,
+        lastRoute: NaviLiveBackupRoute?,
+        includesLastRoute: Boolean,
+        hasCompletedOnboarding: Boolean?,
+    ) {
+        context.naviLiveDataStore.edit { prefs ->
+            settingsState?.let { prefs.putBackupSettings(it) }
+
+            favoriteIds?.let { prefs[Keys.FavoriteIds] = it }
+            customFavoritePlaces?.let { places ->
+                if (places.isEmpty()) {
+                    prefs.remove(Keys.CustomFavoritePlacesJson)
+                } else {
+                    prefs[Keys.CustomFavoritePlacesJson] = encodeCustomFavoritePlaces(places)
+                }
+            }
+
+            if (includesLastRoute) {
+                val place = lastRoute?.place
+                if (place == null) {
+                    prefs.remove(Keys.LastRoutePlaceId)
+                    prefs.remove(Keys.LastRoutePlaceJson)
+                } else {
+                    prefs[Keys.LastRoutePlaceId] = place.id
+                    prefs[Keys.LastRoutePlaceJson] = NavigationPersistenceCodec.encodePlace(place).toString()
+                }
+                val summary = lastRoute?.summary
+                if (summary == null) {
+                    prefs.remove(Keys.LastRouteSummaryJson)
+                } else {
+                    prefs[Keys.LastRouteSummaryJson] = NavigationPersistenceCodec.encodeRouteSummary(summary)
+                }
+            }
+
+            hasCompletedOnboarding?.let { prefs[Keys.HasCompletedOnboarding] = it }
+        }
+    }
+
+    suspend fun setLocalRestorePoint(json: String) {
+        context.naviLiveDataStore.edit { prefs ->
+            prefs[Keys.LocalRestorePointJson] = json
+        }
+    }
+
+    suspend fun clearLocalRestorePoint() {
+        context.naviLiveDataStore.edit { prefs ->
+            prefs.remove(Keys.LocalRestorePointJson)
         }
     }
 
@@ -383,7 +437,56 @@ class NaviLivePreferencesStore(
             ),
             downloadedUpdateApkPath = preferences[Keys.DownloadedUpdateApkPath],
             downloadedUpdateVersionLabel = preferences[Keys.DownloadedUpdateVersionLabel],
+            localRestorePointJson = preferences[Keys.LocalRestorePointJson]
+                ?.takeIf(String::isNotBlank),
         )
+    }
+
+    private fun MutablePreferences.putBackupSettings(settings: SettingsState) {
+        this[Keys.Language] = settings.language
+        this[Keys.InterfaceTheme] = settings.interfaceTheme.storageValue
+        this[Keys.CustomThemeBackgroundHex] = settings.customThemeColors.backgroundHex
+        this[Keys.CustomThemeSurfaceHex] = settings.customThemeColors.surfaceHex
+        this[Keys.CustomThemePrimaryTextHex] = settings.customThemeColors.primaryTextHex
+        this[Keys.CustomThemeSecondaryTextHex] = settings.customThemeColors.secondaryTextHex
+        this[Keys.CustomThemeAccentHex] = settings.customThemeColors.accentHex
+        this[Keys.CustomThemeOutlineHex] = settings.customThemeColors.outlineHex
+        this[Keys.ShowTutorialOnStartup] = settings.showTutorialOnStartup
+        this[Keys.VibrationEnabled] = settings.vibrationEnabled
+        this[Keys.ShakeGestureEnabled] = settings.shakeGestureEnabled
+        this[Keys.ShakeStrength] = settings.shakeStrength.storageValue
+        this[Keys.HeadphoneButtonRepeatEnabled] = settings.headphoneButtonRepeatEnabled
+        this[Keys.SoundCuesEnabled] = settings.soundCuesEnabled
+        this[Keys.SoundCueVolumePercent] = settings.soundCueVolumePercent.coerceIn(0, 100)
+        this[Keys.SoundCueTheme] = settings.soundCueTheme.storageValue
+        this[Keys.AutoRecalculate] = settings.autoRecalculate
+        this[Keys.JunctionAlerts] = settings.junctionAlerts
+        this[Keys.PedestrianCrossingAlerts] = settings.pedestrianCrossingAlerts
+        this[Keys.TurnByTurnAnnouncements] = settings.turnByTurnAnnouncements
+        this[Keys.AnnouncementCadenceMode] = settings.announcementCadenceMode.storageValue
+        this[Keys.SearchRadiusKm] = settings.searchRadiusKm.coerceIn(
+            SharedProductRules.Search.minimumRadiusKm,
+            SharedProductRules.Search.maximumRadiusKm,
+        )
+        this[Keys.SearchResultLimit] = settings.searchResultLimit.coerceIn(
+            SharedProductRules.Search.minimumResultLimit,
+            SharedProductRules.Search.maximumResultLimit,
+        )
+        this[Keys.NearbyPoiCacheMode] = settings.nearbyPoiCacheMode.storageValue
+        this[Keys.NearbyPoiCacheRadiusKm] = settings.nearbyPoiCacheRadiusKm.coerceIn(
+            SharedProductRules.Search.minimumRadiusKm,
+            5,
+        )
+        this[Keys.UpdateChannel] = settings.updateChannel.storageValue
+        this[Keys.SpeechOutputMode] = settings.speechOutputMode.storageValue
+        val selectedSystemTtsEnginePackage = settings.selectedSystemTtsEnginePackage
+        if (selectedSystemTtsEnginePackage.isNullOrBlank()) {
+            remove(Keys.SelectedSystemTtsEnginePackage)
+        } else {
+            this[Keys.SelectedSystemTtsEnginePackage] = selectedSystemTtsEnginePackage
+        }
+        this[Keys.SpeechRatePercent] = settings.speechRatePercent.coerceIn(50, 200)
+        this[Keys.SpeechVolumePercent] = settings.speechVolumePercent.coerceIn(0, 100)
     }
 
 
@@ -434,6 +537,7 @@ class NaviLivePreferencesStore(
         val SpeechVolumePercent = intPreferencesKey("speech_volume_percent")
         val DownloadedUpdateApkPath = stringPreferencesKey("downloaded_update_apk_path")
         val DownloadedUpdateVersionLabel = stringPreferencesKey("downloaded_update_version_label")
+        val LocalRestorePointJson = stringPreferencesKey("local_restore_point_json")
     }
 }
 

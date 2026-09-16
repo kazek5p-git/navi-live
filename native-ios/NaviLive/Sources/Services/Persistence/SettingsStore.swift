@@ -42,6 +42,44 @@ final class SettingsStore: ObservableObject {
     save()
   }
 
+  func makeBackupData() throws -> Data {
+    let payload = NaviLiveBackupCodec.makePayload(snapshot: snapshot)
+    return try NaviLiveBackupCodec.encode(payload: payload)
+  }
+
+  func localRestorePointData() -> Data? {
+    snapshot.localRestorePointData
+  }
+
+  func setLocalRestorePointData(_ data: Data) {
+    snapshot.localRestorePointData = data
+    save()
+  }
+
+  func restoreBackup(
+    settings: AppSettings?,
+    favorites: [Place]?,
+    lastRoute: NaviLiveBackupRoute?,
+    includesLastRoute: Bool,
+    hasCompletedOnboarding: Bool?
+  ) {
+    if let settings {
+      snapshot.settings = settings
+    }
+    if let favorites {
+      snapshot.favorites = favorites
+    }
+    if includesLastRoute {
+      snapshot.lastRoutePlaceID = lastRoute?.placeID
+      snapshot.lastRoutePlace = lastRoute?.place?.place()
+      snapshot.lastRouteSummary = lastRoute?.summary
+    }
+    if let hasCompletedOnboarding {
+      snapshot.hasCompletedOnboarding = hasCompletedOnboarding
+    }
+    save()
+  }
+
   private func save() {
     guard let data = try? encoder.encode(snapshot) else {
       return

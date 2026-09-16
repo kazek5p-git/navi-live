@@ -275,6 +275,8 @@ data class NaviLiveUiState(
     val diagnosticsState: DiagnosticsState = DiagnosticsState(),
     val appUpdateState: AppUpdateState = AppUpdateState(),
     val nearbyPoiCacheState: NearbyPoiCacheState = NearbyPoiCacheState(),
+    val hasLocalRestorePoint: Boolean = false,
+    val backupStatusMessage: String = "",
     val statusMessage: String = "",
     val isLoadingSearch: Boolean = false,
     val isLoadingRoute: Boolean = false,

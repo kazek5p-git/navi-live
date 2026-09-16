@@ -116,7 +116,7 @@ internal object NavigationPersistenceCodec {
             put("instruction", step.instruction)
             put("distanceMeters", step.distanceMeters)
             step.maneuverPoint?.let { put("maneuverPoint", encodePoint(it)) }
-            put("kind", step.kind.name)
+            put("kind", step.kind.toBackupValue())
             step.maneuverType?.let { put("maneuverType", it) }
             step.maneuverModifier?.let { put("maneuverModifier", it) }
             step.roadName?.let { put("roadName", it) }
@@ -124,8 +124,8 @@ internal object NavigationPersistenceCodec {
     }
 
     private fun decodeRouteStep(value: JSONObject): RouteStep {
-        val kind = when (value.optString("kind")) {
-            RouteStepKind.PedestrianCrossing.name -> RouteStepKind.PedestrianCrossing
+        val kind = when (value.optString("kind").replace("_", "").lowercase()) {
+            "pedestriancrossing" -> RouteStepKind.PedestrianCrossing
             else -> RouteStepKind.Instruction
         }
         return RouteStep(
@@ -137,6 +137,11 @@ internal object NavigationPersistenceCodec {
             maneuverModifier = value.optString("maneuverModifier").takeIf(String::isNotEmpty),
             roadName = value.optString("roadName").takeIf(String::isNotEmpty),
         )
+    }
+
+    private fun RouteStepKind.toBackupValue(): String = when (this) {
+        RouteStepKind.Instruction -> "instruction"
+        RouteStepKind.PedestrianCrossing -> "pedestrianCrossing"
     }
 
     private fun encodePoint(point: GeoPoint): JSONObject {

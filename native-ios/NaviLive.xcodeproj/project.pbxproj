@@ -31,6 +31,7 @@
 		58D89EC47F376C4D742FA8EC /* NavigationPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CCCC6D7D8E103FE050E684 /* NavigationPersistenceTests.swift */; };
 		5BEF7FAC46E97DFAEF368FC6 /* HeadphoneRemoteControlService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498BC7D675ED5E4BAF07E15 /* HeadphoneRemoteControlService.swift */; };
 		5C6D85C7797AB48F1939DEB6 /* RouteQualityAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422C70F020A264D3E8DD597B /* RouteQualityAnalyzer.swift */; };
+		5A4E8D7B2F3C4A1E8D6C9B02 /* BackupRestoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A4E8D7B2F3C4A1E8D6C9B01 /* BackupRestoreView.swift */; };
 		6092E7375B8B0A0F33C3D683 /* RouteSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59862EB3C6B4C6605F10AF6 /* RouteSummaryView.swift */; };
 		6231EDA99CB436BF1C84BB68 /* HeadingAlignView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19F51C1F15A4DA573A439496 /* HeadingAlignView.swift */; };
 		636F187BABD9AEEDED99F4BE /* RoutePolylineIntersectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75459C454BE539B03B337E7E /* RoutePolylineIntersectionTests.swift */; };
@@ -51,6 +52,7 @@
 		9C86CF87767842772836867A /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11058C064BC60B138D61F99 /* L10n.swift */; };
 		A4C47CD9F06CDF8D2E86BE5E /* VoiceOverAnnouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7DF491966F886FE4B8E440 /* VoiceOverAnnouncer.swift */; };
 		A4E27A815DCC8C3D1F0FBB2D /* SearchResultCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C1589DEA47584716B02EF3 /* SearchResultCore.swift */; };
+		A1B2C3D4E5F60718293A4B5D /* NaviLiveBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* NaviLiveBackup.swift */; };
 		AD6007813C51894E0F5DF7BB /* FavoritesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18487FD8F48CF4E503764348 /* FavoritesStore.swift */; };
 		AF67D7A4EAC0280BCC30AF65 /* AddressFormattingCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 862DCDF8A73FE50A6CB0714A /* AddressFormattingCore.swift */; };
 		B01170B310B02C7E7B09EBA2 /* PedestrianCrossingCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759A9B44BC026FD9192A69FB /* PedestrianCrossingCoreTests.swift */; };
@@ -96,6 +98,7 @@
 		092C8DBC1989EC11F2538CB5 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/General.strings; sourceTree = "<group>"; };
 		097381EEFBD7C3778E389F3F /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/Root.strings; sourceTree = "<group>"; };
 		09B2A0337352D66E8A360F3C /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5C /* NaviLiveBackup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NaviLiveBackup.swift; sourceTree = "<group>"; };
 		09E47EDE6025BB52C11FACFA /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Root.strings; sourceTree = "<group>"; };
 		0A2DA99A0DD3D4B7FF17B58A /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Settings.strings; sourceTree = "<group>"; };
 		0AEAC83D4760702B11A12B34 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Navigation.strings; sourceTree = "<group>"; };
@@ -348,6 +351,7 @@
 		EF951D88C21F2D72B81E3C0F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Navigation.strings"; sourceTree = "<group>"; };
 		F0ACFACB54A6D05F75F03E2C /* LocationFixStabilizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFixStabilizerTests.swift; sourceTree = "<group>"; };
 		F1FEAC230D0EFD6DD27095C1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		5A4E8D7B2F3C4A1E8D6C9B01 /* BackupRestoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRestoreView.swift; sourceTree = "<group>"; };
 		F231CA39DDD336D59DAEE660 /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/Home.strings; sourceTree = "<group>"; };
 		F353EF7876EDF91272FA32FB /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Home.strings; sourceTree = "<group>"; };
 		F419FCDEA50CC7760197524A /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -401,6 +405,7 @@
 			isa = PBXGroup;
 			children = (
 				18487FD8F48CF4E503764348 /* FavoritesStore.swift */,
+				A1B2C3D4E5F60718293A4B5C /* NaviLiveBackup.swift */,
 				09B2A0337352D66E8A360F3C /* SettingsStore.swift */,
 			);
 			path = Persistence;
@@ -594,6 +599,7 @@
 		CF48B095DF910382ABAC583C /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				5A4E8D7B2F3C4A1E8D6C9B01 /* BackupRestoreView.swift */,
 				E64560F0226C2CDBDAF74D1D /* HelpPrivacyView.swift */,
 				B3ACBD136794AC7FBE4CA35B /* InterfaceThemeSettingsView.swift */,
 				F1FEAC230D0EFD6DD27095C1 /* SettingsView.swift */,
@@ -785,6 +791,7 @@
 				B2D4DCACBEFE8918380977AA /* AppFormatters.swift in Sources */,
 				F446865BA390E50B01331593 /* AppModel.swift in Sources */,
 				C34141B318A5A5396F05D15E /* ArrivalView.swift in Sources */,
+				5A4E8D7B2F3C4A1E8D6C9B02 /* BackupRestoreView.swift in Sources */,
 				149B0FD2828D394CD33BC9C3 /* CurrentPositionView.swift in Sources */,
 				AD6007813C51894E0F5DF7BB /* FavoritesStore.swift in Sources */,
 				4248F7B91C0D646AD5BBB6DE /* FavoritesView.swift in Sources */,
@@ -796,6 +803,7 @@
 				9C86CF87767842772836867A /* L10n.swift in Sources */,
 				6384158350D4DE8FF41E3F63 /* LiveNavigationEngine.swift in Sources */,
 				4B3FEA239C2BAECDD7BDCCFA /* LocationService.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5D /* NaviLiveBackup.swift in Sources */,
 				32317B870D6B5B0EFC16CF37 /* NaviLiveApp.swift in Sources */,
 				187C83A322C5F23AEB78FF8F /* NaviLiveInterfaceTheme.swift in Sources */,
 				07F81BCC30E50DB47C3CBC46 /* NavigationAPIClient.swift in Sources */,

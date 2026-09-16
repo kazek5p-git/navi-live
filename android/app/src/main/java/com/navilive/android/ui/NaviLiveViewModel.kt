@@ -13,6 +13,11 @@ import androidx.lifecycle.viewModelScope
 import com.navilive.android.R
 import com.navilive.android.data.FakeNaviLiveRepository
 import com.navilive.android.data.location.LocationTrackerStore
+import com.navilive.android.data.preferences.NaviLiveBackupCodec
+import com.navilive.android.data.preferences.NaviLiveBackupErrorReason
+import com.navilive.android.data.preferences.NaviLiveBackupException
+import com.navilive.android.data.preferences.NaviLiveBackupPayload
+import com.navilive.android.data.preferences.NaviLiveBackupRoute
 import com.navilive.android.data.preferences.NaviLivePreferencesStore
 import com.navilive.android.data.routing.OpenStreetRoutingRepository
 import com.navilive.android.data.routing.RouteAssistantCore
@@ -56,6 +61,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.math.roundToInt
 
 private data class RouteSession(
@@ -151,6 +159,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     private var lastTelemetryFixTimestampMs: Long = 0L
     private var hasPerformedStartupUpdateCheck = false
     private var hasRestoredPersistedRoute = false
+    private var localRestorePointJson: String? = null
 
     private val _uiState = MutableStateFlow(
         NaviLiveUiState(
@@ -178,6 +187,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
     private fun observePreferencesStore() {
         viewModelScope.launch {
             preferencesStore.state.collect { persisted ->
+                localRestorePointJson = persisted.localRestorePointJson
                 val currentVersionLabel = currentAppVersionLabel()
                 val currentBuildLabel = currentAppBuildLabel()
                 val sanitizedCustomFavoritePlaces = persisted.customFavoritePlaces
@@ -284,6 +294,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
                             },
                         ),
                         hasCompletedOnboarding = persisted.hasCompletedOnboarding,
+                        hasLocalRestorePoint = persisted.localRestorePointJson != null,
                         isPreferencesLoaded = true,
                     )
                 }
@@ -667,6 +678,252 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun exportedBackupJson(): String {
+        val state = _uiState.value
+        val lastRoutePlace = getPlace(state.lastRoutePlaceId)
+        val lastRouteSummary = state.lastRoutePlaceId?.let(routeCache::get)
+        return NaviLiveBackupCodec.encode(
+            settings = state.settingsState,
+            favorites = getFavorites(),
+            lastRoutePlaceId = state.lastRoutePlaceId,
+            lastRoutePlace = lastRoutePlace,
+            lastRouteSummary = lastRouteSummary,
+            hasCompletedOnboarding = state.hasCompletedOnboarding,
+        )
+    }
+
+    fun suggestedBackupFileName(): String {
+        val version = currentAppVersionLabel().replace(Regex("[^A-Za-z0-9._-]"), "_")
+        val build = currentAppBuildLabel().replace(Regex("[^A-Za-z0-9._-]"), "_")
+        val date = SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(Date())
+        return "Navi-Live-$version-build-$build-backup-$date.json"
+    }
+
+    fun onBackupExportFinished(success: Boolean) {
+        val message = string(
+            if (success) R.string.status_backup_exported else R.string.status_backup_export_failed,
+        )
+        _uiState.update { current ->
+            current.copy(backupStatusMessage = message, statusMessage = message)
+        }
+    }
+
+    fun onBackupExportPreparationFailed() {
+        val message = string(R.string.status_backup_export_failed)
+        _uiState.update { current ->
+            current.copy(backupStatusMessage = message, statusMessage = message)
+        }
+    }
+
+    fun onBackupImportReadFailed() {
+        val message = string(R.string.status_backup_import_failed)
+        _uiState.update { current ->
+            current.copy(backupStatusMessage = message, statusMessage = message)
+        }
+    }
+
+    fun saveLocalRestorePoint() {
+        val json = try {
+            exportedBackupJson()
+        } catch (error: Exception) {
+            onBackupExportPreparationFailed()
+            return
+        }
+        viewModelScope.launch {
+            try {
+                preferencesStore.setLocalRestorePoint(json)
+                localRestorePointJson = json
+                val message = string(R.string.status_backup_local_saved)
+                _uiState.update { current ->
+                    current.copy(
+                        hasLocalRestorePoint = true,
+                        backupStatusMessage = message,
+                        statusMessage = message,
+                    )
+                }
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                val message = string(R.string.status_backup_local_save_failed)
+                _uiState.update { current ->
+                    current.copy(backupStatusMessage = message, statusMessage = message)
+                }
+            }
+        }
+    }
+
+    fun restoreLocalRestorePoint() {
+        val raw = localRestorePointJson
+        if (raw.isNullOrBlank()) {
+            val message = string(R.string.status_backup_local_missing)
+            _uiState.update { current ->
+                current.copy(backupStatusMessage = message, statusMessage = message)
+            }
+            return
+        }
+        importBackupJson(raw, successMessage = R.string.status_backup_local_restored)
+    }
+
+    fun importBackupJson(raw: String) {
+        importBackupJson(raw, successMessage = R.string.status_backup_imported)
+    }
+
+    private fun importBackupJson(raw: String, @StringRes successMessage: Int) {
+        val payload = try {
+            NaviLiveBackupCodec.decode(raw)
+        } catch (error: NaviLiveBackupException) {
+            val message = backupErrorMessage(error.reason)
+            _uiState.update { current ->
+                current.copy(backupStatusMessage = message, statusMessage = message)
+            }
+            return
+        } catch (error: Exception) {
+            val message = string(R.string.status_backup_import_failed)
+            _uiState.update { current ->
+                current.copy(backupStatusMessage = message, statusMessage = message)
+            }
+            return
+        }
+
+        applyBackupPayload(payload, successMessage)
+    }
+
+    private fun applyBackupPayload(payload: NaviLiveBackupPayload, @StringRes successMessage: Int) {
+        val current = _uiState.value
+        val importedFavorites = payload.favorites
+            ?.filterNot { it.id in retiredDemoPlaceIds }
+        val nextFavoriteIds = importedFavorites?.map(Place::id)?.toSet()
+        val nextCustomFavoritePlaces = importedFavorites
+            ?.filterNot { it.id in seedPlaceIds }
+            ?: current.places.filter { it.id in current.favoriteIds && it.id !in seedPlaceIds }
+
+        val route = payload.lastRoute
+        val routePlace = if (payload.includesLastRoute) {
+            val importedRoutePlace = route?.place?.takeUnless { it.id in retiredDemoPlaceIds }
+            importedRoutePlace?.let { imported ->
+                seedPlaces.firstOrNull { it.id == imported.id } ?: imported
+            } ?: route?.placeId
+                ?.takeUnless { it in retiredDemoPlaceIds }
+                ?.let { routeId ->
+                    current.places.firstOrNull { it.id == routeId }
+                        ?: seedPlaces.firstOrNull { it.id == routeId }
+                }
+        } else {
+            current.lastRoutePlaceId?.let(::getPlace)
+        }
+        val routePlaceId = if (payload.includesLastRoute) {
+            routePlace?.id ?: route?.placeId?.takeUnless { it in retiredDemoPlaceIds }
+        } else {
+            current.lastRoutePlaceId
+        }
+        val routeSummary = if (payload.includesLastRoute && routePlace != null) {
+            route?.summary?.takeIf { summary ->
+                route.placeId.isNullOrBlank() || route.placeId == routePlace.id
+            }?.let { normalizeSummary(routePlace, it) }
+        } else if (!payload.includesLastRoute) {
+            routePlaceId?.let(routeCache::get)
+        } else {
+            null
+        }
+
+        val nextPlaces = mergeById(
+            if (importedFavorites != null) {
+                mergeById(seedPlaces, nextCustomFavoritePlaces)
+            } else {
+                current.places
+            },
+            listOfNotNull(routePlace?.takeUnless { it.id in seedPlaceIds }),
+        )
+        val nextSettings = synchronizeSpeechSettings(
+            payload.settings?.mergeInto(current.settingsState) ?: current.settingsState,
+        )
+        val nextHasCompletedOnboarding = payload.hasCompletedOnboarding ?: current.hasCompletedOnboarding
+        val nextActiveNavigationState: ActiveNavigationState
+
+        routeCache.clear()
+        activeRouteSession = null
+        routeInitialBearingDegrees = null
+        isNavigationLive = false
+        isRouteRecalculating = false
+        resetNavigationAnnouncementState()
+        if (routePlace != null && routeSummary != null) {
+            routeCache[routePlace.id] = routeSummary
+            routeInitialBearingDegrees = RouteProjectionCore.initialBearingDegrees(routeSummary.pathPoints)
+            activeRouteSession = createRouteSession(routePlace, routeSummary)
+            nextActiveNavigationState = buildActiveNavigationState(
+                session = activeRouteSession!!,
+                fix = current.locationState.latestFix,
+                previous = ActiveNavigationState(),
+                isOffRoute = false,
+                isRecalculating = false,
+                offRouteDistanceMeters = null,
+            )
+        } else {
+            nextActiveNavigationState = ActiveNavigationState()
+        }
+
+        _uiState.update { state ->
+            state.copy(
+                places = nextPlaces,
+                searchResults = if (state.searchQuery.isBlank()) nextPlaces else state.searchResults,
+                favoriteIds = nextFavoriteIds ?: state.favoriteIds,
+                lastRoutePlaceId = routePlaceId,
+                settingsState = nextSettings,
+                activeNavigationState = nextActiveNavigationState,
+                isNavigationLive = false,
+                hasCompletedOnboarding = nextHasCompletedOnboarding,
+                backupStatusMessage = string(successMessage),
+                statusMessage = string(successMessage),
+            )
+        }
+
+        val persistedLastRoute = if (payload.includesLastRoute) {
+            NaviLiveBackupRoute(
+                placeId = routePlaceId,
+                place = routePlace,
+                summary = routeSummary,
+            )
+        } else {
+            null
+        }
+        viewModelScope.launch {
+            preferencesStore.restoreBackup(
+                settingsState = if (payload.settings != null) nextSettings else null,
+                favoriteIds = nextFavoriteIds,
+                customFavoritePlaces = importedFavorites?.let { nextCustomFavoritePlaces },
+                lastRoute = persistedLastRoute,
+                includesLastRoute = payload.includesLastRoute,
+                hasCompletedOnboarding = payload.hasCompletedOnboarding,
+            )
+        }
+    }
+
+    private fun createRouteSession(place: Place, summary: RouteSummary): RouteSession {
+        return RouteSession(
+            destinationId = place.id,
+            destinationName = place.name,
+            destinationPoint = place.point,
+            steps = summary.steps,
+            pathPoints = summary.pathPoints,
+            stepDistancesAlongRoute = stepDistancesAlongRoute(
+                steps = summary.steps,
+                pathPoints = summary.pathPoints,
+            ),
+        )
+    }
+
+    private fun backupErrorMessage(reason: NaviLiveBackupErrorReason): String {
+        return string(
+            when (reason) {
+                NaviLiveBackupErrorReason.EmptyFile -> R.string.status_backup_empty_file
+                NaviLiveBackupErrorReason.InvalidFile -> R.string.status_backup_invalid_file
+                NaviLiveBackupErrorReason.NoContent -> R.string.status_backup_no_content
+                NaviLiveBackupErrorReason.NewerSchema -> R.string.status_backup_newer_version
+                NaviLiveBackupErrorReason.UnsupportedApp -> R.string.status_backup_wrong_app
+            },
+        )
+    }
+
     fun saveCurrentLocationAsFavorite(rawName: String) {
         val name = rawName.trim()
         if (name.isBlank()) {
@@ -932,17 +1189,7 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
             preferencesStore.setLastRoute(place = place, summary = normalized)
         }
         routeInitialBearingDegrees = RouteProjectionCore.initialBearingDegrees(normalized.pathPoints)
-        activeRouteSession = RouteSession(
-            destinationId = place.id,
-            destinationName = place.name,
-            destinationPoint = place.point,
-            steps = normalized.steps,
-            pathPoints = normalized.pathPoints,
-            stepDistancesAlongRoute = stepDistancesAlongRoute(
-                steps = normalized.steps,
-                pathPoints = normalized.pathPoints,
-            ),
-        )
+        activeRouteSession = createRouteSession(place, normalized)
         isNavigationLive = keepNavigationLive
         resetNavigationAnnouncementState()
         isRouteRecalculating = false

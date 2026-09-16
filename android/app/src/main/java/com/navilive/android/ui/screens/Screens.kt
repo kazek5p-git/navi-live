@@ -181,6 +181,7 @@ private enum class SettingsDestination {
     Sounds,
     Speech,
     App,
+    Backup,
     Diagnostics,
 }
 
@@ -1734,6 +1735,12 @@ fun SettingsScreen(
     onPrimaryUpdateAction: () -> Unit,
     onOpenReleasePage: (String) -> Unit,
     onOpenProjectRepository: () -> Unit,
+    hasLocalRestorePoint: Boolean,
+    backupStatusMessage: String,
+    onSaveLocalRestorePoint: () -> Unit,
+    onRestoreLocalRestorePoint: () -> Unit,
+    onExportBackup: () -> Unit,
+    onImportBackup: () -> Unit,
     onExportDiagnostics: () -> Unit,
     onClearDiagnostics: () -> Unit,
     onShareDiagnostics: (() -> Unit)?,
@@ -1753,6 +1760,7 @@ fun SettingsScreen(
         SettingsDestination.Sounds -> stringResource(R.string.settings_group_sounds_title)
         SettingsDestination.Speech -> stringResource(R.string.settings_group_speech_title)
         SettingsDestination.App -> stringResource(R.string.settings_group_app_title)
+        SettingsDestination.Backup -> stringResource(R.string.settings_backup_title)
         SettingsDestination.Diagnostics -> stringResource(R.string.settings_group_diagnostics_title)
     }
 
@@ -1808,6 +1816,11 @@ fun SettingsScreen(
                         title = stringResource(R.string.settings_group_app_title),
                         icon = Icons.Filled.Settings,
                         onClick = { destination = SettingsDestination.App },
+                    )
+                    SettingsNavigationCard(
+                        title = stringResource(R.string.settings_backup_title),
+                        icon = Icons.Filled.FileDownload,
+                        onClick = { destination = SettingsDestination.Backup },
                     )
                     SettingsNavigationCard(
                         title = stringResource(R.string.settings_group_diagnostics_title),
@@ -1996,6 +2009,16 @@ fun SettingsScreen(
                         versionLabel = updateState.currentVersionLabel,
                         buildLabel = updateState.currentBuildLabel,
                         onOpenProjectRepository = onOpenProjectRepository,
+                    )
+                }
+                SettingsDestination.Backup -> {
+                    BackupRestoreCard(
+                        hasLocalRestorePoint = hasLocalRestorePoint,
+                        statusMessage = backupStatusMessage,
+                        onSaveLocalRestorePoint = onSaveLocalRestorePoint,
+                        onRestoreLocalRestorePoint = onRestoreLocalRestorePoint,
+                        onExportBackup = onExportBackup,
+                        onImportBackup = onImportBackup,
                     )
                 }
                 SettingsDestination.Diagnostics -> {
@@ -3883,6 +3906,94 @@ private fun SettingsToggleCard(
             ) {
                 Text(title, fontWeight = FontWeight.SemiBold)
                 Switch(checked = checked, onCheckedChange = onCheckedChange)
+            }
+        }
+    }
+}
+
+@Composable
+private fun BackupRestoreCard(
+    hasLocalRestorePoint: Boolean,
+    statusMessage: String,
+    onSaveLocalRestorePoint: () -> Unit,
+    onRestoreLocalRestorePoint: () -> Unit,
+    onExportBackup: () -> Unit,
+    onImportBackup: () -> Unit,
+) {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            CardTitle(stringResource(R.string.settings_backup_card_title))
+            Text(
+                text = stringResource(R.string.settings_backup_local_title),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.semantics { heading() },
+            )
+            Text(stringResource(R.string.settings_backup_local_description))
+            Text(
+                text = stringResource(
+                    if (hasLocalRestorePoint) {
+                        R.string.settings_backup_local_available
+                    } else {
+                        R.string.settings_backup_local_empty
+                    },
+                ),
+                modifier = Modifier.semantics {
+                    liveRegion = LiveRegionMode.Polite
+                },
+            )
+            FilledTonalButton(
+                onClick = onSaveLocalRestorePoint,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(Icons.Filled.CheckCircle, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.settings_backup_local_save))
+            }
+            OutlinedButton(
+                onClick = onRestoreLocalRestorePoint,
+                enabled = hasLocalRestorePoint,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(Icons.Filled.Refresh, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.settings_backup_local_restore))
+            }
+
+            HorizontalDivider()
+            Text(
+                text = stringResource(R.string.settings_backup_file_title),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.semantics { heading() },
+            )
+            Text(stringResource(R.string.settings_backup_file_description))
+            OutlinedButton(
+                onClick = onExportBackup,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(Icons.Filled.FileDownload, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.settings_backup_export))
+            }
+            OutlinedButton(
+                onClick = onImportBackup,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(Icons.Filled.FileDownload, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.settings_backup_import))
+            }
+            if (statusMessage.isNotBlank()) {
+                Text(
+                    text = statusMessage,
+                    modifier = Modifier.semantics {
+                        liveRegion = LiveRegionMode.Polite
+                    },
+                )
             }
         }
     }

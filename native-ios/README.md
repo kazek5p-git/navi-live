@@ -16,6 +16,7 @@ Implemented and validated on GitHub Actions:
 - location permission gate
 - home, search, place details, route summary
 - favorites, settings, help/privacy
+- backup and restore of settings, favorites, custom places, last route and onboarding state
 - heading alignment
 - active navigation
 - off-route detection
@@ -60,6 +61,11 @@ Supported localization folders mirror the same structure for `en`, `pl`, `ru`, `
 Missing iOS locale tables can be generated with `python native-ios/tools/generate_translations.py`. The generator preserves `Navi Live` and formatting placeholders such as `%@`, `%d`, and `%1$@`.
 
 Cross-platform locale coverage can be checked with `python scripts/Validate-NaviLive-Locales.py` from the repository root.
+
+Settings > Backup and restore provides one local restore point and native iOS JSON file export/import through `fileExporter` and `fileImporter`.
+The JSON backup format is shared with Android (`schemaVersion` 1), so a backup can be moved between the two platforms.
+Backup files contain settings and personal navigation data only; cached nearby places, diagnostics, downloaded updates and secrets are excluded.
+Imports validate the app name, schema version, file size and data types. A partial file changes only the fields that it contains.
 
 Russian iOS localization was updated through PR #3 from `Kostenkov-2021/Ru-iOS-localization` and merged on 2026-05-29.
 The PR corrected wording in `Home.strings`, `Navigation.strings`, and `Onboarding.strings`.

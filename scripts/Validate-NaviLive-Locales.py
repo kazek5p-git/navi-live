@@ -59,6 +59,10 @@ STRINGS_LINE = re.compile(
 PLACEHOLDER = re.compile(r'%(?:\d+\$)?[sd@ifu]|%%')
 ANDROID_FALLBACK_PREFIXES = ("assistant_", "format_assistant_")
 IOS_FALLBACK_PREFIXES = ("assistant.",)
+# Backup jest wdrażany etapami. Pozostałe języki korzystają z jawnego fallbacku
+# do angielskiego, zamiast wyświetlać surowy klucz lokalizacji.
+ANDROID_OPTIONAL_FALLBACK_PREFIXES = ("settings_backup_", "status_backup_")
+IOS_OPTIONAL_FALLBACK_PREFIXES = ("settings.backup.", "settings.section.backup")
 RETIRED_IOS_KEYS = frozenset(
     {
         "root.placeholder.onboarding",
@@ -201,7 +205,10 @@ def validate_android(repo: Path, errors: list[str], warnings: list[str]) -> None
             continue
 
         localized_values, _ = android_strings(locale_dir / "strings.xml")
-        missing = sorted(base_keys - set(localized_values))
+        optional_fallback_keys = {
+            key for key in base_keys if key.startswith(ANDROID_OPTIONAL_FALLBACK_PREFIXES)
+        }
+        missing = sorted(base_keys - set(localized_values) - optional_fallback_keys)
         if missing:
             errors.append(f"Android {locale} missing {len(missing)} keys, first: {missing[:5]}")
 
@@ -265,7 +272,10 @@ def validate_ios(repo: Path, errors: list[str], warnings: list[str]) -> None:
                 errors.append(
                     f"iOS {locale}/{base_file.name} contains retired keys: {retired_in_locale}",
                 )
-            missing = sorted(set(base_values) - set(localized_values))
+            optional_fallback_keys = {
+                key for key in base_values if key.startswith(IOS_OPTIONAL_FALLBACK_PREFIXES)
+            }
+            missing = sorted(set(base_values) - set(localized_values) - optional_fallback_keys)
             extra = sorted(set(localized_values) - set(base_values))
             if missing:
                 errors.append(

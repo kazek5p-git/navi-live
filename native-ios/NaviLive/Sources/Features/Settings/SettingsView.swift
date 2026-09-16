@@ -71,6 +71,15 @@ struct SettingsView: View {
         }
 
         NavigationLink {
+          BackupRestoreView(model: model)
+        } label: {
+          SettingsGroupRow(
+            title: L10n.text("settings.section.backup", table: .settings),
+            systemImage: "externaldrive"
+          )
+        }
+
+        NavigationLink {
           HelpPrivacyView()
         } label: {
           SettingsGroupRow(

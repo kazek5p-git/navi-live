@@ -33,6 +33,8 @@ final class AppModel: ObservableObject {
   @Published var isLiveTracking = false
   @Published private(set) var isNavigationActive = false
   @Published var nearbyPOICacheState = NearbyPOICacheState()
+  @Published private(set) var hasLocalRestorePoint = false
+  @Published var backupStatusMessage = ""
 
   let locationService: LocationService
 
@@ -107,6 +109,7 @@ final class AppModel: ObservableObject {
     )
     activeNavigationState = ActiveNavigationState()
     hasCompletedOnboarding = snapshot.hasCompletedOnboarding
+    hasLocalRestorePoint = snapshot.localRestorePointData != nil
     favorites.forEach { knownPlaces[$0.id] = $0 }
     if let lastRoutePlace = snapshot.lastRoutePlace {
       knownPlaces[lastRoutePlace.id] = lastRoutePlace
@@ -952,6 +955,195 @@ final class AppModel: ObservableObject {
 
   func openHelpPrivacy() {
     path.append(.helpPrivacy)
+  }
+
+  func exportedBackupData() throws -> Data {
+    try settingsStore.makeBackupData()
+  }
+
+  func suggestedBackupFileName() -> String {
+    let version = appVersionLabel.replacingOccurrences(
+      of: "[^A-Za-z0-9._-]",
+      with: "_",
+      options: .regularExpression
+    )
+    let build = appBuildLabel.replacingOccurrences(
+      of: "[^A-Za-z0-9._-]",
+      with: "_",
+      options: .regularExpression
+    )
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.dateFormat = "yyyyMMdd-HHmmss"
+    return "Navi-Live-\(version)-build-\(build)-backup-\(formatter.string(from: Date())).json"
+  }
+
+  func onBackupExportFinished(_ result: Result<URL, Error>) {
+    switch result {
+    case .success:
+      setBackupStatus("settings.backup.status.exported", announce: true)
+    case .failure(let error):
+      let nsError = error as NSError
+      if nsError.domain == NSCocoaErrorDomain && nsError.code == NSUserCancelledError {
+        return
+      }
+      setBackupStatus("settings.backup.status.export_failed", announce: false)
+    }
+  }
+
+  func onBackupExportPreparationFailed() {
+    setBackupStatus("settings.backup.status.export_failed", announce: false)
+  }
+
+  func onBackupImportReadFailed() {
+    setBackupStatus("settings.backup.status.import_failed", announce: false)
+  }
+
+  func saveLocalRestorePoint() {
+    do {
+      let data = try exportedBackupData()
+      settingsStore.setLocalRestorePointData(data)
+      hasLocalRestorePoint = true
+      setBackupStatus("settings.backup.status.local_saved", announce: true)
+    } catch {
+      setBackupStatus("settings.backup.status.export_failed", announce: false)
+    }
+  }
+
+  func restoreLocalRestorePoint() {
+    guard let data = settingsStore.localRestorePointData() else {
+      setBackupStatus("settings.backup.status.local_missing", announce: false)
+      return
+    }
+    importBackupData(data, successKey: "settings.backup.status.local_restored")
+  }
+
+  func importBackupData(_ data: Data) {
+    importBackupData(data, successKey: "settings.backup.status.imported")
+  }
+
+  func reportBackupError(_ error: Error) {
+    let nsError = error as NSError
+    if nsError.domain == NSCocoaErrorDomain && nsError.code == NSUserCancelledError {
+      return
+    }
+    if let backupError = error as? NaviLiveBackupError {
+      let key: String
+      switch backupError {
+      case .emptyFile:
+        key = "settings.backup.status.empty_file"
+      case .invalidFile:
+        key = "settings.backup.status.invalid_file"
+      case .noContent:
+        key = "settings.backup.status.no_content"
+      case .newerSchema:
+        key = "settings.backup.status.newer_version"
+      case .unsupportedApp:
+        key = "settings.backup.status.wrong_app"
+      }
+      setBackupStatus(key, announce: false)
+    } else {
+      setBackupStatus("settings.backup.status.import_failed", announce: false)
+    }
+  }
+
+  private func importBackupData(_ data: Data, successKey: String) {
+    do {
+      let payload = try NaviLiveBackupCodec.decodePayload(data)
+      applyBackupPayload(payload, successKey: successKey)
+    } catch {
+      reportBackupError(error)
+    }
+  }
+
+  private func applyBackupPayload(_ payload: NaviLiveBackupPayload, successKey: String) {
+    let nextSettings = payload.settings?.appSettings(merging: settings) ?? settings
+    if payload.settings != nil {
+      settings = nextSettings
+      L10n.selectedLanguageCode = nextSettings.languageCode
+      headingState = headingStateFor(currentHeadingDegrees)
+    }
+
+    let importedFavorites = payload.favorites?.map { $0.place() }
+    if let importedFavorites {
+      favorites = importedFavorites
+      importedFavorites.forEach { knownPlaces[$0.id] = $0 }
+    }
+
+    var persistedRoute: NaviLiveBackupRoute?
+    if let incomingRoute = payload.lastRoute {
+      let incomingPlaceID = incomingRoute.placeID?.trimmingCharacters(in: .whitespacesAndNewlines)
+      let importedRoutePlace = incomingRoute.place?.place()
+      var routePlace: Place?
+      if let importedRoutePlace,
+         incomingPlaceID == nil || incomingPlaceID == importedRoutePlace.id {
+        routePlace = importedRoutePlace
+      } else if let incomingPlaceID {
+        routePlace = knownPlaces[incomingPlaceID]
+      }
+      let routeSummary: RouteSummary?
+      if incomingPlaceID == nil || incomingPlaceID == routePlace?.id {
+        routeSummary = incomingRoute.summary
+      } else {
+        routeSummary = nil
+      }
+
+      lastRoutePlaceID = routePlace?.id ?? incomingPlaceID
+      selectedRouteSummary = routeSummary
+      isNavigationLive = false
+      isNavigationActive = false
+      resetSpeechQueue(stopCurrentSpeech: true)
+      resetCountdownAnnouncementState()
+      lastImmediateAnnouncementStepIndex = -1
+      liveNavigationEngine.reset()
+
+      if let routePlace, let routeSummary {
+        knownPlaces[routePlace.id] = routePlace
+        routeInitialBearingDegrees = RouteProjectionCore.initialBearingDegrees(
+          pathPoints: routeSummary.pathPoints
+        )
+        activeNavigationState = liveNavigationEngine.loadRoute(
+          destination: routePlace,
+          summary: routeSummary,
+          fix: locationService.latestFix
+        )
+        persistedRoute = NaviLiveBackupRoute(
+          placeID: routePlace.id,
+          place: NaviLiveBackupPlace(place: routePlace),
+          summary: routeSummary
+        )
+      } else {
+        routeInitialBearingDegrees = nil
+        activeNavigationState = ActiveNavigationState()
+        persistedRoute = NaviLiveBackupRoute(
+          placeID: lastRoutePlaceID,
+          place: routePlace.map { NaviLiveBackupPlace(place: $0) },
+          summary: nil
+        )
+      }
+    }
+
+    if let importedOnboardingState = payload.hasCompletedOnboarding {
+      hasCompletedOnboarding = importedOnboardingState
+    }
+
+    settingsStore.restoreBackup(
+      settings: payload.settings == nil ? nil : nextSettings,
+      favorites: importedFavorites,
+      lastRoute: persistedRoute,
+      includesLastRoute: payload.lastRoute != nil,
+      hasCompletedOnboarding: payload.hasCompletedOnboarding
+    )
+    setBackupStatus(successKey, announce: true)
+  }
+
+  private func setBackupStatus(_ key: String, announce: Bool) {
+    let message = L10n.text(key, table: .settings)
+    backupStatusMessage = message
+    statusMessage = message
+    if announce {
+      announceSuccess(message: message)
+    }
   }
 
   func updateLanguageCode(_ code: String) {

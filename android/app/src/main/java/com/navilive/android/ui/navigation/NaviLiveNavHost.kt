@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
@@ -32,6 +33,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -40,6 +44,7 @@ import androidx.navigation.navArgument
 import com.navilive.android.R
 import com.navilive.android.data.location.HeadingTracker
 import com.navilive.android.data.location.LocationForegroundService
+import com.navilive.android.data.preferences.NaviLiveBackupCodec
 import com.navilive.android.model.AppUpdatePhase
 import com.navilive.android.model.ShakeStrength
 import com.navilive.android.ui.NaviLiveViewModel
@@ -63,7 +68,10 @@ import com.navilive.android.ui.screens.SettingsScreen
 import com.navilive.android.ui.screens.StartScreen
 import com.navilive.android.ui.screens.TutorialScreen
 import com.navilive.android.ui.theme.NaviLiveTheme
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.InputStream
+import java.nio.charset.StandardCharsets
 import kotlin.math.abs
 import kotlin.math.sqrt
 
@@ -121,6 +129,64 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
                 }
             }
         }
+    }
+
+    val backupScope = rememberCoroutineScope()
+    var pendingBackupJson by remember { mutableStateOf<String?>(null) }
+    val exportBackupLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json"),
+    ) { uri ->
+        val json = pendingBackupJson
+        pendingBackupJson = null
+        if (uri == null || json == null) return@rememberLauncherForActivityResult
+
+        backupScope.launch(Dispatchers.IO) {
+            val success = runCatching {
+                val output = context.contentResolver.openOutputStream(uri)
+                    ?: error("Nie można otworzyć pliku backupu do zapisu.")
+                output.use { stream ->
+                    stream.write(json.toByteArray(StandardCharsets.UTF_8))
+                }
+            }.isSuccess
+            withContext(Dispatchers.Main.immediate) {
+                viewModel.onBackupExportFinished(success)
+            }
+        }
+    }
+    val importBackupLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+
+        backupScope.launch(Dispatchers.IO) {
+            val raw = runCatching {
+                val input = context.contentResolver.openInputStream(uri)
+                    ?: error("Nie można otworzyć wybranego pliku backupu.")
+                input.use {
+                    readUtf8UpToLimit(it, NaviLiveBackupCodec.MaxBackupBytes)
+                }
+            }.getOrNull()
+            withContext(Dispatchers.Main.immediate) {
+                if (raw == null) {
+                    viewModel.onBackupImportReadFailed()
+                } else {
+                    viewModel.importBackupJson(raw)
+                }
+            }
+        }
+    }
+
+    val exportBackup: () -> Unit = {
+        runCatching {
+            pendingBackupJson = viewModel.exportedBackupJson()
+            exportBackupLauncher.launch(viewModel.suggestedBackupFileName())
+        }.onFailure {
+            pendingBackupJson = null
+            viewModel.onBackupExportPreparationFailed()
+        }
+    }
+    val importBackup: () -> Unit = {
+        importBackupLauncher.launch(arrayOf("application/json", "text/plain"))
     }
 
     LaunchedEffect(hasLocationPermission) {
@@ -637,6 +703,12 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
                 onOpenProjectRepository = {
                     openExternalUrl(context, ProjectRepositoryUrl)
                 },
+                hasLocalRestorePoint = uiState.value.hasLocalRestorePoint,
+                backupStatusMessage = uiState.value.backupStatusMessage,
+                onSaveLocalRestorePoint = viewModel::saveLocalRestorePoint,
+                onRestoreLocalRestorePoint = viewModel::restoreLocalRestorePoint,
+                onExportBackup = exportBackup,
+                onImportBackup = importBackup,
                 onExportDiagnostics = viewModel::exportDiagnostics,
                 onClearDiagnostics = viewModel::clearDiagnostics,
                 onShareDiagnostics = uiState.value.diagnosticsState.lastExportPath?.let { exportPath ->
@@ -666,6 +738,24 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
     }
 }
 }
+
+private fun readUtf8UpToLimit(input: InputStream, maxBytes: Int): String {
+    val buffer = ByteArray(DEFAULT_BACKUP_READ_BUFFER_SIZE)
+    val output = ByteArrayOutputStream(minOf(maxBytes, DEFAULT_BACKUP_READ_BUFFER_SIZE))
+    var totalBytes = 0
+    while (true) {
+        val read = input.read(buffer)
+        if (read < 0) break
+        if (read > maxBytes - totalBytes) {
+            throw IllegalArgumentException("Plik backupu jest za duży.")
+        }
+        output.write(buffer, 0, read)
+        totalBytes += read
+    }
+    return String(output.toByteArray(), StandardCharsets.UTF_8)
+}
+
+private const val DEFAULT_BACKUP_READ_BUFFER_SIZE = 8 * 1024
 
 private fun closeApp(context: Context) {
     context.findActivity()?.let { activity ->
