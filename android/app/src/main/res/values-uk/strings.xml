@@ -531,4 +531,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Кроків маршруту без повних даних про маневр: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Близьких пар поворотів у протилежних напрямках: %1$d.</string>
     <string name="heading_instruction_rotate_left">Поверніть телефон трохи ліворуч, доки він не буде спрямований уздовж маршруту.</string>
+    <string name="settings_group_view_title">Вигляд</string>
+    <string name="settings_view_theme_title">Тема інтерфейсу</string>
+    <string name="settings_view_theme_system">Використовувати налаштування телефону</string>
+    <string name="settings_view_theme_light">Світла</string>
+    <string name="settings_view_theme_dark">Темна</string>
+    <string name="settings_view_theme_high_contrast">Висока контрастність</string>
+    <string name="settings_view_theme_custom">Власна</string>
+    <string name="settings_view_preview_title">Попередній перегляд</string>
+    <string name="settings_view_custom_colors_title">Власні кольори</string>
+    <string name="settings_view_background_color">Колір тла</string>
+    <string name="settings_view_surface_color">Колір карток</string>
+    <string name="settings_view_primary_text_color">Колір основного тексту</string>
+    <string name="settings_view_secondary_text_color">Колір другорядного тексту</string>
+    <string name="settings_view_accent_color">Колір акценту</string>
+    <string name="settings_view_outline_color">Колір рамки</string>
+    <string name="settings_view_hex_hint">Використовуйте колір HEX, наприклад #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Введіть дійсний колір HEX.</string>
+    <string name="settings_view_reset_button">Відновити власні кольори</string>
 </resources>

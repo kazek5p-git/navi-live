@@ -192,6 +192,7 @@
 
     <string name="settings_title">Settings</string>
     <string name="settings_group_guidance_title">Guidance and route</string>
+    <string name="settings_group_view_title">View</string>
     <string name="settings_group_local_search_title">Local search</string>
     <string name="settings_group_sounds_title">Sounds</string>
     <string name="settings_group_speech_title">Speech and voice</string>
@@ -205,6 +206,23 @@
     <string name="settings_language_system_default">Use phone language</string>
     <string name="settings_language_detected_label">Detected from phone</string>
     <string name="settings_language_changed">App language updated.</string>
+    <string name="settings_view_theme_title">Interface theme</string>
+    <string name="settings_view_theme_system">Use phone settings</string>
+    <string name="settings_view_theme_light">Light</string>
+    <string name="settings_view_theme_dark">Dark</string>
+    <string name="settings_view_theme_high_contrast">High contrast</string>
+    <string name="settings_view_theme_custom">Custom</string>
+    <string name="settings_view_preview_title">Preview</string>
+    <string name="settings_view_custom_colors_title">Custom colors</string>
+    <string name="settings_view_background_color">Background color</string>
+    <string name="settings_view_surface_color">Card color</string>
+    <string name="settings_view_primary_text_color">Primary text color</string>
+    <string name="settings_view_secondary_text_color">Secondary text color</string>
+    <string name="settings_view_accent_color">Accent color</string>
+    <string name="settings_view_outline_color">Border color</string>
+    <string name="settings_view_hex_hint">Use a HEX color, for example #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Enter a valid HEX color.</string>
+    <string name="settings_view_reset_button">Reset custom colors</string>
     <string name="settings_voice_title">Voice announcements</string>
     <string name="settings_announcement_cadence_title">Announcement cadence</string>
     <string name="settings_announcement_cadence_distance_title">Distance based</string>

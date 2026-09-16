@@ -15,6 +15,8 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.navilive.android.model.AnnouncementCadenceMode
 import com.navilive.android.model.GeoPoint
+import com.navilive.android.model.InterfaceTheme
+import com.navilive.android.model.InterfaceThemeColors
 import com.navilive.android.model.NearbyPoiCacheMode
 import com.navilive.android.model.Place
 import com.navilive.android.model.RouteSummary
@@ -124,6 +126,23 @@ class NaviLivePreferencesStore(
     suspend fun setLanguage(language: String) {
         context.naviLiveDataStore.edit { prefs ->
             prefs[Keys.Language] = language
+        }
+    }
+
+    suspend fun setInterfaceTheme(theme: InterfaceTheme) {
+        context.naviLiveDataStore.edit { prefs ->
+            prefs[Keys.InterfaceTheme] = theme.storageValue
+        }
+    }
+
+    suspend fun setCustomThemeColors(colors: InterfaceThemeColors) {
+        context.naviLiveDataStore.edit { prefs ->
+            prefs[Keys.CustomThemeBackgroundHex] = colors.backgroundHex
+            prefs[Keys.CustomThemeSurfaceHex] = colors.surfaceHex
+            prefs[Keys.CustomThemePrimaryTextHex] = colors.primaryTextHex
+            prefs[Keys.CustomThemeSecondaryTextHex] = colors.secondaryTextHex
+            prefs[Keys.CustomThemeAccentHex] = colors.accentHex
+            prefs[Keys.CustomThemeOutlineHex] = colors.outlineHex
         }
     }
 
@@ -305,6 +324,21 @@ class NaviLivePreferencesStore(
             hasCompletedOnboarding = preferences[Keys.HasCompletedOnboarding] ?: false,
             settingsState = SettingsState(
                 language = preferences[Keys.Language] ?: SettingsState().language,
+                interfaceTheme = InterfaceTheme.fromStorageValue(preferences[Keys.InterfaceTheme]),
+                customThemeColors = InterfaceThemeColors(
+                    backgroundHex = preferences[Keys.CustomThemeBackgroundHex]
+                        ?: SettingsState().customThemeColors.backgroundHex,
+                    surfaceHex = preferences[Keys.CustomThemeSurfaceHex]
+                        ?: SettingsState().customThemeColors.surfaceHex,
+                    primaryTextHex = preferences[Keys.CustomThemePrimaryTextHex]
+                        ?: SettingsState().customThemeColors.primaryTextHex,
+                    secondaryTextHex = preferences[Keys.CustomThemeSecondaryTextHex]
+                        ?: SettingsState().customThemeColors.secondaryTextHex,
+                    accentHex = preferences[Keys.CustomThemeAccentHex]
+                        ?: SettingsState().customThemeColors.accentHex,
+                    outlineHex = preferences[Keys.CustomThemeOutlineHex]
+                        ?: SettingsState().customThemeColors.outlineHex,
+                ),
                 showTutorialOnStartup = preferences[Keys.ShowTutorialOnStartup]
                     ?: SettingsState().showTutorialOnStartup,
                 vibrationEnabled = preferences[Keys.VibrationEnabled] ?: SettingsState().vibrationEnabled,
@@ -369,6 +403,13 @@ class NaviLivePreferencesStore(
         val LastRouteSummaryJson = stringPreferencesKey("last_route_summary_json")
         val HasCompletedOnboarding = booleanPreferencesKey("has_completed_onboarding")
         val Language = stringPreferencesKey("language")
+        val InterfaceTheme = stringPreferencesKey("interface_theme")
+        val CustomThemeBackgroundHex = stringPreferencesKey("custom_theme_background_hex")
+        val CustomThemeSurfaceHex = stringPreferencesKey("custom_theme_surface_hex")
+        val CustomThemePrimaryTextHex = stringPreferencesKey("custom_theme_primary_text_hex")
+        val CustomThemeSecondaryTextHex = stringPreferencesKey("custom_theme_secondary_text_hex")
+        val CustomThemeAccentHex = stringPreferencesKey("custom_theme_accent_hex")
+        val CustomThemeOutlineHex = stringPreferencesKey("custom_theme_outline_hex")
         val ShowTutorialOnStartup = booleanPreferencesKey("show_tutorial_on_startup")
         val VibrationEnabled = booleanPreferencesKey("vibration_enabled")
         val ShakeGestureEnabled = booleanPreferencesKey("shake_gesture_enabled")

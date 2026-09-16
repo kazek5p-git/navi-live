@@ -127,6 +127,30 @@ enum class SoundCueTheme(val storageValue: String) {
     }
 }
 
+enum class InterfaceTheme(val storageValue: String) {
+    System("system"),
+    Light("light"),
+    Dark("dark"),
+    HighContrast("high_contrast"),
+    Custom("custom"),
+    ;
+
+    companion object {
+        fun fromStorageValue(value: String?): InterfaceTheme {
+            return entries.firstOrNull { it.storageValue == value } ?: System
+        }
+    }
+}
+
+data class InterfaceThemeColors(
+    val backgroundHex: String = "#F5F9FF",
+    val surfaceHex: String = "#FFFFFF",
+    val primaryTextHex: String = "#101418",
+    val secondaryTextHex: String = "#40464E",
+    val accentHex: String = "#065EA8",
+    val outlineHex: String = "#9AA8B8",
+)
+
 enum class NearbyPoiCacheMode(val storageValue: String) {
     Enabled("enabled"),
     WifiOnly("wifi_only"),
@@ -163,6 +187,8 @@ data class SystemTtsEngineOption(
 
 data class SettingsState(
     val language: String = "",
+    val interfaceTheme: InterfaceTheme = InterfaceTheme.System,
+    val customThemeColors: InterfaceThemeColors = InterfaceThemeColors(),
     val showTutorialOnStartup: Boolean = false,
     val vibrationEnabled: Boolean = true,
     val shakeGestureEnabled: Boolean = true,

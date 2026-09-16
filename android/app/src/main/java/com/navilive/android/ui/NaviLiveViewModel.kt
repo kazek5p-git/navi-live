@@ -31,6 +31,8 @@ import com.navilive.android.model.AppUpdatePhase
 import com.navilive.android.model.AppUpdateState
 import com.navilive.android.model.GeoPoint
 import com.navilive.android.model.HeadingState
+import com.navilive.android.model.InterfaceTheme
+import com.navilive.android.model.InterfaceThemeColors
 import com.navilive.android.model.LocationFix
 import com.navilive.android.model.NaviLiveUiState
 import com.navilive.android.model.NearbyPoiCacheMode
@@ -1675,6 +1677,30 @@ class NaviLiveViewModel(application: Application) : AndroidViewModel(application
         }
         viewModelScope.launch {
             preferencesStore.setLanguage(normalized)
+        }
+    }
+
+    fun setInterfaceTheme(theme: InterfaceTheme) {
+        _uiState.update { current ->
+            current.copy(settingsState = current.settingsState.copy(interfaceTheme = theme))
+        }
+        viewModelScope.launch {
+            preferencesStore.setInterfaceTheme(theme)
+        }
+    }
+
+    fun setCustomThemeColors(colors: InterfaceThemeColors) {
+        _uiState.update { current ->
+            current.copy(
+                settingsState = current.settingsState.copy(
+                    interfaceTheme = InterfaceTheme.Custom,
+                    customThemeColors = colors,
+                ),
+            )
+        }
+        viewModelScope.launch {
+            preferencesStore.setCustomThemeColors(colors)
+            preferencesStore.setInterfaceTheme(InterfaceTheme.Custom)
         }
     }
 

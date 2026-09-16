@@ -519,4 +519,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Maneiobra xehetasunik gabeko ibilbide-urratsak: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Aurkako norabideak adierazten dituzten hurbileko bira-pareak: %1$d.</string>
     <string name="heading_instruction_rotate_left">Biratu pixka bat ezkerrera ibilbidearekin lerrokatzeko.</string>
+    <string name="settings_group_view_title">Ikuspegia</string>
+    <string name="settings_view_theme_title">Interfazearen gaia</string>
+    <string name="settings_view_theme_system">Erabili telefonoaren ezarpenak</string>
+    <string name="settings_view_theme_light">Argia</string>
+    <string name="settings_view_theme_dark">Iluna</string>
+    <string name="settings_view_theme_high_contrast">Kontraste handia</string>
+    <string name="settings_view_theme_custom">Pertsonalizatua</string>
+    <string name="settings_view_preview_title">Aurrebista</string>
+    <string name="settings_view_custom_colors_title">Kolore pertsonalizatuak</string>
+    <string name="settings_view_background_color">Atzeko planoaren kolorea</string>
+    <string name="settings_view_surface_color">Txartelen kolorea</string>
+    <string name="settings_view_primary_text_color">Testu nagusiaren kolorea</string>
+    <string name="settings_view_secondary_text_color">Bigarren mailako testuaren kolorea</string>
+    <string name="settings_view_accent_color">Azentu-kolorea</string>
+    <string name="settings_view_outline_color">Ertzaren kolorea</string>
+    <string name="settings_view_hex_hint">Erabili HEX kolore bat, adibidez #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Sartu baliozko HEX kolore bat.</string>
+    <string name="settings_view_reset_button">Berrezarri kolore pertsonalizatuak</string>
 </resources>

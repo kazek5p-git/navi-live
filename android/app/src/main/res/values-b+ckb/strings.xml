@@ -519,4 +519,22 @@
     <string name="assistant_quality_issue_missing_maneuver">هەنگاوەکانی ڕێگا کە وردەکاریی سووڕانەوەیان نییە: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">ژمارەی جووتە سووڕانەوە نزیکەکان بە ئاراستەی پێچەوانە: %1$d.</string>
     <string name="heading_instruction_rotate_left">تەلەفۆنەکە کەمێک بۆ چەپ بسوڕێنەوە تا بە ئاراستەی ڕێگاکە بێت.</string>
+    <string name="settings_group_view_title">بینین</string>
+    <string name="settings_view_theme_title">ڕووکاری بەکارهێنەر</string>
+    <string name="settings_view_theme_system">بەکارهێنانی ڕێکخستنەکانی تەلەفۆن</string>
+    <string name="settings_view_theme_light">ڕوون</string>
+    <string name="settings_view_theme_dark">تاریک</string>
+    <string name="settings_view_theme_high_contrast">کۆنتراستی بەرز</string>
+    <string name="settings_view_theme_custom">تایبەت</string>
+    <string name="settings_view_preview_title">پێشبینین</string>
+    <string name="settings_view_custom_colors_title">ڕەنگە تایبەتەکان</string>
+    <string name="settings_view_background_color">ڕەنگی پاشبنەما</string>
+    <string name="settings_view_surface_color">ڕەنگی کارت</string>
+    <string name="settings_view_primary_text_color">ڕەنگی دەقی سەرەکی</string>
+    <string name="settings_view_secondary_text_color">ڕەنگی دەقی لاوەکی</string>
+    <string name="settings_view_accent_color">ڕەنگی جەختکردنەوە</string>
+    <string name="settings_view_outline_color">ڕەنگی سنوور</string>
+    <string name="settings_view_hex_hint">ڕەنگی HEX بەکاربهێنە، بۆ نموونە #RRGGBB.</string>
+    <string name="settings_view_invalid_color">ڕەنگێکی دروستی HEX بنووسە.</string>
+    <string name="settings_view_reset_button">ڕەنگە تایبەتەکان بگەڕێنەوە</string>
 </resources>

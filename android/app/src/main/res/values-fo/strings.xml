@@ -519,4 +519,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Rutustig uttan upplýsingar um manøvruna: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Nær liggjandi pør av snaringum í mótsettum ættum: %1$d.</string>
     <string name="heading_instruction_rotate_left">Snara eitt sindur til vinstru fyri at stilla teg eftir rutuni.</string>
+    <string name="settings_group_view_title">Útsjónd</string>
+    <string name="settings_view_theme_title">Snið á brúkaraflatu</string>
+    <string name="settings_view_theme_system">Brúka telefonstillingar</string>
+    <string name="settings_view_theme_light">Ljóst</string>
+    <string name="settings_view_theme_dark">Myrkt</string>
+    <string name="settings_view_theme_high_contrast">Høgur kontrastur</string>
+    <string name="settings_view_theme_custom">Tillagað</string>
+    <string name="settings_view_preview_title">Forsýning</string>
+    <string name="settings_view_custom_colors_title">Tillagaðir litir</string>
+    <string name="settings_view_background_color">Bakgrundarlitur</string>
+    <string name="settings_view_surface_color">Litur á kortum</string>
+    <string name="settings_view_primary_text_color">Litur á høvuðsteksti</string>
+    <string name="settings_view_secondary_text_color">Litur á undirteksti</string>
+    <string name="settings_view_accent_color">Áherðslulitur</string>
+    <string name="settings_view_outline_color">Rammlitur</string>
+    <string name="settings_view_hex_hint">Brúka ein HEX-litur, til dømis #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Skriva ein gildugan HEX-litur.</string>
+    <string name="settings_view_reset_button">Endurset tillagaðar litir</string>
 </resources>

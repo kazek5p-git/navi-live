@@ -964,6 +964,20 @@ final class AppModel: ObservableObject {
     statusMessage = L10n.text("settings.language.updated", table: .settings)
   }
 
+  func updateInterfaceTheme(_ theme: InterfaceTheme) {
+    settings.interfaceTheme = theme
+    settingsStore.updateSettings { $0.interfaceTheme = theme }
+  }
+
+  func updateCustomInterfaceThemeColors(_ colors: InterfaceThemeColors) {
+    settings.customInterfaceThemeColors = colors
+    settings.interfaceTheme = .custom
+    settingsStore.updateSettings {
+      $0.customInterfaceThemeColors = colors
+      $0.interfaceTheme = .custom
+    }
+  }
+
   func updateShowTutorialOnLaunch(_ enabled: Bool) {
     settings.showTutorialOnLaunch = enabled
     settingsStore.updateSettings { $0.showTutorialOnLaunch = enabled }

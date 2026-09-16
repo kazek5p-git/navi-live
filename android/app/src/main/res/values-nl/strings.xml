@@ -519,4 +519,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Route-stappen zonder manoeuvregegevens: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Dicht bij elkaar gelegen afslagparen in tegengestelde richtingen: %1$d.</string>
     <string name="heading_instruction_rotate_left">Draai iets naar links om je op de route uit te lijnen.</string>
+    <string name="settings_group_view_title">Weergave</string>
+    <string name="settings_view_theme_title">Interfacethema</string>
+    <string name="settings_view_theme_system">Telefooninstellingen gebruiken</string>
+    <string name="settings_view_theme_light">Licht</string>
+    <string name="settings_view_theme_dark">Donker</string>
+    <string name="settings_view_theme_high_contrast">Hoog contrast</string>
+    <string name="settings_view_theme_custom">Aangepast</string>
+    <string name="settings_view_preview_title">Voorbeeld</string>
+    <string name="settings_view_custom_colors_title">Aangepaste kleuren</string>
+    <string name="settings_view_background_color">Achtergrondkleur</string>
+    <string name="settings_view_surface_color">Kleur van kaarten</string>
+    <string name="settings_view_primary_text_color">Kleur van hoofdtekst</string>
+    <string name="settings_view_secondary_text_color">Kleur van secundaire tekst</string>
+    <string name="settings_view_accent_color">Accentkleur</string>
+    <string name="settings_view_outline_color">Randkleur</string>
+    <string name="settings_view_hex_hint">Gebruik een HEX-kleur, bijvoorbeeld #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Voer een geldige HEX-kleur in.</string>
+    <string name="settings_view_reset_button">Aangepaste kleuren herstellen</string>
 </resources>

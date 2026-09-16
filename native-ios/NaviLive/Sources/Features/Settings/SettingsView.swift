@@ -26,6 +26,15 @@ struct SettingsView: View {
         }
 
         NavigationLink {
+          InterfaceThemeSettingsView(model: model)
+        } label: {
+          SettingsGroupRow(
+            title: L10n.text("settings.section.view", table: .settings),
+            systemImage: "eye"
+          )
+        }
+
+        NavigationLink {
           SoundSettingsDetailView(model: model)
         } label: {
           SettingsGroupRow(

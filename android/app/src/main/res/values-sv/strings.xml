@@ -519,4 +519,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Ruttsteg som saknar manöverinformation: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Närliggande svängpar i motsatta riktningar: %1$d.</string>
     <string name="heading_instruction_rotate_left">Vrid dig lite åt vänster för att rikta in dig efter rutten.</string>
+    <string name="settings_group_view_title">Visning</string>
+    <string name="settings_view_theme_title">Gränssnittstema</string>
+    <string name="settings_view_theme_system">Använd telefonens inställningar</string>
+    <string name="settings_view_theme_light">Ljust</string>
+    <string name="settings_view_theme_dark">Mörkt</string>
+    <string name="settings_view_theme_high_contrast">Hög kontrast</string>
+    <string name="settings_view_theme_custom">Anpassat</string>
+    <string name="settings_view_preview_title">Förhandsvisning</string>
+    <string name="settings_view_custom_colors_title">Anpassade färger</string>
+    <string name="settings_view_background_color">Bakgrundsfärg</string>
+    <string name="settings_view_surface_color">Kortfärg</string>
+    <string name="settings_view_primary_text_color">Färg på huvudtext</string>
+    <string name="settings_view_secondary_text_color">Färg på sekundärtext</string>
+    <string name="settings_view_accent_color">Accentfärg</string>
+    <string name="settings_view_outline_color">Kantfärg</string>
+    <string name="settings_view_hex_hint">Använd en HEX-färg, till exempel #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Ange en giltig HEX-färg.</string>
+    <string name="settings_view_reset_button">Återställ anpassade färger</string>
 </resources>

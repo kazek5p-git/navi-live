@@ -527,4 +527,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Étapes de l\'itinéraire sans détails complets sur la manœuvre : %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Paires de virages proches dans des directions opposées : %1$d.</string>
     <string name="heading_instruction_rotate_left">Tournez légèrement le téléphone vers la gauche jusqu’à ce qu’il pointe dans la direction de l’itinéraire.</string>
+    <string name="settings_group_view_title">Affichage</string>
+    <string name="settings_view_theme_title">Thème de l’interface</string>
+    <string name="settings_view_theme_system">Utiliser les réglages du téléphone</string>
+    <string name="settings_view_theme_light">Clair</string>
+    <string name="settings_view_theme_dark">Sombre</string>
+    <string name="settings_view_theme_high_contrast">Contraste élevé</string>
+    <string name="settings_view_theme_custom">Personnalisé</string>
+    <string name="settings_view_preview_title">Aperçu</string>
+    <string name="settings_view_custom_colors_title">Couleurs personnalisées</string>
+    <string name="settings_view_background_color">Couleur d’arrière-plan</string>
+    <string name="settings_view_surface_color">Couleur des cartes</string>
+    <string name="settings_view_primary_text_color">Couleur du texte principal</string>
+    <string name="settings_view_secondary_text_color">Couleur du texte secondaire</string>
+    <string name="settings_view_accent_color">Couleur d’accentuation</string>
+    <string name="settings_view_outline_color">Couleur de la bordure</string>
+    <string name="settings_view_hex_hint">Utilisez une couleur HEX, par exemple #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Saisissez une couleur HEX valide.</string>
+    <string name="settings_view_reset_button">Réinitialiser les couleurs personnalisées</string>
 </resources>

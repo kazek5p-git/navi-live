@@ -519,4 +519,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Routeschrëtt ouni Manöverdetailer: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Nopesch Puer vun Ofbéien a géigesäitege Richtungen: %1$d.</string>
     <string name="heading_instruction_rotate_left">Dréit e bëssen no lénks, fir Iech un d\'Route unzepassen.</string>
+    <string name="settings_group_view_title">Usiicht</string>
+    <string name="settings_view_theme_title">Interface-Thema</string>
+    <string name="settings_view_theme_system">Telefonastellunge benotzen</string>
+    <string name="settings_view_theme_light">Hell</string>
+    <string name="settings_view_theme_dark">Däischter</string>
+    <string name="settings_view_theme_high_contrast">Héije Kontrast</string>
+    <string name="settings_view_theme_custom">Benotzerdefinéiert</string>
+    <string name="settings_view_preview_title">Virschau</string>
+    <string name="settings_view_custom_colors_title">Benotzerdefinéiert Faarwen</string>
+    <string name="settings_view_background_color">Hannergrondfaarf</string>
+    <string name="settings_view_surface_color">Faarf vun de Kaarten</string>
+    <string name="settings_view_primary_text_color">Faarf vum Haapttext</string>
+    <string name="settings_view_secondary_text_color">Faarf vum sekundären Text</string>
+    <string name="settings_view_accent_color">Akzentfaarf</string>
+    <string name="settings_view_outline_color">Rummfaarf</string>
+    <string name="settings_view_hex_hint">Benotzt eng HEX-Faarf, zum Beispill #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Gitt eng valabel HEX-Faarf an.</string>
+    <string name="settings_view_reset_button">Benotzerdefinéiert Faarwen zrécksetzen</string>
 </resources>

@@ -519,4 +519,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Reittivaiheista puuttuvat käännöksen tiedot: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Lähekkäisiä vastakkaisiin suuntiin osoittavia käännösparia: %1$d.</string>
     <string name="heading_instruction_rotate_left">Käännä puhelinta hieman vasemmalle, kunnes se osoittaa reitin suuntaan.</string>
+    <string name="settings_group_view_title">Näkymä</string>
+    <string name="settings_view_theme_title">Käyttöliittymän teema</string>
+    <string name="settings_view_theme_system">Käytä puhelimen asetuksia</string>
+    <string name="settings_view_theme_light">Vaalea</string>
+    <string name="settings_view_theme_dark">Tumma</string>
+    <string name="settings_view_theme_high_contrast">Suuri kontrasti</string>
+    <string name="settings_view_theme_custom">Mukautettu</string>
+    <string name="settings_view_preview_title">Esikatselu</string>
+    <string name="settings_view_custom_colors_title">Mukautetut värit</string>
+    <string name="settings_view_background_color">Taustaväri</string>
+    <string name="settings_view_surface_color">Korttien väri</string>
+    <string name="settings_view_primary_text_color">Päätekstin väri</string>
+    <string name="settings_view_secondary_text_color">Toissijaisen tekstin väri</string>
+    <string name="settings_view_accent_color">Korostusväri</string>
+    <string name="settings_view_outline_color">Reunuksen väri</string>
+    <string name="settings_view_hex_hint">Käytä HEX-väriä, esimerkiksi #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Anna kelvollinen HEX-väri.</string>
+    <string name="settings_view_reset_button">Palauta mukautetut värit</string>
 </resources>

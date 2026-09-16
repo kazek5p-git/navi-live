@@ -519,4 +519,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Rutetrin uden manøvredetaljer: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Nære par af sving i modsatte retninger: %1$d.</string>
     <string name="heading_instruction_rotate_left">Drej lidt til venstre for at rette dig ind efter ruten.</string>
+    <string name="settings_group_view_title">Visning</string>
+    <string name="settings_view_theme_title">Grænsefladetema</string>
+    <string name="settings_view_theme_system">Brug telefonens indstillinger</string>
+    <string name="settings_view_theme_light">Lys</string>
+    <string name="settings_view_theme_dark">Mørk</string>
+    <string name="settings_view_theme_high_contrast">Høj kontrast</string>
+    <string name="settings_view_theme_custom">Brugerdefineret</string>
+    <string name="settings_view_preview_title">Forhåndsvisning</string>
+    <string name="settings_view_custom_colors_title">Brugerdefinerede farver</string>
+    <string name="settings_view_background_color">Baggrundsfarve</string>
+    <string name="settings_view_surface_color">Kortfarve</string>
+    <string name="settings_view_primary_text_color">Farve på primær tekst</string>
+    <string name="settings_view_secondary_text_color">Farve på sekundær tekst</string>
+    <string name="settings_view_accent_color">Accentfarve</string>
+    <string name="settings_view_outline_color">Kantfarve</string>
+    <string name="settings_view_hex_hint">Brug en HEX-farve, f.eks. #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Indtast en gyldig HEX-farve.</string>
+    <string name="settings_view_reset_button">Nulstil brugerdefinerede farver</string>
 </resources>

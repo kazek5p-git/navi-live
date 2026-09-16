@@ -537,4 +537,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Céimeanna bealaigh nach bhfuil sonraí ainlithe iontu: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Beirteanna casadh cóngaracha i dtreonna contrártha: %1$d.</string>
     <string name="heading_instruction_rotate_left">Cas beagán ar chlé chun ailíniú leis an mbealach.</string>
+    <string name="settings_group_view_title">Amharc</string>
+    <string name="settings_view_theme_title">Téama an chomhéadain</string>
+    <string name="settings_view_theme_system">Úsáid socruithe an fhóin</string>
+    <string name="settings_view_theme_light">Geal</string>
+    <string name="settings_view_theme_dark">Dorcha</string>
+    <string name="settings_view_theme_high_contrast">Ardchodarsnacht</string>
+    <string name="settings_view_theme_custom">Saincheaptha</string>
+    <string name="settings_view_preview_title">Réamhamharc</string>
+    <string name="settings_view_custom_colors_title">Dathanna saincheaptha</string>
+    <string name="settings_view_background_color">Dath an chúlra</string>
+    <string name="settings_view_surface_color">Dath na gcártaí</string>
+    <string name="settings_view_primary_text_color">Dath an phríomhthéacs</string>
+    <string name="settings_view_secondary_text_color">Dath an téacs thánaistigh</string>
+    <string name="settings_view_accent_color">Dath an accent</string>
+    <string name="settings_view_outline_color">Dath na teorann</string>
+    <string name="settings_view_hex_hint">Úsáid dath HEX, mar shampla #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Cuir dath HEX bailí isteach.</string>
+    <string name="settings_view_reset_button">Athshocraigh dathanna saincheaptha</string>
 </resources>

@@ -533,4 +533,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Крокаў маршруту без поўных звестак пра манеўр: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Блізкіх пар паваротаў у супрацьлеглых напрамках: %1$d.</string>
     <string name="heading_instruction_rotate_left">Павярніце тэлефон крыху налева, пакуль ён не будзе накіраваны ўздоўж маршруту.</string>
+    <string name="settings_group_view_title">Выгляд</string>
+    <string name="settings_view_theme_title">Тэма інтэрфейсу</string>
+    <string name="settings_view_theme_system">Выкарыстоўваць налады тэлефона</string>
+    <string name="settings_view_theme_light">Светлая</string>
+    <string name="settings_view_theme_dark">Цёмная</string>
+    <string name="settings_view_theme_high_contrast">Высокая кантраснасць</string>
+    <string name="settings_view_theme_custom">Карыстальніцкая</string>
+    <string name="settings_view_preview_title">Папярэдні прагляд</string>
+    <string name="settings_view_custom_colors_title">Карыстальніцкія колеры</string>
+    <string name="settings_view_background_color">Колер фону</string>
+    <string name="settings_view_surface_color">Колер картак</string>
+    <string name="settings_view_primary_text_color">Колер асноўнага тэксту</string>
+    <string name="settings_view_secondary_text_color">Колер другаснага тэксту</string>
+    <string name="settings_view_accent_color">Колер акцэнту</string>
+    <string name="settings_view_outline_color">Колер межаў</string>
+    <string name="settings_view_hex_hint">Выкарыстоўвайце колер HEX, напрыклад #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Увядзіце дапушчальны колер HEX.</string>
+    <string name="settings_view_reset_button">Аднавіць карыстальніцкія колеры</string>
 </resources>

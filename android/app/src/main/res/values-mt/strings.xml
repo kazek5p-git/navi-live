@@ -537,4 +537,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Passi tar-rotta mingħajr dettalji tal-manuvra: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Pari ta\' dawriet qrib xulxin f\'direzzjonijiet opposti: %1$d.</string>
     <string name="heading_instruction_rotate_left">Dawwar ftit lejn ix-xellug biex tallinja ruħek mar-rotta.</string>
+    <string name="settings_group_view_title">Dehra</string>
+    <string name="settings_view_theme_title">Tema tal-interfaċċja</string>
+    <string name="settings_view_theme_system">Uża s-settings tat-telefon</string>
+    <string name="settings_view_theme_light">Ċar</string>
+    <string name="settings_view_theme_dark">Skur</string>
+    <string name="settings_view_theme_high_contrast">Kuntrast għoli</string>
+    <string name="settings_view_theme_custom">Personalizzat</string>
+    <string name="settings_view_preview_title">Previżjoni</string>
+    <string name="settings_view_custom_colors_title">Kuluri personalizzati</string>
+    <string name="settings_view_background_color">Kulur tal-isfond</string>
+    <string name="settings_view_surface_color">Kulur tal-karti</string>
+    <string name="settings_view_primary_text_color">Kulur tat-test ewlieni</string>
+    <string name="settings_view_secondary_text_color">Kulur tat-test sekondarju</string>
+    <string name="settings_view_accent_color">Kulur tal-aċċent</string>
+    <string name="settings_view_outline_color">Kulur tal-bord</string>
+    <string name="settings_view_hex_hint">Uża kulur HEX, pereżempju #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Daħħal kulur HEX validu.</string>
+    <string name="settings_view_reset_button">Irrisettja l-kuluri personalizzati</string>
 </resources>

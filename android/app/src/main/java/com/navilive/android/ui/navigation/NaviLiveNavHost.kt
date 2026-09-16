@@ -62,6 +62,7 @@ import com.navilive.android.ui.screens.SearchScreen
 import com.navilive.android.ui.screens.SettingsScreen
 import com.navilive.android.ui.screens.StartScreen
 import com.navilive.android.ui.screens.TutorialScreen
+import com.navilive.android.ui.theme.NaviLiveTheme
 import java.io.File
 import kotlin.math.abs
 import kotlin.math.sqrt
@@ -238,10 +239,11 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
         LocalOpenSettings provides openSettings,
         LocalOpenVisualAssistance provides openVisualAssistance,
     ) {
-        NavHost(
-            navController = navController,
-            startDestination = Routes.Bootstrap,
-        ) {
+        NaviLiveTheme(settings = uiState.value.settingsState) {
+            NavHost(
+                navController = navController,
+                startDestination = Routes.Bootstrap,
+            ) {
         composable(Routes.Bootstrap) {
             LaunchedEffect(
                 uiState.value.isPreferencesLoaded,
@@ -597,6 +599,8 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
                 diagnosticsState = uiState.value.diagnosticsState,
                 nearbyPoiCacheState = uiState.value.nearbyPoiCacheState,
                 onOpenHelpPrivacy = { navController.navigate(Routes.HelpPrivacy) },
+                onInterfaceThemeChange = viewModel::setInterfaceTheme,
+                onCustomThemeColorsChange = viewModel::setCustomThemeColors,
                 onVibrationChange = viewModel::setVibration,
                 onShakeGestureEnabledChange = viewModel::setShakeGestureEnabled,
                 onShakeStrengthChange = viewModel::setShakeStrength,
@@ -657,6 +661,7 @@ fun NaviLiveNavHost(viewModel: NaviLiveViewModel) {
                 onOpenVisualAssistance = openVisualAssistance,
                 onBack = { navController.popBackStack() },
             )
+            }
         }
     }
 }

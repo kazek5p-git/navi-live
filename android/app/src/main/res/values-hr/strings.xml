@@ -525,4 +525,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Koraka rute bez potpunih podataka o manevru: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Bliskih parova skretanja u suprotnim smjerovima: %1$d.</string>
     <string name="heading_instruction_rotate_left">Lagano okrenite telefon ulijevo dok ne bude usmjeren duž rute.</string>
+    <string name="settings_group_view_title">Izgled</string>
+    <string name="settings_view_theme_title">Tema sučelja</string>
+    <string name="settings_view_theme_system">Upotrijebi postavke telefona</string>
+    <string name="settings_view_theme_light">Svijetla</string>
+    <string name="settings_view_theme_dark">Tamna</string>
+    <string name="settings_view_theme_high_contrast">Visoki kontrast</string>
+    <string name="settings_view_theme_custom">Prilagođena</string>
+    <string name="settings_view_preview_title">Pregled</string>
+    <string name="settings_view_custom_colors_title">Prilagođene boje</string>
+    <string name="settings_view_background_color">Boja pozadine</string>
+    <string name="settings_view_surface_color">Boja kartica</string>
+    <string name="settings_view_primary_text_color">Boja glavnog teksta</string>
+    <string name="settings_view_secondary_text_color">Boja sekundarnog teksta</string>
+    <string name="settings_view_accent_color">Boja naglaska</string>
+    <string name="settings_view_outline_color">Boja obruba</string>
+    <string name="settings_view_hex_hint">Upotrijebite HEX boju, na primjer #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Unesite valjanu HEX boju.</string>
+    <string name="settings_view_reset_button">Vrati prilagođene boje</string>
 </resources>

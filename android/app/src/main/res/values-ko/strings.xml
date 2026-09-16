@@ -513,4 +513,22 @@
     <string name="assistant_quality_issue_missing_maneuver">회전 정보가 부족한 경로 단계: %1$d개.</string>
     <string name="assistant_quality_issue_close_opposite">서로 반대 방향을 가리키는 가까운 회전 쌍: %1$d개.</string>
     <string name="heading_instruction_rotate_left">휴대전화를 경로 방향을 향하도록 약간 왼쪽으로 돌리세요.</string>
+    <string name="settings_group_view_title">보기</string>
+    <string name="settings_view_theme_title">인터페이스 테마</string>
+    <string name="settings_view_theme_system">휴대전화 설정 사용</string>
+    <string name="settings_view_theme_light">밝게</string>
+    <string name="settings_view_theme_dark">어둡게</string>
+    <string name="settings_view_theme_high_contrast">고대비</string>
+    <string name="settings_view_theme_custom">사용자 지정</string>
+    <string name="settings_view_preview_title">미리 보기</string>
+    <string name="settings_view_custom_colors_title">사용자 지정 색상</string>
+    <string name="settings_view_background_color">배경색</string>
+    <string name="settings_view_surface_color">카드 색상</string>
+    <string name="settings_view_primary_text_color">기본 텍스트 색상</string>
+    <string name="settings_view_secondary_text_color">보조 텍스트 색상</string>
+    <string name="settings_view_accent_color">강조 색상</string>
+    <string name="settings_view_outline_color">테두리 색상</string>
+    <string name="settings_view_hex_hint">HEX 색상을 사용하세요(예: #RRGGBB).</string>
+    <string name="settings_view_invalid_color">올바른 HEX 색상을 입력하세요.</string>
+    <string name="settings_view_reset_button">사용자 지정 색상 초기화</string>
 </resources>

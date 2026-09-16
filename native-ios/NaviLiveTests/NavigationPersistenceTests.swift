@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import XCTest
 @testable import NaviLive
 
@@ -96,5 +97,52 @@ final class NavigationPersistenceTests: XCTestCase {
     XCTAssertEqual(restored.snapshot.lastRoutePlace, place)
     XCTAssertEqual(restored.snapshot.lastRoutePlaceID, place.id)
     XCTAssertEqual(restored.snapshot.lastRouteSummary, summary)
+  }
+
+  @MainActor
+  func testSettingsStorePersistsInterfaceThemeAndCustomColors() throws {
+    let suiteName = "NaviLiveTests.\(UUID().uuidString)"
+    let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+
+    let store = SettingsStore(defaults: defaults)
+    store.updateSettings {
+      $0.interfaceTheme = .custom
+      $0.customInterfaceThemeColors = InterfaceThemeColors(
+        backgroundHex: "#101010",
+        surfaceHex: "#202020",
+        primaryTextHex: "#FFFFFF",
+        secondaryTextHex: "#DDDDDD",
+        accentHex: "#FFD600",
+        outlineHex: "#FFFFFF"
+      )
+    }
+
+    let restored = SettingsStore(defaults: defaults)
+    XCTAssertEqual(restored.snapshot.settings.interfaceTheme, .custom)
+    XCTAssertEqual(restored.snapshot.settings.customInterfaceThemeColors.accentHex, "#FFD600")
+  }
+
+  func testOlderSettingsDefaultToSystemInterfaceTheme() throws {
+    let data = try JSONSerialization.data(
+      withJSONObject: [
+        "settings": ["languageCode": "pl"]
+      ]
+    )
+
+    let snapshot = try JSONDecoder().decode(PersistedSnapshot.self, from: data)
+    XCTAssertEqual(snapshot.settings.interfaceTheme, .system)
+    XCTAssertEqual(snapshot.settings.customInterfaceThemeColors.backgroundHex, "#F5F9FF")
+  }
+
+  func testCustomThemeChoosesReadableTextWhenSelectedColorHasInsufficientContrast() {
+    let background = UIColor(red: 0.47, green: 0.47, blue: 0.47, alpha: 1)
+    let preferred = UIColor(red: 0.50, green: 0.50, blue: 0.50, alpha: 1)
+    let text = NaviLiveThemeColorSupport.accessibleTextColor(preferred, on: [background])
+
+    XCTAssertGreaterThanOrEqual(
+      NaviLiveThemeColorSupport.contrastRatio(text, background),
+      4.5
+    )
   }
 }

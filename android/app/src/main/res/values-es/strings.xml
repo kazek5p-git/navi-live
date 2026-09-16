@@ -525,4 +525,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Pasos de la ruta sin datos completos de maniobra: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Pares de giros cercanos en direcciones opuestas: %1$d.</string>
     <string name="heading_instruction_rotate_left">Gira ligeramente el teléfono hacia la izquierda hasta que apunte en la dirección de la ruta.</string>
+    <string name="settings_group_view_title">Vista</string>
+    <string name="settings_view_theme_title">Tema de la interfaz</string>
+    <string name="settings_view_theme_system">Usar los ajustes del teléfono</string>
+    <string name="settings_view_theme_light">Claro</string>
+    <string name="settings_view_theme_dark">Oscuro</string>
+    <string name="settings_view_theme_high_contrast">Contraste alto</string>
+    <string name="settings_view_theme_custom">Personalizado</string>
+    <string name="settings_view_preview_title">Vista previa</string>
+    <string name="settings_view_custom_colors_title">Colores personalizados</string>
+    <string name="settings_view_background_color">Color de fondo</string>
+    <string name="settings_view_surface_color">Color de las tarjetas</string>
+    <string name="settings_view_primary_text_color">Color del texto principal</string>
+    <string name="settings_view_secondary_text_color">Color del texto secundario</string>
+    <string name="settings_view_accent_color">Color de acento</string>
+    <string name="settings_view_outline_color">Color del borde</string>
+    <string name="settings_view_hex_hint">Usa un color HEX, por ejemplo #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Introduce un color HEX válido.</string>
+    <string name="settings_view_reset_button">Restablecer colores personalizados</string>
 </resources>

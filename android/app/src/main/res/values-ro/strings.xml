@@ -525,4 +525,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Pași ai traseului fără detalii complete despre manevră: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Perechi de viraje apropiate în direcții opuse: %1$d.</string>
     <string name="heading_instruction_rotate_left">Rotește ușor telefonul spre stânga până când este orientat în direcția traseului.</string>
+    <string name="settings_group_view_title">Aspect</string>
+    <string name="settings_view_theme_title">Tema interfeței</string>
+    <string name="settings_view_theme_system">Folosește setările telefonului</string>
+    <string name="settings_view_theme_light">Deschis</string>
+    <string name="settings_view_theme_dark">Închis</string>
+    <string name="settings_view_theme_high_contrast">Contrast ridicat</string>
+    <string name="settings_view_theme_custom">Personalizat</string>
+    <string name="settings_view_preview_title">Previzualizare</string>
+    <string name="settings_view_custom_colors_title">Culori personalizate</string>
+    <string name="settings_view_background_color">Culoarea fundalului</string>
+    <string name="settings_view_surface_color">Culoarea cardurilor</string>
+    <string name="settings_view_primary_text_color">Culoarea textului principal</string>
+    <string name="settings_view_secondary_text_color">Culoarea textului secundar</string>
+    <string name="settings_view_accent_color">Culoarea de accent</string>
+    <string name="settings_view_outline_color">Culoarea chenarului</string>
+    <string name="settings_view_hex_hint">Folosește o culoare HEX, de exemplu #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Introdu o culoare HEX validă.</string>
+    <string name="settings_view_reset_button">Resetează culorile personalizate</string>
 </resources>

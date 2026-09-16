@@ -556,4 +556,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Шагов маршрута без полных данных о манёвре: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Близких пар поворотов в противоположных направлениях: %1$d.</string>
     <string name="heading_instruction_rotate_left">Слегка поверните телефон влево, пока он не будет направлен вдоль маршрута.</string>
+    <string name="settings_group_view_title">Вид</string>
+    <string name="settings_view_theme_title">Тема интерфейса</string>
+    <string name="settings_view_theme_system">Использовать настройки телефона</string>
+    <string name="settings_view_theme_light">Светлая</string>
+    <string name="settings_view_theme_dark">Тёмная</string>
+    <string name="settings_view_theme_high_contrast">Высокая контрастность</string>
+    <string name="settings_view_theme_custom">Пользовательская</string>
+    <string name="settings_view_preview_title">Предпросмотр</string>
+    <string name="settings_view_custom_colors_title">Пользовательские цвета</string>
+    <string name="settings_view_background_color">Цвет фона</string>
+    <string name="settings_view_surface_color">Цвет карточек</string>
+    <string name="settings_view_primary_text_color">Цвет основного текста</string>
+    <string name="settings_view_secondary_text_color">Цвет второстепенного текста</string>
+    <string name="settings_view_accent_color">Цвет акцента</string>
+    <string name="settings_view_outline_color">Цвет границы</string>
+    <string name="settings_view_hex_hint">Используйте цвет в формате HEX, например #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Введите допустимый цвет в формате HEX.</string>
+    <string name="settings_view_reset_button">Восстановить пользовательские цвета</string>
 </resources>

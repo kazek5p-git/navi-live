@@ -141,6 +141,8 @@ import com.navilive.android.model.AppUpdateState
 import com.navilive.android.model.DiagnosticsState
 import com.navilive.android.model.GeoPoint
 import com.navilive.android.model.HeadingState
+import com.navilive.android.model.InterfaceTheme
+import com.navilive.android.model.InterfaceThemeColors
 import com.navilive.android.model.NearbyPoiCacheMode
 import com.navilive.android.model.NearbyPoiCacheState
 import com.navilive.android.model.Place
@@ -153,6 +155,7 @@ import com.navilive.android.model.SharedProductRules
 import com.navilive.android.model.SoundCueTheme
 import com.navilive.android.model.SpeechOutputMode
 import com.navilive.android.model.UpdateChannel
+import com.navilive.android.ui.theme.PrimaryContainerBlue
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.math.BigDecimal
@@ -171,6 +174,7 @@ private enum class BannerTone {
 
 private enum class SettingsDestination {
     Root,
+    View,
     WhatsNew,
     Guidance,
     LocalSearch,
@@ -1698,6 +1702,8 @@ fun SettingsScreen(
     diagnosticsState: DiagnosticsState,
     nearbyPoiCacheState: NearbyPoiCacheState,
     onOpenHelpPrivacy: () -> Unit,
+    onInterfaceThemeChange: (InterfaceTheme) -> Unit,
+    onCustomThemeColorsChange: (InterfaceThemeColors) -> Unit,
     onVibrationChange: (Boolean) -> Unit,
     onShakeGestureEnabledChange: (Boolean) -> Unit,
     onShakeStrengthChange: (ShakeStrength) -> Unit,
@@ -1740,6 +1746,7 @@ fun SettingsScreen(
 
     val title = when (destination) {
         SettingsDestination.Root -> stringResource(R.string.settings_title)
+        SettingsDestination.View -> stringResource(R.string.settings_group_view_title)
         SettingsDestination.WhatsNew -> stringResource(R.string.settings_whats_new_title)
         SettingsDestination.Guidance -> stringResource(R.string.settings_group_guidance_title)
         SettingsDestination.LocalSearch -> stringResource(R.string.settings_group_local_search_title)
@@ -1767,6 +1774,11 @@ fun SettingsScreen(
         ) {
             when (destination) {
                 SettingsDestination.Root -> {
+                    SettingsNavigationCard(
+                        title = stringResource(R.string.settings_group_view_title),
+                        icon = Icons.Filled.Visibility,
+                        onClick = { destination = SettingsDestination.View },
+                    )
                     SettingsNavigationCard(
                         title = stringResource(R.string.settings_group_guidance_title),
                         icon = Icons.AutoMirrored.Filled.AssistantDirection,
@@ -1807,6 +1819,22 @@ fun SettingsScreen(
                         icon = Icons.Filled.Info,
                         onClick = onOpenHelpPrivacy,
                     )
+                }
+                SettingsDestination.View -> {
+                    InterfaceThemeMenuCard(
+                        selectedTheme = state.interfaceTheme,
+                        onThemeChange = onInterfaceThemeChange,
+                    )
+                    InterfaceThemePreviewCard(
+                        selectedTheme = state.interfaceTheme,
+                        customColors = state.customThemeColors,
+                    )
+                    if (state.interfaceTheme == InterfaceTheme.Custom) {
+                        CustomThemeEditorCard(
+                            colors = state.customThemeColors,
+                            onColorsChange = onCustomThemeColorsChange,
+                        )
+                    }
                 }
                 SettingsDestination.WhatsNew -> {
                     WhatsNewCard(versionLabel = updateState.currentVersionLabel)
@@ -2072,6 +2100,303 @@ private fun SettingsNavigationCard(
         }
     }
 }
+
+@Composable
+private fun InterfaceThemeMenuCard(
+    selectedTheme: InterfaceTheme,
+    onThemeChange: (InterfaceTheme) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val title = stringResource(R.string.settings_view_theme_title)
+    val selectedLabel = interfaceThemeLabel(selectedTheme)
+
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Box {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expanded = true }
+                    .padding(16.dp)
+                    .semantics(mergeDescendants = true) {
+                        contentDescription = title
+                        stateDescription = selectedLabel
+                        role = Role.Button
+                    },
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Visibility,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(3.dp),
+                ) {
+                    Text(title, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        text = selectedLabel,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+            ) {
+                InterfaceTheme.entries.forEach { theme ->
+                    DropdownMenuItem(
+                        text = { Text(interfaceThemeLabel(theme)) },
+                        leadingIcon = {
+                            RadioButton(
+                                selected = theme == selectedTheme,
+                                onClick = null,
+                            )
+                        },
+                        onClick = {
+                            expanded = false
+                            onThemeChange(theme)
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun InterfaceThemePreviewCard(
+    selectedTheme: InterfaceTheme,
+    customColors: InterfaceThemeColors,
+) {
+    val colors = interfaceThemePreviewColors(selectedTheme, customColors)
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.settings_view_preview_title),
+                fontWeight = FontWeight.SemiBold,
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+                    .clearAndSetSemantics { },
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Surface(
+                    modifier = Modifier.size(42.dp),
+                    shape = CircleShape,
+                    color = colors.accent,
+                ) { }
+                Surface(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(42.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    color = colors.surface,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, colors.outline),
+                ) {
+                    Box(contentAlignment = Alignment.CenterStart) {
+                        Text(
+                            text = "Aa  Navi Live",
+                            modifier = Modifier.padding(horizontal = 14.dp),
+                            color = colors.primaryText,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CustomThemeEditorCard(
+    colors: InterfaceThemeColors,
+    onColorsChange: (InterfaceThemeColors) -> Unit,
+) {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            CardTitle(stringResource(R.string.settings_view_custom_colors_title))
+            InterfaceThemeColorField(
+                title = stringResource(R.string.settings_view_background_color),
+                value = colors.backgroundHex,
+                onValueChange = { onColorsChange(colors.copy(backgroundHex = it)) },
+            )
+            InterfaceThemeColorField(
+                title = stringResource(R.string.settings_view_surface_color),
+                value = colors.surfaceHex,
+                onValueChange = { onColorsChange(colors.copy(surfaceHex = it)) },
+            )
+            InterfaceThemeColorField(
+                title = stringResource(R.string.settings_view_primary_text_color),
+                value = colors.primaryTextHex,
+                onValueChange = { onColorsChange(colors.copy(primaryTextHex = it)) },
+            )
+            InterfaceThemeColorField(
+                title = stringResource(R.string.settings_view_secondary_text_color),
+                value = colors.secondaryTextHex,
+                onValueChange = { onColorsChange(colors.copy(secondaryTextHex = it)) },
+            )
+            InterfaceThemeColorField(
+                title = stringResource(R.string.settings_view_accent_color),
+                value = colors.accentHex,
+                onValueChange = { onColorsChange(colors.copy(accentHex = it)) },
+            )
+            InterfaceThemeColorField(
+                title = stringResource(R.string.settings_view_outline_color),
+                value = colors.outlineHex,
+                onValueChange = { onColorsChange(colors.copy(outlineHex = it)) },
+            )
+            Text(
+                text = stringResource(R.string.settings_view_hex_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            OutlinedButton(
+                onClick = { onColorsChange(InterfaceThemeColors()) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.settings_view_reset_button))
+            }
+        }
+    }
+}
+
+@Composable
+private fun InterfaceThemeColorField(
+    title: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+) {
+    var draft by remember(value) { mutableStateOf(value) }
+    val isValid = isValidInterfaceThemeHex(draft)
+    val swatchColor = parseInterfaceThemeColor(draft, MaterialTheme.colorScheme.primary)
+
+    OutlinedTextField(
+        value = draft,
+        onValueChange = { newValue ->
+            draft = newValue
+            if (isValidInterfaceThemeHex(newValue)) {
+                onValueChange(newValue.uppercase())
+            }
+        },
+        label = { Text(title) },
+        singleLine = true,
+        isError = draft.isNotBlank() && !isValid,
+        leadingIcon = {
+            Surface(
+                modifier = Modifier.size(24.dp),
+                shape = CircleShape,
+                color = swatchColor,
+                border = androidx.compose.foundation.BorderStroke(
+                    1.dp,
+                    MaterialTheme.colorScheme.outline,
+                ),
+            ) { }
+        },
+        supportingText = if (draft.isNotBlank() && !isValid) {
+            { Text(stringResource(R.string.settings_view_invalid_color)) }
+        } else {
+            null
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
+        modifier = Modifier.fillMaxWidth(),
+    )
+}
+
+@Composable
+private fun interfaceThemeLabel(theme: InterfaceTheme): String {
+    return when (theme) {
+        InterfaceTheme.System -> stringResource(R.string.settings_view_theme_system)
+        InterfaceTheme.Light -> stringResource(R.string.settings_view_theme_light)
+        InterfaceTheme.Dark -> stringResource(R.string.settings_view_theme_dark)
+        InterfaceTheme.HighContrast -> stringResource(R.string.settings_view_theme_high_contrast)
+        InterfaceTheme.Custom -> stringResource(R.string.settings_view_theme_custom)
+    }
+}
+
+private data class InterfaceThemePreviewColors(
+    val background: Color,
+    val surface: Color,
+    val primaryText: Color,
+    val accent: Color,
+    val outline: Color,
+)
+
+@Composable
+private fun interfaceThemePreviewColors(
+    theme: InterfaceTheme,
+    customColors: InterfaceThemeColors,
+): InterfaceThemePreviewColors {
+    return when (theme) {
+        InterfaceTheme.System -> InterfaceThemePreviewColors(
+            background = MaterialTheme.colorScheme.background,
+            surface = MaterialTheme.colorScheme.surface,
+            primaryText = MaterialTheme.colorScheme.onSurface,
+            accent = MaterialTheme.colorScheme.primary,
+            outline = MaterialTheme.colorScheme.outline,
+        )
+        InterfaceTheme.Light -> InterfaceThemePreviewColors(
+            background = SurfaceLightPreview,
+            surface = Color.White,
+            primaryText = OnSurfaceLightPreview,
+            accent = PrimaryBluePreview,
+            outline = SurfaceVariantLightPreview,
+        )
+        InterfaceTheme.Dark -> InterfaceThemePreviewColors(
+            background = DarkBackgroundPreview,
+            surface = DarkSurfacePreview,
+            primaryText = DarkTextPreview,
+            accent = PrimaryContainerBlue,
+            outline = DarkOutlinePreview,
+        )
+        InterfaceTheme.HighContrast -> InterfaceThemePreviewColors(
+            background = Color.Black,
+            surface = Color.Black,
+            primaryText = Color.White,
+            accent = Color(0xFFFFD600),
+            outline = Color(0xFFFFD600),
+        )
+        InterfaceTheme.Custom -> InterfaceThemePreviewColors(
+            background = parseInterfaceThemeColor(customColors.backgroundHex, SurfaceLightPreview),
+            surface = parseInterfaceThemeColor(customColors.surfaceHex, Color.White),
+            primaryText = parseInterfaceThemeColor(customColors.primaryTextHex, OnSurfaceLightPreview),
+            accent = parseInterfaceThemeColor(customColors.accentHex, PrimaryBluePreview),
+            outline = parseInterfaceThemeColor(customColors.outlineHex, SurfaceVariantLightPreview),
+        )
+    }
+}
+
+private fun isValidInterfaceThemeHex(value: String): Boolean {
+    val trimmed = value.trim()
+    return trimmed.length == 7 && trimmed[0] == '#' &&
+        trimmed.drop(1).all { it.isDigit() || it.lowercaseChar() in 'a'..'f' }
+}
+
+private fun parseInterfaceThemeColor(value: String, fallback: Color): Color {
+    return runCatching {
+        Color(android.graphics.Color.parseColor(value.trim()))
+    }.getOrDefault(fallback)
+}
+
+private val SurfaceLightPreview = Color(0xFFF5F9FF)
+private val OnSurfaceLightPreview = Color(0xFF101418)
+private val SurfaceVariantLightPreview = Color(0xFFDDE3EB)
+private val PrimaryBluePreview = Color(0xFF065EA8)
+private val DarkBackgroundPreview = Color(0xFF111418)
+private val DarkSurfacePreview = Color(0xFF1B2026)
+private val DarkTextPreview = Color(0xFFE1E2E5)
+private val DarkOutlinePreview = Color(0xFF737B86)
 
 @Composable
 private fun LanguageSettingsCard(

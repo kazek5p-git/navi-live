@@ -519,4 +519,22 @@
     <string name="assistant_quality_issue_missing_maneuver">مراحل مسیر بدون جزئیات کامل مانور: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">جفت‌پیچ‌های نزدیک با جهت‌های مخالف: %1$d.</string>
     <string name="heading_instruction_rotate_left">تلفن را کمی به چپ بچرخانید تا در امتداد مسیر قرار بگیرد.</string>
+    <string name="settings_group_view_title">نما</string>
+    <string name="settings_view_theme_title">پوستهٔ رابط کاربری</string>
+    <string name="settings_view_theme_system">استفاده از تنظیمات تلفن</string>
+    <string name="settings_view_theme_light">روشن</string>
+    <string name="settings_view_theme_dark">تیره</string>
+    <string name="settings_view_theme_high_contrast">کنتراست بالا</string>
+    <string name="settings_view_theme_custom">سفارشی</string>
+    <string name="settings_view_preview_title">پیش‌نمایش</string>
+    <string name="settings_view_custom_colors_title">رنگ‌های سفارشی</string>
+    <string name="settings_view_background_color">رنگ پس‌زمینه</string>
+    <string name="settings_view_surface_color">رنگ کارت‌ها</string>
+    <string name="settings_view_primary_text_color">رنگ متن اصلی</string>
+    <string name="settings_view_secondary_text_color">رنگ متن ثانویه</string>
+    <string name="settings_view_accent_color">رنگ تأکیدی</string>
+    <string name="settings_view_outline_color">رنگ حاشیه</string>
+    <string name="settings_view_hex_hint">از یک رنگ HEX استفاده کنید، برای مثال #RRGGBB.</string>
+    <string name="settings_view_invalid_color">یک رنگ HEX معتبر وارد کنید.</string>
+    <string name="settings_view_reset_button">بازنشانی رنگ‌های سفارشی</string>
 </resources>

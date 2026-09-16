@@ -155,6 +155,23 @@ enum SoundCueTheme: String, CaseIterable, Codable, Sendable {
   case cosmic
 }
 
+enum InterfaceTheme: String, CaseIterable, Codable, Sendable {
+  case system
+  case light
+  case dark
+  case highContrast
+  case custom
+}
+
+struct InterfaceThemeColors: Codable, Hashable, Sendable {
+  var backgroundHex: String = "#F5F9FF"
+  var surfaceHex: String = "#FFFFFF"
+  var primaryTextHex: String = "#101418"
+  var secondaryTextHex: String = "#40464E"
+  var accentHex: String = "#065EA8"
+  var outlineHex: String = "#9AA8B8"
+}
+
 enum NearbyPOICacheMode: String, CaseIterable, Codable, Sendable {
   case enabled
   case wifiOnly
@@ -170,6 +187,8 @@ struct NearbyPOICacheState: Codable, Hashable, Sendable {
 
 struct AppSettings: Codable, Hashable, Sendable {
   var languageCode: String = ""
+  var interfaceTheme: InterfaceTheme = .system
+  var customInterfaceThemeColors: InterfaceThemeColors = .init()
   var showTutorialOnLaunch: Bool = true
   var vibrationEnabled: Bool = true
   var shakeGestureEnabled: Bool = true
@@ -194,6 +213,8 @@ struct AppSettings: Codable, Hashable, Sendable {
 
   enum CodingKeys: String, CodingKey {
     case languageCode
+    case interfaceTheme
+    case customInterfaceThemeColors
     case showTutorialOnLaunch
     case vibrationEnabled
     case shakeGestureEnabled
@@ -222,6 +243,11 @@ struct AppSettings: Codable, Hashable, Sendable {
   init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     languageCode = AppLanguage.normalize(try container.decodeIfPresent(String.self, forKey: .languageCode))
+    interfaceTheme = try container.decodeIfPresent(InterfaceTheme.self, forKey: .interfaceTheme) ?? .system
+    customInterfaceThemeColors = try container.decodeIfPresent(
+      InterfaceThemeColors.self,
+      forKey: .customInterfaceThemeColors
+    ) ?? .init()
     showTutorialOnLaunch = try container.decodeIfPresent(Bool.self, forKey: .showTutorialOnLaunch) ?? true
     vibrationEnabled = try container.decodeIfPresent(Bool.self, forKey: .vibrationEnabled) ?? true
     shakeGestureEnabled = try container.decodeIfPresent(Bool.self, forKey: .shakeGestureEnabled) ?? true

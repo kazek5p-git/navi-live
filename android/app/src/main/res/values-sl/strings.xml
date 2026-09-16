@@ -531,4 +531,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Koraki poti brez podatkov o manevru: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Pari bližnjih zavojev v nasprotnih smereh: %1$d.</string>
     <string name="heading_instruction_rotate_left">Obrnite se nekoliko levo, da se poravnate s potjo.</string>
+    <string name="settings_group_view_title">Pogled</string>
+    <string name="settings_view_theme_title">Tema vmesnika</string>
+    <string name="settings_view_theme_system">Uporabi nastavitve telefona</string>
+    <string name="settings_view_theme_light">Svetla</string>
+    <string name="settings_view_theme_dark">Temna</string>
+    <string name="settings_view_theme_high_contrast">Visok kontrast</string>
+    <string name="settings_view_theme_custom">Po meri</string>
+    <string name="settings_view_preview_title">Predogled</string>
+    <string name="settings_view_custom_colors_title">Barve po meri</string>
+    <string name="settings_view_background_color">Barva ozadja</string>
+    <string name="settings_view_surface_color">Barva kartic</string>
+    <string name="settings_view_primary_text_color">Barva glavnega besedila</string>
+    <string name="settings_view_secondary_text_color">Barva sekundarnega besedila</string>
+    <string name="settings_view_accent_color">Barva poudarka</string>
+    <string name="settings_view_outline_color">Barva obrobe</string>
+    <string name="settings_view_hex_hint">Uporabite barvo HEX, na primer #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Vnesite veljavno barvo HEX.</string>
+    <string name="settings_view_reset_button">Ponastavi barve po meri</string>
 </resources>

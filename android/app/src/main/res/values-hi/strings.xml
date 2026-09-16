@@ -519,4 +519,22 @@
     <string name="assistant_quality_issue_missing_maneuver">मोड़ के पूरे विवरण के बिना मार्ग चरण: %1$d।</string>
     <string name="assistant_quality_issue_close_opposite">विपरीत दिशाओं में संकेत करने वाले पास-पास के मोड़ों के जोड़े: %1$d।</string>
     <string name="heading_instruction_rotate_left">फ़ोन को थोड़ा बाईं ओर घुमाएँ, जब तक वह मार्ग की दिशा में न हो जाए।</string>
+    <string name="settings_group_view_title">दृश्य</string>
+    <string name="settings_view_theme_title">इंटरफ़ेस थीम</string>
+    <string name="settings_view_theme_system">फ़ोन की सेटिंग इस्तेमाल करें</string>
+    <string name="settings_view_theme_light">हल्का</string>
+    <string name="settings_view_theme_dark">गहरा</string>
+    <string name="settings_view_theme_high_contrast">उच्च कंट्रास्ट</string>
+    <string name="settings_view_theme_custom">कस्टम</string>
+    <string name="settings_view_preview_title">पूर्वावलोकन</string>
+    <string name="settings_view_custom_colors_title">कस्टम रंग</string>
+    <string name="settings_view_background_color">पृष्ठभूमि का रंग</string>
+    <string name="settings_view_surface_color">कार्ड का रंग</string>
+    <string name="settings_view_primary_text_color">मुख्य टेक्स्ट का रंग</string>
+    <string name="settings_view_secondary_text_color">द्वितीयक टेक्स्ट का रंग</string>
+    <string name="settings_view_accent_color">एक्सेंट का रंग</string>
+    <string name="settings_view_outline_color">बॉर्डर का रंग</string>
+    <string name="settings_view_hex_hint">HEX रंग इस्तेमाल करें, जैसे #RRGGBB.</string>
+    <string name="settings_view_invalid_color">मान्य HEX रंग दर्ज करें.</string>
+    <string name="settings_view_reset_button">कस्टम रंग रीसेट करें</string>
 </resources>

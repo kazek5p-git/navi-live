@@ -519,4 +519,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Leiðarskref sem vantar upplýsingar um aðgerð: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Nálæg beygjupör í gagnstæðar áttir: %1$d.</string>
     <string name="heading_instruction_rotate_left">Snúðu þér aðeins til vinstri til að stilla þig við leiðina.</string>
+    <string name="settings_group_view_title">Útlit</string>
+    <string name="settings_view_theme_title">Þema viðmóts</string>
+    <string name="settings_view_theme_system">Nota stillingar símans</string>
+    <string name="settings_view_theme_light">Ljóst</string>
+    <string name="settings_view_theme_dark">Dökkt</string>
+    <string name="settings_view_theme_high_contrast">Mikill birtuskilnaður</string>
+    <string name="settings_view_theme_custom">Sérsniðið</string>
+    <string name="settings_view_preview_title">Forskoðun</string>
+    <string name="settings_view_custom_colors_title">Sérsniðnir litir</string>
+    <string name="settings_view_background_color">Bakgrunnslitur</string>
+    <string name="settings_view_surface_color">Litur spjalda</string>
+    <string name="settings_view_primary_text_color">Litur aðaltexta</string>
+    <string name="settings_view_secondary_text_color">Litur aukatexta</string>
+    <string name="settings_view_accent_color">Áherslulitur</string>
+    <string name="settings_view_outline_color">Rammi</string>
+    <string name="settings_view_hex_hint">Notaðu HEX-lit, til dæmis #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Sláðu inn gildan HEX-lit.</string>
+    <string name="settings_view_reset_button">Endurstilla sérsniðna liti</string>
 </resources>

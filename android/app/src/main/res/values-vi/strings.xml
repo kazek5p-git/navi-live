@@ -513,4 +513,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Bước trên tuyến đường thiếu chi tiết thao tác: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Cặp rẽ gần nhau chỉ về các hướng ngược nhau: %1$d.</string>
     <string name="heading_instruction_rotate_left">Xoay điện thoại hơi sang trái cho đến khi điện thoại hướng theo tuyến đường.</string>
+    <string name="settings_group_view_title">Giao diện</string>
+    <string name="settings_view_theme_title">Chủ đề giao diện</string>
+    <string name="settings_view_theme_system">Dùng cài đặt điện thoại</string>
+    <string name="settings_view_theme_light">Sáng</string>
+    <string name="settings_view_theme_dark">Tối</string>
+    <string name="settings_view_theme_high_contrast">Độ tương phản cao</string>
+    <string name="settings_view_theme_custom">Tùy chỉnh</string>
+    <string name="settings_view_preview_title">Xem trước</string>
+    <string name="settings_view_custom_colors_title">Màu tùy chỉnh</string>
+    <string name="settings_view_background_color">Màu nền</string>
+    <string name="settings_view_surface_color">Màu thẻ</string>
+    <string name="settings_view_primary_text_color">Màu văn bản chính</string>
+    <string name="settings_view_secondary_text_color">Màu văn bản phụ</string>
+    <string name="settings_view_accent_color">Màu nhấn</string>
+    <string name="settings_view_outline_color">Màu đường viền</string>
+    <string name="settings_view_hex_hint">Sử dụng màu HEX, ví dụ #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Nhập màu HEX hợp lệ.</string>
+    <string name="settings_view_reset_button">Đặt lại màu tùy chỉnh</string>
 </resources>

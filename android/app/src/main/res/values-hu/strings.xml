@@ -519,4 +519,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Hiányzó manőveradatokat tartalmazó útvonallépések: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Ellentétes irányba mutató közeli kanyarpárok: %1$d.</string>
     <string name="heading_instruction_rotate_left">Fordítsd kissé balra a telefont, amíg az útvonal irányába nem mutat.</string>
+    <string name="settings_group_view_title">Nézet</string>
+    <string name="settings_view_theme_title">Felülettéma</string>
+    <string name="settings_view_theme_system">Telefonbeállítások használata</string>
+    <string name="settings_view_theme_light">Világos</string>
+    <string name="settings_view_theme_dark">Sötét</string>
+    <string name="settings_view_theme_high_contrast">Nagy kontraszt</string>
+    <string name="settings_view_theme_custom">Egyéni</string>
+    <string name="settings_view_preview_title">Előnézet</string>
+    <string name="settings_view_custom_colors_title">Egyéni színek</string>
+    <string name="settings_view_background_color">Háttérszín</string>
+    <string name="settings_view_surface_color">Kártyák színe</string>
+    <string name="settings_view_primary_text_color">Fő szöveg színe</string>
+    <string name="settings_view_secondary_text_color">Másodlagos szöveg színe</string>
+    <string name="settings_view_accent_color">Kiemelőszín</string>
+    <string name="settings_view_outline_color">Szegély színe</string>
+    <string name="settings_view_hex_hint">Használjon HEX-színt, például: #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Adjon meg érvényes HEX-színt.</string>
+    <string name="settings_view_reset_button">Egyéni színek visszaállítása</string>
 </resources>

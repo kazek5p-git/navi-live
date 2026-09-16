@@ -519,4 +519,22 @@
     <string name="assistant_quality_issue_missing_maneuver">Чекори на рутата без детали за маневрот: %1$d.</string>
     <string name="assistant_quality_issue_close_opposite">Блиски парови свртувања во спротивни насоки: %1$d.</string>
     <string name="heading_instruction_rotate_left">Свртете малку налево за да се усогласите со рутата.</string>
+    <string name="settings_group_view_title">Приказ</string>
+    <string name="settings_view_theme_title">Тема на интерфејсот</string>
+    <string name="settings_view_theme_system">Користи ги поставките на телефонот</string>
+    <string name="settings_view_theme_light">Светла</string>
+    <string name="settings_view_theme_dark">Темна</string>
+    <string name="settings_view_theme_high_contrast">Висок контраст</string>
+    <string name="settings_view_theme_custom">Прилагодена</string>
+    <string name="settings_view_preview_title">Преглед</string>
+    <string name="settings_view_custom_colors_title">Прилагодени бои</string>
+    <string name="settings_view_background_color">Боја на заднината</string>
+    <string name="settings_view_surface_color">Боја на картичките</string>
+    <string name="settings_view_primary_text_color">Боја на главниот текст</string>
+    <string name="settings_view_secondary_text_color">Боја на секундарниот текст</string>
+    <string name="settings_view_accent_color">Боја на акцентот</string>
+    <string name="settings_view_outline_color">Боја на рамката</string>
+    <string name="settings_view_hex_hint">Користете HEX боја, на пример #RRGGBB.</string>
+    <string name="settings_view_invalid_color">Внесете важечка HEX боја.</string>
+    <string name="settings_view_reset_button">Врати ги прилагодените бои</string>
 </resources>

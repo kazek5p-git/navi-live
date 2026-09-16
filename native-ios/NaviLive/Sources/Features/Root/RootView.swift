@@ -20,6 +20,10 @@ struct RootView: View {
       }
     }
     .environment(\.locale, model.appLocale)
+    .naviLiveInterfaceTheme(
+      model.settings.interfaceTheme,
+      customColors: model.settings.customInterfaceThemeColors
+    )
     .task {
       guard !didBootstrap else { return }
       didBootstrap = true
