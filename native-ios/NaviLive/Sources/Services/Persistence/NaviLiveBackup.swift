@@ -95,6 +95,20 @@ struct NaviLiveBackupPlace: Codable, Equatable {
     }
     savedAccuracyMeters = try container.decodeIfPresent(Double.self, forKey: .savedAccuracyMeters)
   }
+
+  func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode(id, forKey: .id)
+    try container.encode(name, forKey: .name)
+    try container.encode(address, forKey: .address)
+    try container.encode(walkDistanceMeters, forKey: .walkDistanceMeters)
+    try container.encode(walkEtaMinutes, forKey: .walkEtaMinutes)
+    try container.encodeIfPresent(point, forKey: .point)
+    try container.encodeIfPresent(phone, forKey: .phone)
+    try container.encodeIfPresent(website, forKey: .website)
+    try container.encodeIfPresent(savedAtMs, forKey: .savedAtMs)
+    try container.encodeIfPresent(savedAccuracyMeters, forKey: .savedAccuracyMeters)
+  }
 }
 
 struct NaviLiveBackupThemeColors: Codable, Equatable {
@@ -520,12 +534,12 @@ struct NaviLiveBackupDocument: FileDocument {
     guard let data = configuration.file.regularFileContents else {
       throw NaviLiveBackupError.invalidFile
     }
-    try NaviLiveBackupCodec.decodePayload(data)
+    _ = try NaviLiveBackupCodec.decodePayload(data)
     self.data = data
   }
 
   func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
-    try NaviLiveBackupCodec.decodePayload(data)
+    _ = try NaviLiveBackupCodec.decodePayload(data)
     return FileWrapper(regularFileWithContents: data)
   }
 
@@ -542,7 +556,7 @@ struct NaviLiveBackupDocument: FileDocument {
       throw NaviLiveBackupError.invalidFile
     }
     let data = try Data(contentsOf: url)
-    try NaviLiveBackupCodec.decodePayload(data)
+    _ = try NaviLiveBackupCodec.decodePayload(data)
     return data
   }
 }
