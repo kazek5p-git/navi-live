@@ -15,6 +15,9 @@ Podczas aktywnej nawigacji przejdź listę kroków i rotor instrukcji. Sprawdź,
 Sprawdź wyszukiwanie i regresje.
 Sprawdź wyniki wyszukiwania, budowanie trasy, aktywną nawigację, ulubione oraz ustawienia mowy i dźwięków. Zgłoś, jeśli wynik nie zawiera adresu albo aplikacja pokazuje punkt wyraźnie oddalony mimo bliższych wyników.
 
+Sprawdź kopię zapasową i przywracanie.
+W ustawieniach utwórz kopię zapasową, a następnie sprawdź jej eksport i import. Zweryfikuj, czy po przywróceniu zachowują się ustawienia, ulubione, zapisane punkty, ostatnia trasa i stan samouczka. Sprawdź również anulowanie importu oraz komunikaty o nieprawidłowym lub nieobsługiwanym pliku.
+
 ENGLISH
 
 Check route assistant localization.
@@ -31,3 +34,6 @@ During active navigation, move through the step list and the instructions rotor.
 
 Check search and regressions.
 Check search results, route building, active navigation, favorites, and speech or sound settings. Report results without an address or a clearly distant result when closer places are available.
+
+Check backup and restore.
+Create a backup in settings, then test exporting and importing it. Verify that settings, favorites, saved places, the last route, and onboarding state are preserved after restore. Also test cancelling an import and the messages shown for an invalid or unsupported file.
