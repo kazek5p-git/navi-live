@@ -148,12 +148,39 @@
     <string name="settings_group_speech_title">Речь и голос</string>
     <string name="settings_group_app_title">Приложение и обновления</string>
     <string name="settings_group_diagnostics_title">Диагностика</string>
+    <string name="settings_backup_title">Резервное копирование и восстановление</string>
+    <string name="settings_backup_card_title">Резервное копирование и восстановление</string>
+    <string name="settings_backup_local_title">Локальная точка восстановления</string>
+    <string name="settings_backup_local_description">На этом устройстве хранится одна точка восстановления. При сохранении новой точки предыдущая заменяется.</string>
+    <string name="settings_backup_local_available">Локальная точка восстановления доступна.</string>
+    <string name="settings_backup_local_empty">Локальная точка восстановления ещё не сохранена.</string>
+    <string name="settings_backup_local_save">Сохранить точку восстановления</string>
+    <string name="settings_backup_local_restore">Восстановить данные из точки восстановления</string>
+    <string name="settings_backup_file_title">Файл резервной копии</string>
+    <string name="settings_backup_file_description">Экспортируйте настройки и личные данные в файл JSON или импортируйте файл с другого устройства. Кэш, данные диагностики и секретные данные в файл не входят.</string>
+    <string name="settings_backup_export">Экспортировать резервную копию</string>
+    <string name="settings_backup_import">Импортировать резервную копию</string>
+    <string name="status_backup_exported">Резервная копия экспортирована.</string>
+    <string name="status_backup_export_failed">Не удалось экспортировать резервную копию.</string>
+    <string name="status_backup_import_failed">Не удалось прочитать резервную копию.</string>
+    <string name="status_backup_local_saved">Локальная точка восстановления сохранена.</string>
+    <string name="status_backup_local_save_failed">Не удалось сохранить локальную точку восстановления.</string>
+    <string name="status_backup_local_missing">Локальная точка восстановления недоступна.</string>
+    <string name="status_backup_local_restored">Данные восстановлены из локальной точки восстановления.</string>
+    <string name="status_backup_imported">Резервная копия импортирована.</string>
+    <string name="status_backup_empty_file">Выбранный файл резервной копии пуст.</string>
+    <string name="status_backup_invalid_file">Выбранный файл не удалось распознать как резервную копию Navi Live.</string>
+    <string name="status_backup_no_content">В выбранной резервной копии нет данных для восстановления.</string>
+    <string name="status_backup_newer_version">Эта резервная копия создана в более новой версии Navi Live.</string>
+    <string name="status_backup_wrong_app">Этот файл не является резервной копией Navi Live.</string>
     <string name="settings_group_help_title">Справка и конфиденциальность</string>
     <string name="settings_help_privacy_title">Справка и конфиденциальность</string>
     <string name="settings_help_privacy_tutorial_open_button">Открыть обучение</string>
     <string name="settings_language_title">Язык</string>
     <string name="settings_language_detected_label">Определяется по настройкам телефона</string>
-    <string name="settings_language_selected_label">Язык приложения</string>     <string name="settings_language_system_default">Использовать язык телефона</string>     <string name="settings_language_changed">Язык приложения обновлен.</string>
+    <string name="settings_language_selected_label">Язык приложения</string>
+    <string name="settings_language_system_default">Использовать язык телефона</string>
+    <string name="settings_language_changed">Язык приложения обновлён.</string>
     <string name="settings_voice_title">Голосовые подсказки</string>
     <string name="settings_announcement_cadence_title">Частота объявлений</string>
     <string name="settings_announcement_cadence_distance_title">По расстоянию</string>
@@ -164,8 +191,8 @@
     <string name="format_status_search_radius_updated">Радиус поиска: %1$d км.</string>
     <string name="settings_search_result_limit_title">Количество результатов поиска</string>
     <plurals name="format_search_result_limit_value">
-        <item quantity="one">%1$d результатов</item>
-        <item quantity="few">%1$d результатов</item>
+        <item quantity="one">%1$d результат</item>
+        <item quantity="few">%1$d результата</item>
         <item quantity="many">%1$d результатов</item>
         <item quantity="other">%1$d результатов</item>
     </plurals>
@@ -308,8 +335,8 @@
     <string name="format_step_preview_with_distance">%1$d. %2$s, %3$s</string>
     <string name="format_progress_step">Шаг %1$d из %2$d</string>
     <plurals name="format_found_matching_places">
-        <item quantity="one">Найдено %1$d подходящих мест.</item>
-        <item quantity="few">Найдено %1$d подходящих мест.</item>
+        <item quantity="one">Найдено %1$d подходящее место.</item>
+        <item quantity="few">Найдено %1$d подходящих места.</item>
         <item quantity="many">Найдено %1$d подходящих мест.</item>
         <item quantity="other">Найдено %1$d подходящих мест.</item>
     </plurals>
@@ -318,21 +345,21 @@
     <string name="format_route_ready">Маршрут до %1$s построен.</string>
     <string name="format_continue_toward">Продолжайте движение к %1$s.</string>
     <plurals name="format_navigation_upcoming_instruction_distance">
-        <item quantity="one">Через %1$d метров, %2$s</item>
-        <item quantity="few">Через %1$d метров, %2$s</item>
+        <item quantity="one">Через %1$d метр, %2$s</item>
+        <item quantity="few">Через %1$d метра, %2$s</item>
         <item quantity="many">Через %1$d метров, %2$s</item>
         <item quantity="other">Через %1$d метров, %2$s</item>
     </plurals>
     <plurals name="format_navigation_upcoming_instruction_time">
-        <item quantity="one">Через %1$d секунд, %2$s</item>
-        <item quantity="few">Через %1$d секунд, %2$s</item>
+        <item quantity="one">Через %1$d секунду, %2$s</item>
+        <item quantity="few">Через %1$d секунды, %2$s</item>
         <item quantity="many">Через %1$d секунд, %2$s</item>
         <item quantity="other">Через %1$d секунд, %2$s</item>
     </plurals>
     <string name="format_navigation_immediate_instruction">Сейчас: %1$s</string>
     <plurals name="format_navigation_repeat_following_distance">
-        <item quantity="one">Затем через %1$d метров: %2$s</item>
-        <item quantity="few">Затем через %1$d метров: %2$s</item>
+        <item quantity="one">Затем через %1$d метр: %2$s</item>
+        <item quantity="few">Затем через %1$d метра: %2$s</item>
         <item quantity="many">Затем через %1$d метров: %2$s</item>
         <item quantity="other">Затем через %1$d метров: %2$s</item>
     </plurals>
@@ -504,9 +531,9 @@
     <string name="settings_whats_new_version">Текущая версия</string>
     <string name="settings_whats_new_intro">Наиболее важные изменения в этой версии Navi Live.</string>
     <string name="settings_whats_new_guidance">Более стабильные подсказки для ходьбы и более точные инструкции по маршруту.</string>
-    <string name="settings_whats_new_search">Улучшен поиск мест поблизости и более четкие адреса в результатах.</string>
+    <string name="settings_whats_new_search">Улучшен поиск мест поблизости. Адреса в результатах стали понятнее.</string>
     <string name="settings_whats_new_accessibility">Улучшенная программа чтения с экрана, поддержка языка, речи и звука навигации.</string>
-    <string name="settings_whats_new_location">Более надежная обработка местоположения и общая стабильность приложения.</string>
+    <string name="settings_whats_new_location">Повышена надёжность определения местоположения и стабильность приложения.</string>
     <string name="assistant_quick_overview">Кратко описать маршрут</string>
     <string name="format_assistant_overview">Краткий обзор маршрута: %1$s</string>
     <string name="format_assistant_overview_item">%1$d. %2$s, %3$s.</string>
